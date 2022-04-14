@@ -19,6 +19,7 @@ package spoon.support.compiler.jdt;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
+import spoon.testing.utils.ModelTest;
 
 import java.util.List;
 
@@ -26,10 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JDTBasedSpoonCompilerTest {
 
-	@Test
-	public void testOrderCompilationUnits() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/main/java");
+	@ModelTest("./src/main/java")
+	public void testOrderCompilationUnits(Launcher launcher) {
 		JDTBasedSpoonCompiler spoonCompiler = (JDTBasedSpoonCompiler) launcher.getModelBuilder();
 
 		CompilationUnitDeclaration[] compilationUnitDeclarations = spoonCompiler.buildUnits(null, spoonCompiler.sources, spoonCompiler.getSourceClasspath(), "");

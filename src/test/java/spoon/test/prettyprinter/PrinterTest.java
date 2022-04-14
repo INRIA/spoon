@@ -45,6 +45,7 @@ import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.TokenWriter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.prettyprinter.testclasses.MissingVariableDeclaration;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -579,15 +580,12 @@ public class PrinterTest {
 			assertEquals("(a + b).toString()", invocations.get(2).toString());
 		}
 
-	@Test
-	public void testCustomPrettyPrinter() throws Exception {
+	@ModelTest("src/test/resources/JavaCode.java")
+	public void testCustomPrettyPrinter(Launcher launcher, Factory factory) throws Exception {
 		// contract: one can use Spoon to write a custom pretty-printer
 		// here the pretty-printer writes two spaces before each keyword of the language
-		Launcher spoon = new Launcher();
-		// Java file to be pretty-printed, can be a folder as well
-		spoon.addInputResource("src/test/resources/JavaCode.java");
-		spoon.getFactory().getEnvironment().setPrettyPrinterCreator(() -> {
-				DefaultJavaPrettyPrinter defaultJavaPrettyPrinter = new DefaultJavaPrettyPrinter(spoon.getFactory().getEnvironment());
+		factory.getEnvironment().setPrettyPrinterCreator(() -> {
+				DefaultJavaPrettyPrinter defaultJavaPrettyPrinter = new DefaultJavaPrettyPrinter(factory.getEnvironment());
 				// here we create the custom version of the token writer
 				defaultJavaPrettyPrinter.setPrinterTokenWriter(new DefaultTokenWriter() {
 					@Override
@@ -599,7 +597,7 @@ public class PrinterTest {
 				});
 				return defaultJavaPrettyPrinter;
 		});
-		spoon.run();
+		launcher.prettyprint();
 		// the pretty-printed code is in folder ./spooned (default value that can be set with setOutputDirectory)
 
 		assertTrue(FileUtils.readFileToString(new File("spooned/HelloWorld.java"), "UTF-8").contains("  class"));

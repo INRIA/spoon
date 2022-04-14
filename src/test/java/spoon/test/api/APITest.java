@@ -69,6 +69,7 @@ import spoon.template.TemplateMatcher;
 import spoon.template.TemplateParameter;
 import spoon.test.api.processors.AwesomeProcessor;
 import spoon.test.api.testclasses.Bar;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -284,34 +285,28 @@ public class APITest {
 		assertEquals("Launcher.java", filesName.get(1));
 	}
 
-	@Test
-	public void testInvalidateCacheOfCompiler() {
-		final Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
-		spoon.setSourceOutputDirectory("./target/api");
-		spoon.getEnvironment().setNoClasspath(true);
-		spoon.run();
+	@ModelTest("./src/test/java/spoon/test/api/testclasses/Bar.java")
+	public void testInvalidateCacheOfCompiler(Launcher launcher, Factory factory) {
+		assertTrue(launcher.getModelBuilder().compile());
 
-		assertTrue(spoon.getModelBuilder().compile());
+		final CtClass<Bar> aClass = factory.Class().get(Bar.class);
 
-		final CtClass<Bar> aClass = spoon.getFactory().Class().get(Bar.class);
-
-		final CtMethod aMethod = spoon.getFactory().Core().createMethod();
+		final CtMethod aMethod = factory.Core().createMethod();
 		aMethod.setSimpleName("foo");
-		aMethod.setType(spoon.getFactory().Type().BOOLEAN_PRIMITIVE);
-		aMethod.setBody(spoon.getFactory().Core().createBlock());
+		aMethod.setType(factory.Type().BOOLEAN_PRIMITIVE);
+		aMethod.setBody(factory.Core().createBlock());
 		aClass.addMethod(aMethod);
 
 		// contract: compilation errors are not silent
 		try {
-			spoon.getModelBuilder().compile();
+			launcher.getModelBuilder().compile();
 			fail();
 		} catch (SnippetCompilationError expected) {}
 
 
 		aClass.removeMethod(aMethod);
 
-		assertTrue(spoon.getModelBuilder().compile());
+		assertTrue(launcher.getModelBuilder().compile());
 	}
 
 	@Test
@@ -466,10 +461,9 @@ public class APITest {
 		}
 	}
 
-	@Test
-	public void testOutputDestinationHandler() throws IOException {
+	@ModelTest("./src/test/java/spoon/test/api/testclasses/Bar.java")
+	public void testOutputDestinationHandler(Launcher launcher) throws IOException {
 		// contract: files are created in the directory determined by the output destination handler
-
 		final File outputDest = Files.createTempDirectory("spoon").toFile();
 
 		final OutputDestinationHandler outputDestinationHandler = new OutputDestinationHandler() {
@@ -493,11 +487,8 @@ public class APITest {
 				return outputDest;
 			}
 		};
-
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
 		launcher.getEnvironment().setOutputDestinationHandler(outputDestinationHandler);
-		launcher.run();
+		launcher.prettyprint();
 
 		File generatedFile = new File(outputDest, "unnamed module_spoon.test.api.testclasses_Bar.java");
 		assertTrue(generatedFile.exists());
@@ -571,17 +562,13 @@ public class APITest {
 		assertTrue(units.contains(classFile.getCanonicalPath()), "Class file not contained (" + classFile.getCanonicalPath() + "). \nContent: " + StringUtils.join(units, "\n"));
 	}
 
-	@Test
-	public void testOutputWithNoOutputProduceNoFolder() {
+	@ModelTest("./src/test/java/spoon/test/api/testclasses/Bar.java")
+	public void testOutputWithNoOutputProduceNoFolder(Launcher launcher) {
 		// contract: when using "NO_OUTPUT" output type, no output folder shoud be created
-		String destPath = "./target/nooutput_" + UUID.randomUUID().toString();
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
+		String destPath = "./target/nooutput_" + UUID.randomUUID();
 		launcher.setSourceOutputDirectory(destPath);
 		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setCommentEnabled(true);
-		launcher.run();
+		launcher.prettyprint();
 		File outputDir = new File(destPath);
 		System.out.println(destPath);
 		assertFalse(outputDir.exists(), "Output dir should not exist: " + outputDir.getAbsolutePath());

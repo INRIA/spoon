@@ -52,6 +52,7 @@ import spoon.test.position.testclasses.FooField;
 import spoon.test.position.testclasses.FooSourceFragments;
 import spoon.test.position.testclasses.NewArrayList;
 import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,20 +62,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestSourceFragment {
 
-	@Test
-	public void testSourceFragmentField() {
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/OneLineMultipleVariableDeclaration.java");
-		spoon.buildModel();
-
-		CtType t = spoon.getFactory().Type().get(OneLineMultipleVariableDeclaration.class);
+	@ModelTest("./src/test/java/spoon/test/prettyprinter/testclasses/OneLineMultipleVariableDeclaration.java")
+	public void testSourceFragmentField(Factory factory) {
+		CtType t = factory.Type().get(OneLineMultipleVariableDeclaration.class);
 
 		ElementSourceFragment fragment = ElementSourceFragment.createSourceFragmentsFrom(t);
 
 		// contract: there is no full fragment for joint fields
 		// the fragment of the type of field a
 		assertEquals("|int|", fragment.getChildrenFragments().get(8).toString());
-
 	}
 
 

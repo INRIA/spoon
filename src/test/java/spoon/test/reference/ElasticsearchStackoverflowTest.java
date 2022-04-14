@@ -28,6 +28,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -45,18 +46,12 @@ public class ElasticsearchStackoverflowTest {
 		}
 	}
 
-	@Test
-	public void testStackOverflow() {
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/elasticsearch-stackoverflow");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.buildModel();
-
-		CtModel model = launcher.getModel();
+	@ModelTest("./src/test/resources/noclasspath/elasticsearch-stackoverflow")
+	public void testStackOverflow(CtModel model) {
 		Scanner scanner = new Scanner();
 		scanner.scan(model.getRootPackage());
 
-		List<CtExecutableReference> executables = launcher.getModel().getElements(new TypeFilter<>(CtExecutableReference.class));
+		List<CtExecutableReference> executables = model.getElements(new TypeFilter<>(CtExecutableReference.class));
 		assertFalse(executables.isEmpty());
 
 		boolean result = false;

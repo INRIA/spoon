@@ -41,10 +41,12 @@ import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.compiler.jdt.JDTBatchCompiler;
+import spoon.testing.utils.ModelTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,20 +103,14 @@ public class TestModule {
 		}
 	}
 
-	@Test
-	public void testCompleteModuleInfoContentNoClasspath() {
+	@ModelTest(value = "./src/test/resources/spoon/test/module/simple_module/module-info.java", complianceLevel = 9)
+	public void testCompleteModuleInfoContentNoClasspath(CtModel model, Factory factory) {
 		// contract: all information of the module-info should be available through the model
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/spoon/test/module/simple_module/module-info.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setComplianceLevel(9);
-		launcher.buildModel();
+		assertEquals(2, model.getAllModules().size());
 
-		assertEquals(2, launcher.getModel().getAllModules().size());
-
-		CtModule unnamedModule = launcher.getFactory().Module().getOrCreate(CtModule.TOP_LEVEL_MODULE_NAME);
-		assertSame(unnamedModule, launcher.getModel().getUnnamedModule());
-		CtModule moduleGreetings = launcher.getFactory().Module().getOrCreate("simple_module");
+		CtModule unnamedModule = factory.Module().getOrCreate(CtModule.TOP_LEVEL_MODULE_NAME);
+		assertSame(unnamedModule, model.getUnnamedModule());
+		CtModule moduleGreetings = factory.Module().getOrCreate("simple_module");
 
 		assertEquals("simple_module", moduleGreetings.getSimpleName());
 

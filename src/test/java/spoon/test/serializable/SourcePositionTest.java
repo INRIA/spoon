@@ -32,6 +32,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.support.SerializationModelStreamer;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -48,14 +49,9 @@ public class SourcePositionTest {
 		outstr.writeTo(fileStream);
 	}
 
-	@Test
-	public void testSourcePosition() throws IOException {
+	@ModelTest("./src/test/resources/serialization/SomeClass.java")
+	public void testSourcePosition(Factory factory) throws IOException {
 		File modelFile = new File("./target/SourcePositionTest-model");
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/serialization/SomeClass.java");
-		launcher.buildModel();
-
-		Factory factory = launcher.getFactory();
 
 		saveFactory(factory, modelFile);
 
@@ -74,17 +70,15 @@ public class SourcePositionTest {
 		assertTrue(elem1.getPosition().getFile().equals(elem2.getPosition().getFile()));
 	}
 
-	@Test
-	public void test_sourcePositionOfTypeInFieldExists() {
+	@ModelTest({
+		"src/test/resources/spoon/test/sourcePosition/FieldType.java",
+		"src/test/resources/spoon/test/sourcePosition/SourcePartitionValidator.java",
+	})
+	public void test_sourcePositionOfTypeInFieldExists(CtModel model) {
 		// contract: the type reference of type of the field should have a source position
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/spoon/test/sourcePosition/FieldType.java");
-		launcher.addInputResource("src/test/resources/spoon/test/sourcePosition/SourcePartitionValidator.java");
-		CtModel model = launcher.buildModel();
-
 		CtField<?> field = (CtField<?>) model.getElements(
-				element -> element instanceof CtField &&
-						((CtField<?>) element).getSimpleName().equals("pleaseAttachSourcePositionToMyType")).stream().findFirst().get();
+			element -> element instanceof CtField &&
+				((CtField<?>) element).getSimpleName().equals("pleaseAttachSourcePositionToMyType")).stream().findFirst().get();
 		assertTrue(field.getType().getPosition().isValidPosition(), "Source position unknown for type of field");
 	}
 }

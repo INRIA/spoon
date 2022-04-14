@@ -37,6 +37,7 @@ import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.compiler.VirtualFile;
+import spoon.testing.utils.ModelTest;
 
 
 import static org.hamcrest.CoreMatchers.is;
@@ -137,10 +138,9 @@ public class SnippetTest {
 		assertEquals("foo.bar", spoon.getFactory().Type().get("foo.bar.X").getPackage().getQualifiedName());
 	}
 
-	@Test
-	public void testCompileAndReplaceSnippetsIn() {
-
-        /*
+	@ModelTest("src/test/resources/snippet/SnippetResources.java")
+	public void testCompileAndReplaceSnippetsIn(Factory factory) {
+		/*
             contract:
                 We have a method, and we have a CodeSnippetStatement.
                 In the code snippet, there is a reference to a declared variable, e.g. an object.
@@ -148,14 +148,8 @@ public class SnippetTest {
                 The snippet must be replaced by the reference of the good object.
          */
 
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/snippet/SnippetResources.java");
-		launcher.buildModel();
-
-		final Factory factory = launcher.getFactory();
-
 		final CtCodeSnippetStatement codeSnippetStatement = factory.createCodeSnippetStatement("s.method(23)");
-		final CtClass<?> snippetClass = launcher.getFactory().Class().get("snippet.test.resources.SnippetResources");
+		final CtClass<?> snippetClass = factory.Class().get("snippet.test.resources.SnippetResources");
 		CtMethod<?> staticMethod = snippetClass.getMethodsByName("staticMethod").get(0);
 		staticMethod.getBody().insertEnd(codeSnippetStatement);
 
@@ -169,21 +163,17 @@ public class SnippetTest {
 		assertEquals(factory.createVariableRead(reference, false), lastStatement.getTarget()); // the target of the inserted invocation has been resolved as the reference of the declared object "s"
 	}
 
-	@Test
-	public void testCompileSnippetsWithCtComment() {
+	@ModelTest("src/test/resources/snippet/SnippetCommentResource.java")
+	public void testCompileSnippetsWithCtComment(Factory factory) {
 		// contract: snippets are correctly compiled when followed by a CtComment
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/snippet/SnippetCommentResource.java");
-		launcher.buildModel();
-		Factory factory = launcher.getFactory();
 		final CtClass<?> testClass = factory.Class().get("snippet.test.resources.SnippetCommentResource");
 		CtMethod method = testClass.getMethodsByName("modifiedMethod").get(0);
 		CtBlock body = method.getBody();
-		body.addStatement(body.getStatements().size()-1,launcher.getFactory().createInlineComment("inline comment"));
-		body.addStatement(body.getStatements().size()-1,launcher.getFactory().createCodeSnippetStatement("invokedMethod()"));
+		body.addStatement(body.getStatements().size() - 1, factory.createInlineComment("inline comment"));
+		body.addStatement(body.getStatements().size() - 1, factory.createCodeSnippetStatement("invokedMethod()"));
 		CtBlock innerBlock = body.getStatement(0);
-		innerBlock.addStatement(0,factory.createCodeSnippetStatement("invokedMethod()"));
-		body.addStatement(0,factory.createComment("block comment", CtComment.CommentType.BLOCK));
+		innerBlock.addStatement(0, factory.createCodeSnippetStatement("invokedMethod()"));
+		body.addStatement(0, factory.createComment("block comment", CtComment.CommentType.BLOCK));
 		testClass.compileAndReplaceSnippets();
 		assertTrue(body.getStatements().get(0) instanceof CtComment);
 		assertTrue(body.getStatements().get(1) instanceof CtBlock);

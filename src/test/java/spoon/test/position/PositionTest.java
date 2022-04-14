@@ -106,6 +106,7 @@ import spoon.test.position.testclasses.PositionTry;
 import spoon.test.position.testclasses.SomeEnum;
 import spoon.test.position.testclasses.TypeParameter;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -693,14 +694,11 @@ public class PositionTest {
 		assertEquals(SourcePosition.NOPOSITION, implicitSuperCall.getPosition());
 	}
 
-	@Test
-	public void getPositionOfImplicitBlock() {
+	@ModelTest("./src/test/java/spoon/test/position/testclasses/ImplicitBlock.java")
+	public void getPositionOfImplicitBlock(CtModel model) {
 		// contract: position of implicit block in if (cond) [implicit block] else [implicit block] should be the source position of implicit block content.
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/position/testclasses/ImplicitBlock.java");
-		launcher.buildModel();
 
-		CtIf ifElement = launcher.getModel().getElements(new TypeFilter<>(CtIf.class)).get(0);
+		CtIf ifElement = model.getElements(new TypeFilter<>(CtIf.class)).get(0);
 		CtStatement thenStatement = ifElement.getThenStatement();
 
 		assertTrue(thenStatement instanceof CtBlock);
@@ -1347,19 +1345,15 @@ public class PositionTest {
 			CtClass cl = Launcher.parseClass("class A { void foo() {");
 			assertTrue(cl.getSimpleName().equals("A"));
 			assertTrue(cl.getMethods().size() == 1);
-		} catch(Exception e) {
-			fail("Error while parsing incomplete class declaration "+e);
+		} catch (Exception e) {
+			fail("Error while parsing incomplete class declaration " + e);
 		}
 	}
 
-	@Test
-	public void testNoClasspathVariableAccessInInnerClass1() {
+	@ModelTest("./src/test/resources/noclasspath/lambdas/InheritedClassesWithLambda1.java")
+	public void testNoClasspathVariableAccessInInnerClass1(CtModel model) {
 		// contract: creating variable access in no classpath should not break source position
 		// https://github.com/INRIA/spoon/issues/3052
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/lambdas/InheritedClassesWithLambda1.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		CtModel model = launcher.buildModel();
 		List<CtClass> allClasses = model.getElements(new TypeFilter<>(CtClass.class));
 		assertEquals(3, allClasses.size());
 		CtClass failing = allClasses.stream().filter(t -> t.getSimpleName().equals("Failing")).findFirst().get();
@@ -1372,14 +1366,10 @@ public class PositionTest {
 		assertEquals("com.pkg.InheritedClassesWithLambda1.Failing", field.getVariable().getDeclaringType().toString());
 	}
 
-	@Test
-	public void testNoClasspathVariableAccessInInnerClass2() {
+	@ModelTest("./src/test/resources/noclasspath/lambdas/InheritedClassesWithLambda2.java")
+	public void testNoClasspathVariableAccessInInnerClass2(CtModel model) {
 		// contract: same as for testNoClasspathVariableAccessInInnerClass1,
 		// but here we have inner class inside another inner class
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/lambdas/InheritedClassesWithLambda2.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		CtModel model = launcher.buildModel();
 		List<CtClass> allClasses = model.getElements(new TypeFilter<>(CtClass.class));
 		assertEquals(4, allClasses.size());
 		CtClass failing = allClasses.stream().filter(t -> t.getSimpleName().equals("Failing")).findFirst().get();
@@ -1392,14 +1382,10 @@ public class PositionTest {
 		assertEquals("InheritedClassesWithLambda2.OneMoreClass.Failing", field.getVariable().getDeclaringType().toString());
 	}
 
-	@Test
-	public void testNoClasspathVariableAccessInInnerInterface() {
+	@ModelTest("./src/test/resources/noclasspath/lambdas/InheritedInterfacesWithLambda.java")
+	public void testNoClasspathVariableAccessInInnerInterface(CtModel model) {
 		// contract: same as for testNoClasspathVariableAccessInInnerClass1,
 		// but here we have interface instead of class
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/lambdas/InheritedInterfacesWithLambda.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		CtModel model = launcher.buildModel();
 		List<CtInterface> allInterfaces = model.getElements(new TypeFilter<>(CtInterface.class));
 		assertEquals(1, allInterfaces.size());
 		CtInterface failing = allInterfaces.stream().filter(t -> t.getSimpleName().equals("Failing")).findFirst().get();

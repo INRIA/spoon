@@ -66,6 +66,7 @@ import spoon.test.reference.testclasses.EnumValue;
 import spoon.test.reference.testclasses.Panini;
 import spoon.test.reference.testclasses.ParamRefs;
 import spoon.test.reference.testclasses.SuperAccess;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 
@@ -253,13 +254,8 @@ public class TypeReferenceTest {
 		assertNotEquals(firstTypeParam, secondTypeParam);
 	}
 
-	@Test
-	public void testRecursiveTypeReference() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/Tacos.java");
-		launcher.setSourceOutputDirectory("./target/spoon-test");
-		launcher.run();
-
+	@ModelTest("./src/test/java/spoon/test/reference/testclasses/Tacos.java")
+	public void testRecursiveTypeReference(Launcher launcher) {
 		final CtInvocation<?> inv = Query.getElements(launcher.getFactory(), new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
 			@Override
 			public boolean matches(CtInvocation<?> element) {
@@ -287,13 +283,8 @@ public class TypeReferenceTest {
 		assertTrue(genericExtends.getBoundingType() instanceof CtTypeReference);
 	}
 
-	@Test
-	public void testRecursiveTypeReferenceInGenericType() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/EnumValue.java");
-		launcher.setSourceOutputDirectory("./target/spoon-test");
-		launcher.run();
-
+	@ModelTest("./src/test/java/spoon/test/reference/testclasses/EnumValue.java")
+	public void testRecursiveTypeReferenceInGenericType(Launcher launcher) {
 		final CtClass<EnumValue> aClass = launcher.getFactory().Class().get(EnumValue.class);
 		final CtMethod<?> asEnum = aClass.getMethodsByName("asEnum").get(0);
 
@@ -310,31 +301,18 @@ public class TypeReferenceTest {
 		assertNotNull(circularRef);
 	}
 
-	@Test
-	public void testUnknownSuperClassWithSameNameInNoClasspath() {
+	@ModelTest("./src/test/resources/noclasspath/Attachment.java")
+	public void testUnknownSuperClassWithSameNameInNoClasspath(Launcher launcher, Factory factory) {
 		// contract: Gets the import of a type specified in the declaration of a class.
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/Attachment.java");
-		launcher.setSourceOutputDirectory("./target/class-declaration");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.run();
-
-		CtClass<?> ctType = (CtClass<?>) launcher.getFactory().Class().getAll().get(0);
+		CtClass<?> ctType = (CtClass<?>) factory.Class().getAll().get(0);
 		assertNotEquals(ctType.getSuperclass(), ctType.getReference());
 		assertEquals("it.feio.android.omninotes.commons.models.Attachment", ctType.getSuperclass().toString());
 		assertEquals("it.feio.android.omninotes.models.Attachment", ctType.getReference().toString());
-
 	}
 
-	@Test
-	public void testPackageInNoClasspath () {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/Demo.java");
-		launcher.setSourceOutputDirectory("./target/class-declaration");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.run();
-
-		final CtClass<Object> aClass = launcher.getFactory().Class().get("Demo");
+	@ModelTest("./src/test/resources/noclasspath/Demo.java")
+	public void testPackageInNoClasspath(Launcher launcher, Factory factory) {
+		final CtClass<Object> aClass = factory.Class().get("Demo");
 		final Set<CtTypeReference<?>> referencedTypes = aClass.getReferencedTypes();
 
 		boolean containsDemoReference = false;
@@ -359,16 +337,10 @@ public class TypeReferenceTest {
 		assertTrue(containsJoinerReference, "Reference to Joiner is missing");
 	}
 
-	@Test
-	public void testTypeReferenceSpecifiedInClassDeclarationInNoClasspath() {
+	@ModelTest("./src/test/resources/noclasspath/Demo.java")
+	public void testTypeReferenceSpecifiedInClassDeclarationInNoClasspath(Launcher launcher, Factory factory) {
 		// contract: Gets the import of a type specified in the declaration of a class.
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/Demo.java");
-		launcher.setSourceOutputDirectory("./target/class-declaration");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.run();
-
-		final CtClass<Object> aClass = launcher.getFactory().Class().get("Demo");
+		final CtClass<Object> aClass = factory.Class().get("Demo");
 
 		assertNotNull(aClass.getSuperclass());
 		assertEquals("com.google.common.base.Function", aClass.getSuperclass().getQualifiedName());
@@ -385,16 +357,10 @@ public class TypeReferenceTest {
 		}
 	}
 
-	@Test
-	public void testTypeReferenceSpecifiedInClassDeclarationInNoClasspathWithGenerics() {
+	@ModelTest("./src/test/resources/noclasspath/Demo2.java")
+	public void testTypeReferenceSpecifiedInClassDeclarationInNoClasspathWithGenerics(Launcher launcher, Factory factory) {
 		// contract: Gets the import of a type specified in the declaration of a class.
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/Demo2.java");
-		launcher.setSourceOutputDirectory("./target/class-declaration");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.run();
-
-		final CtClass<Object> aClass = launcher.getFactory().Class().get("Demo2");
+		final CtClass<Object> aClass = factory.Class().get("Demo2");
 		Set<CtTypeReference<?>> superInterfaces = aClass.getSuperInterfaces();
 		final CtTypeReference superInterface = superInterfaces.toArray(new CtTypeReference[superInterfaces.size()])[0];
 		assertEquals("Bar", superInterface.getSimpleName());
@@ -415,16 +381,10 @@ public class TypeReferenceTest {
 		assertEquals("example.FooBar<?, ? extends Tacos<?>>.Bar<?, ? extends Tacos<?>>", superInterface.toString());
 	}
 
-	@Test
-	public void testArgumentOfAInvocationIsNotATypeAccess() {
+	@ModelTest("./src/test/resources/noclasspath/Demo3.java")
+	public void testArgumentOfAInvocationIsNotATypeAccess(Launcher launcher, Factory factory) {
 		// contract: In no classpath, an unknown field specified as argument isn't a CtTypeAccess.
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/Demo3.java");
-		launcher.setSourceOutputDirectory("./target/class-declaration");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.run();
-
-		final CtClass<Object> demo3 = launcher.getFactory().Class().get("Demo3");
+		final CtClass<Object> demo3 = factory.Class().get("Demo3");
 		final List<CtFieldRead> fields = demo3.getElements(new TypeFilter<CtFieldRead>(CtFieldRead.class) {
 			@Override
 			public boolean matches(CtFieldRead element) {
@@ -434,16 +394,10 @@ public class TypeReferenceTest {
 		assertEquals(1, fields.size());
 	}
 
-	@Test
-	public void testInvocationWithFieldAccessInNoClasspath() {
+	@ModelTest("./src/test/resources/noclasspath/Demo4.java")
+	public void testInvocationWithFieldAccessInNoClasspath(Launcher launcher, Factory factory) {
 		// contract: In no classpath mode, if we have field accesses in an invocation, we should build field access and not type access.
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/Demo4.java");
-		launcher.setSourceOutputDirectory("./target/class-declaration");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.run();
-
-		final CtClass<Object> demo4 = launcher.getFactory().Class().get("Demo4");
+		final CtClass<Object> demo4 = factory.Class().get("Demo4");
 		final CtMethod<?> doSomething = demo4.getMethodsByName("doSomething").get(0);
 		final CtInvocation topInvocation = doSomething.getElements(new TypeFilter<>(CtInvocation.class)).get(0);
 		assertNotNull(topInvocation.getTarget());
@@ -458,18 +412,12 @@ public class TypeReferenceTest {
 		canBeBuilt("./src/test/resources/noclasspath/TestBot.java", 8, true);
 	}
 
-	@Test
-	public void testAnnotationOnMethodWithPrimitiveReturnTypeInNoClasspath() {
+	@ModelTest("./src/test/resources/noclasspath/A.java")
+	public void testAnnotationOnMethodWithPrimitiveReturnTypeInNoClasspath(Launcher launcher, Factory factory) {
 		// contract: In no classpath mode, if we have an annotation declared on a method and overridden
 		// from a super class in an anonymous class, we should rewrite correctly the annotation and don't
 		// throw a NPE.
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/A.java");
-		launcher.setSourceOutputDirectory("./target/class-declaration");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.run();
-
-		final CtClass<Object> aClass = launcher.getFactory().Class().get("A");
+		final CtClass<Object> aClass = factory.Class().get("A");
 		final CtClass anonymousClass = aClass.getElements(new TypeFilter<>(CtNewClass.class)).get(0).getAnonymousClass();
 		final CtMethod run = anonymousClass.getMethod("run");
 		assertNotNull(run);
@@ -477,16 +425,10 @@ public class TypeReferenceTest {
 		assertEquals("@java.lang.Override", run.getAnnotations().get(0).toString());
 	}
 
-	@Test
-	public void testAnonymousClassesHaveAnEmptyStringForItsNameInNoClasspath() {
+	@ModelTest("./src/test/resources/noclasspath/A.java")
+	public void testAnonymousClassesHaveAnEmptyStringForItsNameInNoClasspath(Launcher launcher, Factory factory) {
 		// contract: In no classpath mode, a type reference have an empty string for its name.
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/A.java");
-		launcher.setSourceOutputDirectory("./target/class-declaration");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.run();
-
-		final CtClass<Object> aClass = launcher.getFactory().Class().get("A");
+		final CtClass<Object> aClass = factory.Class().get("A");
 		final CtClass anonymousClass = aClass.getElements(new TypeFilter<>(CtNewClass.class)).get(0).getAnonymousClass();
 		assertEquals("1", anonymousClass.getReference().getSimpleName());
 		Set<CtTypeReference<?>> referencedTypes = aClass.getReferencedTypes();
@@ -609,18 +551,15 @@ public class TypeReferenceTest {
 		CtType<Panini> paniniCtType = buildClass(Panini.class);
 
 		CtClass anonymousClass = ((CtNewClass) ((CtReturn) paniniCtType
-				.getMethod("entryIterator").getBody().getStatement(0))
-				.getReturnedExpression()).getAnonymousClass();
+			.getMethod("entryIterator").getBody().getStatement(0))
+			.getReturnedExpression()).getAnonymousClass();
 
 		assertTrue(anonymousClass.getReference().isSubtypeOf(paniniCtType.getFactory().Type().createReference("spoon.test.reference.testclasses.Panini$Itr")));
 	}
 
-	@Test
-	public void testGetTypeDeclaration() {
-		Launcher l = new Launcher();
-		l.addInputResource("src/test/resources/compilation/compilation-tests/");
-		l.buildModel();
-		CtType<?> bar = l.getFactory().Type().get("compilation.Bar");
+	@ModelTest("src/test/resources/compilation/compilation-tests/")
+	public void testGetTypeDeclaration(Factory factory) {
+		CtType<?> bar = factory.Type().get("compilation.Bar");
 		CtType iBar = bar.getSuperInterfaces().toArray(new CtTypeReference[0])[0].getTypeDeclaration();
 		assertNotNull(iBar);
 		assertEquals("compilation.IBar", iBar.getQualifiedName());
@@ -693,13 +632,9 @@ public class TypeReferenceTest {
 		assertEquals("spoon.test.reference.testclasses.Parent", typeRef.toString());
 	}
 
-	@Test
-	public void testIsInTheSamePackageNoClasspath() {
+	@ModelTest("./src/test/resources/noclasspath/A5.java")
+	public void testIsInTheSamePackageNoClasspath(CtModel model) {
 		// contract: we should not get NPE within canAccess() in noclasspath mode
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/A5.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		CtModel model = launcher.buildModel();
 		CtType<?> type = model.getAllTypes().stream().findFirst().get();
 
 		List<CtLocalVariable> vars = type.getElements(new TypeFilter<>(CtLocalVariable.class));
@@ -742,15 +677,11 @@ public class TypeReferenceTest {
 		return (CtTypeReference<?>) ref;
 	}
 
-	@Test
-	public void testUnqualifiedExternalTypeMemberAccess() {
+	@ModelTest("./src/test/resources/noclasspath/UnqualifiedExternalTypeMemberAccess.java")
+	public void testUnqualifiedExternalTypeMemberAccess(CtModel model) {
 		// contract: if a type member is accessed without qualification, but it is not part of the current
 		// compilation unit, any qualification attached to it through import resolution must remain implicit
 		// See #3363 for details
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/UnqualifiedExternalTypeMemberAccess.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		CtModel model = launcher.buildModel();
 		List<CtTypeReference<?>> typeReferences = model.getElements(e -> e.getSimpleName().equals("SOMETHING"));
 
 		assertEquals(1, typeReferences.size(), "There should only be one reference to SOMETHING, check the resource!");
@@ -805,31 +736,19 @@ public class TypeReferenceTest {
 		assertThat(reference.isLocalType(), is(false));
 	}
 
-	@Test
-	public void testTypeReferenceToChildClass() {
+	@ModelTest("./src/test/resources/reference-to-child-class/ReferenceToChildClass.java")
+	public void testTypeReferenceToChildClass(CtModel model) {
 		// contract: a reference to a child class should retain the parent class name
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/reference-to-child-class/ReferenceToChildClass.java");
-		launcher.getEnvironment().setAutoImports(true);
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.buildModel();
-
-		CtClass cls = launcher.getModel().getElements(new TypeFilter<>(CtClass.class)).get(0);
+		CtClass cls = model.getElements(new TypeFilter<>(CtClass.class)).get(0);
 		CtTypeReference<?> interfaceTypeRef = cls.getSuperInterfaces().stream().findFirst().get();
 
 		assertEquals("Foo<ReferenceToChildClass.Bar<?>>", interfaceTypeRef.toString());
 	}
 
-	@Test
-	public void testProblemTypeReferenceToChildClass() {
+	@ModelTest("./src/test/resources/reference-to-child-class/ProblemReferenceToChildClass.java")
+	public void testProblemTypeReferenceToChildClass(CtModel model) {
 		// contract: a reference to a child class in a not compilable file should retain the parent class name
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/reference-to-child-class/ProblemReferenceToChildClass.java");
-		launcher.getEnvironment().setAutoImports(true);
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.buildModel();
-
-		CtClass cls = launcher.getModel().getElements(new TypeFilter<>(CtClass.class)).get(0);
+		CtClass cls = model.getElements(new TypeFilter<>(CtClass.class)).get(0);
 		CtTypeReference<?> interfaceTypeRef = cls.getSuperInterfaces().stream().findFirst().get();
 
 		assertEquals("Foo<ProblemReferenceToChildClass.Bar<?>>", interfaceTypeRef.toString());

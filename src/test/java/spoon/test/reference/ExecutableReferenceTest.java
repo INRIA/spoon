@@ -15,11 +15,13 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
@@ -31,6 +33,7 @@ import spoon.test.reference.testclasses.EnumValue;
 import spoon.test.reference.testclasses.Kuu;
 import spoon.test.reference.testclasses.Stream;
 import spoon.test.reference.testclasses.SuperFoo;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -102,13 +105,8 @@ public class ExecutableReferenceTest {
 		assertEquals("Bar.m(\"42\")", invocations.get(3).toString());
 	}
 
-	@Test
-	public void testSuperClassInGetAllExecutables() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/");
-		launcher.setSourceOutputDirectory("./target/spoon-test");
-		launcher.run();
-
+	@ModelTest("./src/test/java/spoon/test/reference/testclasses/")
+	public void testSuperClassInGetAllExecutables(final Launcher launcher) {
 		final CtClass<Burritos> aBurritos = launcher.getFactory().Class().get(Burritos.class);
 		final CtMethod<?> aMethod = aBurritos.getMethodsByName("m").get(0);
 		try {
@@ -118,29 +116,21 @@ public class ExecutableReferenceTest {
 		}
 	}
 
-	@Test
-	public void testGetAllExecutablesMethodForInterface() {
+	@ModelTest("./src/test/java/spoon/test/reference/testclasses")
+	public void testGetAllExecutablesMethodForInterface(Launcher launcher) {
 		// contract: As interfaces doesn't extend object, the Foo interface must have 1 method and no method from object.
-		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
-		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses");
-		launcher.run();
 		CtInterface<Foo> foo = launcher.getFactory().Interface().get(spoon.test.reference.testclasses.Foo.class);
 		Collection<CtExecutableReference<?>> fooExecutables = foo.getAllExecutables();
 		assertAll(
-				() ->assertEquals(1, fooExecutables.size()),
-				() ->assertEquals(foo.getSuperInterfaces().iterator().next().getTypeDeclaration().getMethod("m").getReference(),
-						launcher.getFactory().Interface().get(SuperFoo.class).getMethod("m").getReference()));
+			() -> assertEquals(1, fooExecutables.size()),
+			() -> assertEquals(foo.getSuperInterfaces().iterator().next().getTypeDeclaration().getMethod("m").getReference(),
+				launcher.getFactory().Interface().get(SuperFoo.class).getMethod("m").getReference()));
 	}
 
-	@Test
-	public void testGetAllExecutablesMethodForClasses() {
+	@ModelTest("./src/test/java/spoon/test/reference/testclasses")
+	public void testGetAllExecutablesMethodForClasses(Factory factory) {
 		// contract: As classes extend object and the Bar class has 1 method, getAllExecutables for Bar must return 12/13.
-		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
-		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses");
-		launcher.run();
-		CtClass<Bar> bar = launcher.getFactory().Class().get(Bar.class);
+		CtClass<Bar> bar = factory.Class().get(Bar.class);
 		Collection<CtExecutableReference<?>> barExecutables = bar.getAllExecutables();
 		/*
 		This assertion is needed because in java.lang.object the method registerNative was removed.
@@ -149,22 +139,16 @@ public class ExecutableReferenceTest {
 		In jdk8 object has 12 methods and in newer jdk object has 11
 		 */
 		assertTrue(barExecutables.size() == 12 || barExecutables.size() == 13);
-		CtInterface<Kuu> kuu = launcher.getFactory().Interface().get(Kuu.class);
+		CtInterface<Kuu> kuu = factory.Interface().get(Kuu.class);
 		List<CtExecutableReference<?>> kuuExecutables = new ArrayList<>(kuu.getAllExecutables());
 		assertAll(
-				() -> assertEquals(1 /* default method in interface */, kuuExecutables.size()),
-				() -> assertEquals(kuu.getMethod("m").getReference(), kuuExecutables.get(0)));
+			() -> assertEquals(1 /* default method in interface */, kuuExecutables.size()),
+			() -> assertEquals(kuu.getMethod("m").getReference(), kuuExecutables.get(0)));
 	}
 
-	@Test
-	public void testCreateReferenceForAnonymousExecutable() {
-		final spoon.Launcher launcher = new spoon.Launcher();
-		launcher.addInputResource("src/test/resources/noclasspath/Foo4.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setComplianceLevel(8);
-		launcher.buildModel();
-
-		launcher.getModel().getElements(new TypeFilter<CtExecutable<?>>(CtExecutable.class) {
+	@ModelTest(value = "src/test/resources/noclasspath/Foo4.java", complianceLevel = 8)
+	public void testCreateReferenceForAnonymousExecutable(CtModel model) {
+		model.getElements(new TypeFilter<CtExecutable<?>>(CtExecutable.class) {
 			@Override
 			public boolean matches(final CtExecutable<?> exec) {
 				try {
@@ -177,43 +161,27 @@ public class ExecutableReferenceTest {
 		});
 	}
 
-	@Test
-	public void testInvokeEnumMethod() {
-		final spoon.Launcher launcher = new spoon.Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/reference/Enum.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setComplianceLevel(8);
-		launcher.buildModel();
-
-		CtInvocation invocation = launcher.getModel().getElements(new TypeFilter<CtInvocation>(CtInvocation.class) {
+	@ModelTest(value = "./src/test/java/spoon/test/reference/Enum.java", complianceLevel = 8)
+	public void testInvokeEnumMethod(CtModel model) {
+		CtInvocation invocation = model.getElements(new TypeFilter<CtInvocation>(CtInvocation.class) {
 			@Override
 			public boolean matches(CtInvocation element) {
-				return super.matches(element) 
+				return super.matches(element)
 					&& "valueOf".equals(element.getExecutable().getSimpleName());
 			}
 		}).get(0);
 		assertNotNull(invocation.getExecutable().getExecutableDeclaration());
 	}
 
-	@Test
-	public void testLambdaNoClasspath() {
-		final Launcher launcher = new Launcher();
-		// Throws `IllegalStateException` before PR #1100 due to invalid AST
-		// hierarchy.
-		launcher.addInputResource("./src/test/resources/noclasspath/org/elasticsearch/action/admin/cluster/node/tasks");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.buildModel();
+	@ModelTest("./src/test/resources/noclasspath/org/elasticsearch/action/admin/cluster/node/tasks")
+	public void testLambdaNoClasspath(Launcher launcher) {
+		// This is fine. Launcher parameter is relevant to ensure model is built
 	}
 
-	@Test
-	public void testHashcodeWorksWithReference() {
+	@ModelTest("./src/test/java/spoon/test/reference/testclasses/EnumValue.java")
+	public void testHashcodeWorksWithReference(Factory factory) {
 		// contract: two distinct CtExecutableReference should have different hashcodes
-
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/EnumValue.java");
-		launcher.buildModel();
-
-		CtClass enumValue = launcher.getFactory().Class().get(EnumValue.class);
+		CtClass enumValue = factory.Class().get(EnumValue.class);
 
 		CtMethod firstMethod = (CtMethod) enumValue.getMethodsByName("asEnum").get(0);
 		CtMethod secondMethod = (CtMethod) enumValue.getMethodsByName("unwrap").get(0);
@@ -235,15 +203,10 @@ public class ExecutableReferenceTest {
 		assertNotEquals(hashCode1, hashCode2);
 	}
 
-	@Test
-	public void testPbWithStream() {
+	@ModelTest("./src/test/java/spoon/test/reference/testclasses/Stream.java")
+	public void testPbWithStream(Factory factory) {
 		// contract: array constructor references are well represented
-
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/Stream.java");
-		launcher.buildModel();
-
-		CtClass klass = launcher.getFactory().Class().get(Stream.class);
+		CtClass klass = factory.Class().get(Stream.class);
 		List<CtExecutableReference> executableReferenceList = klass.getElements(new TypeFilter<>(CtExecutableReference.class));
 		CtExecutableReference lastExecutableReference = executableReferenceList.get(executableReferenceList.size() - 1);
 		CtExecutable declaration = lastExecutableReference.getExecutableDeclaration();

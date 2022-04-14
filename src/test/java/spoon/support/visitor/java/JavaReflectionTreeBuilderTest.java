@@ -103,6 +103,7 @@ import spoon.test.pkg.PackageTest;
 import spoon.test.pkg.cyclic.Outside;
 import spoon.test.pkg.cyclic.direct.Cyclic;
 import spoon.test.pkg.cyclic.indirect.Indirect;
+import spoon.testing.utils.ModelTest;
 
 public class JavaReflectionTreeBuilderTest {
 
@@ -640,12 +641,9 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("Bidon", annotatedParameter.getAnnotations().get(0).getAnnotationType().getSimpleName());
 	}
 
-	@Test
-	public void testInnerClassOfSourceCodeClass() {
+	@ModelTest("src/test/java/spoon/support/visitor/java/JavaReflectionTreeBuilderTest.java")
+	public void testInnerClass(Launcher launcher) {
 		// contract: JavaReflectionTreeBuilder does not rescan the type if source information is available
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/java/spoon/support/visitor/java/JavaReflectionTreeBuilderTest.java");
-		launcher.buildModel();
 		CtType ctType = launcher.getFactory().Type().get(Diff.class);
 		assertEquals("Diff", ctType.getSimpleName());
 		assertEquals(false, ctType.isAnonymous());
@@ -685,8 +683,8 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 
-	@Test
-	public void testAnonymousClass() {
+	@ModelTest("src/test/java/spoon/support/visitor/java/JavaReflectionTreeBuilderTest.java")
+	public void testAnonymousClass(Launcher launcher) {
 		// contract: JavaReflectionTreeBuilder works on anonymous classes
 
 		// the test object: an anonymous class
@@ -695,9 +693,6 @@ public class JavaReflectionTreeBuilderTest {
 
 			}
 		};
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/java/spoon/support/visitor/java/JavaReflectionTreeBuilderTest.java");
-		launcher.buildModel();
 		CtType ctType = launcher.getModel().getElements(new TypeFilter<CtType>(CtType.class) {
 			@Override
 			public boolean matches(CtType element) {

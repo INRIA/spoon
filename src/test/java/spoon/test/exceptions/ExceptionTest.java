@@ -26,11 +26,13 @@ import spoon.SpoonModelBuilder;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -119,18 +121,13 @@ public class ExceptionTest {
 			// an exception should be thrown, even in noclasspath mode
 			spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/resources/spoon/test/duplicateclasses/Foo.java", "./src/test/resources/spoon/test/duplicateclasses/Bar.java")).build();
 		});
-	} 
+	}
 
-	@Test
-	public void testUnionCatchExceptionInsideLambdaInNoClasspath() {
+	@ModelTest("./src/test/resources/noclasspath/UnionCatch.java")
+	public void testUnionCatchExceptionInsideLambdaInNoClasspath(CtModel model) {
 		// contract: the model should be built when defining a union catch inside a lambda which is not known (noclasspath)
 		// and the catch variable types should be the same than outside a lambda
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/UnionCatch.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.buildModel();
-
-		List<CtCatch> catches = launcher.getFactory().getModel().getElements(new TypeFilter<>(CtCatch.class));
+		List<CtCatch> catches = model.getElements(new TypeFilter<>(CtCatch.class));
 		assertEquals(2, catches.size());
 
 		CtCatchVariable variable1 = catches.get(0).getParameter(); // inside a lambda
@@ -140,13 +137,10 @@ public class ExceptionTest {
 		assertEquals(variable2, variable1);
 	}
 
-	@Test
-	public void testIssue2860() {
+	@ModelTest("src/test/resources/spoon/test/noclasspath/exceptions/Bar.java")
+	public void testIssue2860(Factory factory) {
 		// contract: no exceptions is thrown in mutlicatch in lambda
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/spoon/test/noclasspath/exceptions/Bar.java");
-		launcher.buildModel();
-		CtType<Object> type = launcher.getFactory().Type().get("spoon.test.noclasspath.exceptions.Bar");
+		CtType<Object> type = factory.Type().get("spoon.test.noclasspath.exceptions.Bar");
 		CtCatch c = type.filterChildren(new TypeFilter<CtCatch>(CtCatch.class)).first();
 		// the upper type of java.io.IOException | java.lang.InterruptedException is java.lang.Exception
 		assertEquals("java.lang.Exception", c.getParameter().getType().toString());

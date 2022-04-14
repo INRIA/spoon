@@ -32,6 +32,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.arrays.testclasses.VaragParam;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -121,12 +122,9 @@ public class ArraysTest {
 		assertEquals("new com.example.Type[list.size()]", local.toString());
 	}
 
-	@Test
-	public void testCtNewArrayInnerCtNewArray() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/java/spoon/test/arrays/testclasses/Foo.java");
+	@ModelTest("src/test/java/spoon/test/arrays/testclasses/Foo.java")
+	public void testCtNewArrayInnerCtNewArray(Launcher launcher) {
 		launcher.setSourceOutputDirectory("target/foo");
-		launcher.buildModel();
 		launcher.prettyprint();
 		try {
 			launcher.getModelBuilder().compile();
@@ -135,13 +133,9 @@ public class ArraysTest {
 		}
 	}
 
-	@Test
-	public void testCtNewArrayWitComments() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/java/spoon/test/arrays/testclasses/NewArrayWithComment.java");
-		launcher.getEnvironment().setCommentEnabled(true);
+	@ModelTest("src/test/java/spoon/test/arrays/testclasses/NewArrayWithComment.java")
+	public void testCtNewArrayWitComments(Launcher launcher) {
 		launcher.setSourceOutputDirectory("target/foo2");
-		launcher.buildModel();
 		launcher.prettyprint();
 		try {
 			launcher.getModelBuilder().compile();

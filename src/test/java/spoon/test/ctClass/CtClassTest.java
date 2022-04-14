@@ -54,6 +54,7 @@ import spoon.test.SpoonTestHelpers;
 import spoon.test.ctClass.testclasses.AnonymousClass;
 import spoon.test.ctClass.testclasses.Foo;
 import spoon.test.ctClass.testclasses.Pozole;
+import spoon.testing.utils.ModelTest;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -219,16 +220,12 @@ public class CtClassTest {
 		factory.Code().createCodeSnippetStatement(aPozole.toString()).compile();
 	}
 
-	@Test
-	public void testSpoonShouldInferImplicitPackageInNoClasspath() {
+	@ModelTest("./src/test/resources/noclasspath/issue1293/com/cristal/ircica/applicationcolis/userinterface/fragments/TransporteurFragment.java")
+	public void testSpoonShouldInferImplicitPackageInNoClasspath(Factory factory) {
 		// contract: in noClasspath, when a type is used and no import is specified, then Spoon
 		// should infer that this type is in the same package as the current class.
-		final Launcher launcher2 = new Launcher();
-		launcher2.addInputResource("./src/test/resources/noclasspath/issue1293/com/cristal/ircica/applicationcolis/userinterface/fragments/TransporteurFragment.java");
-		launcher2.getEnvironment().setNoClasspath(true);
-		launcher2.buildModel();
 
-		final CtClass<Object> aClass2 = launcher2.getFactory().Class().get("com.cristal.ircica.applicationcolis.userinterface.fragments.TransporteurFragment");
+		final CtClass<Object> aClass2 = factory.Class().get("com.cristal.ircica.applicationcolis.userinterface.fragments.TransporteurFragment");
 		final String type2 = aClass2.getSuperclass().getQualifiedName();
 
 		CtField field = aClass2.getField("transporteurRadioGroup");
@@ -237,16 +234,11 @@ public class CtClassTest {
 		assertThat(type2, is("com.cristal.ircica.applicationcolis.userinterface.fragments.CompletableFragment"));
 	}
 
-	@Test
-	public void toStringWithImports() {
+	@ModelTest("./src/test/java/spoon/test/ctClass/")
+	public void toStringWithImports(Factory factory, Launcher launcher) {
 		String newLine = System.getProperty("line.separator");
-
-		final Launcher launcher2 = new Launcher();
-		launcher2.addInputResource("./src/test/java/spoon/test/ctClass/");
-		launcher2.getEnvironment().setNoClasspath(true);
-		launcher2.buildModel();
-		final CtClass<Object> aClass2 = launcher2.getFactory().Class().get(AnonymousClass.class);
-		DefaultJavaPrettyPrinter djpp = new DefaultJavaPrettyPrinter(launcher2.getEnvironment());
+		final CtClass<Object> aClass2 = factory.Class().get(AnonymousClass.class);
+		DefaultJavaPrettyPrinter djpp = new DefaultJavaPrettyPrinter(launcher.getEnvironment());
 		aClass2.accept(djpp);
 
 		// contract: a class can be printed with full context
@@ -282,7 +274,7 @@ public class CtClassTest {
 		// contract: toStringWithImports works with a new class with no position
 		assertEquals("package foo;" + newLine +
 				"import java.io.File;" + newLine +
-				"class Bar extends File {}", launcher2.getFactory().createClass("foo.Bar").setSuperclass(launcher2.getFactory().Type().get(File.class).getReference()).toStringWithImports());
+				"class Bar extends File {}", factory.createClass("foo.Bar").setSuperclass(factory.Type().get(File.class).getReference()).toStringWithImports());
 	}
 
 	@Test
@@ -304,17 +296,10 @@ public class CtClassTest {
 		canBeBuilt("./target/issue1306", 8, true);
 	}
 
-	@Test
-	public void testCloneAnonymousClassInvocation() {
+	@ModelTest("./src/test/java/spoon/test/ctClass/testclasses/AnonymousClass.java")
+	public void testCloneAnonymousClassInvocation(CtModel model) {
 		// contract: after cloning an anonymous class invocation, we still should be able to print it, when not using autoimport
-
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/ctClass/testclasses/AnonymousClass.java");
-		launcher.getEnvironment().setAutoImports(false);
-		launcher.buildModel();
-
-		CtModel model = launcher.getModel();
-		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<>(CtNewClass.class)).get(0);
+		CtNewClass newClassInvocation = model.getElements(new TypeFilter<>(CtNewClass.class)).get(0);
 		CtNewClass newClassInvocationCloned = newClassInvocation.clone();
 
 		CtClass anonymousClass = newClassInvocation.getAnonymousClass();
@@ -332,17 +317,10 @@ public class CtClassTest {
 		assertEquals(newClassInvocation.toString(), newClassInvocationCloned.toString());
 	}
 
-	@Test
-	public void testCloneAnonymousClassInvocationWithAutoimports() {
+	@ModelTest("./src/test/java/spoon/test/ctClass/testclasses/AnonymousClass.java")
+	public void testCloneAnonymousClassInvocationWithAutoimports(CtModel model) {
 		// contract: after cloning an anonymous class invocation, we still should be able to print it, when using autoimport
-
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/ctClass/testclasses/AnonymousClass.java");
-		launcher.getEnvironment().setAutoImports(true);
-		launcher.buildModel();
-
-		CtModel model = launcher.getModel();
-		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<>(CtNewClass.class)).get(0);
+		CtNewClass newClassInvocation = model.getElements(new TypeFilter<>(CtNewClass.class)).get(0);
 		CtNewClass newClassInvocationCloned = newClassInvocation.clone();
 
 		CtClass anonymousClass = newClassInvocation.getAnonymousClass();

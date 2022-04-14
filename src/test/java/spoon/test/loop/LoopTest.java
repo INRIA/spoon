@@ -30,6 +30,7 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
 import org.junit.jupiter.api.Test;
+import spoon.testing.utils.ModelTest;
 
 import java.io.File;
 
@@ -74,11 +75,8 @@ public class LoopTest {
 		assertEquals(expectedDebug, ctLoop.toString());
 	}
 
-	@Test
-	public void testEmptyForLoopExpression() {
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/loop/testclasses/EmptyLoops.java");
-		CtModel model = launcher.buildModel();
+	@ModelTest("./src/test/java/spoon/test/loop/testclasses/EmptyLoops.java")
+	public void testEmptyForLoopExpression(CtModel model) {
 		CtFor ctFor = model.getElements(new TypeFilter<>(CtFor.class)).get(0);
 		assertTrue(ctFor.getForInit().isEmpty());
 		assertNull(ctFor.getExpression());

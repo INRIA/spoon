@@ -32,6 +32,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.condition.testclasses.Foo;
 import spoon.test.condition.testclasses.Foo2;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -134,16 +135,12 @@ public class ConditionalTest {
 		assertEquals("System.out.println();", conditions.get(0).getElseStatement().prettyprint().trim());
 	}
 
-	@Test
-	public void testNoThenBlockBug2() throws Exception {
+	@ModelTest("src/test/java/spoon/test/condition/testclasses/Foo2.java")
+	public void testNoThenBlockBug2(CtModel model) throws Exception {
 		// contract: an empty statement is correctly handled
 		// no NPE should be produced during the model build
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/java/spoon/test/condition/testclasses/Foo2.java");
-		CtModel m = launcher.buildModel();
-
 		// check if we have correct then-else statements
-		CtType<?> aFoo = m.getAllTypes().stream()
+		CtType<?> aFoo = model.getAllTypes().stream()
 				.filter(t -> t.getSimpleName().equals("Foo2"))
 				.findFirst()
 				.get();

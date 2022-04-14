@@ -45,6 +45,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.Level;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
@@ -52,6 +53,7 @@ import spoon.test.processing.processors.CtClassProcessor;
 import spoon.test.processing.processors.CtInterfaceProcessor;
 import spoon.test.processing.processors.CtTypeProcessor;
 import spoon.test.processing.processors.RenameProcessor;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ProcessorUtils;
 
 
@@ -335,17 +337,12 @@ public class ProcessingTest {
 		assertEquals(mamap, p.mapStringDouble);
 	}
 
-	@Test
-	public void testProcessorWithGenericType() {
+	@ModelTest("./src/test/java/spoon/test/imports/testclasses")
+	public void testProcessorWithGenericType(Launcher launcher) {
 		// contract: we can use generic type for another abstract processor
-
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses");
-
 		CtClassProcessor classProcessor = new CtClassProcessor();
-		spoon.addProcessor(classProcessor);
-
-		spoon.run();
+		launcher.addProcessor(classProcessor);
+		launcher.process();
 
 		assertFalse(classProcessor.elements.isEmpty());
 
@@ -354,23 +351,19 @@ public class ProcessingTest {
 		}
 	}
 
-	@Test
-	public void testCallProcessorWithMultipleTypes() {
+	@ModelTest("./src/test/java/spoon/test/imports/testclasses")
+	public void testCallProcessorWithMultipleTypes(Launcher launcher) {
 		// contract: when calling a processor capable of treating CtClass and another capable of treating CtType, they are called on the right types
-
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses");
-
 		CtClassProcessor classProcessor = new CtClassProcessor();
-		spoon.addProcessor(classProcessor);
+		launcher.addProcessor(classProcessor);
 
 		CtTypeProcessor typeProcessor = new CtTypeProcessor();
-		spoon.addProcessor(typeProcessor);
+		launcher.addProcessor(typeProcessor);
 
 		CtInterfaceProcessor interfaceProcessor = new CtInterfaceProcessor();
-		spoon.addProcessor(interfaceProcessor);
+		launcher.addProcessor(interfaceProcessor);
 
-		spoon.run();
+		launcher.process();
 
 		assertFalse(classProcessor.elements.isEmpty());
 
@@ -425,8 +418,8 @@ public class ProcessingTest {
 		assertTrue(fileContent.contains("private D a = new D();"));
 	}
 
-	@Test
-	public void testNullableSettingForProcessor() throws IOException {
+	@ModelTest("src/test/resources/spoon/test/processor/test")
+	public void testNullableSettingForProcessor(Launcher launcher, Factory factory) {
 		//contract: nullable( = notNullable == false) properties with a null value must not throw a exception.
 		class AProcessor extends AbstractProcessor<CtElement> {
 			@Property(notNullable = false)
@@ -445,10 +438,8 @@ public class ProcessingTest {
 			public void process(CtElement element) {
 			}
 		}
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/spoon/test/processor/test");
 		Processor<CtElement> processor = new AProcessor();
-		processor.setFactory(launcher.getFactory());
+		processor.setFactory(factory);
 		ProcessorProperties props = new ProcessorPropertiesImpl();
 
 		props.set("aString", null);
@@ -458,13 +449,13 @@ public class ProcessingTest {
 
 		ProcessorUtils.initProperties(processor, props);
 		launcher.addProcessor(processor);
-		launcher.run();
+		launcher.process();
 		int warnings = launcher.getEnvironment().getWarningCount();
 		assertTrue(warnings == 0);
 	}
 
-	@Test
-	public void testNullableSettingForProcessor2() throws IOException {
+	@ModelTest("src/test/resources/spoon/test/processor/test")
+	public void testNullableSettingForProcessor2(Launcher launcher, Factory factory) {
 		//contract: notNullable( = notNullable == true) properties with a null value must throw a spoonexception.
 
 		class AProcessor extends AbstractProcessor<CtElement> {
@@ -484,10 +475,8 @@ public class ProcessingTest {
 			public void process(CtElement element) {
 			}
 		}
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/spoon/test/processor/test");
 		Processor<CtElement> processor = new AProcessor();
-		processor.setFactory(launcher.getFactory());
+		processor.setFactory(factory);
 		ProcessorProperties props = new ProcessorPropertiesImpl();
 
 		props.set("aString", null);

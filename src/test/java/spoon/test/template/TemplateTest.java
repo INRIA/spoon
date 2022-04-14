@@ -61,6 +61,7 @@ import spoon.test.template.testclasses.inheritance.SuperTemplate;
 import spoon.test.template.testclasses.logger.Logger;
 import spoon.test.template.testclasses.logger.LoggerTemplateProcessor;
 import spoon.testing.utils.LineSeperatorExtension;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;

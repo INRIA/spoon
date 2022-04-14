@@ -10,15 +10,15 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CompilationUnitPrintTest {
 
-    @Test
-    public void test() {
-
-        /* Testing scenario:
+    @ModelTest("src/test/java/spoon/CompilationUnitPrintTest.java")
+    public void test(Factory factory) {
+		/* Testing scenario:
             Build a model with a class
             Clone this class
             Modify the clone by adding a method
@@ -28,12 +28,6 @@ public class CompilationUnitPrintTest {
          */
 
         // build original class
-        Launcher launcher = new Launcher();
-        launcher.addInputResource("src/test/java/spoon/CompilationUnitPrintTest.java");
-        launcher.getEnvironment().setNoClasspath(true);
-        launcher.buildModel();
-        final Factory factory = launcher.getFactory();
-
         // clone
         final CtClass<?> compilationUnitPrintTest = factory.Class().get("spoon.CompilationUnitPrintTest");
         final CtClass<?> clone = compilationUnitPrintTest.clone();
@@ -61,7 +55,7 @@ public class CompilationUnitPrintTest {
         assertEquals(1 , compilationUnitPrintTest.getMethods().size());
 
         // building now a new model from the java file outputted just before
-        launcher = new Launcher();
+        Launcher launcher = new Launcher();
         launcher.addInputResource("target/spoon/CompilationUnitPrintTest.java");
         launcher.getEnvironment().setNoClasspath(true);
         launcher.buildModel();

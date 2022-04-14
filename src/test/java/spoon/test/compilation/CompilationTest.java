@@ -60,6 +60,7 @@ import spoon.support.compiler.jdt.JDTBatchCompiler;
 import spoon.test.compilation.testclasses.Bar;
 import spoon.test.compilation.testclasses.IBar;
 import spoon.test.compilation.testclasses.Ifoo;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import static org.hamcrest.CoreMatchers.not;
@@ -123,20 +124,15 @@ public class CompilationTest {
 		assertTrue(new File(compiledFile).exists());
 	}
 
-	@Test
-	public void compileTest() throws Exception {
+	@ModelTest("./src/test/resources/noclasspath/Simple.java")
+	public void compileTest(Launcher launcher, Factory factory) throws Exception {
 		// contract: the modified version of classes is the one that is compiled to binary code
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/Simple.java");
 		File outputBinDirectory = new File("./target/class-simple");
 		if (!outputBinDirectory.exists()) {
 			outputBinDirectory.mkdirs();
 		}
 		launcher.setBinaryOutputDirectory(outputBinDirectory);
-		launcher.getEnvironment().setShouldCompile(true);
-		launcher.buildModel();
 
-		Factory factory = launcher.getFactory();
 		CoreFactory core = factory.Core();
 		CodeFactory code = factory.Code();
 

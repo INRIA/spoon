@@ -28,6 +28,7 @@ import spoon.reflect.code.LiteralBase;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.declaration.CtClass;
 import org.junit.jupiter.api.Test;
+import spoon.testing.utils.ModelTest;
 
 import java.util.TreeSet;
 
@@ -147,16 +148,9 @@ public class LiteralTest {
 		assertEquals(factory.Type().stringType(), literal.getType());
 	}
 
-	@Test
-	public void testEscapedString() {
-
+	@ModelTest(value = "./src/test/java/spoon/test/literal/testclasses/EscapedLiteral.java", autoImport = true)
+	public void testEscapedString(Launcher launcher) {
 		/* test escaped char: spoon change octal values by equivalent unicode values */
-
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/literal/testclasses/EscapedLiteral.java");
-		launcher.getEnvironment().setCommentEnabled(true);
-		launcher.getEnvironment().setAutoImports(true);
-		launcher.buildModel();
 		final CtClass<?> ctClass = launcher.getFactory().Class().get("spoon.test.literal.testclasses.EscapedLiteral");
 
 		assertTrue('\u0000' == (char) ((CtLiteral) ctClass.getField("c1").getDefaultExpression()).getValue());
@@ -182,13 +176,10 @@ public class LiteralTest {
 		assertTrue('\u0002' == (char) ((CtLiteral) ctClass.getField("c9").getDefaultExpression()).getValue());
 	}
 
-	@Test
-	public void testLiteralBase() {
+	@ModelTest("./src/test/java/spoon/test/literal/testclasses/BasedLiteral.java")
+	public void testLiteralBase(Factory factory) {
 		// contract: CtLiteral should provide correct base (2, 8, 10, 16 or empty)
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/literal/testclasses/BasedLiteral.java");
-		launcher.buildModel();
-		final CtClass<?> ctClass = launcher.getFactory().Class().get("spoon.test.literal.testclasses.BasedLiteral");
+		final CtClass<?> ctClass = factory.Class().get("spoon.test.literal.testclasses.BasedLiteral");
 
 		assertEquals(LiteralBase.DECIMAL, ((CtLiteral) ctClass.getField("i1").getDefaultExpression()).getBase());
 		assertEquals(LiteralBase.DECIMAL, ((CtLiteral) ctClass.getField("i2").getDefaultExpression()).getBase());
@@ -223,15 +214,12 @@ public class LiteralTest {
 
 		assertNull(((CtLiteral) ctClass.getField("c1").getDefaultExpression()).getBase());
 		assertNull(((CtLiteral) ctClass.getField("s1").getDefaultExpression()).getBase());
-    }
+	}
 
-	@Test
-	public void testLiteralBasePrinter() {
+	@ModelTest("./src/test/java/spoon/test/literal/testclasses/BasedLiteral.java")
+	public void testLiteralBasePrinter(Factory factory) {
 		// contract: PrettyPrinter should output literals in the specified base
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/literal/testclasses/BasedLiteral.java");
-		launcher.buildModel();
-		final CtClass<?> ctClass = launcher.getFactory().Class().get("spoon.test.literal.testclasses.BasedLiteral");
+		final CtClass<?> ctClass = factory.Class().get("spoon.test.literal.testclasses.BasedLiteral");
 
 		assertEquals("42", ctClass.getField("i1").getDefaultExpression().toString());
 		((CtLiteral) ctClass.getField("i1").getDefaultExpression()).setBase(LiteralBase.OCTAL);

@@ -18,6 +18,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
+import spoon.testing.utils.ModelTest;
 
 import java.util.Arrays;
 import java.util.HashSet;

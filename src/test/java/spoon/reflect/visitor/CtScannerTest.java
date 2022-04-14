@@ -37,6 +37,7 @@ import spoon.metamodel.MMMethod;
 import spoon.metamodel.MMMethodKind;
 import spoon.metamodel.Metamodel;
 import spoon.metamodel.MetamodelConcept;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.cu.CompilationUnit;
@@ -52,6 +53,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.processors.CheckScannerTestProcessor;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -112,13 +114,9 @@ public class CtScannerTest {
 		return sc1.signature;
 	}
 
-	@Test
-	public void testScannerCallsAllProperties() {
+	@ModelTest("./src/main/java/spoon/reflect/")
+	public void testScannerCallsAllProperties(Launcher launcher) {
 		// contract: CtScanner must visit all metamodel properties and use correct CtRole!
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/main/java/spoon/reflect/");
-		launcher.run();
-
 		CtTypeReference<?> ctElementRef = launcher.getFactory().createCtTypeReference(CtElement.class);
 		CtTypeReference<?> ctRefRef = launcher.getFactory().createCtTypeReference(CtReference.class);
 

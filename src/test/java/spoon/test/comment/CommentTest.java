@@ -1155,20 +1155,20 @@ public class CommentTest {
 	public void testCommentGetRawContent(Launcher launcher) {
 		CtClass<?> type = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.comment.testclasses.JavaDocComment");
 		//contract: getContent always returns cleaned comment content with \n as EOL
-		assertEquals("JavaDoc test class.\n" + 
-				"\n" + 
-				"Long description", type.getComments().get(0).getContent());
+		assertEquals("JavaDoc test class.\n" +
+			"\n" +
+			"Long description", type.getComments().get(0).getContent());
 		// contract: return the full original comment with prefix and suffix, incl. the original EOL (\r as EOL here)
-		assertEquals("/**\r" + 
-				" * JavaDoc test class.\r" + 
-				" *\r" + 
-				" * Long description\r" + 
-				" *\r" + 
-				" * @deprecated\r" + 
-				" * @since 1.3\r" + 
-				" * @author Thomas Durieux\r" + 
-				" * @version 1.0\r" + 
-				" */", type.getComments().get(0).getRawContent());
+		assertEquals("/**\r" +
+			" * JavaDoc test class.\r" +
+			" *\r" +
+			" * Long description\r" +
+			" *\r" +
+			" * @deprecated\r" +
+			" * @since 1.3\r" +
+			" * @author Thomas Durieux\r" +
+			" * @version 1.0\r" +
+			" */", type.getComments().get(0).getRawContent());
 	}
 
 	@ModelTest("./src/test/java/spoon/test/comment/testclasses/EmptyStatementComments.java")

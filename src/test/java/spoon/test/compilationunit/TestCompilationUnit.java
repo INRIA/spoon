@@ -41,10 +41,12 @@ import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 import spoon.test.api.testclasses.Bar;
+import spoon.testing.utils.ModelTest;
 
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -79,11 +81,8 @@ public class TestCompilationUnit {
 		assertEquals(content, cu.getOriginalSourceCode());
 	}
 
-	@Test
-	public void testGetUnitTypeWorksWithDeclaredType() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
-		launcher.buildModel();
+	@ModelTest("./src/test/java/spoon/test/api/testclasses/Bar.java")
+	public void testGetUnitTypeWorksWithDeclaredType(Launcher launcher) {
 
 		CtType type = launcher.getFactory().Type().get(Bar.class);
 		CompilationUnit compilationUnit = type.getPosition().getCompilationUnit();
@@ -91,11 +90,8 @@ public class TestCompilationUnit {
 		assertEquals(CompilationUnit.UNIT_TYPE.TYPE_DECLARATION, compilationUnit.getUnitType());
 	}
 
-	@Test
-	public void testGetUnitTypeWorksWithDeclaredPackage() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/pkg/package-info.java");
-		launcher.buildModel();
+	@ModelTest("./src/test/java/spoon/test/pkg/package-info.java")
+	public void testGetUnitTypeWorksWithDeclaredPackage(Launcher launcher) {
 
 		CtPackage ctPackage = launcher.getFactory().Package().get("spoon.test.pkg");
 		CompilationUnit compilationUnit = ctPackage.getPosition().getCompilationUnit();
@@ -330,13 +326,8 @@ public class TestCompilationUnit {
 		assertNotEquals(utf8Type.getField("s2"), cp1251Type.getField("s2"));
 	}
 
-	@Test
-	public void testPrintImport() {
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/simple-import/TestClass.java");
-		launcher.getEnvironment().setAutoImports(true);
-		launcher.buildModel();
-
+	@ModelTest("src/test/resources/simple-import/TestClass.java")
+	public void testPrintImport(Launcher launcher) {
 		CtType t = launcher.getModel().getRootPackage().getPackage("matchers").getType("TestClass");
 
 		CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(t);

@@ -78,12 +78,8 @@ public class CtTypeTest {
 		assertFalse(clazz.hasMethod(null));
 	}
 
-	@Test
-	public void testHasMethodInSuperClass() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/ctType/testclasses/X.java");
-		launcher.run();
-
+	@ModelTest("./src/test/java/spoon/test/ctType/testclasses/X.java")
+	public void testHasMethodInSuperClass(Launcher launcher) {
 		final CtClass<?> xClass = launcher.getFactory().Class().get("spoon.test.ctType.testclasses.X");
 		final CtClass<?> yClass = launcher.getFactory().Class().get("spoon.test.ctType.testclasses.Y");
 		final CtMethod<?> superMethod = xClass.getMethods().iterator().next();
@@ -262,44 +258,33 @@ public class CtTypeTest {
 
 		assertSame(reFetchedTypeDecl, typeDecl);
 	}
-  
-	@Test
-	public void testSneakyThrowsInSubClasses() {
+
+	@ModelTest("src/test/resources/npe")
+	public void testSneakyThrowsInSubClasses(CtModel model) {
 		// contract: Sneaky throws doesn't crash spoons method return type resolution.
 		// see e.g https://projectlombok.org/features/SneakyThrows for explanation
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/npe");
-		CtModel model = launcher.buildModel();
 		assertDoesNotThrow(() -> model.getAllTypes().stream().forEach(CtType::getAllExecutables));
-  }
-  
-  @Test
-	public void testGetAllExecutablesOnTypeImplementingNestedInterface() {
+	}
+
+	@ModelTest("src/test/resources/extendsStaticInnerType")
+	public void testGetAllExecutablesOnTypeImplementingNestedInterface(CtModel model) {
 		// contract: implicit static nested interfaces are correct handled in getAllExecutables.
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/extendsStaticInnerType");
-		CtModel model = launcher.buildModel();
 		CtType<?> type = model.getAllTypes().stream().filter(v -> v.getSimpleName().contains("BarBaz")).findAny().get();
 		int expectedNumExecutablesInJDK8 = 13;
 		int expectedNumExecutablesPostJDK8 = 14;
 		int numExecutables = type.getAllExecutables().size();
 		assertThat(numExecutables, anyOf(
-				equalTo(expectedNumExecutablesInJDK8),
-				equalTo(expectedNumExecutablesPostJDK8))
-		);	
+			equalTo(expectedNumExecutablesInJDK8),
+			equalTo(expectedNumExecutablesPostJDK8))
+		);
 	}
 
 	/**
 	 * This test captures keyword constraint in CtReferenceImpl based on the compliance level, since the keyword
 	 * "enum" was only introduced in Java 5
 	 */
-	@Test
-	public void testEnumPackage() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/keywordCompliance/enum/Foo.java");
-		launcher.getEnvironment().setComplianceLevel(4);
-		launcher.run();
-
+	@ModelTest(value = "./src/test/resources/keywordCompliance/enum/Foo.java", complianceLevel = 4)
+	public void testEnumPackage(Launcher launcher) {
 		Collection<CtType<?>> types = launcher.getModel().getAllTypes();
 		assertThat(types.size(), is(1));
 		assertThat(types.stream().findFirst().get(), notNullValue());

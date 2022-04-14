@@ -43,6 +43,7 @@ import spoon.support.reflect.eval.EvalHelper;
 import spoon.support.reflect.eval.InlinePartialEvaluator;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.eval.testclasses.Foo;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -268,31 +269,25 @@ public class EvalTest {
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("{" + System.lineSeparator()
-					+ "    java.lang.System.out.println(\"bar\");" + System.lineSeparator()
-					+ "}", elnew.toString());
+				+ "    java.lang.System.out.println(\"bar\");" + System.lineSeparator()
+				+ "}", elnew.toString());
 		}
 	}
 
-	@Test
-	public void testVisitorPartialEvaluatorScanner() {
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/java/spoon/test/eval/testclasses/Foo.java");
-		launcher.buildModel();
-		PartialEvaluator eval = launcher.getFactory().Eval().createPartialEvaluator();
-		CtType<?> foo = launcher.getFactory().Type().get((Class<?>) Foo.class);
+	@ModelTest("src/test/java/spoon/test/eval/testclasses/Foo.java")
+	public void testVisitorPartialEvaluatorScanner(Factory factory) {
+		PartialEvaluator eval = factory.Eval().createPartialEvaluator();
+		CtType<?> foo = factory.Type().get((Class<?>) Foo.class);
 		foo.accept(new InlinePartialEvaluator(eval));
 		assertEquals("false", foo.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0).getDefaultExpression().toString());
 		// the if has been removed
 		assertEquals(0, foo.getElements(new TypeFilter<>(CtIf.class)).size());
 	}
 
-	@Test
-	public void testconvertElementToRuntimeObject() {
+	@ModelTest("src/test/java/spoon/test/eval/testclasses/Foo.java")
+	public void testconvertElementToRuntimeObject(Factory factory) {
 		// contract: getCorrespondingRuntimeObject works well for all kinds of expression
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/java/spoon/test/eval/testclasses/Foo.java");
-		launcher.buildModel();
-		CtType<?> foo = launcher.getFactory().Type().get((Class<?>) Foo.class);
+		CtType<?> foo = factory.Type().get((Class<?>) Foo.class);
 
 		// also works for non-enum fields with partial evaluation embedded in convertElementToRuntimeObject
 		assertEquals(false, EvalHelper.convertElementToRuntimeObject(foo.getField("b6").getDefaultExpression()));

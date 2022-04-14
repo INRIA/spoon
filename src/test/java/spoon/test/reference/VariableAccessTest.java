@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
@@ -33,6 +34,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtVariableReference;
@@ -42,6 +44,7 @@ import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.Pozole;
 import spoon.test.reference.testclasses.Tortillas;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -82,23 +85,14 @@ public class VariableAccessTest {
 		assertEquals(expected, ((CtVariableAccess) ctArrayWrite.getTarget()).getVariable().getDeclaration());
 	}
 
-	@Test
-	public void testParameterReferenceInConstructorNoClasspath () {
-		final Launcher launcher = new Launcher();
-		// throws `NullPointerException` before PR #1098
-		launcher.addInputResource("./src/test/resources/noclasspath/org/elasticsearch/indices/analysis/HunspellService.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.buildModel();
+	@ModelTest("./src/test/resources/noclasspath/org/elasticsearch/indices/analysis/HunspellService.java")
+	public void testParameterReferenceInConstructorNoClasspath(Launcher launcher) {
+		// Model is built
 	}
 
-	@Test
-	public void testDeclarationOfVariableReference() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/Foo2.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.buildModel();
-
-		launcher.getModel().getElements(new TypeFilter<CtVariableReference>(CtVariableReference.class) {
+	@ModelTest("./src/test/resources/noclasspath/Foo2.java")
+	public void testDeclarationOfVariableReference(CtModel model) {
+		model.getElements(new TypeFilter<CtVariableReference>(CtVariableReference.class) {
 			@Override
 			public boolean matches(CtVariableReference element) {
 				try {
@@ -111,15 +105,9 @@ public class VariableAccessTest {
 		});
 	}
 
-	@Test
-	public void testDeclaringTypeOfALambdaReferencedByParameterReference() {
-		final spoon.Launcher launcher = new spoon.Launcher();
-		launcher.addInputResource("src/test/resources/noclasspath/Foo3.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setComplianceLevel(8);
-		launcher.buildModel();
-
-		launcher.getModel().getElements(new TypeFilter<CtExecutable<?>>(CtExecutable.class) {
+	@ModelTest(value = "src/test/resources/noclasspath/Foo3.java", complianceLevel = 8)
+	public void testDeclaringTypeOfALambdaReferencedByParameterReference(CtModel model) {
+		model.getElements(new TypeFilter<CtExecutable<?>>(CtExecutable.class) {
 			@Override
 			public boolean matches(CtExecutable<?> exec) {
 				final List<CtParameterReference<?>> guiParams = exec.getParameters().stream().map(CtParameter::getReference).collect(Collectors.toList());
@@ -143,14 +131,9 @@ public class VariableAccessTest {
 		});
 	}
 
-	@Test
-	public void testGetDeclarationAfterClone() {
-		final Launcher launcher = new Launcher();
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.addInputResource("./src/test/resources/noclasspath/A2.java");
-		launcher.buildModel();
-
-		final CtClass<Object> a2 = launcher.getFactory().Class().get("A2");
+	@ModelTest("./src/test/resources/noclasspath/A2.java")
+	public void testGetDeclarationAfterClone(Launcher launcher, Factory factory) {
+		final CtClass<Object> a2 = factory.Class().get("A2");
 		final CtClass<Object> a2Cloned = a2.clone();
 
 		assertEquals(a2, a2Cloned);

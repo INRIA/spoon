@@ -61,6 +61,7 @@ import spoon.test.imports.ImportTest;
 import spoon.test.prettyprinter.testclasses.AClass;
 import spoon.test.prettyprinter.testclasses.ClassUsingStaticMethod;
 import spoon.testing.utils.LineSeperatorExtension;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -347,14 +348,11 @@ public class DefaultPrettyPrinterTest {
 		assertTrue(javaFile.exists());
 
 		assertEquals("package foo;" + nl + "class Bar {}",
-				Files.readString(javaFile.toPath(), StandardCharsets.UTF_8));
+			Files.readString(javaFile.toPath(), StandardCharsets.UTF_8));
 	}
 
-	@Test
-	public void importsFromMultipleTypesSupported() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/A.java");
-		launcher.run();
+	@ModelTest("./src/test/java/spoon/test/prettyprinter/testclasses/A.java")
+	public void importsFromMultipleTypesSupported(Launcher launcher) {
 		Environment env = launcher.getEnvironment();
 		env.setAutoImports(true);
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(env);
@@ -377,28 +375,18 @@ public class DefaultPrettyPrinterTest {
 		assertEquals(compile, snippet.compile());
 	}
 
-	@Test
-	public void testIssue1501() {
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/orwall/PreferencesActivity.java");
-		launcher.addInputResource("./src/test/resources/noclasspath/orwall/BackgroundProcess.java");
-		launcher.setSourceOutputDirectory("./target/issue1501");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.run();
-
+	@ModelTest({
+		"./src/test/resources/noclasspath/orwall/PreferencesActivity.java",
+		"./src/test/resources/noclasspath/orwall/BackgroundProcess.java",
+	})
+	public void testIssue1501(Launcher launcher) {
 		assertFalse(launcher.getModel().getAllTypes().isEmpty());
 	}
 
-	@Test
-	public void testIssue2130() {
+	@ModelTest(value = "./src/test/resources/noclasspath/LogService.java", complianceLevel = 8)
+	public void testIssue2130(Launcher launcher, CtModel model) {
 		// contract: varargs parameters should always be CtArrayTypeReference
-
-		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.addInputResource("./src/test/resources/noclasspath/LogService.java");
 		launcher.setSourceOutputDirectory("./target/issue2130");
-		launcher.getEnvironment().setComplianceLevel(8);
-		CtModel model = launcher.buildModel();
 
 		CtMethod<?> machin = model.getElements(new NamedElementFilter<>(CtMethod.class, "machin")).get(0);
 		assertEquals("machin", machin.getSimpleName());
@@ -449,14 +437,10 @@ public class DefaultPrettyPrinterTest {
 		}
 	}
 
-	@Test
 	@ExtendWith(LineSeperatorExtension.class)
-	public void testElseIf() {
+	@ModelTest(value = "./src/test/resources/noclasspath/A6.java", autoImport = true)
+	public void testElseIf(CtModel model) {
 		//contract: else if statements should be printed without break else and if
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/A6.java");
-		launcher.getEnvironment().setAutoImports(true);
-		CtModel model = launcher.buildModel();
 		CtType a5 = model.getRootPackage().getType("A6");
 		String result = a5.toStringWithImports();
 		String expected = "public class A6 {\n" +
@@ -477,20 +461,17 @@ public class DefaultPrettyPrinterTest {
 	 * As the test takes a long time to run, it is only meant to detect exemples of violation that can, then, be
 	 * used as unit test.
 	 * Note that this test can be reused to check the compliance of any pretty printer with any set of styling rules.
-	*/
+	 */
 	@Disabled // disabled as long as 1) it is too long 2) we don't implement a SpoonCompliantPrettyPrinter
-	@Test
-	public void testCheckstyleCompliance() throws IOException, XmlPullParserException {
+	@ModelTest("./src/main/java")
+	public void testCheckstyleCompliance(Launcher launcher) throws IOException, XmlPullParserException {
 		File tmpDir = new File("./target/tmp-checkstyle");
 		if(tmpDir.exists()) {
 			FileUtils.deleteDirectory(tmpDir);
 		}
 
 		//Build spoon AST and pretty print it in tmpDir
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/main/java");
 		launcher.setSourceOutputDirectory(tmpDir.getPath() + "/src/main/java");
-		launcher.buildModel();
 		launcher.prettyprint();
 
 		//copy pom and modify relative path

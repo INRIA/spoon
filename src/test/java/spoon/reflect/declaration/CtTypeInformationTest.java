@@ -34,6 +34,7 @@ import spoon.reflect.declaration.testclasses.TestInterface;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.adaption.TypeAdaptor;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -114,11 +115,8 @@ public class CtTypeInformationTest {
 		}
 	}
 
-	@Test
-	public void testGetAllMethodsReturnsTheRightNumber() {
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/ExtendsObject.java");
-		launcher.buildModel();
+	@ModelTest("src/test/resources/noclasspath/ExtendsObject.java")
+	public void testGetAllMethodsReturnsTheRightNumber(Launcher launcher) {
 		int nbMethodsObject = launcher.getFactory().Type().get(Object.class).getAllMethods().size();
 
 		final CtType<?> extendsObject = launcher.getFactory().Type().get("test.ExtendsObject");

@@ -58,6 +58,7 @@ import spoon.test.fieldaccesses.testclasses.MyClass;
 import spoon.test.fieldaccesses.testclasses.Panini;
 import spoon.test.fieldaccesses.testclasses.Pozole;
 import spoon.test.fieldaccesses.testclasses.Tacos;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -246,14 +247,8 @@ public class FieldAccessTest {
 	}
 
 
-	@Test
-	public void testFieldAccessNoClasspath() {
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/import-resources/fr/inria/");
-		launcher.getEnvironment().setNoClasspath(true);
-
-		launcher.run();
-
+	@ModelTest("src/test/resources/import-resources/fr/inria/")
+	public void testFieldAccessNoClasspath(Launcher launcher) {
 		CtType<?> ctType = launcher.getFactory().Class().get("FooNoClassPath");
 
 		CtFieldAccess ctFieldAccess = ctType
@@ -400,18 +395,11 @@ public class FieldAccessTest {
 		assertEquals("spoon.test.fieldaccesses.testclasses.Mole.Delicious delicious", aType.getMethodsByName("m").get(0).getParameters().get(0).toString());
 	}
 
-	@Test
-	public void testFieldAccessOnUnknownType() {
-		final Launcher launcher = new Launcher();
-
-		launcher.addInputResource("./src/test/resources/noclasspath/FieldAccessRes.java");
-
-		launcher.getEnvironment().setNoClasspath(true);
-
-		launcher.buildModel();
-
+	@ModelTest("./src/test/resources/noclasspath/FieldAccessRes.java")
+	public void testFieldAccessOnUnknownType(Factory factory) {
 		class CounterScanner extends CtScanner {
 			private int visited = 0;
+
 			@Override
 			public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
 				visited++;
@@ -421,7 +409,7 @@ public class FieldAccessTest {
 		}
 
 		CounterScanner scanner = new CounterScanner();
-		launcher.getFactory().Class().get("FieldAccessRes").accept(scanner);
+		factory.Class().get("FieldAccessRes").accept(scanner);
 
 		assertEquals(1, scanner.visited);
 	}

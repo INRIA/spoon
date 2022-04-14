@@ -33,6 +33,7 @@ import spoon.reflect.CtModel;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.compiler.VirtualFile;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -114,13 +115,9 @@ public class LauncherTest {
 		}
 	}
 
-	@Test
-	public void testLLauncherBuildModelReturnAModel() {
+	@ModelTest("./src/test/resources/spoon/test/api/Foo.java")
+	public void testLLauncherBuildModelReturnAModel(CtModel model) {
 		// contract: Launcher#buildModel should return a consistent CtModel
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/spoon/test/api/Foo.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		CtModel model = launcher.buildModel();
 		assertNotNull(model);
 
 		assertEquals(2, model.getAllTypes().size());

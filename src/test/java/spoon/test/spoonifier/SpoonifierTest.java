@@ -32,6 +32,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -98,22 +99,20 @@ public class SpoonifierTest {
 	 * This test is too long for CI, but it checks that SpoonifierVisitor does produce equivalent CtElement for all
 	 * CtElement in Rule
 	 */
-	
-	@Test
+
 	@Disabled
-	public void testSpoonifierElement() throws ClassNotFoundException, MalformedURLException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+	@ModelTest("src/test/java/spoon/test/prettyprinter/testclasses/Rule.java")
+	public void testSpoonifierElement(CtModel model) throws MalformedURLException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 		int i = 0;
 
 		//Build the model of the given class
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/java/spoon/test/prettyprinter/testclasses/Rule.java");
-		CtModel model = launcher.buildModel();
+
 		List<CtType> l = model.getElements(new TypeFilter<CtType>(CtType.class));
 		if (l.isEmpty()) return;
 		CtType targetType = l.get(0);
-		Iterator<CtElement> iterator =  targetType.descendantIterator();
+		Iterator<CtElement> iterator = targetType.descendantIterator();
 		while (iterator.hasNext()) {
-			testSpoonifierWith(iterator.next(),i++);
+			testSpoonifierWith(iterator.next(), i++);
 		}
 
 

@@ -36,6 +36,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.constructorcallnewclass.testclasses.Bar;
 import spoon.test.constructorcallnewclass.testclasses.Foo;
 import spoon.test.constructorcallnewclass.testclasses.Foo2;
+import spoon.testing.utils.ModelTest;
 
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -183,14 +184,10 @@ public class NewClassTest {
 		assertEquals(Foo2.class.getCanonicalName() + "$12$1", elements.get(12).getAnonymousClass().getQualifiedName());
 	}
 
-	@Test
-	public void testCtNewClassInNoClasspath() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/new-class");
+	@ModelTest("./src/test/resources/new-class")
+	public void testCtNewClassInNoClasspath(Launcher launcher) {
 		launcher.setSourceOutputDirectory("./target/new-class");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.run();
-
+		launcher.prettyprint();
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("IndexWriter");
 		final List<CtNewClass> ctNewClasses = aClass.getElements(new TypeFilter<>(CtNewClass.class));
 		final CtNewClass ctNewClass = ctNewClasses.get(0);

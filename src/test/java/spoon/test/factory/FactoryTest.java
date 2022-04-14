@@ -43,6 +43,7 @@ import spoon.support.StandardEnvironment;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.test.SpoonTestHelpers;
 import spoon.test.factory.testclasses.Foo;
+import spoon.testing.utils.ModelTest;
 
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -250,13 +251,10 @@ public class FactoryTest {
 		}
 	}
 
-	@Test
-	public void factoryTest() throws Exception {
+	@ModelTest("src/main/java/spoon/reflect/factory/Factory.java")
+	public void factoryTest(Factory factory) throws Exception {
 		// contract: all methods of Factory can be called without exception, returning a correct object
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("src/main/java/spoon/reflect/factory/Factory.java");
-		spoon.buildModel();
-		for (CtMethod<?> m : spoon.getFactory().Type().get("spoon.reflect.factory.Factory").getMethods()) {
+		for (CtMethod<?> m : factory.Type().get("spoon.reflect.factory.Factory").getMethods()) {
 			if (!m.getSimpleName().startsWith("create")
 				|| "createSourcePosition".equals(m.getSimpleName()) // method with implicit contracts on int parameters
 				|| "createBodyHolderSourcePosition".equals(m.getSimpleName()) // method with implicit contracts on int parameters
@@ -285,7 +283,7 @@ public class FactoryTest {
 			rm = m.getReference().getActualMethod();
 			//rm = spoon.getFactory().getClass().getDeclaredMethod(m.getSimpleName(), argsClass); // works also
 			//System.out.println(rm);
-			Object res = rm.invoke(spoon.getFactory(), args);
+			Object res = rm.invoke(factory, args);
 			assertNotNull(res);
 
 		}

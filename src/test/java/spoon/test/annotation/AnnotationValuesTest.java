@@ -23,6 +23,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -40,6 +41,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.annotation.testclasses.AnnotationValues;
 import spoon.test.annotation.testclasses.BoundNumber;
 import spoon.test.annotation.testclasses.Summary;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -138,17 +140,14 @@ public class AnnotationValuesTest {
 		assertTrue(on(byteOrder).giveMeAnnotationValue("byteOrder").element instanceof CtFieldRead);
 	}
 
-	@Test
-	public void testAnnotationPrintAnnotation() {
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/printer-test/spoon/test/AnnotationSpecTest.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setCommentEnabled(false); // avoid getting the comment for the equals
-		launcher.buildModel();
-
+	@ModelTest(
+		value = "src/test/resources/printer-test/spoon/test/AnnotationSpecTest.java",
+		commentsEnabled = false
+	)
+	public void testAnnotationPrintAnnotation(Factory factory) {
 		assertEquals(
 				strCtClassOracle,
-				launcher.getFactory().Class().getAll().get(0).getElements(new TypeFilter<>(CtClass.class)).get(2).toString()
+				factory.Class().getAll().get(0).getElements(new TypeFilter<>(CtClass.class)).get(2).toString()
 		);
 	}
 

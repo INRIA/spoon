@@ -54,6 +54,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -90,12 +91,10 @@ public class SpoonArchitectureEnforcerTest {
 		}
 	}
 
-	@Test
-	public void testFactorySubFactory() {
+	@ModelTest("./src/main/java/spoon/reflect/factory")
+	public void testFactorySubFactory(Launcher launcher) {
 		// contract:: all subfactory methods must also be in the main factory
 		// this is very important for usability and discoverability
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/main/java/spoon/reflect/factory");
 		class SanityCheck { int val = 0; }
 		SanityCheck sanityCheck = new SanityCheck();
 		launcher.addProcessor(new AbstractManualProcessor() {
@@ -147,7 +146,7 @@ public class SpoonArchitectureEnforcerTest {
 				}
 			}
 		});
-		launcher.run();
+		launcher.process();
 		assertTrue(sanityCheck.val > 100);
 	}
 
@@ -326,27 +325,25 @@ public class SpoonArchitectureEnforcerTest {
 			@Override
 			public boolean matches(CtClass element) {
 				return element.getSuperclass() == null && super.matches(element) && !element.getMethods().isEmpty()
-						&& element.getElements(new TypeFilter<>(CtMethod.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.STATIC));
+					&& element.getElements(new TypeFilter<>(CtMethod.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.STATIC));
 			}
 		})) {
 			assertTrue(klass.getElements(new TypeFilter<>(CtConstructor.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.PRIVATE)), "Utility class " + klass.getQualifiedName() + " is missing private constructor");
 		}
 	}
 
-	@Test
-	public void testInterfacesAreCtScannable() {
+	@ModelTest({
+		"src/main/java/spoon/support",
+		"src/main/java/spoon/reflect/declaration",
+		"src/main/java/spoon/reflect/code",
+		"src/main/java/spoon/reflect/reference",
+		"src/main/java/spoon/support/reflect/declaration",
+		"src/main/java/spoon/support/reflect/code",
+		"src/main/java/spoon/support/reflect/reference",
+	})
+	public void testInterfacesAreCtScannable(Factory factory) {
 		// contract: all non-leaf interfaces of the metamodel should be visited by CtInheritanceScanner
-		Launcher interfaces = new Launcher();
-		interfaces.addInputResource("src/main/java/spoon/support");
-		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
-		interfaces.addInputResource("src/main/java/spoon/reflect/code");
-		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
-		interfaces.addInputResource("src/main/java/spoon/support/reflect/declaration");
-		interfaces.addInputResource("src/main/java/spoon/support/reflect/code");
-		interfaces.addInputResource("src/main/java/spoon/support/reflect/reference");
-		interfaces.buildModel();
-
-		CtClass<?> ctScanner = interfaces.getFactory().Class().get(CtInheritanceScanner.class);
+		CtClass<?> ctScanner = factory.Class().get(CtInheritanceScanner.class);
 
 		List<String> missingMethods = new ArrayList<>();
 

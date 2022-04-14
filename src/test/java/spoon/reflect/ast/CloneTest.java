@@ -48,6 +48,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.visitor.equals.CloneHelper;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -245,14 +246,9 @@ public class CloneTest {
 		}
 	}
 
-	@Test
-	public void testIssue3389() {
+	@ModelTest("src/test/resources/JavaCode.java")
+	public void testIssue3389(Launcher launcher) {
 		// test case for https://github.com/INRIA/spoon/issues/3389
-		Launcher launcher = new Launcher();
-		launcher.addInputResource( "./src/test/resources/JavaCode.java" );
-		launcher.buildModel();
-		CtModel model = launcher.getModel();
-
 		CtType<?> c = launcher.getFactory().Type().get("HelloWorld");
 
 		// sanity check: the field is at the end as in the source

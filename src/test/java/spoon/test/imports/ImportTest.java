@@ -71,6 +71,7 @@ import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.ToBeModified;
 import spoon.test.imports.testclasses.badimportissue3320.source.TestSource;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.BufferedReader;
@@ -1289,17 +1290,9 @@ public class ImportTest {
 		assertEquals(CtImportKind.ALL_TYPES, cu.getImports().iterator().next().getImportKind());
 	}
 
-	@Test
-	public void testImportWithGenerics() {
+	@ModelTest(value = "./src/test/resources/import-with-generics/TestWithGenerics.java", autoImport = true)
+	public void testImportWithGenerics(Launcher launcher) {
 		// contract: in noclasspath autoimport, we should be able to use generic type
-		final Launcher launcher = new Launcher();
-		// this class is not compilable 'spoon.test.imports.testclasses.withgenerics.Target' does not exist
-		launcher.addInputResource("./src/test/resources/import-with-generics/TestWithGenerics.java");
-		launcher.getEnvironment().setAutoImports(true);
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.setSourceOutputDirectory("./target/import-with-generics");
-		launcher.run();
-
 		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
 		CtType element = launcher.getFactory().Class().get("spoon.test.imports.testclasses.TestWithGenerics");
 		List<CtType<?>> toPrint = new ArrayList<>();
@@ -1441,12 +1434,9 @@ public class ImportTest {
 		assertNotNull(launcher.getFactory().Type().get("TestNullable"));
 	}
 
-	@Test
-	public void testBug2369_fqn() {
+	@ModelTest("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java")
+	public void testBug2369_fqn(Factory factory) {
 		// see https://github.com/INRIA/spoon/issues/2369
-		final Launcher launcher = new Launcher();
-launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java");
-		launcher.buildModel();
 		final String nl = System.lineSeparator();
 		assertEquals("public class JavaLongUse {" + nl +
 				"    public class Long {}" + nl +
@@ -1458,16 +1448,12 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 				"    public static void main(java.lang.String[] args) {" + nl +
 				"        java.lang.System.out.println(spoon.test.imports.testclasses.JavaLongUse.method());" + nl +
 				"    }" + nl +
-				"}", launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
+				"}", factory.Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
 	}
 
-	@Test
-	public void testBug2369_autoimports() {
+	@ModelTest("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java")
+	public void testBug2369_autoimports(Launcher launcher) {
 		// https://github.com/INRIA/spoon/issues/2369
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java");
-		launcher.getEnvironment().setAutoImports(true);
-		launcher.buildModel();
 		final String nl = System.lineSeparator();
 		assertEquals("public class JavaLongUse {" + nl +
 				"    public class Long {}" + nl +
@@ -1581,31 +1567,26 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 			assertThat(output, containsString("import spoon.SpoonException;"));
 		}
 	}
-	@Test
-	public void testImportOnSpoon() throws IOException {
-		File targetDir = new File("./target/import-test");
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/main/java/spoon/");
-		spoon.getEnvironment().setAutoImports(true);
-		spoon.getEnvironment().setCommentEnabled(true);
-		spoon.getEnvironment().setSourceOutputDirectory(targetDir);
-		spoon.getEnvironment().setLevel("warn");
-		spoon.buildModel();
 
-		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
+	@ModelTest("./src/main/java/spoon/")
+	public void testImportOnSpoon(Launcher launcher, CtModel model, Factory factory) throws IOException {
+		File targetDir = new File("./target/import-test");
+		launcher.setSourceOutputDirectory(targetDir);
+
+		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(launcher.getEnvironment());
 
 		Map<CtType, List<String>> missingImports = new HashMap<>();
 		Map<CtType, List<String>> unusedImports = new HashMap<>();
 
 		JavaOutputProcessor outputProcessor;
 
-		for (CtType<?> ctType : spoon.getModel().getAllTypes()) {
+		for (CtType<?> ctType : model.getAllTypes()) {
 			if (!ctType.isTopLevel()) {
 				continue;
 			}
 
 			outputProcessor = new JavaOutputProcessor(prettyPrinter);
-			outputProcessor.setFactory(spoon.getFactory());
+			outputProcessor.setFactory(factory);
 			outputProcessor.init();
 
 			Set<String> computedTypeImports = new HashSet<>();

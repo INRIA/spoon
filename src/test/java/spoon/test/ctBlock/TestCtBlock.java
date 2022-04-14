@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtIf;
@@ -28,8 +29,10 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.test.ctBlock.testclasses.Toto;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -40,13 +43,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class TestCtBlock {
 
-	@Test
-	public void testRemoveStatement() {
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/java/spoon/test/ctBlock/testclasses/Toto.java");
-		spoon.buildModel();
-
-		List<CtMethod> methods = spoon.getModel().getElements(new NamedElementFilter<>(CtMethod.class, "foo"));
+	@ModelTest("./src/test/java/spoon/test/ctBlock/testclasses/Toto.java")
+	public void testRemoveStatement(CtModel model) {
+		List<CtMethod> methods = model.getElements(new NamedElementFilter<>(CtMethod.class, "foo"));
 
 		assertEquals(1, methods.size());
 
@@ -65,22 +64,17 @@ public class TestCtBlock {
 		assertTrue(newLastStatement instanceof CtIf);
 	}
 
-	@Test
-	public void testAddStatementInBlock() {
+	@ModelTest("./src/test/java/spoon/test/ctBlock/testclasses/Toto.java")
+	public void testAddStatementInBlock(Factory factory) {
 		// contract: we can add a statement at a specific index
 		// the statements with a higher index are pushed after
-
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/java/spoon/test/ctBlock/testclasses/Toto.java");
-		spoon.buildModel();
-
-		CtClass<?> toto = spoon.getFactory().Class().get(Toto.class);
+		CtClass<?> toto = factory.Class().get(Toto.class);
 		CtMethod foo = toto.getMethodsByName("foo").get(0);
 		CtBlock block = foo.getBody();
 		CtBlock originalBlock = block.clone();
 
 		assertEquals(4, block.getStatements().size());
-		block.addStatement(1, (CtStatement) spoon.getFactory().createInvocation().setExecutable(foo.getReference()));
+		block.addStatement(1, (CtStatement) factory.createInvocation().setExecutable(foo.getReference()));
 
 		assertEquals(5, block.getStatements().size());
 
@@ -91,16 +85,11 @@ public class TestCtBlock {
 		}
 	}
 
-	@Test
-	public void testAddStatementInCase() {
+	@ModelTest("./src/test/java/spoon/test/ctBlock/testclasses/Toto.java")
+	public void testAddStatementInCase(Factory factory) {
 		// contract: we can add a statement at a specific index
 		// the statements with a higher index are pushed after
-
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/java/spoon/test/ctBlock/testclasses/Toto.java");
-		spoon.buildModel();
-
-		CtClass<?> toto = spoon.getFactory().Class().get(Toto.class);
+		CtClass<?> toto = factory.Class().get(Toto.class);
 		CtMethod bar = toto.getMethodsByName("bar").get(0);
 		CtSwitch<?> ctSwitch = (CtSwitch) bar.getBody().getStatement(0);
 
@@ -112,7 +101,7 @@ public class TestCtBlock {
 
 
 		assertEquals(3, firstCase.getStatements().size());
-		firstCase.addStatement(3, spoon.getFactory().createBreak());
+		firstCase.addStatement(3, factory.createBreak());
 		assertEquals(4, firstCase.getStatements().size());
 
 		for (int i = 0; i < 3; i++) {
@@ -120,7 +109,7 @@ public class TestCtBlock {
 		}
 
 		assertEquals(2, secondCase.getStatements().size());
-		secondCase.addStatement(1, (CtStatement) spoon.getFactory().createInvocation().setExecutable(bar.getReference()));
+		secondCase.addStatement(1, (CtStatement) factory.createInvocation().setExecutable(bar.getReference()));
 		assertEquals(3, secondCase.getStatements().size());
 
 		assertEquals(originalSecondCase.getStatements().get(0), secondCase.getStatements().get(0));

@@ -24,11 +24,13 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.modifiers.testclasses.AbstractClass;
 import spoon.test.modifiers.testclasses.MethodVarArgs;
 import spoon.test.modifiers.testclasses.StaticMethod;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.Collection;
@@ -42,35 +44,26 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class ModifiersTest {
 
-    @Test
-    public void testMethodWithVarargsDoesNotBecomeTransient() {
+    @ModelTest("./src/test/java/spoon/test/modifiers/testclasses/MethodVarArgs.java")
+    public void testMethodWithVarargsDoesNotBecomeTransient(Factory factory) {
         // contract: method with varsargs should not become transient
-        Launcher spoon = new Launcher();
-        spoon.addInputResource("./src/test/java/spoon/test/modifiers/testclasses/MethodVarArgs.java");
-        spoon.buildModel();
-
-        CtType<?> myClass = spoon.getFactory().Type().get(MethodVarArgs.class);
+        CtType<?> myClass = factory.Type().get(MethodVarArgs.class);
         CtMethod methodVarargs = myClass.getMethodsByName("getInitValues").get(0);
 
         Set<ModifierKind> expectedModifiers = Collections.singleton(ModifierKind.PROTECTED);
 
         assertEquals(expectedModifiers, methodVarargs.getModifiers());
 
-        spoon = new Launcher();
+        Launcher spoon = new Launcher();
         spoon.addInputResource("./src/test/java/spoon/test/modifiers/testclasses/MethodVarArgs.java");
         spoon.getEnvironment().setShouldCompile(true);
         spoon.run();
     }
 
-    @Test
-    public void testCtModifiableAddRemoveReturnCtModifiable() {
+    @ModelTest("./src/test/java/spoon/test/modifiers/testclasses/MethodVarArgs.java")
+    public void testCtModifiableAddRemoveReturnCtModifiable(Factory factory) {
         // contract: CtModifiable#addModifier and CtModifiable#removeModifier should return CtModifiable
-
-        Launcher spoon = new Launcher();
-        spoon.addInputResource("./src/test/java/spoon/test/modifiers/testclasses/MethodVarArgs.java");
-        spoon.buildModel();
-
-        CtType<?> myClass = spoon.getFactory().Type().get(MethodVarArgs.class);
+        CtType<?> myClass = factory.Type().get(MethodVarArgs.class);
         CtMethod methodVarargs = myClass.getMethodsByName("getInitValues").get(0);
 
         Object o = methodVarargs.addModifier(ModifierKind.FINAL);
@@ -80,15 +73,10 @@ public class ModifiersTest {
         assertEquals(methodVarargs, o);
     }
 
-    @Test
-    public void testSetVisibility() {
+    @ModelTest("./src/test/java/spoon/test/modifiers/testclasses/StaticMethod.java")
+    public void testSetVisibility(Factory factory) {
         // contract: setVisibility should only work with public/private/protected modifiers
-
-        Launcher spoon = new Launcher();
-        spoon.addInputResource("./src/test/java/spoon/test/modifiers/testclasses/StaticMethod.java");
-        spoon.buildModel();
-
-        CtType<?> myClass = spoon.getFactory().Type().get(StaticMethod.class);
+        CtType<?> myClass = factory.Type().get(StaticMethod.class);
         CtMethod methodPublicStatic = myClass.getMethodsByName("maMethod").get(0);
 
         assertEquals(ModifierKind.PUBLIC, methodPublicStatic.getVisibility());
@@ -103,17 +91,13 @@ public class ModifiersTest {
         assertEquals(ModifierKind.PROTECTED, methodPublicStatic.getVisibility());
     }
 
-    @Test
-    public void testGetModifiersHelpers() {
+    @ModelTest({
+        "./src/test/java/spoon/test/modifiers/testclasses/AbstractClass.java",
+        "./src/test/java/spoon/test/modifiers/testclasses/ConcreteClass.java",
+    })
+    public void testGetModifiersHelpers(Launcher launcher, Factory factory) {
         // contract: the CtModifiable helpers like isPublic, isFinal etc returns right values
-
-        Launcher spoon = new Launcher();
-        spoon.addInputResource("./src/test/java/spoon/test/modifiers/testclasses/AbstractClass.java");
-        spoon.addInputResource("./src/test/java/spoon/test/modifiers/testclasses/ConcreteClass.java");
-        spoon.getEnvironment().setShouldCompile(true);
-        spoon.run();
-
-        CtType<?> abstractClass = spoon.getFactory().Type().get(AbstractClass.class);
+        CtType<?> abstractClass = factory.Type().get(AbstractClass.class);
 
         checkCtModifiableHelpersAssertion(abstractClass, true, false, false, true, false, false, false, false, false, false, false);
 
@@ -186,7 +170,7 @@ public class ModifiersTest {
             }
         }
 
-        CtType<?> concreteClass = spoon.getFactory().Type().get("spoon.test.modifiers.testclasses.ConcreteClass");
+        CtType<?> concreteClass = factory.Type().get("spoon.test.modifiers.testclasses.ConcreteClass");
         checkCtModifiableHelpersAssertion(concreteClass, false, false, false, false, true, false, false, false, false, false, false);
 
         assertEquals(2, concreteClass.getFields().size());
