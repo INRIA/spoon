@@ -36,6 +36,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.ctType.testclasses.X;
+import spoon.testing.utils.ModelTest;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -90,15 +91,10 @@ public class CtTypeTest {
 		assertTrue(yClass.hasMethod(superMethod));
 	}
 
-	@Test
-	public void testHasMethodInDefaultMethod() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/ctType/testclasses/X.java");
-		launcher.getEnvironment().setComplianceLevel(8);
-		launcher.run();
-
-		final CtClass<?> x = launcher.getFactory().Class().get("spoon.test.ctType.testclasses.W");
-		final CtInterface<?> z = launcher.getFactory().Interface().get("spoon.test.ctType.testclasses.Z");
+	@ModelTest(value = "./src/test/java/spoon/test/ctType/testclasses/X.java", complianceLevel = 8)
+	public void testHasMethodInDefaultMethod(Launcher launcher, Factory factory) {
+		final CtClass<?> x = factory.Class().get("spoon.test.ctType.testclasses.W");
+		final CtInterface<?> z = factory.Interface().get("spoon.test.ctType.testclasses.Z");
 		final CtMethod<?> superMethod = z.getMethods().iterator().next();
 
 		assertTrue(x.hasMethod(superMethod));
