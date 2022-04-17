@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * A small utility class helping with printing json-like strings in {@link GlueNode} and {@link DeclarationNode}.
+ */
 final class NodePrintHelper {
 
 	private NodePrintHelper() {
