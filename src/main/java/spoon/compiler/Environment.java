@@ -583,6 +583,22 @@ public interface Environment {
 	 */
 	void setPrettyPrinterCreator(Supplier<PrettyPrinter> creator);
 
+	/**
+	 * Whether to use the new or legacy and (soon to be) deprecated type adaption. You should not use this method.
+	 *
+	 * @return true if spoon uses the old and (soon to be) deprecated type adaption.
+	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(forRemoval = true, since = "10.2.0")
+	boolean useLegacyTypeAdaption();
+
+	/**
+	 * Sets whether to use the new or legacy and (soon to be) deprecated type adaption. You should not use this method.
+	 *
+	 * @param useLegacyTypeAdaption whether to use the old type adaption implementation
+	 */
+	@Deprecated(forRemoval = true, since = "10.2.0")
+	void setUseLegacyTypeAdaption(boolean useLegacyTypeAdaption);
 
 	/**
 	 * Whether Spoon currently ignores duplicate declarations of types.

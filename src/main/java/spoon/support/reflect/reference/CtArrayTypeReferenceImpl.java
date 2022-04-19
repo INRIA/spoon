@@ -164,4 +164,9 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 	public DeclarationKind getDeclarationKind() {
 		return (DeclarationKind) this.getMetadata(DeclarationKind.class.getSimpleName());
 	}
+
+	@Override
+	public boolean isGenerics() {
+		return getArrayType().isGenerics();
+	}
 }

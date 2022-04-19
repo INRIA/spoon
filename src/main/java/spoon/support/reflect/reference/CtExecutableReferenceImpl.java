@@ -26,9 +26,9 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.NamedElementFilter;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
-import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.SignaturePrinter;
 
 import java.lang.reflect.AnnotatedElement;
@@ -225,7 +225,8 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			return declaringType != null && declaringType.isSubtypeOf(executable.getDeclaringType());
 		}
 		if (exec instanceof CtMethod<?> && thisExec instanceof CtMethod<?>) {
-			return new ClassTypingContext(((CtTypeMember) thisExec).getDeclaringType()).isOverriding((CtMethod<?>) thisExec, (CtMethod<?>) exec);
+			return new TypeAdaptor(((CtTypeMember) thisExec).getDeclaringType())
+					.isOverriding((CtMethod<?>) thisExec, (CtMethod<?>) exec);
 		}
 		//it is not a method. So we can return true only if it is reference to the this executable
 		return exec == getDeclaration();

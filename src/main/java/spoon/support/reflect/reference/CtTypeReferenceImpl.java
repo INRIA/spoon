@@ -32,8 +32,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.reflect.declaration.CtElementImpl;
-import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
@@ -291,7 +291,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			//everything is a sub type of Object
 			return true;
 		}
-		return new ClassTypingContext(this).isSubtypeOf(type);
+		return new TypeAdaptor(this).isSubtypeOf(type);
 	}
 
 	/**

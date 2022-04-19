@@ -21,9 +21,9 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
-import spoon.support.visitor.ClassTypingContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -187,7 +187,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public boolean isOverriding(CtMethod<?> superMethod) {
-		return new ClassTypingContext(getDeclaringType()).isOverriding(this, superMethod);
+		return new TypeAdaptor(getDeclaringType()).isOverriding(this, superMethod);
 	}
 
 	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
@@ -215,7 +215,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		List<CtMethod<?>> s = new ArrayList<>();
 
 		// first collect potential declarations of this method in the type hierarchy
-		ClassTypingContext context = new ClassTypingContext(this.getDeclaringType());
+		TypeAdaptor context = new TypeAdaptor(this.getDeclaringType());
 		getDeclaringType().map(new AllTypeMembersFunction(CtMethod.class)).forEach((CtMethod<?> m) -> {
 			if (m != this && context.isOverriding(this, m)) {
 				s.add(m);

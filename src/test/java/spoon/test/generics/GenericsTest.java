@@ -60,6 +60,7 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
@@ -921,7 +922,7 @@ public class GenericsTest {
 		CtTypeParameter tpD = ctModel.getFormalCtTypeParameters().get(3);
 
 		CtClass<?> ctModelB = ctModel.filterChildren(new NamedElementFilter<>(CtClass.class,"ModelB")).first();
-		ClassTypingContext sth = new ClassTypingContext(ctModelB);
+		TypeAdaptor sth = new TypeAdaptor(ctModelB);
 		// in ModelB, "A" is "A2"
 		assertEquals("A2", sth.adaptType(tpA).getQualifiedName());
 		// in ModelB, "B" is "B2"
@@ -931,7 +932,7 @@ public class GenericsTest {
 		assertEquals("D2", sth.adaptType(tpD).getQualifiedName());
 
 		CtClass<?> ctModelC = ctModel.filterChildren(new NamedElementFilter<>(CtClass.class,"ModelC")).first();
-		ClassTypingContext sthC = new ClassTypingContext(ctModelC);
+		TypeAdaptor sthC = new TypeAdaptor(ctModelC);
 		assertEquals("java.lang.Integer", sthC.adaptType(tpA).getQualifiedName());
 		assertEquals("java.lang.RuntimeException", sthC.adaptType(tpB).getQualifiedName());
 		assertEquals("java.lang.IllegalArgumentException", sthC.adaptType(tpC).getQualifiedName());
@@ -966,11 +967,7 @@ public class GenericsTest {
 		assertEquals("A", ctClassLunch_A.getSimpleName());
 		
 		//are these two types same?
-		ClassTypingContext typingContextOfDisgust = new ClassTypingContext(typeReferenceOfDisgust);
-		
-		//contract: the class typing context provides its scope 
-		assertSame(typeReferenceOfDisgust.getTypeDeclaration(), typingContextOfDisgust.getAdaptationScope());
-		
+		TypeAdaptor typingContextOfDisgust = new TypeAdaptor(typeReferenceOfDisgust);
 		// in disgust, X of WeddingLunch is bound to "Model"
 		assertEquals("spoon.test.generics.testclasses.Mole", typingContextOfDisgust.adaptType(ctWeddingLunch_X).getQualifiedName());
 		//adapt A to scope of CelebrationLunch<Integer,Long,Double>.WeddingLunch<Mole>
@@ -979,16 +976,13 @@ public class GenericsTest {
 		assertEquals("spoon.test.generics.testclasses.Mole", typingContextOfDisgust.adaptType(ctClassLunch_A).getQualifiedName());
 
 		// I don't understand the goal and utility of this one
-		assertEquals("java.lang.Double", typingContextOfDisgust.getEnclosingGenericTypeAdapter().adaptType(ctClassLunch_A).getQualifiedName());
+		assertEquals("java.lang.Double", new TypeAdaptor(typeReferenceOfDisgust.getDeclaringType()).adaptType(ctClassLunch_A).getQualifiedName());
 
 
 		// now we resolve those types, but in the context of the declaration, where no concrete types exist
 		//are these two types same in scope of CelebrationLunch<K,L,M>.WddingLunch<X> class itself
-		ClassTypingContext sthOftWeddingLunch_X = new ClassTypingContext(typeReferenceOfDisgust.getDeclaration());
-		
-		//contract: the class typing context provides its scope 
-		assertSame(typeReferenceOfDisgust.getDeclaration(), sthOftWeddingLunch_X.getAdaptationScope());
-		
+		TypeAdaptor sthOftWeddingLunch_X = new TypeAdaptor(typeReferenceOfDisgust.getDeclaration());
+
 		// in WeddingLunch "X" is still "X"
 		assertEquals("X", sthOftWeddingLunch_X.adaptType(ctWeddingLunch_X).getQualifiedName());
 
@@ -997,7 +991,7 @@ public class GenericsTest {
 
 		// ?????
 		//adapt A to scope of enclosing class of CelebrationLunch<K,L,M>.WddingLunch<X>, which is CelebrationLunch<K,L,M>
-		assertEquals("M", sthOftWeddingLunch_X.getEnclosingGenericTypeAdapter().adaptType(ctClassLunch_A).getQualifiedName());
+		assertEquals("M", new TypeAdaptor(typeReferenceOfDisgust.getDeclaration().getDeclaringType()).adaptType(ctClassLunch_A).getQualifiedName());
 	}
 	
 	@Test
@@ -1017,8 +1011,8 @@ public class GenericsTest {
 		CtTypeParameter typeParamP = classB.getFormalCtTypeParameters().get(1);
 		assertEquals("N", typeParamN.getQualifiedName());
 		assertEquals("P", typeParamP.getQualifiedName());
-		
-		ClassTypingContext ctcB = new ClassTypingContext(classB);
+
+		TypeAdaptor ctcB = new TypeAdaptor(classB);
 		assertEquals("N", ctcB.adaptType(typeParamO).getQualifiedName());
 		assertEquals("P", ctcB.adaptType(typeParamM).getQualifiedName());
 		//contract: superClass of CtTypeParam is adapted too
@@ -1101,7 +1095,7 @@ public class GenericsTest {
 		assertEquals("java.lang.Long", celebrationLunchTC.adaptType(classCelebrationLunch_L).getQualifiedName());
 		assertEquals("java.lang.Double", celebrationLunchTC.adaptType(classCelebrationLunch_M).getQualifiedName());
 	}
-	
+
 	@Test
 	public void testMethodTypingContextAdaptMethod() {
 		// core contracts of MethodTypingContext#adaptMethod
@@ -1112,12 +1106,9 @@ public class GenericsTest {
 		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NamedElementFilter<>(CtMethod.class,"eatMe")).first();
 		CtClass<?> ctClassWeddingLunch = factory.Class().get(WeddingLunch.class);
 
-		ClassTypingContext ctcWeddingLunch = new ClassTypingContext(ctClassWeddingLunch);
-		// we all analyze new methods
-		final MethodTypingContext methodSTH = new MethodTypingContext().setClassTypingContext(ctcWeddingLunch);
+		TypeAdaptor typeAdaptorWeddingLunch = new TypeAdaptor(ctClassWeddingLunch);
 		//contract: method can be adapted only using MethodTypingContext
-		methodSTH.setMethod(trLunch_eatMe);
-		CtMethod<?> adaptedLunchEatMe = (CtMethod<?>) methodSTH.getAdaptationScope();
+		CtMethod<?> adaptedLunchEatMe = typeAdaptorWeddingLunch.adaptMethod(trLunch_eatMe);
 
 		//contract: adapting of method declared in different scope, returns new method
 		assertNotSame(adaptedLunchEatMe, trLunch_eatMe);
@@ -1146,8 +1137,7 @@ public class GenericsTest {
 		assertEquals("C", adaptedLunchEatMe.getParameters().get(2).getType().getQualifiedName());
 
 		//contract: adapting of adapted method returns input method
-		methodSTH.setMethod(adaptedLunchEatMe);
-		assertSame(adaptedLunchEatMe, methodSTH.getAdaptationScope());
+		assertEquals(typeAdaptorWeddingLunch.adaptMethod(adaptedLunchEatMe), adaptedLunchEatMe);
 	}
 	
 	@Test
@@ -1163,27 +1153,32 @@ public class GenericsTest {
 		// represents <C> void eatMe(M paramA, K paramB, C paramC)
 		CtMethod<?> trWeddingLunch_eatMe = ctClassWeddingLunch.filterChildren(new NamedElementFilter<>(CtMethod.class,"eatMe")).first();
 		
-		ClassTypingContext ctcWeddingLunch = new ClassTypingContext(ctClassWeddingLunch);
-		
+		TypeAdaptor ctcWeddingLunch = new TypeAdaptor(ctClassWeddingLunch);
+
 		assertTrue(ctcWeddingLunch.isOverriding(trLunch_eatMe, trLunch_eatMe));
-		assertTrue(ctcWeddingLunch.isOverriding(trLunch_eatMe, trWeddingLunch_eatMe));
-		assertTrue(ctcWeddingLunch.isSubSignature(trLunch_eatMe, trWeddingLunch_eatMe));
+		assertTrue(ctcWeddingLunch.isOverriding(trWeddingLunch_eatMe, trLunch_eatMe));
+		assertTrue(new ClassTypingContext(ctClassWeddingLunch).isSubSignature(trWeddingLunch_eatMe, trLunch_eatMe));
 
 		//contract: check that adapting of methods still produces same results, even when scopeMethod is already assigned
 		assertTrue(ctcWeddingLunch.isOverriding(trWeddingLunch_eatMe, trLunch_eatMe));
 		assertTrue(ctcWeddingLunch.isOverriding(trWeddingLunch_eatMe, trWeddingLunch_eatMe));
-		assertTrue(ctcWeddingLunch.isSubSignature(trWeddingLunch_eatMe, trWeddingLunch_eatMe));
+		assertTrue(new ClassTypingContext(ctClassWeddingLunch).isSubSignature(trWeddingLunch_eatMe, trWeddingLunch_eatMe));
 	}
-	
-	
-	
+
+
+
 	@Test
 	public void testClassContextOnInnerClass() throws Exception {
 		CtClass<?> classBanana = (CtClass<?>)buildClass(Banana.class);
 		CtClass<?> classVitamins = classBanana.getNestedType("Vitamins");
 		CtTypeReference<?> refList_T = classVitamins.getSuperclass();
 		//contract: generic types defined in enclocing classe (Banana<T>) are resolved from inner class hierarchy (Vitamins->List<T>) too.
-		assertSame(classBanana.getFormalCtTypeParameters().get(0), new ClassTypingContext(classVitamins).adaptType(refList_T.getActualTypeArguments().get(0)).getDeclaration());
+		assertSame(
+				classBanana.getFormalCtTypeParameters().get(0),
+				new TypeAdaptor(classVitamins).adaptType(
+						refList_T.getActualTypeArguments().get(0)
+				).getDeclaration()
+		);
 	}
 
 	private void checkFakeTpl(CtInterface<?> fakeTplItf) {
@@ -1333,10 +1328,10 @@ public class GenericsTest {
 		List<CtMethod<?>> methodsItf = iterableItf.getMethodsByName("forEach");
 		assertEquals(1, methodsItf.size());
 
-		ClassTypingContext ctc = new ClassTypingContext(ctClass.getReference());
+		TypeAdaptor ctc = new TypeAdaptor(ctClass.getReference());
 		assertTrue(ctc.isOverriding(methods.get(0), methodsItf.get(0)));
-		assertTrue(ctc.isSubSignature(methods.get(0), methodsItf.get(0)));
-		assertTrue(ctc.isSameSignature(methods.get(0), methodsItf.get(0)));
+		assertTrue(new ClassTypingContext(ctClass.getReference()).isSubSignature(methods.get(0), methodsItf.get(0)));
+		assertTrue(ctc.isConflicting(methods.get(0), methodsItf.get(0)));
 	}
 
 	@Test
@@ -1351,11 +1346,11 @@ public class GenericsTest {
 		CtType<?> iface = launcher.getFactory().Type().get("spoon.test.generics.testclasses2.ISameSignature");
 		CtMethod ifaceMethod = iface.getMethodsByName("visitCtConditional").get(0);
 
-		ClassTypingContext ctcSub = new ClassTypingContext(ctClass.getReference());
+		TypeAdaptor ctcSub = new TypeAdaptor(ctClass.getReference());
 		assertTrue(ctcSub.isOverriding(classMethod, ifaceMethod));
-		assertTrue(ctcSub.isOverriding(ifaceMethod, classMethod));
-		assertTrue(ctcSub.isSubSignature(classMethod, ifaceMethod));
-		assertTrue(ctcSub.isSubSignature(ifaceMethod, classMethod));
+		assertFalse(ctcSub.isOverriding(ifaceMethod, classMethod));
+		assertTrue(new ClassTypingContext(ctClass.getReference()).isSubSignature(classMethod, ifaceMethod));
+		assertTrue(new ClassTypingContext(ctClass.getReference()).isSubSignature(ifaceMethod, classMethod));
 		assertTrue(ctcSub.isSameSignature(classMethod, ifaceMethod));
 		assertTrue(ctcSub.isSameSignature(ifaceMethod, classMethod));
 	}
@@ -1400,11 +1395,11 @@ public class GenericsTest {
 		CtType<?> iface = launcher.getFactory().Type().get("spoon.test.generics.testclasses2.ISameSignature3");
 		CtMethod ifaceMethod = (CtMethod)iface.getMethodsByName("visitCtConditional").get(0);
 
-		ClassTypingContext ctcSub = new ClassTypingContext(ctClass.getReference());
+		TypeAdaptor ctcSub = new TypeAdaptor(ctClass.getReference());
 		assertTrue(ctcSub.isOverriding(classMethod, ifaceMethod));
-		assertTrue(ctcSub.isOverriding(ifaceMethod, classMethod));
-		assertTrue(ctcSub.isSubSignature(classMethod, ifaceMethod));
-		assertTrue(ctcSub.isSubSignature(ifaceMethod, classMethod));
+		assertFalse(ctcSub.isOverriding(ifaceMethod, classMethod));
+		assertTrue(new ClassTypingContext(ctClass.getReference()).isSubSignature(classMethod, ifaceMethod));
+		assertTrue(new ClassTypingContext(ctClass.getReference()).isSubSignature(ifaceMethod, classMethod));
 		assertTrue(ctcSub.isSameSignature(classMethod, ifaceMethod));
 		assertTrue(ctcSub.isSameSignature(ifaceMethod, classMethod));
 	}
@@ -1435,8 +1430,8 @@ public class GenericsTest {
 		
 		assertEquals(ifaceSetter.getParameters().get(0).getType(), classGetter.getType());
 		
-		MethodTypingContext mtc = new MethodTypingContext().setClassTypingContext(new ClassTypingContext(ctClass)).setMethod(ifaceSetter);
-		CtMethod<?> adaptedMethod = (CtMethod<?>) mtc.getAdaptationScope();
+		TypeAdaptor typeAdaptor = new TypeAdaptor(ctClass);
+		CtMethod<?> adaptedMethod = typeAdaptor.adaptMethod(ifaceSetter);
 		/*
 		 * after adaptation of `Set<AnType<T>>` from scope of interface to scope of class there is Set<AnType<T extends Object>>
 		 * Which is semantically equivalent, but Equals check does not know that
@@ -1457,7 +1452,7 @@ public class GenericsTest {
 		CtNewClass<?> newClassExpr = (CtNewClass<?>) retStmt.getReturnedExpression();
 		CtType<?> declaringType = newClassExpr.getAnonymousClass();
 		CtMethod<?> m1 = declaringType.getMethodsByName("iterator").get(0);
-		ClassTypingContext c = new ClassTypingContext(declaringType);
+		TypeAdaptor c = new TypeAdaptor(declaringType);
 		//the adaptation of such type parameter keeps that parameter as it is.
 		assertFalse(c.isOverriding(m1, declaringType.getSuperclass().getTypeDeclaration().getMethodsByName("add").get(0)));
 		assertTrue(c.isOverriding(m1, declaringType.getSuperclass().getTypeDeclaration().getMethodsByName("iterator").get(0)));

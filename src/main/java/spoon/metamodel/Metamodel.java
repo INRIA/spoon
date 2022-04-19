@@ -39,10 +39,10 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFolder;
-import spoon.support.visitor.ClassTypingContext;
 
 /**
  * Represents the Spoon metamodel (incl. at runtime)
@@ -552,12 +552,12 @@ public class Metamodel {
 		CtAnnotation<A> annotation = method.getAnnotation(annotationType);
 		if (annotation == null) {
 			CtType<?> declType = method.getDeclaringType();
-			final ClassTypingContext ctc = new ClassTypingContext(declType);
+			TypeAdaptor typeAdaptor = new TypeAdaptor(declType);
 			annotation = declType.map(new AllTypeMembersFunction(CtMethod.class)).map((CtMethod<?> currentMethod) -> {
 				if (method == currentMethod) {
 					return null;
 				}
-				if (ctc.isSameSignature(method, currentMethod)) {
+				if (typeAdaptor.isConflicting(method, currentMethod)) {
 					CtAnnotation<A> annotation2 = currentMethod.getAnnotation(annotationType);
 					if (annotation2 != null) {
 						return annotation2;
