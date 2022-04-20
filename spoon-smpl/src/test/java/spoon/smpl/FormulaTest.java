@@ -22,11 +22,11 @@
 
 package spoon.smpl;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-
+import org.junit.jupiter.api.Test;
 import spoon.smpl.formula.*;
+
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FormulaTest {
 	@Test

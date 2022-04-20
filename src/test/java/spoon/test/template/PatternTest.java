@@ -1647,4 +1647,22 @@ public class PatternTest {
 		assertNotNull(v);
 		return ((ImmutableMap) v).asMap();
 	}
+
+	@Test
+	void testGeneratorCopiesMetadataOfTemplateElement() {
+		// contract: metadata should be cloned for all elements generated via template
+
+		String c1 = "public class A { int getOne() { return 1; } }";
+		CtType <?> type = Launcher.parseClass(c1);
+		String key = "foo";
+		String val = "bar";
+
+		// attach metadata
+		type.descendantIterator().forEachRemaining(ctElement -> ctElement.putMetadata(key, val));
+
+		// create clone using the above type as template
+		CtType <?> cloneType = PatternBuilder.create(type).build().generator().generate("B", new HashMap<>());
+
+		cloneType.descendantIterator().forEachRemaining(ctElement -> assertEquals(val, ctElement.getMetadata(key), "Metadata does not match for: " + ctElement));
+	}
 }

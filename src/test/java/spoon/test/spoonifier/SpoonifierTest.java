@@ -7,18 +7,6 @@
  */
 package spoon.test.spoonifier;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
-import spoon.Launcher;
-import spoon.SpoonModelBuilder;
-import spoon.experimental.SpoonifierVisitor;
-import spoon.reflect.CtModel;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,8 +21,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import spoon.Launcher;
+import spoon.SpoonModelBuilder;
+import spoon.experimental.SpoonifierVisitor;
+import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.TypeFilter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SpoonifierTest {
 
@@ -42,8 +41,9 @@ public class SpoonifierTest {
 	 * This test is too long for CI, but it checks that SpoonifierVisitor does produce equivalent Type for all
 	 * files used for testing purposes.
 	 */
-	@Ignore
+	
 	@Test
+	@Disabled
 	public void testOnAllTestClasses() throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
 		//Get all testclasses files
@@ -98,8 +98,9 @@ public class SpoonifierTest {
 	 * This test is too long for CI, but it checks that SpoonifierVisitor does produce equivalent CtElement for all
 	 * CtElement in Rule
 	 */
-	@Ignore
+	
 	@Test
+	@Disabled
 	public void testSpoonifierElement() throws ClassNotFoundException, MalformedURLException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 		int i = 0;
 

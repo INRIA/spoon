@@ -1,12 +1,12 @@
 package spoon.test.visitor;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.CtScanner;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by marcel on 16.03.16.

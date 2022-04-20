@@ -16,14 +16,13 @@
  */
 package spoon.test.replace;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import spoon.SpoonException;
 import spoon.metamodel.ConceptKind;
+import spoon.metamodel.Metamodel;
 import spoon.metamodel.MetamodelConcept;
 import spoon.metamodel.MetamodelProperty;
-import spoon.metamodel.Metamodel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtStatement;
@@ -45,37 +44,31 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatibleObject;
 
-@RunWith(Parameterized.class)
+
 public class ReplaceParametrizedTest<T extends CtVisitable> {
 
 	private static Metamodel metaModel;
 
-	@Parameterized.Parameters(name = "{0}")
-	public static Collection<Object[]> data() {
+	@TestFactory
+	public Collection<DynamicTest> createTests() {
 		metaModel = Metamodel.getInstance();
-
-		List<Object[]> values = new ArrayList<>();
-		for (MetamodelConcept t : metaModel.getConcepts()) {
-			if(t.getKind()==ConceptKind.LEAF) {
-				values.add(new Object[] { t });
+		List<DynamicTest> values = new ArrayList<>();
+		for (MetamodelConcept concept : metaModel.getConcepts()) {
+			if(concept.getKind()==ConceptKind.LEAF) {
+				values.add(DynamicTest.dynamicTest(concept.getName(), () -> testContract(concept)));
 			}
 		}
 		return values;
 	}
 
-	@Parameterized.Parameter(0)
-	public MetamodelConcept typeToTest;
-	
-
-	@Test
-	public void testContract() {
+	private void testContract(MetamodelConcept typeToTest) {
 		List<String> problems = new ArrayList<>();
 		
 		// contract: all elements are replaceable wherever they are in the model
@@ -163,7 +156,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 			}
 			Scanner s = new Scanner();
 			receiver.accept(s);
-			assertTrue("Settable field " + mmField.toString() + " should set value.\n" + getReport(problems), s.found);
+			assertTrue(s.found, "Settable field " + mmField.toString() + " should set value.\n" + getReport(problems, typeToTest));
 			
 			// contract: a property getter on the same role can be used to get the value back
 			assertSame(argument, invokeGetter(rh, receiver));
@@ -175,14 +168,14 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 			argument.replace(argument2);
 
 			// the new element is indeed now in this AST
-			assertTrue(receiver.getClass().getSimpleName() + " failed for " + mmField, receiver.getElements(new SameFilter(argument2)).size() == 1);
+			assertTrue(receiver.getElements(new SameFilter(argument2)).size() == 1, receiver.getClass().getSimpleName() + " failed for " + mmField);
 		}
 		if (!problems.isEmpty()) {
-			fail(getReport(problems));
+			fail(getReport(problems, typeToTest));
 		}
 	}
 	
-	private String getReport(List<String> problems) {
+	private String getReport(List<String> problems, MetamodelConcept typeToTest) {
 		if (!problems.isEmpty()) {
 			StringBuilder report = new StringBuilder();
 			report.append("The accessors of " + typeToTest + " have problems:");

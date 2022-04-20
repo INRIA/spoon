@@ -22,22 +22,21 @@
 
 package spoon.smpl;
 
-import org.junit.Before;
-import org.junit.Test;
+import java.util.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.operation.Operation;
 import spoon.smpl.operation.OperationCategory;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.*;
-
 import static spoon.smpl.TestUtils.*;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
 public class TransformerTest {
-	@Before
+	@BeforeEach
 	public void before() {
 		resetControlFlowNodeCounter();
 	}

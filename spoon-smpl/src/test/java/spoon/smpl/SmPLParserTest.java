@@ -22,14 +22,15 @@
 
 package spoon.smpl;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.smpl.SmPLParser.parse;
 import static spoon.smpl.SmPLParser.rewrite;
 
@@ -37,21 +38,21 @@ public class SmPLParserTest {
 	String implicitDotsBegin = "if (" + SmPLJavaDSL.getDotsWithOptionalMatchName() + "(" + SmPLJavaDSL.getDotsWhenExistsName() + "())) {";
 	String implicitDotsEnd = "}";
 
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void testRewriteEmptyString() {
+		assertThrows(RuntimeException.class, () -> {
+			// contract: asking SmPLParser to rewrite the empty string should cause exception
+			rewrite("");
+		});
+	} 
 
-		// contract: asking SmPLParser to rewrite the empty string should cause exception
-
-		rewrite("");
-	}
-
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void testRewriteBad01() {
-
-		// contract: asking SmPLParser to rewrite nonsense string should cause exception
-
-		rewrite("hello");
-	}
+		assertThrows(RuntimeException.class, () -> {
+			// contract: asking SmPLParser to rewrite nonsense string should cause exception
+			rewrite("hello");
+		});
+	} 
 
 	@Test
 	public void testRewriteEmptyRule() {
@@ -284,141 +285,102 @@ public class SmPLParserTest {
 		System.setErr(err);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testLeadingSuperfluousStatementDotsOperatorThrowsException() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			// contract: a superfluous statement dots operator at the top of a patch that does not match on the method header should cause SmPLParser to throw an exception
+			String smpl = "@@ @@\n" + ("...\n" + "\n");
+			disableStderr();
+			try {
+				SmPLParser.parse(smpl);
+			} finally {
+				enableStderr();
+			}
+		});
+	} 
 
-		// contract: a superfluous statement dots operator at the top of a patch that does not match on the method header should cause SmPLParser to throw an exception
-
-		String smpl = "@@ @@\n" +
-					  "...\n" +
-					  "\n";
-
-		disableStderr();
-
-		try {
-			SmPLParser.parse(smpl);
-		} finally {
-			enableStderr();
-		}
-	}
-
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testLeadingSuperfluousOptDotsOperatorThrowsException() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			// contract: a superfluous optdots operator at the top of a patch that does not match on the method header should cause SmPLParser to throw an exception
+			String smpl = "@@ @@\n" + ("<...\n" + "...>\n" + "\n");
+			disableStderr();
+			try {
+				SmPLParser.parse(smpl);
+			} finally {
+				enableStderr();
+			}
+		});
+	} 
 
-		// contract: a superfluous optdots operator at the top of a patch that does not match on the method header should cause SmPLParser to throw an exception
-
-		String smpl = "@@ @@\n" +
-					  "<...\n" +
-					  "...>\n" +
-					  "\n";
-
-		disableStderr();
-
-		try {
-			SmPLParser.parse(smpl);
-		} finally {
-			enableStderr();
-		}
-	}
-
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testConsecutiveStatementtDotsOperatorThrowsException() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			// contract: consecutive statement dots operators should cause SmPLParser to throw an exception
+			String smpl = "@@ @@\n" + ("void m() {\n" + "...\n" + "...\n" + "}\n");
+			disableStderr();
+			try {
+				SmPLParser.parse(smpl);
+			} finally {
+				enableStderr();
+			}
+		});
+	} 
 
-		// contract: consecutive statement dots operators should cause SmPLParser to throw an exception
-
-		String smpl = "@@ @@\n" +
-					  "void m() {\n" +
-					  "...\n" +
-					  "...\n" +
-					  "}\n";
-
-		disableStderr();
-
-		try {
-			SmPLParser.parse(smpl);
-		} finally {
-			enableStderr();
-		}
-	}
-
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testStatementDotsInDisjunctionThrowsException() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			// contract: statement dots in a pattern disjunction should cause SmPLParser to throw an exception
+			String smpl = "@@ @@\n" + ("(\n" + "a()\n" + "|\n" + "...\n" + ")\n");
+			disableStderr();
+			try {
+				SmPLParser.parse(smpl);
+			} finally {
+				enableStderr();
+			}
+		});
+	} 
 
-		// contract: statement dots in a pattern disjunction should cause SmPLParser to throw an exception
-
-		String smpl = "@@ @@\n" +
-					  "(\n" +
-					  "a()\n" +
-					  "|\n" +
-					  "...\n" +
-					  ")\n";
-
-		disableStderr();
-
-		try {
-			SmPLParser.parse(smpl);
-		} finally {
-			enableStderr();
-		}
-	}
-
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testOptDotsInDisjunctionThrowsException() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			// contract: an optdots block in a pattern disjunction should cause SmPLParser to throw an exception
+			String smpl = "@@ @@\n" + ("(\n" + "a()\n" + "|\n" + "<...\n" + "b();\n" + "...>\n" + ")\n");
+			disableStderr();
+			try {
+				SmPLParser.parse(smpl);
+			} finally {
+				enableStderr();
+			}
+		});
+	} 
 
-		// contract: an optdots block in a pattern disjunction should cause SmPLParser to throw an exception
-
-		String smpl = "@@ @@\n" +
-					  "(\n" +
-					  "a()\n" +
-					  "|\n" +
-					  "<...\n" +
-					  "b();\n" +
-					  "...>\n" +
-					  ")\n";
-
-		disableStderr();
-
-		try {
-			SmPLParser.parse(smpl);
-		} finally {
-			enableStderr();
-		}
-	}
-
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testStatementDotsInAdditionThrowsException() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			// contract: a statement dots operator present in an addition should cause SmPLParser to throw an exception
+			String smpl = "@@ @@\n" + ("anchor();\n" + "+ ... when any\n");
+			disableStderr();
+			try {
+				SmPLParser.parse(smpl);
+			} finally {
+				enableStderr();
+			}
+		});
+	} 
 
-		// contract: a statement dots operator present in an addition should cause SmPLParser to throw an exception
-
-		String smpl = "@@ @@\n" +
-					  "anchor();\n" +
-					  "+ ... when any\n";
-
-		disableStderr();
-
-		try {
-			SmPLParser.parse(smpl);
-		} finally {
-			enableStderr();
-		}
-	}
-
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testArgumentDotsInAdditionThrowsException() {
-
-		// contract: a statement dots operator present in an addition should cause SmPLParser to throw an exception
-
-		String smpl = "@@ @@\n" +
-					  "anchor();\n" +
-					  "+ Arrays.asList(1,2,...);\n";
-
-		disableStderr();
-
-		try {
-			SmPLParser.parse(smpl);
-		} finally {
-			enableStderr();
-		}
-	}
+		assertThrows(IllegalArgumentException.class, () -> {
+			// contract: a statement dots operator present in an addition should cause SmPLParser to throw an exception
+			String smpl = "@@ @@\n" + ("anchor();\n" + "+ Arrays.asList(1,2,...);\n");
+			disableStderr();
+			try {
+				SmPLParser.parse(smpl);
+			} finally {
+				enableStderr();
+			}
+		});
+	} 
 }
 

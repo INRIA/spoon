@@ -16,7 +16,6 @@
  */
 package spoon.test.comment;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -79,19 +78,20 @@ import spoon.test.comment.testclasses.CommentsOnStatements;
 import spoon.test.comment.testclasses.InlineComment;
 import spoon.test.comment.testclasses.JavaDocComment;
 import spoon.test.comment.testclasses.JavaDocEmptyCommentAndTags;
+import spoon.test.comment.testclasses.JavaDocWithLink;
 import spoon.test.comment.testclasses.OtherJavaDoc;
 import spoon.test.comment.testclasses.TestClassWithComments;
 import spoon.test.comment.testclasses.WildComments;
 import spoon.test.comment.testclasses.WindowsEOL;
 import spoon.testing.utils.LineSeperatorExtension;
-import spoon.test.comment.testclasses.JavaDocWithLink;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -101,9 +101,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
 
 
@@ -890,7 +890,7 @@ public class CommentTest {
 		launcher.buildModel();
 
 		StringBuffer codeElementsDocumentationPage = new StringBuffer();
-		codeElementsDocumentationPage.append(IOUtils.toString(new FileReader("doc/code_elements_header.md")));
+		codeElementsDocumentationPage.append(Files.readString(Path.of("doc/code_elements_header.md"), StandardCharsets.UTF_8));
 		codeElementsDocumentationPage.append("\n\n");
 		launcher.getModel().getElements(new TypeFilter<>(CtInterface.class)).stream().forEach(x -> {
 
@@ -970,10 +970,12 @@ public class CommentTest {
 		}
 		);
 
+		String actual = codeElementsDocumentationPage.toString();
 		try {
-			assertEquals(IOUtils.toString(new FileReader("doc/code_elements.md")), codeElementsDocumentationPage.toString(), "doc outdated, please commit doc/code_elements.md");
+			String expected = Files.readString(Path.of("doc/code_elements.md"), StandardCharsets.UTF_8);
+			assertEquals(expected, actual, "doc outdated, please commit doc/code_elements.md");
 		} finally {
-			IOUtils.write(codeElementsDocumentationPage.toString(), new FileOutputStream("doc/code_elements.md"));
+			Files.writeString(Path.of("doc/code_elements.md"), actual, StandardCharsets.UTF_8);
 		}
 	}
 

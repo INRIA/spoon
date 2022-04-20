@@ -16,7 +16,11 @@
  */
 package spoon.test.delete;
 
-import org.junit.Test;
+
+import java.lang.annotation.Annotation;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtIf;
@@ -33,13 +37,10 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.delete.testclasses.Adobada;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class DeleteTest {

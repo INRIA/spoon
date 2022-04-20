@@ -16,50 +16,49 @@
  */
 package spoon.test.interfaces;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-
-import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
-import spoon.Launcher;
-import spoon.SpoonModelBuilder;
-import spoon.reflect.CtModel;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.factory.Factory;
-import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.SpoonTestHelpers;
-import spoon.test.interfaces.testclasses.ExtendsDefaultMethodInterface;
-import spoon.test.interfaces.testclasses.ExtendsStaticMethodInterface;
-import spoon.test.interfaces.testclasses.InterfaceWithDefaultMethods;
-import spoon.test.interfaces.testclasses.RedefinesDefaultMethodInterface;
 import spoon.test.interfaces.testclasses.RedefinesStaticMethodInterface;
+import spoon.SpoonModelBuilder;
+import spoon.reflect.factory.Factory;
+import spoon.test.interfaces.testclasses.RedefinesDefaultMethodInterface;
+import spoon.reflect.code.CtStatement;
+import spoon.test.interfaces.testclasses.InterfaceWithDefaultMethods;
+import spoon.reflect.declaration.CtInterface;
+import spoon.test.interfaces.testclasses.ExtendsStaticMethodInterface;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import spoon.support.reflect.CtExtendedModifier;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.code.CtBlock;
+import spoon.test.interfaces.testclasses.ExtendsDefaultMethodInterface;
+import spoon.Launcher;
+import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.Collection;
+import java.io.File;
 
+import static spoon.test.SpoonTestHelpers.contentEquals;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static spoon.test.SpoonTestHelpers.contentEquals;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class InterfaceTest {
 
 	private Factory factory;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		final File testDirectory = new File("./src/test/java/spoon/test/interfaces/testclasses/");
 
@@ -78,7 +77,7 @@ public class InterfaceTest {
 		final CtInterface<?> ctInterface = (CtInterface<?>) factory.Type().get(InterfaceWithDefaultMethods.class);
 
 		final CtMethod<?> ctMethod = ctInterface.getMethodsByName("getZonedDateTime").get(0);
-		assertTrue("The method in the interface must to be default", ctMethod.isDefaultMethod());
+		assertTrue(ctMethod.isDefaultMethod(), "The method in the interface must to be default");
 
 		// contract: the toString does not show the implicit modifiers (here "public")
 		final String expected =
@@ -86,7 +85,7 @@ public class InterfaceTest {
 						+ System.lineSeparator()
 						+ "    return java.time.ZonedDateTime.of(getLocalDateTime(), spoon.test.interfaces.testclasses.InterfaceWithDefaultMethods.getZoneId(zoneString));"
 						+ System.lineSeparator() + "}";
-		assertEquals("The default method must to be well printed", expected, ctMethod.toString());
+		assertEquals(expected, ctMethod.toString(), "The default method must to be well printed");
 	}
 
 	@Test
@@ -94,55 +93,55 @@ public class InterfaceTest {
 		final CtInterface<?> ctInterface = (CtInterface<?>) factory.Type().get(Consumer.class);
 
 		final CtMethod<?> ctMethod = ctInterface.getMethodsByName("andThen").get(0);
-		assertTrue("The method in the interface must to be default", ctMethod.isDefaultMethod());
+		assertTrue(ctMethod.isDefaultMethod(), "The method in the interface must to be default");
 	}
 
 	@Test
 	public void testExtendsDefaultMethodInSubInterface() {
 		final CtInterface<?> ctInterface = (CtInterface<?>) factory.Type().get(ExtendsDefaultMethodInterface.class);
 
-		assertEquals("Sub interface must have only one method in its interface", 1, ctInterface.getMethods().size());
-		assertEquals("Sub interface must have 6 methods in its interface and its super interfaces", 6, ctInterface.getAllMethods().size());
+		assertEquals(1, ctInterface.getMethods().size(), "Sub interface must have only one method in its interface");
+		assertEquals(6, ctInterface.getAllMethods().size(), "Sub interface must have 6 methods in its interface and its super interfaces");
 
 		final CtMethod<?> getZonedDateTimeMethod = ctInterface.getMethodsByName("getZonedDateTime").get(0);
-		assertTrue("Method in the sub interface must be a default method", getZonedDateTimeMethod.isDefaultMethod());
-		assertSame("Interface of the default method must be the sub interface", ExtendsDefaultMethodInterface.class, getZonedDateTimeMethod.getDeclaringType().getActualClass());
+		assertTrue(getZonedDateTimeMethod.isDefaultMethod(), "Method in the sub interface must be a default method");
+		assertSame(ExtendsDefaultMethodInterface.class, getZonedDateTimeMethod.getDeclaringType().getActualClass(), "Interface of the default method must be the sub interface");
 	}
 
 	@Test
 	public void testRedefinesDefaultMethodInSubInterface() {
 		final CtInterface<?> ctInterface = (CtInterface<?>) factory.Type().get(RedefinesDefaultMethodInterface.class);
 
-		assertEquals("Sub interface must have only one method in its interface", 1, ctInterface.getMethods().size());
-		assertEquals("Sub interface must have 6 methods in its interface and its super interfaces", 6, ctInterface.getAllMethods().size());
+		assertEquals(1, ctInterface.getMethods().size(), "Sub interface must have only one method in its interface");
+		assertEquals(6, ctInterface.getAllMethods().size(), "Sub interface must have 6 methods in its interface and its super interfaces");
 
 		final CtMethod<?> getZonedDateTimeMethod = ctInterface.getMethodsByName("getZonedDateTime").get(0);
-		assertFalse("Method in the sub interface mustn't be a default method", getZonedDateTimeMethod.isDefaultMethod());
-		assertSame("Interface of the default method must be the sub interface", RedefinesDefaultMethodInterface.class, getZonedDateTimeMethod.getDeclaringType().getActualClass());
+		assertFalse(getZonedDateTimeMethod.isDefaultMethod(), "Method in the sub interface mustn't be a default method");
+		assertSame(RedefinesDefaultMethodInterface.class, getZonedDateTimeMethod.getDeclaringType().getActualClass(), "Interface of the default method must be the sub interface");
 	}
 
 	@Test
 	public void testExtendsStaticMethodInSubInterface() {
 		final CtInterface<?> ctInterface = (CtInterface<?>) factory.Type().get(ExtendsStaticMethodInterface.class);
 
-		assertEquals("Sub interface must have only one method in its interface", 1, ctInterface.getMethods().size());
-		assertEquals("Sub interface must have 6 methods in its interface and its super interfaces", 6, ctInterface.getAllMethods().size());
+		assertEquals(1, ctInterface.getMethods().size(), "Sub interface must have only one method in its interface");
+		assertEquals(6, ctInterface.getAllMethods().size(), "Sub interface must have 6 methods in its interface and its super interfaces");
 
 		final CtMethod<?> getZoneIdMethod = ctInterface.getMethodsByName("getZoneId").get(0);
-		assertTrue("Method in the sub interface must be a static method", getZoneIdMethod.getModifiers().contains(ModifierKind.STATIC));
-		assertSame("Interface of the static method must be the sub interface", ExtendsStaticMethodInterface.class, getZoneIdMethod.getDeclaringType().getActualClass());
+		assertTrue(getZoneIdMethod.getModifiers().contains(ModifierKind.STATIC), "Method in the sub interface must be a static method");
+		assertSame(ExtendsStaticMethodInterface.class, getZoneIdMethod.getDeclaringType().getActualClass(), "Interface of the static method must be the sub interface");
 	}
 
 	@Test
 	public void testRedefinesStaticMethodInSubInterface() {
 		final CtInterface<?> ctInterface = (CtInterface<?>) factory.Type().get(RedefinesStaticMethodInterface.class);
 
-		assertEquals("Sub interface must have only one method in its interface", 1, ctInterface.getMethods().size());
-		assertEquals("Sub interface must have 6+12(from java.lang.Object) methods in its interface and its super interfaces", 6, ctInterface.getAllMethods().size());
+		assertEquals(1, ctInterface.getMethods().size(), "Sub interface must have only one method in its interface");
+		assertEquals(6, ctInterface.getAllMethods().size(), "Sub interface must have 6+12(from java.lang.Object) methods in its interface and its super interfaces");
 
 		final CtMethod<?> getZoneIdMethod = ctInterface.getMethodsByName("getZoneId").get(0);
-		assertFalse("Method in the sub interface mustn't be a static method", getZoneIdMethod.getModifiers().contains(ModifierKind.STATIC));
-		assertSame("Interface of the static method must be the sub interface", RedefinesStaticMethodInterface.class, getZoneIdMethod.getDeclaringType().getActualClass());
+		assertFalse(getZoneIdMethod.getModifiers().contains(ModifierKind.STATIC), "Method in the sub interface mustn't be a static method");
+		assertSame(RedefinesStaticMethodInterface.class, getZoneIdMethod.getDeclaringType().getActualClass(), "Interface of the static method must be the sub interface");
 	}
 
 	@org.junit.jupiter.api.Test
@@ -201,15 +200,13 @@ public class InterfaceTest {
 		assertEquals(4, types.size());
 
 		for (CtType<?> type : types) {
-			assertTrue("Nested type " + type.getQualifiedName() + " is not public", type.isPublic());
+			assertTrue(type.isPublic(), "Nested type " + type.getQualifiedName() + " is not public");
 			CtExtendedModifier modifier = type.getExtendedModifiers()
 					.stream()
 					.filter(it -> it.getKind() == ModifierKind.PUBLIC)
 					.findFirst()
 					.get();
-			assertTrue(
-					"nested type " + type.getQualifiedName() + " has explicit modifier",
-					modifier.isImplicit()
+			assertTrue(modifier.isImplicit(), "nested type " + type.getQualifiedName() + " has explicit modifier"
 			);
 		}
 	}
@@ -231,15 +228,13 @@ public class InterfaceTest {
 		assertEquals(4, types.size());
 
 		for (CtType<?> type : types) {
-			assertTrue("Nested type " + type.getQualifiedName() + " is not static", type.isStatic());
+			assertTrue(type.isStatic(), "Nested type " + type.getQualifiedName() + " is not static");
 			CtExtendedModifier modifier = type.getExtendedModifiers()
 					.stream()
 					.filter(it -> it.getKind() == ModifierKind.STATIC)
 					.findFirst()
 					.get();
-			assertTrue(
-					"nested type " + type.getQualifiedName() + " has explicit modifier",
-					modifier.isImplicit()
+			assertTrue(modifier.isImplicit(), "nested type " + type.getQualifiedName() + " has explicit modifier"
 			);
 		}
 	}
@@ -252,10 +247,10 @@ public class InterfaceTest {
 		CtClass<?> nestedClass = factory.Class().create("foo.Bar$Inner");
 		ctInterface.addNestedType(nestedClass);
 
-		assertTrue("Class wasn't made public", nestedClass.isPublic());
+		assertTrue(nestedClass.isPublic(), "Class wasn't made public");
 		ctInterface.removeNestedType(nestedClass);
 
-		assertFalse("public modifier wasn't removed", nestedClass.isPublic());
+		assertFalse(nestedClass.isPublic(), "public modifier wasn't removed");
 	}
 
 	@Test
@@ -266,10 +261,10 @@ public class InterfaceTest {
 		CtClass<?> nestedClass = factory.Class().create("foo.Bar$Inner");
 		ctInterface.addNestedType(nestedClass);
 
-		assertTrue("Class wasn't made static", nestedClass.isStatic());
+		assertTrue(nestedClass.isStatic(), "Class wasn't made static");
 		ctInterface.removeNestedType(nestedClass);
 
-		assertFalse("static modifier wasn't removed", nestedClass.isStatic());
+		assertFalse(nestedClass.isStatic(), "static modifier wasn't removed");
 	}
 
 }

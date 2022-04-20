@@ -43,7 +43,9 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -122,6 +124,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private transient SpoonProgress spoonProgress = new SpoonProgress() { /*anonymous class with empty methods*/ };
 
 	private CompressionType compressionType = CompressionType.GZIP;
+
+	private boolean useLegacyTypeAdaption;
 
 	private boolean ignoreDuplicateDeclarations = false;
 
@@ -418,7 +422,7 @@ private transient  ClassLoader inputClassloader;
 				if (onlyFileURLs) {
 					List<String> classpath = new ArrayList<>();
 					for (URL url : urls) {
-						classpath.add(url.getPath());
+						classpath.add(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8));
 					}
 					setSourceClasspath(classpath.toArray(new String[0]));
 				} else {
@@ -716,6 +720,18 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public void setPrettyPrinterCreator(Supplier<PrettyPrinter> creator) {
 		this.prettyPrinterCreator = creator;
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public boolean useLegacyTypeAdaption() {
+		return useLegacyTypeAdaption;
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public void setUseLegacyTypeAdaption(boolean useLegacyTypeAdaption) {
+		this.useLegacyTypeAdaption = useLegacyTypeAdaption;
 	}
 
 	@Override

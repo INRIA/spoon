@@ -23,6 +23,7 @@
 package spoon.smpl;
 
 import fr.inria.controlflow.ControlFlowNode;
+import java.util.*;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -32,11 +33,10 @@ import spoon.smpl.pattern.PatternBuilder;
 import spoon.smpl.pattern.PatternNode;
 
 import java.lang.reflect.Field;
-import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestUtils {
 	public static void resetControlFlowNodeCounter() {

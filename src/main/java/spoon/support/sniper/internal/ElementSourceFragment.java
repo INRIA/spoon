@@ -7,6 +7,7 @@
  */
 package spoon.support.sniper.internal;
 
+
 import spoon.SpoonException;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtLiteral;
@@ -411,7 +412,7 @@ public class ElementSourceFragment implements SourceFragment {
 					//we have found exact match
 					if (element != null && getElement() != element) {
 						if (firstChild == null) {
-							throw new SpoonException("There is no source fragment for element " + element.toString() + ". There is one for class " + getElement().toString());
+							throw new SpoonException("There is no source fragment for element " + element + ". There is one for class " + getElement().toString());
 						}
 						return firstChild.getSourceFragmentOf(element, start, end);
 					}
@@ -693,14 +694,14 @@ public class ElementSourceFragment implements SourceFragment {
 			consumer.accept(new TokenSourceFragment(buff.toString(), TokenType.SPACE));
 			return;
 		}
-		char[] str = new char[buff.length()];
-		buff.getChars(0, buff.length(), str, 0);
+		char[] charArray = new char[buff.length()];
+		buff.getChars(0, buff.length(), charArray, 0);
 		int off = 0;
-		while (off < str.length) {
+		while (off < charArray.length) {
 			//detect java identifier or keyword
-			int lenOfIdentifier = detectJavaIdentifier(str, off);
+			int lenOfIdentifier = detectJavaIdentifier(charArray, off);
 			if (lenOfIdentifier > 0) {
-				String identifier = new String(str, off, lenOfIdentifier);
+				String identifier = new String(charArray, off, lenOfIdentifier);
 				if (javaKeywords.contains(identifier)) {
 					//it is a java keyword
 					consumer.accept(new TokenSourceFragment(identifier, TokenType.KEYWORD));
@@ -714,13 +715,13 @@ public class ElementSourceFragment implements SourceFragment {
 			//detect longest match in matchers
 			StringMatcher longestMatcher = null;
 			for (StringMatcher strMatcher : matchers) {
-				if (strMatcher.isMatch(str, off)) {
+				if (strMatcher.isMatch(charArray, off)) {
 					longestMatcher = strMatcher.getLonger(longestMatcher);
 				}
 			}
 			// nothing has matched, best effort token
 			if (longestMatcher == null) {
-				consumer.accept(new TokenSourceFragment(str.toString(), TokenType.CODE_SNIPPET));
+				consumer.accept(new TokenSourceFragment(Arrays.toString(charArray), TokenType.CODE_SNIPPET));
 				return;
 			}
 			consumer.accept(new TokenSourceFragment(longestMatcher.toString(), longestMatcher.getType()));

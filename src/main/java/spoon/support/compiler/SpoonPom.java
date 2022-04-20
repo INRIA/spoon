@@ -7,7 +7,6 @@
  */
 package spoon.support.compiler;
 
-import org.slf4j.Logger;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.BuildBase;
 import org.apache.maven.model.Model;
@@ -21,6 +20,7 @@ import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.slf4j.Logger;
 import spoon.Launcher;
 import spoon.MavenLauncher;
 import spoon.SpoonException;
@@ -503,7 +503,7 @@ public class SpoonPom implements SpoonResource {
 					sb.append(line);
 					line = br.readLine();
 				}
-				if (!"".equals(sb.toString())) {
+				if (!sb.toString().isEmpty()) {
 					String[] classpath = sb.toString().split(File.pathSeparator);
 					for (String cpe : classpath) {
 						if (!classpathElements.contains(cpe)) {

@@ -52,6 +52,7 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtRHSReceiver;
+import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -282,6 +283,14 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans an abstract reference.
 	 */
 	public void scanCtReference(CtReference reference) {
+
+	}
+
+	/**
+	 * Scans an abstract resource in try-with-resource statement.
+	 * @param resource The resource
+	 */
+	public void scanCtResource(CtResource<?> resource) {
 
 	}
 
@@ -697,6 +706,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVariable(e);
 		scanCtCodeElement(e);
 		scanCtNamedElement(e);
+		scanCtResource(e);
 		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtModifiable(e);

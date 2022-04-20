@@ -16,7 +16,12 @@
  */
 package spoon.test.fieldaccesses;
 
-import org.junit.Test;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -42,28 +47,24 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.ImportConflictDetector;
+import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.fieldaccesses.testclasses.B;
 import spoon.test.fieldaccesses.testclasses.Kuu;
 import spoon.test.fieldaccesses.testclasses.Mouse;
+import spoon.test.fieldaccesses.testclasses.MyClass;
 import spoon.test.fieldaccesses.testclasses.Panini;
 import spoon.test.fieldaccesses.testclasses.Pozole;
 import spoon.test.fieldaccesses.testclasses.Tacos;
-import spoon.test.fieldaccesses.testclasses.MyClass;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Logger;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -166,9 +167,9 @@ public class FieldAccessTest {
 		assertEquals("BUG20160112", type.getSimpleName());
 		CtOperatorAssignment<?, ?> ass = type.getElements(
 				new TypeFilter<CtOperatorAssignment<?, ?>>(CtOperatorAssignment.class)).get(0);
-		assertNotNull("z+=a.us", ass);
+		assertNotNull(ass, "z+=a.us");
 		CtExpression<?> righthand = ass.getAssignment();
-		assertTrue("a.us should be CtFieldRead", righthand instanceof CtFieldRead);
+		assertTrue(righthand instanceof CtFieldRead, "a.us should be CtFieldRead");
 	}
 
 	@Test

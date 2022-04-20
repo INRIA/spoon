@@ -22,14 +22,13 @@
 
 package spoon.smpl;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static spoon.smpl.TestUtils.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static org.junit.Assert.assertEquals;
-
-import static spoon.smpl.TestUtils.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EnvironmentTest {
 	@Test

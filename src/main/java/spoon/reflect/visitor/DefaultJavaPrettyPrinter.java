@@ -120,6 +120,7 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.printer.CommentOffset;
+import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.util.ModelList;
 
 import java.lang.annotation.Annotation;
@@ -781,9 +782,28 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.writeComment(f, CommentOffset.BEFORE);
 		elementPrinterHelper.visitCtNamedElement(f, sourceCompilationUnit);
 		elementPrinterHelper.writeModifiers(f);
-		scan(f.getType());
+		if (f.getType() instanceof CtArrayTypeReference<?>) {
+			try (Writable unused = context.modify()
+					.skipArray(shouldSquareBracketBeSkipped(
+							(CtArrayTypeReference<?>) f.getType(),
+							CtArrayTypeReferenceImpl.DeclarationKind.TYPE))) {
+				scan(f.getType());
+			}
+		} else {
+			scan(f.getType());
+		}
+
 		printer.writeSpace();
 		printer.writeIdentifier(f.getSimpleName());
+
+		if (f.getType() instanceof CtArrayTypeReference<?>) {
+			try (Writable unused = context.modify()
+					.skipArray(shouldSquareBracketBeSkipped(
+							(CtArrayTypeReference<?>) f.getType(),
+							CtArrayTypeReferenceImpl.DeclarationKind.IDENTIFIER))) {
+				printSquareBrackets((CtArrayTypeReference<?>) f.getType());
+			}
+		}
 
 		if (f.getDefaultExpression() != null) {
 			printer.writeSpace().writeOperator("=").writeSpace();
@@ -791,6 +811,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		printer.writeSeparator(";");
 		elementPrinterHelper.writeComment(f, CommentOffset.AFTER);
+	}
+
+	private boolean shouldSquareBracketBeSkipped(
+			CtArrayTypeReference<?> arrayTypeReference,
+			CtArrayTypeReferenceImpl.DeclarationKind declarationStyle) {
+		return ((CtArrayTypeReferenceImpl<?>) arrayTypeReference).getDeclarationKind() != declarationStyle;
+	}
+
+	private void printSquareBrackets(CtArrayTypeReference<?> arrayTypeReference) {
+		if (!context.skipArray()) {
+			for (int i = 0; i < arrayTypeReference.getDimensionCount(); ++i) {
+				printer.writeSeparator("[").writeSeparator("]");
+			}
+		}
 	}
 
 	@Override
@@ -1382,17 +1416,40 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (env.isPreserveLineNumbers()) {
 			getPrinterHelper().adjustStartPosition(localVariable);
 		}
-		if (!context.isNextForVariable()) {
+		if (!context.isNextForVariable()
+				&& !localVariable.isImplicit() // for resources in try-with-resources
+		) {
 			elementPrinterHelper.writeModifiers(localVariable);
 			if (localVariable.isInferred() && this.env.getComplianceLevel() >= 10) {
 				getPrinterTokenWriter().writeKeyword("var");
 			} else {
-				scan(localVariable.getType());
+				if (localVariable.getType() instanceof CtArrayTypeReference<?>) {
+					try (Writable unused = context.modify()
+							.skipArray(
+									shouldSquareBracketBeSkipped(
+											(CtArrayTypeReference<?>) localVariable.getType(),
+											CtArrayTypeReferenceImpl.DeclarationKind.TYPE))) {
+						scan(localVariable.getType());
+					}
+				} else {
+					scan(localVariable.getType());
+				}
 			}
 			printer.writeSpace();
 		}
 		printer.writeIdentifier(localVariable.getSimpleName());
-		if (localVariable.getDefaultExpression() != null) {
+		if (localVariable.getType() instanceof CtArrayTypeReference<?>) {
+			try (Writable unused = context.modify()
+					.skipArray(
+							shouldSquareBracketBeSkipped(
+									(CtArrayTypeReference<?>) localVariable.getType(),
+									CtArrayTypeReferenceImpl.DeclarationKind.IDENTIFIER))) {
+				printSquareBrackets((CtArrayTypeReference<?>) localVariable.getType());
+			}
+		}
+		if (localVariable.getDefaultExpression() != null
+				&& !localVariable.isImplicit() // for resources in try-with-resources
+		) {
 			printer.writeSpace().writeOperator("=").writeSpace();
 			scan(localVariable.getDefaultExpression());
 		}
@@ -1591,10 +1648,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtLambda(CtLambda<T> lambda) {
 		enterCtExpression(lambda);
+		// single parameter lambdas with implicit type can be printed without parantheses
+		if (isSingleParameterWithoutExplicitType(lambda) && !ignoreImplicit) {
+			elementPrinterHelper.printList(lambda.getParameters(), null, false, "", false, false, ",",
+					false, false, "", this::scan);
+		} else {
+			elementPrinterHelper.printList(lambda.getParameters(), null, false, "(", false, false, ",",
+					false, false, ")", this::scan);
+		}
 
-		elementPrinterHelper.printList(lambda.getParameters(),
-			null, false, "(", false, false, ",", false, false, ")",
-			parameter -> scan(parameter));
 		printer.writeSpace();
 		printer.writeSeparator("->");
 		printer.writeSpace();
@@ -1605,6 +1667,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			scan(lambda.getExpression());
 		}
 		exitCtExpression(lambda);
+	}
+
+	private <T> boolean isSingleParameterWithoutExplicitType(CtLambda<T> lambda) {
+		return lambda.getParameters().size() == 1 && (lambda.getParameters().get(0).getType() == null
+				|| lambda.getParameters().get(0).getType().isImplicit());
 	}
 
 	@Override
@@ -1673,8 +1740,21 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			scan(parameter.getType());
 		}
-		printer.writeSpace();
+		// after an implicit type, there is no space because we dont print anything
+		if (isParameterWithImplicitType(parameter) || isNotFirstParameter(parameter)
+				|| ignoreImplicit) {
+			printer.writeSpace();
+		}
 		printer.writeIdentifier(parameter.getSimpleName());
+	}
+
+	private <T> boolean isParameterWithImplicitType(CtParameter<T> parameter) {
+		return parameter.getType() != null && !parameter.getType().isImplicit();
+	}
+
+	private <T> boolean isNotFirstParameter(CtParameter<T> parameter) {
+		return parameter.getParent() != null
+				&& parameter.getParent().getParameters().indexOf(parameter) != 0;
 	}
 
 	@Override

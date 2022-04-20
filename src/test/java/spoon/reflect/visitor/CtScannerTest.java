@@ -16,13 +16,27 @@
  */
 package spoon.reflect.visitor;
 
-import org.junit.Test;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
+import spoon.metamodel.ConceptKind;
 import spoon.metamodel.MMMethod;
 import spoon.metamodel.MMMethodKind;
-import spoon.metamodel.ConceptKind;
-import spoon.metamodel.MetamodelConcept;
 import spoon.metamodel.Metamodel;
+import spoon.metamodel.MetamodelConcept;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.cu.CompilationUnit;
@@ -39,25 +53,12 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.processors.CheckScannerTestProcessor;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class CtScannerTest {
 
@@ -146,7 +147,7 @@ public class CtScannerTest {
 			}
 
 			CtMethod<?> visitMethod = scannerVisitMethodsByName.remove("visit" + leafConcept.getName());
-			assertNotNull("CtScanner#" + "visit" + leafConcept.getName() + "(...) not found", visitMethod);
+			assertNotNull(visitMethod, "CtScanner#" + "visit" + leafConcept.getName() + "(...) not found");
 			Set<String> calledMethods = new HashSet<>();
 			Set<String> checkedMethods = new HashSet<>();
 
@@ -216,7 +217,7 @@ public class CtScannerTest {
 		if (!problems.isEmpty()) {
 			fail(String.join("\n", problems));
 		}
-		assertTrue("not enough checks " + c.nbChecks, c.nbChecks >= 200);
+		assertTrue(c.nbChecks >= 200, "not enough checks " + c.nbChecks);
 	}
 
 	@Test

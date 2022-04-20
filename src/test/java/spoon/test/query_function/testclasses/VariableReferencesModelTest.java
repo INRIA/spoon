@@ -1,13 +1,14 @@
 package spoon.test.query_function.testclasses;
 
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.function.Consumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The main purpose of this test is to be transfomed by Spoon into Spoon model, 
@@ -26,7 +27,11 @@ public class VariableReferencesModelTest {
 				int field = 1;
 				assertTrue(field == 1);
 			}
-			int f1,f2,f3,field = 2,f4;
+			int f1;
+			int f2;
+			int f3;
+			int field = 2;
+			int f4;
 			assertTrue(field == 2);
 		}
 		int field = 3;
@@ -118,7 +123,7 @@ public class VariableReferencesModelTest {
 	
 	@Test
 	public void parameterInLambdaWithBody() {
-		Consumer<Integer> fnc = (field)->{
+		Consumer<Integer> fnc = field->{
 			assertTrue(field == 17);
 		};
 		fnc.accept(17);
@@ -126,7 +131,7 @@ public class VariableReferencesModelTest {
 	
 	@Test
 	public void parameterInLambdaWithExpression() {
-		Consumer<Integer> fnc = (field)->assertTrue(field == 18);
+		Consumer<Integer> fnc = field->assertTrue(field == 18);
 		fnc.accept(18);
 	}
 	

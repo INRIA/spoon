@@ -75,6 +75,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
@@ -107,12 +108,11 @@ public class JDTTreeBuilderHelper {
 	 * @return Qualified name.
 	 */
 	static String createQualifiedTypeName(char[][] typeName) {
-		StringBuilder s = new StringBuilder();
-		for (int i = 0; i < typeName.length - 1; i++) {
-			s.append(CharOperation.charToString(typeName[i])).append(".");
+		StringJoiner joiner = new StringJoiner(".");
+		for (char[] typeNamePart : typeName) {
+			joiner.add(CharOperation.charToString(typeNamePart));
 		}
-		s.append(CharOperation.charToString(typeName[typeName.length - 1]));
-		return s.toString();
+		return joiner.toString();
 	}
 
 	/**

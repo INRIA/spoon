@@ -16,18 +16,19 @@
  */
 package spoon.test.intercession;
 
-import static org.junit.Assert.assertEquals;
-import static spoon.testing.utils.ModelUtils.createFactory;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class RemoveTest {
 

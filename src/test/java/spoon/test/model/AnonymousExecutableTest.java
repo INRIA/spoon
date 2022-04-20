@@ -16,7 +16,7 @@
  */
 package spoon.test.model;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtType;
@@ -24,7 +24,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class AnonymousExecutableTest {

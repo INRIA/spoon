@@ -1,24 +1,21 @@
 package spoon.test.issue3321;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import spoon.Launcher;
+import spoon.test.GitHubIssue;
 import spoon.reflect.cu.SourcePosition;
+import spoon.Launcher;
+import spoon.reflect.factory.Factory;
+import spoon.test.issue3321.testclasses.AnnoUser;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.factory.Factory;
-import spoon.test.GitHubIssue;
-import spoon.test.issue3321.testclasses.AnnoUser;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class AnnotationPositionTest {
 
-	@Ignore("Unresolved Bug")
-	@GitHubIssue(issueNumber = 3358)
-	@Test
+	
+	@GitHubIssue(issueNumber = 3358, fixed = false)
 	public void testUsageOfTypeAnnotationOnParameterInMethod() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);
@@ -71,9 +68,7 @@ public class AnnotationPositionTest {
 	}
 
 
-	@Ignore("UnresolvedBug")
-	@GitHubIssue(issueNumber = 3358)
-	@Test
+	@GitHubIssue(issueNumber = 3358, fixed = false)
 	public void testSneakyAnnotationsOnParameters() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);

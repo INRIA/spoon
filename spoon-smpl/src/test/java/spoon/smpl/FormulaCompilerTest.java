@@ -22,19 +22,19 @@
 
 package spoon.smpl;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.smpl.formula.ExistsVar;
 import spoon.smpl.formula.Formula;
 import spoon.smpl.formula.FormulaScanner;
 import spoon.smpl.formula.Predicate;
+import static spoon.smpl.TestUtils.*;
 
 import java.util.Stack;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
-import static spoon.smpl.TestUtils.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * This suite is intentionally left very sparse as the current idea is that FormulaCompiler

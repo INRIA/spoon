@@ -1,6 +1,6 @@
 package spoon.test.lambda;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
@@ -8,7 +8,7 @@ import spoon.reflect.declaration.CtClass;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class AnonymousInLambdaTest {
 	@Test
@@ -25,7 +25,7 @@ public class AnonymousInLambdaTest {
 
 		cp.classes.forEach(
 				t -> {
-					assertFalse(t.getSimpleName() + " is not good " + t.getPosition(), t.getSimpleName().contains("<unknown>"));
+					assertFalse(t.getSimpleName().contains("<unknown>"), t.getSimpleName() + " is not good " + t.getPosition());
 				}
 		);
 	}

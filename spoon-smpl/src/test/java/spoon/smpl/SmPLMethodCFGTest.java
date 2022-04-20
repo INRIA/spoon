@@ -23,12 +23,11 @@
 package spoon.smpl;
 
 import fr.inria.controlflow.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.support.compiler.VirtualFile;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SmPLMethodCFGTest {

@@ -16,7 +16,11 @@
  */
 package spoon.test.factory;
 
-import org.junit.Test;
+
+import java.lang.reflect.Method;
+import java.nio.file.Paths;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.processing.AbstractProcessor;
@@ -40,16 +44,14 @@ import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.test.SpoonTestHelpers;
 import spoon.test.factory.testclasses.Foo;
 
-import java.lang.reflect.Method;
-import java.nio.file.Paths;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatibleObject;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -274,7 +276,7 @@ public class FactoryTest {
 				argsClass[i] = type.getActualClass();
 				if (!type.isPrimitive()) {
 					// post-condition to be sure that createCompatibleObject works well
-					assertTrue(args[i].getClass().toString() + " != " + argsClass[i].toString(), argsClass[i].isAssignableFrom(args[i].getClass()));
+					assertTrue(argsClass[i].isAssignableFrom(args[i].getClass()), args[i].getClass().toString() + " != " + argsClass[i].toString());
 				}
 			}
 

@@ -16,7 +16,7 @@
  */
 package spoon.test.initializers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
@@ -29,9 +29,9 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.imports.ImportTest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class InitializerTest {
@@ -46,11 +46,6 @@ public class InitializerTest {
 		CtAnonymousExecutable staticBlock = type.getElements(new TypeFilter<>(CtAnonymousExecutable.class)).get(0);
 		assertTrue(staticBlock.getModifiers().contains(ModifierKind.STATIC));
 		assertEquals(1, staticBlock.getBody().getStatements().size());
-
-		// this fails: regression or known bug?
-		// RP: this look OK. Spoon adds the full path
-		// assertEquals("InternalClass.tmp = \"nop\"",
-		// staticBlock.getBody().getStatements().get(0).toString());
 	}
 
 	@Test

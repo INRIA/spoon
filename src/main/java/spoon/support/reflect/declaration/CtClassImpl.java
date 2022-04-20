@@ -178,7 +178,7 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 	@Override
 	public boolean isAnonymous() {
 		// case 1: the java.lang.Class convention
-		if ("".equals(getSimpleName())) {
+		if (getSimpleName().isEmpty()) {
 			return true;
 		}
 		// case 2: the Spoon convention (the number in the class file)

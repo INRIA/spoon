@@ -16,10 +16,8 @@
  */
 package spoon.test.parent;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
@@ -27,11 +25,13 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class TopLevelTypeTest
 {
 	Factory factory;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		Launcher spoon = new Launcher();
 		spoon.setArgs(new String[] {"--output-type", "nooutput" });

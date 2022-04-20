@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
+
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
@@ -126,8 +127,25 @@ public class CtRecordTest {
 		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
 		assertTrue(records.iterator().next().getConstructors().iterator().next().isCompactConstructor());
 		String correctConstructor =
-			"Rational {" + lineSeparator()
+			"public Rational {" + lineSeparator()
 		+	"    int gcd = records.Rational.gcd(num, denom);" + lineSeparator()
+		+	"    num /= gcd;" + lineSeparator()
+		+	"    denom /= gcd;" + lineSeparator()
+		+	"}";
+		assertEquals(correctConstructor, head(head(records).getConstructors()).toString());
+	}
+
+	@Test
+	void testCompactConstructor2() {
+		// contract: compact constructor is printed correctly for a compilable Java file (issue 4377).
+		String code = "src/test/resources/records/CompactConstructor2.java";
+		CtModel model = createModelFromPath(code);
+		assertEquals(1, model.getAllTypes().size());
+		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
+		assertTrue(records.iterator().next().getConstructors().iterator().next().isCompactConstructor());
+		String correctConstructor =
+			"public CompactConstructor2 {" + lineSeparator()
+		+	"    int gcd = records.CompactConstructor2.gcd(num, denom);" + lineSeparator()
 		+	"    num /= gcd;" + lineSeparator()
 		+	"    denom /= gcd;" + lineSeparator()
 		+	"}";

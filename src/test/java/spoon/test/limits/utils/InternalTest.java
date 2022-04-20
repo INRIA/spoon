@@ -16,7 +16,7 @@
  */
 package spoon.test.limits.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.visitor.filter.NamedElementFilter;
@@ -25,8 +25,8 @@ import spoon.test.limits.utils.testclasses.ContainInternalClass;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class InternalTest {

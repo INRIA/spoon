@@ -37,7 +37,7 @@ import static spoon.reflect.path.CtRole.IS_INFERRED;
  * 		type of the variable
  * @see spoon.reflect.declaration.CtExecutable
  */
-public interface CtLocalVariable<T> extends CtStatement, CtVariable<T>, CtRHSReceiver<T> {
+public interface CtLocalVariable<T> extends CtStatement, CtVariable<T>, CtRHSReceiver<T>, CtResource<T> {
 	/*
 	 * (non-Javadoc)
 	 *

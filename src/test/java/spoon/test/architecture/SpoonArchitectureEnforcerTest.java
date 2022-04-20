@@ -16,8 +16,19 @@
  */
 package spoon.test.architecture;
 
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.metamodel.Metamodel;
@@ -27,8 +38,8 @@ import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExecutableReferenceExpression;
-import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
@@ -44,18 +55,9 @@ import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.metamodel.ConceptKind.ABSTRACT;
 
 public class SpoonArchitectureEnforcerTest {
@@ -124,7 +126,7 @@ public class SpoonArchitectureEnforcerTest {
 							CtMethod method = m.clone();
 
 							method.setSimpleName("create" + simpleNameType);
-							assertTrue(method.getSignature() + " (from " + t.getQualifiedName() + ") is not present in the main factory", factoryImpl.hasMethod(method));
+							assertTrue(factoryImpl.hasMethod(method), method.getSignature() + " (from " + t.getQualifiedName() + ") is not present in the main factory");
 							continue;
 						}
 
@@ -140,7 +142,7 @@ public class SpoonArchitectureEnforcerTest {
 						sanityCheck.val++;
 
 						// the core assertion
-						assertTrue(m.getSignature() + " is not present in the main factory", factoryImpl.hasMethod(m));
+						assertTrue(factoryImpl.hasMethod(m), m.getSignature() + " is not present in the main factory");
 					}
 				}
 			}
@@ -259,7 +261,11 @@ public class SpoonArchitectureEnforcerTest {
 				return super.matches(element) && element.getAnnotation(Test.class) != null;
 			}
 		})) {
-			assertTrue("naming contract violated for " + meth.getParent(CtClass.class).getSimpleName(), meth.getParent(CtClass.class).getSimpleName().startsWith("Test") || meth.getParent(CtClass.class).getSimpleName().endsWith("Test"));
+			CtType<Object> topLevelType = meth.getParent(CtClass.class).getTopLevelType();
+			assertTrue(
+					topLevelType.getSimpleName().startsWith("Test")
+							|| topLevelType.getSimpleName().endsWith("Test"),
+					"naming contract violated for " + meth.getParent(CtClass.class).getSimpleName());
 		}
 
 		// contract: the Spoon test suite does not depend on Junit 3 classes and methods
@@ -323,7 +329,7 @@ public class SpoonArchitectureEnforcerTest {
 						&& element.getElements(new TypeFilter<>(CtMethod.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.STATIC));
 			}
 		})) {
-			assertTrue("Utility class " + klass.getQualifiedName() + " is missing private constructor", klass.getElements(new TypeFilter<>(CtConstructor.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.PRIVATE)));
+			assertTrue(klass.getElements(new TypeFilter<>(CtConstructor.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.PRIVATE)), "Utility class " + klass.getQualifiedName() + " is missing private constructor");
 		}
 	}
 
@@ -354,7 +360,7 @@ public class SpoonArchitectureEnforcerTest {
 			}
 		});
 
-		assertTrue("The following methods are missing in " + ctScanner.getSimpleName() + ": \n" + StringUtils.join(missingMethods, "\n"), missingMethods.isEmpty());
+		assertTrue(missingMethods.isEmpty(), "The following methods are missing in " + ctScanner.getSimpleName() + ": \n" + StringUtils.join(missingMethods, "\n"));
 	}
 
 	@Test
@@ -395,6 +401,7 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.reflect.visitor.printer");
 		officialPackages.add("spoon.reflect.visitor");
 		officialPackages.add("spoon.reflect");
+		officialPackages.add("spoon.support.adaption");
 		officialPackages.add("spoon.support.comparator");
 		officialPackages.add("spoon.support.compiler.jdt");
 		officialPackages.add("spoon.support.compiler");
@@ -500,7 +507,7 @@ public class SpoonArchitectureEnforcerTest {
 				.filter(method -> lookUp.contains(method))
 				.collect(Collectors.toList());
 		methods.removeAll(methodsWithInvocation);
-		assertEquals("Some methods have no invocation", Collections.emptyList(), methods);
+		assertEquals(Collections.emptyList(), methods, "Some methods have no invocation");
 	}
 
 
@@ -524,6 +531,6 @@ public class SpoonArchitectureEnforcerTest {
 				.filter(field -> lookUp.contains(field))
 		.collect(Collectors.toList());
 		fields.removeAll(fieldsWithRead);
-		assertEquals("Some Fields have no read/write", Collections.emptyList(), fields);
+		assertEquals(Collections.emptyList(), fields, "Some Fields have no read/write");
 	}
 }

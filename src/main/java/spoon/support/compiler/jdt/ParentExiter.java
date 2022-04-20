@@ -58,6 +58,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSuperAccess;
@@ -72,6 +73,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.cu.CompilationUnit;
@@ -101,9 +103,11 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -120,7 +124,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	private CtElement child;
 	private ASTNode childJDT;
-	private ASTNode parentJDT;
+	private ASTPair parentPair;
 	private Map<CtTypedElement<?>, List<CtAnnotation>> annotationsMap = new HashMap<>();
 
 	/**
@@ -130,16 +134,16 @@ public class ParentExiter extends CtInheritanceScanner {
 		this.jdtTreeBuilder = jdtTreeBuilder;
 	}
 
+	public void exitParent(ASTPair pair) {
+		this.parentPair = pair;
+		scan(pair.element);
+	}
 	public void setChild(CtElement child) {
 		this.child = child;
 	}
 
 	public void setChild(ASTNode child) {
 		this.childJDT = child;
-	}
-
-	public void setParent(ASTNode parent) {
-		this.parentJDT = parent;
 	}
 
 	@Override
@@ -653,7 +657,7 @@ public class ParentExiter extends CtInheritanceScanner {
 				child.setPosition(this.child.getPosition());
 			}
 
-			IfStatement ifJDT = (IfStatement) this.parentJDT;
+			IfStatement ifJDT = (IfStatement) this.parentPair.node;
 			if (ifJDT.thenStatement == this.childJDT) {
 				//we are visiting `then` of `if`
 				ifElement.setThenStatement(child);
@@ -973,7 +977,30 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
 		if (child instanceof CtLocalVariable) {
-			tryWithResource.addResource((CtLocalVariable<?>) child);
+			// normal, happy path of declaring a new variable
+			tryWithResource.addResource((CtLocalVariable) child);
+		} else if (child instanceof CtVariableRead) {
+			// special case of the resource being declared before
+			final CtVariableReference<?> variableRef = ((CtVariableRead<?>) child).getVariable();
+			if (variableRef.getDeclaration() != null) {
+				// getDeclaration works
+				tryWithResource.addResource((CtResource<?>) variableRef.getDeclaration().clone().setImplicit(true));
+			} else {
+				// we have to find it manually
+				for (ASTPair pair: this.jdtTreeBuilder.getContextBuilder().stack) {
+					final List<CtLocalVariable> variables = pair.element.getElements(new TypeFilter<>(CtLocalVariable.class));
+					for (CtLocalVariable v: variables) {
+						if (v.getSimpleName().equals(variableRef.getSimpleName())) {
+							// we found the resource
+							// we clone it in order to comply with the contract of being a tree
+							final CtLocalVariable clone = v.clone();
+							clone.setImplicit(true);
+							tryWithResource.addResource(clone);
+							break;
+						}
+					}
+				}
+			}
 		}
 		super.visitCtTryWithResource(tryWithResource);
 	}

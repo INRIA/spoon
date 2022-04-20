@@ -7,7 +7,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
@@ -51,9 +50,11 @@ import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -506,32 +507,22 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	protected void generateProcessedSourceFilesUsingCUs() {
 
-		File outputDirectory = getSourceOutputDirectory();
+		File outputDirectoryFile = getSourceOutputDirectory();
 
 		factory.getEnvironment().debugMessage("Generating source using compilation units...");
 		// Check output directory
-		if (outputDirectory == null) {
+		if (outputDirectoryFile == null) {
 			throw new RuntimeException("You should set output directory before generating source files");
 		}
-		// Create spooned directory
-		if (outputDirectory.isFile()) {
+		Path outputDirectory = outputDirectoryFile.toPath().toAbsolutePath().normalize();
+		if (Files.exists(outputDirectory) && !Files.isDirectory(outputDirectory)) {
 			throw new RuntimeException("Output must be a directory");
 		}
-		if (!outputDirectory.exists()) {
-			if (!outputDirectory.mkdirs()) {
-				throw new RuntimeException("Error creating output directory");
-			}
-		}
-
-		try {
-			outputDirectory = outputDirectory.getCanonicalFile();
-		} catch (IOException e1) {
-			throw new SpoonException(e1);
-		}
+		// Create spooned directory
+		createDirectories(outputDirectory);
 
 		factory.getEnvironment().debugMessage("Generating source files to: " + outputDirectory);
 
-		List<File> printedFiles = new ArrayList<>();
 		for (spoon.reflect.cu.CompilationUnit cu : factory.CompilationUnit().getMap().values()) {
 
 			if (cu.getDeclaredTypes().isEmpty()) { // case of package-info
@@ -543,41 +534,41 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			CtPackage pack = element.getPackage();
 
 			// create package directory
-			File packageDir;
-			if (pack.isUnnamedPackage()) {
-				packageDir = new File(outputDirectory.getAbsolutePath());
-			} else {
-				// Create current package directory
-				packageDir = new File(outputDirectory.getAbsolutePath() + File.separatorChar + pack.getQualifiedName().replace('.', File.separatorChar));
-			}
-			if (!packageDir.exists()) {
-				if (!packageDir.mkdirs()) {
-					throw new RuntimeException("Error creating output directory");
-				}
-			}
+			Path packageDir = getPackageDir(outputDirectory, pack);
+			createDirectories(packageDir);
 
 			// print type
-			try {
-				File file = new File(packageDir.getAbsolutePath() + File.separatorChar + element.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
-				file.createNewFile();
-
-				// the path must be given relatively to to the working directory
-				try (InputStream is = getCompilationUnitInputStream(cu);
-					FileOutputStream outFile = new FileOutputStream(file)) {
-
-					IOUtils.copy(is, outFile);
-				}
-
-				if (!printedFiles.contains(file)) {
-					printedFiles.add(file);
-				}
-
+			String fileName = element.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION;
+			Path file = packageDir.resolve(fileName);
+			// order is important here, as the new file needs to exist so the CompilationUnit
+			// can fetch its (still empty) source code. See CtCompilationUnitImpl#getOriginalSourceCode
+			// (this will be called by getCompilationUnitInputStream(cu))
+			try (OutputStream outFile = Files.newOutputStream(file);
+					InputStream is = getCompilationUnitInputStream(cu)) {
+				is.transferTo(outFile);
+			} catch (RuntimeException e) {
+				throw e; // rethrow directly
 			} catch (Exception e) {
-				if (e instanceof RuntimeException) {
-					throw (RuntimeException) e;
-				}
 				throw new SpoonException(e);
 			}
+		}
+	}
+
+	private Path getPackageDir(Path outputDirectory, CtPackage pack) {
+		if (pack.isUnnamedPackage()) {
+			return outputDirectory;
+		} else {
+			// Create current package directory
+			String packagePath = pack.getQualifiedName().replace('.', File.separatorChar);
+			return outputDirectory.resolve(packagePath);
+		}
+	}
+
+	private void createDirectories(Path outputDirectory) {
+		try {
+			Files.createDirectories(outputDirectory);
+		} catch (IOException e) {
+			throw new RuntimeException("Error creating output directory", e);
 		}
 	}
 

@@ -16,8 +16,8 @@
  */
 package spoon.test.imports;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
@@ -67,7 +67,6 @@ import spoon.test.imports.testclasses.A;
 import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.Pozole;
 import spoon.test.imports.testclasses.Reflection;
-import spoon.test.imports.testclasses.StaticNoOrdered;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.ToBeModified;
@@ -76,11 +75,11 @@ import spoon.testing.utils.ModelUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -601,7 +600,7 @@ public class ImportTest {
 		//toString prints fully qualified names
 		assertEquals("private class WrappedListIterator extends spoon.test.imports.testclasses2.AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",mmwli.toString());
 		//pretty printer prints optimized names
-		assertEquals("private class WrappedListIterator extends WrappedCollection.WrappedIterator {}",printByPrinter(mmwli));
+		assertEquals("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",printByPrinter(mmwli));
 		assertTrue(mm.toString().contains("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator"));
 
 		CtClass<?> mmwliother = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$OtherWrappedList$WrappedListIterator");
@@ -1023,10 +1022,10 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testmportInCu() throws  Exception{
+	public void testmportInCu(@TempDir Path tempDir) throws  Exception{
 		// contract: auto-import works for compilation units with multiple classes
 		String[] options = {"--output-type", "compilationunits",
-				"--output", "target/testmportInCu", "--with-imports"};
+				"--output", tempDir.toString(), "--with-imports"};
 
 		String path = "spoon/test/prettyprinter/testclasses/A.java";
 
@@ -1035,8 +1034,8 @@ public class ImportTest {
 		launcher.addInputResource("./src/test/java/"+path);
 		launcher.run();
 
-		File output = new File("target/testmportInCu/"+path);
-		String code = IOUtils.toString(new FileReader(output));
+		Path output = tempDir.resolve(path);
+		String code = Files.readString(output);
 
 		// the ArrayList is imported and used in short mode
 		assertThat(code, containsString("import java.util.ArrayList"));
@@ -1046,9 +1045,6 @@ public class ImportTest {
 
 		// sanity check: the actual code
 		assertThat(code, containsString("ArrayList<String> list = new ArrayList<>()"));
-
-		// cleaning
-		output.delete();
 	}
 
 	@Test
@@ -1062,16 +1058,15 @@ public class ImportTest {
 
 		canBeBuilt(outputDir, 7);
 
-		String pathA = "spoon/test/imports/testclasses/multiplecu/A.java";
-		String pathB = "spoon/test/imports/testclasses/multiplecu/B.java";
+		Path outputDirPath = Path.of(outputDir);
+		Path pathA = outputDirPath.resolve("spoon/test/imports/testclasses/multiplecu/A.java");
+		Path pathB = outputDirPath.resolve("spoon/test/imports/testclasses/multiplecu/B.java");
 
-		File outputA = new File(outputDir+"/"+pathA);
-		String codeA = IOUtils.toString(new FileReader(outputA));
+		String codeA = Files.readString(pathA);
 
 		assertThat(codeA, containsString("import java.util.List;"));
 
-		File outputB = new File(outputDir+"/"+pathB);
-		String codeB = IOUtils.toString(new FileReader(outputB));
+		String codeB = Files.readString(pathB);
 
 		assertThat(codeB, containsString("import java.awt.List;"));
 	}
@@ -1212,12 +1207,12 @@ public class ImportTest {
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setShouldCompile(true);
 		String outputDir = "./target/spoon-sort-import";
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/StaticNoOrdered.java");
+		launcher.addInputResource("./src/test/resources/imports/StaticNoOrdered.java");
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.run();
 
 		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
-		CtType element = launcher.getFactory().Class().get(StaticNoOrdered.class);
+		CtType<?> element = launcher.getFactory().Class().get("spoon.test.imports.testclasses.StaticNoOrdered");
 		List<CtType<?>> toPrint = new ArrayList<>();
 		toPrint.add(element);
 

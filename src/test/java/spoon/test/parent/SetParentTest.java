@@ -16,9 +16,8 @@
  */
 package spoon.test.parent;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import spoon.reflect.CtModelImpl;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -29,34 +28,40 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.ModuleFactory;
-import spoon.reflect.visitor.CtVisitable;
+import spoon.reflect.reference.CtReference;
+import spoon.test.SpoonTestHelpers;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static spoon.test.parent.ContractOnSettersParametrizedTest.createReceiverList;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 // contract: setParent does not modifiy the state of the parent
-@RunWith(Parameterized.class)
-public class SetParentTest<T extends CtVisitable> {
+public class SetParentTest{
 
 	private static Factory factory = createFactory();
 
-	@Parameterized.Parameters(name = "{0}")
-	public static Collection<Object[]> data() {
-		return createReceiverList();
+	@TestFactory
+	public Collection<DynamicTest> createReceiverList() {
+		List<DynamicTest> values = new ArrayList<>();
+		for (CtType<?> t : SpoonTestHelpers.getAllInstantiableMetamodelInterfaces()) {
+			if (!(CtReference.class.isAssignableFrom(t.getActualClass()))) {
+				values.add(DynamicTest.dynamicTest(t.getSimpleName(), () -> 
+					testSetParentDoesNotAlterState(t)));
+			}
+		}
+		return values;
 	}
+	
+	private void testSetParentDoesNotAlterState(CtType<?> toTest) throws Throwable {
+		// contract: setParent does not modifiy the state of the parent
 
-	@Parameterized.Parameter(0)
-	public CtType<?> toTest;
-
-	@Test
-	public void testContract() throws Throwable {
 		Object o = factory.Core().create((Class<? extends CtElement>) toTest.getActualClass());
 		CtMethod<?> setter = factory.Type().get(CtElement.class).getMethodsByName("setParent").get(0);
 

@@ -162,6 +162,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
+import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 
 import java.lang.invoke.MethodHandles;
 
@@ -979,6 +980,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			CtTypeReference<?> arrayType = ((CtArrayTypeReference) typeAccess.getAccessedType()).getArrayType();
 			arrayType.setAnnotations(this.references.buildTypeReference(arrayTypeReference, scope).getAnnotations());
 			arrayType.setSimplyQualified(true);
+			((CtArrayTypeReferenceImpl) typeAccess.getAccessedType()).setDeclarationKind(getDeclarationStyle(arrayTypeReference));
 		}
 		context.enter(typeAccess, arrayTypeReference);
 		return true;
@@ -1000,9 +1002,20 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		if (arrayType != null) {
 			arrayType.getArrayType().setAnnotations(this.references.buildTypeReference(arrayQualifiedTypeReference, scope).getAnnotations());
+			((CtArrayTypeReferenceImpl<?>) arrayType).setDeclarationKind(getDeclarationStyle(arrayQualifiedTypeReference));
 		}
 
 		return true;
+	}
+
+	private CtArrayTypeReferenceImpl.DeclarationKind getDeclarationStyle(ASTNode arrayReferenceNode) {
+		int sourceStart = arrayReferenceNode.sourceStart();
+		int sourceEnd = arrayReferenceNode.sourceEnd();
+
+		if (arrayReferenceNode.toString().length() > sourceEnd - sourceStart + 1) {
+			return CtArrayTypeReferenceImpl.DeclarationKind.IDENTIFIER;
+		}
+		return CtArrayTypeReferenceImpl.DeclarationKind.TYPE;
 	}
 
 	@Override
@@ -1018,7 +1031,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(Assignment assignment, BlockScope scope) {
-		context.enter(factory.Core().createAssignment(), assignment);
+		context.enter(factory.Core().createAssignment().setImplicit((assignment.bits & ASTNode.IsImplicit) != 0), assignment);
 		return true;
 	}
 
@@ -1074,7 +1087,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ClassLiteralAccess classLiteral, BlockScope scope) {
-		context.enter(factory.Code().createClassAccess(references.getTypeReference(classLiteral.targetType)), classLiteral);
+		if (classLiteral.targetType == null) {
+			// fix for issue #4350.
+			context.enter(factory.Code().createClassAccess(references.getTypeReference(classLiteral.type)), classLiteral);
+		} else {
+			context.enter(factory.Code().createClassAccess(references.getTypeReference(classLiteral.targetType)), classLiteral);
+		}
 		return false;
 	}
 
@@ -1451,6 +1469,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		CtTypeReference typeReference = references.buildTypeReference(parameterizedTypeReference, null);
 		CtTypeAccess typeAccess = factory.Code().createTypeAccessWithoutCloningReference(typeReference);
+		if (typeAccess.getAccessedType() instanceof CtArrayTypeReference) {
+			((CtArrayTypeReferenceImpl<?>) typeAccess.getAccessedType()).setDeclarationKind(getDeclarationStyle(parameterizedTypeReference));
+		}
 		context.enter(typeAccess, parameterizedTypeReference);
 		return true;
 	}

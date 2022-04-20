@@ -16,29 +16,29 @@
  */
 package spoon.test.jdtimportbuilder;
 
-import org.junit.Test;
-import spoon.Launcher;
-import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.CtClass;
-import spoon.experimental.CtUnresolvedImport;
+import spoon.test.imports.testclasses.A;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.test.jdtimportbuilder.testclasses.StaticImport;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtImport;
+import spoon.test.jdtimportbuilder.testclasses.StaticImportWithInheritance;
+import spoon.reflect.declaration.CtImportKind;
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.declaration.CtImportKind;
-import spoon.test.imports.testclasses.A;
-import spoon.test.imports.testclasses.ClassWithInvocation;
+import spoon.Launcher;
+import spoon.reflect.declaration.CtClass;
 import spoon.test.jdtimportbuilder.testclasses.StarredImport;
-import spoon.test.jdtimportbuilder.testclasses.StaticImport;
-import spoon.test.jdtimportbuilder.testclasses.StaticImportWithInheritance;
+import spoon.test.imports.testclasses.ClassWithInvocation;
+import org.junit.jupiter.api.Test;
 
+import java.util.stream.Collectors;
+import java.util.Set;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by urli on 09/08/2017.
@@ -196,7 +196,7 @@ public class ImportBuilderTest {
 		CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitStatic.getImports();
 
-		assertEquals(imports.toString(), 1, imports.size());
+		assertEquals(1, imports.size(), imports.toString());
 		CtImport ctImport = imports.iterator().next();
 
 		assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());

@@ -7,12 +7,12 @@
  */
 package spoon.compiler.builder;
 
-import org.apache.commons.io.IOUtils;
 import spoon.compiler.SpoonFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,8 +52,9 @@ public class SourceOptions<T extends SourceOptions<T>> extends Options<T> {
 				try {
 					File file = File.createTempFile(source.getName(), ".java");
 					file.deleteOnExit();
-					try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-						IOUtils.copy(source.getContent(), fileOutputStream);
+					try (FileOutputStream fileOutputStream = new FileOutputStream(file);
+							InputStream content = source.getContent()) {
+						content.transferTo(fileOutputStream);
 					}
 					args.add(file.toString());
 				} catch (IOException e) {

@@ -16,17 +16,30 @@
  */
 package spoon.test.trycatch;
 
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtCatchVariableReference;
@@ -37,24 +50,18 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.trycatch.testclasses.Foo;
 import spoon.test.trycatch.testclasses.Main;
+import spoon.testing.utils.LineSeperatorExtension;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -175,7 +182,7 @@ public class TryCatchTest {
 				new TypeFilter<>(CtTryWithResource.class)).get(0);
 
 		// Checks try has only one resource.
-		assertTrue(ctTryWithResource.getResources().size() == 1);
+		assertEquals(1, ctTryWithResource.getResources().size());
 	}
 
 	@Test
@@ -334,7 +341,7 @@ public class TryCatchTest {
 
 		List<CtCatch> catchers = model.getElements(e -> true);
 
-		assertEquals("There should only be one catch statement, check the resource", 1, catchers.size());
+		assertEquals(1, catchers.size(), "There should only be one catch statement, check the resource");
 		CtTypeReference<?> caughtType = catchers.get(0).getParameter().getType();
 
 		assertEquals("CustomException", caughtType.getSimpleName());
@@ -367,8 +374,8 @@ public class TryCatchTest {
 		CtCatch targetCatch = catches.get(0);
 		List<CtTypeReference<?>> paramTypes = targetCatch.getParameter().getMultiTypes();
 		assertThat(paramTypes.size(), equalTo(2));
-		assertTrue("first type reference is fully qualified", paramTypes.get(0).isSimplyQualified());
-		assertTrue("second type reference is fully qualified", paramTypes.get(1).isSimplyQualified());
+		assertTrue(paramTypes.get(0).isSimplyQualified(), "first type reference is fully qualified");
+		assertTrue(paramTypes.get(1).isSimplyQualified(), "second type reference is fully qualified");
 	}
 
 	@Test
@@ -384,8 +391,8 @@ public class TryCatchTest {
 		CtCatch targetCatch = catches.get(0);
 		List<CtTypeReference<?>> paramTypes = targetCatch.getParameter().getMultiTypes();
 		assertThat(paramTypes.size(), equalTo(2));
-		assertTrue("first type reference should be unqualified", paramTypes.get(0).isSimplyQualified());
-		assertFalse("second type reference should be qualified", paramTypes.get(1).isSimplyQualified());
+		assertTrue(paramTypes.get(0).isSimplyQualified(), "first type reference should be unqualified");
+		assertFalse(paramTypes.get(1).isSimplyQualified(), "second type reference should be qualified");
 	}
 
 	@Test
@@ -405,9 +412,37 @@ public class TryCatchTest {
 		CtModel model = launcher.buildModel();
 		CtLocalVariableReference<?> varRef = model.filterChildren(CtLocalVariableReference.class::isInstance).first();
 
-		assertThat(varRef.getType().getSimpleName(), equalTo("GenericType"));
+		assertThat(varRef.getType().getQualifiedName(), equalTo("NonClosableGenericInTryWithResources.GenericType"));
 
 		// We don't extract the type arguments
 		assertThat(varRef.getType().getActualTypeArguments().size(), equalTo(0));
+	}
+
+	@ExtendWith(LineSeperatorExtension.class)
+	@Test
+	public void testTryWithVariableAsResource() {
+		Factory factory = createFactory();
+		factory.getEnvironment().setComplianceLevel(9);
+
+		// contract: a try with resource is modeled with CtTryWithResource
+		CtTryWithResource tryStmt = factory.Code().createCodeSnippetStatement("class A { public void m() throws Exception {" +
+				"java.lang.AutoCloseable resource = null;" +
+				"try(resource){}}}"
+			).compile().getElements(new TypeFilter<>(CtTryWithResource.class)).get(0);
+		List<CtResource<?>> resources = tryStmt.getResources();
+		assertEquals(1, resources.size());
+		final CtResource<?> ctResource = resources.get(0);
+		assertTrue(ctResource instanceof CtVariable);
+		assertEquals("resource", ((CtVariable<?>) ctResource).getSimpleName());
+
+		// contract: pretty-printing of existing resources works
+		assertEquals("try (resource) {\n}", tryStmt.toString());
+
+		// contract: removeResource does remove the resource
+		tryStmt.removeResource(ctResource);
+		assertEquals(0, tryStmt.getResources().size());
+		// contract: removeResource of nothing is graceful and accepts it
+		tryStmt.removeResource(ctResource);
+
 	}
 }

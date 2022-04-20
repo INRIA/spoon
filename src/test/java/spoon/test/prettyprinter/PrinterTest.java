@@ -16,31 +16,6 @@
  */
 package spoon.test.prettyprinter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.canBeBuilt;
-
-import org.apache.commons.io.FileUtils;
-import org.junit.Test;
-
-import spoon.Launcher;
-import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.ElementPrinterHelper;
-import spoon.reflect.visitor.PrettyPrinter;
-import spoon.reflect.visitor.PrinterHelper;
-import spoon.reflect.visitor.TokenWriter;
-import spoon.reflect.visitor.DefaultTokenWriter;
-import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.prettyprinter.testclasses.MissingVariableDeclaration;
-import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,6 +25,32 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Test;
+import spoon.Launcher;
+import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.DefaultTokenWriter;
+import spoon.reflect.visitor.ElementPrinterHelper;
+import spoon.reflect.visitor.PrettyPrinter;
+import spoon.reflect.visitor.PrinterHelper;
+import spoon.reflect.visitor.TokenWriter;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.prettyprinter.testclasses.MissingVariableDeclaration;
+import spoon.testing.utils.ModelUtils;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class PrinterTest {
 
@@ -86,7 +87,7 @@ public class PrinterTest {
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String result = printer.getResult();
 
-		assertTrue("The result should not contain imports: "+result, !result.contains("import java.util.List;"));
+		assertTrue(!result.contains("import java.util.List;"), "The result should not contain imports: " + result);
 
 		// recreating an auto-immport  printer
 		spoon.getEnvironment().setAutoImports(true);
@@ -94,7 +95,7 @@ public class PrinterTest {
 
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		result = printer.getResult();
-		assertTrue("The result should now contain imports: "+result, result.contains("import java.util.List;"));
+		assertTrue(result.contains("import java.util.List;"), "The result should now contain imports: " + result);
 	}
 
 	@Test
@@ -111,8 +112,8 @@ public class PrinterTest {
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String result = printer.getResult();
 
-		assertTrue("The result should contain FQN for constructor: "+result, result.contains("new spoon.support.visitor.replace.ReplacementVisitor("));
-		assertTrue("The result should not contain reduced constructors: "+result, !result.contains("new ReplacementVisitor("));
+		assertTrue(result.contains("new spoon.support.visitor.replace.ReplacementVisitor("), "The result should contain FQN for constructor: " + result);
+		assertTrue(!result.contains("new ReplacementVisitor("), "The result should not contain reduced constructors: " + result);
 	}
 
 	@Test
@@ -129,11 +130,11 @@ public class PrinterTest {
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String result = printer.getResult();
 
-		assertTrue("The result should not contain import static: ", !result.contains("import static spoon.test.prettyprinter.testclasses.sub.Constants.READY"));
-		assertTrue("The result should contain import type: ", result.contains("import spoon.test.prettyprinter.testclasses.sub.Constants"));
-		assertTrue("The result should contain import static assertTrue: ", result.contains("import static org.junit.Assert.assertTrue;"));
-		assertTrue("The result should contain assertTrue(...): ", result.contains("assertTrue(\"blabla\".equals(\"toto\"));"));
-		assertTrue("The result should use System.out.println(Constants.READY): "+result, result.contains("System.out.println(Constants.READY);"));
+		assertTrue(!result.contains("import static spoon.test.prettyprinter.testclasses.sub.Constants.READY"), "The result should not contain import static: ");
+		assertTrue(result.contains("import spoon.test.prettyprinter.testclasses.sub.Constants"), "The result should contain import type: ");
+		assertTrue(result.contains("import static org.junit.Assert.assertTrue;"), "The result should contain import static assertTrue: ");
+		assertTrue(result.contains("assertTrue(\"blabla\".equals(\"toto\"));"), "The result should contain assertTrue(...): ");
+		assertTrue(result.contains("System.out.println(Constants.READY);"), "The result should use System.out.println(Constants.READY): " + result);
 	}
 
 	@Test
@@ -151,9 +152,9 @@ public class PrinterTest {
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String result = printer.getResult();
 
-		assertTrue("The result should contain import java.util.ArrayList: ", result.contains("import java.util.ArrayList;"));
-		assertTrue("The result should contain import java.util.List: ", result.contains("import java.util.List;"));
-		assertTrue("The result should contain import static org.Bar.m: ", result.contains("import static org.Bar.m;"));
+		assertTrue(result.contains("import java.util.ArrayList;"), "The result should contain import java.util.ArrayList: ");
+		assertTrue(result.contains("import java.util.List;"), "The result should contain import java.util.List: ");
+		assertTrue(result.contains("import static org.Bar.m;"), "The result should contain import static org.Bar.m: ");
 	}
 
 	@Test
@@ -171,9 +172,9 @@ public class PrinterTest {
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String result = printer.getResult();
 
-		assertTrue("The result should contain import java.util.ArrayList: ", result.contains("import java.util.ArrayList;"));
-		assertTrue("The result should contain import java.util.List: ", result.contains("import java.util.List;"));
-		assertTrue("The result should contain import static org.Bar.m: ", result.contains("import static org.Bar.*;"));
+		assertTrue(result.contains("import java.util.ArrayList;"), "The result should contain import java.util.ArrayList: ");
+		assertTrue(result.contains("import java.util.List;"), "The result should contain import java.util.List: ");
+		assertTrue(result.contains("import static org.Bar.*;"), "The result should contain import static org.Bar.m: ");
 	}
 
 	@Test
@@ -191,8 +192,8 @@ public class PrinterTest {
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String result = printer.getResult();
 
-		assertTrue("The result should contain import org.Bar: ", result.contains("import org.Bar;"));
-		assertTrue("The result should contain import org.foo.*: ", result.contains("import org.foo.*;"));
+		assertTrue(result.contains("import org.Bar;"), "The result should contain import org.Bar: ");
+		assertTrue(result.contains("import org.foo.*;"), "The result should contain import org.foo.*: ");
 	}
 
 	@Test
@@ -211,7 +212,7 @@ public class PrinterTest {
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String result = printer.getResult();
 
-		assertTrue("The result should contain direct this accessor for field: "+result, !result.contains("Rule.Phoneme.this.phonemeText"));
+		assertTrue(!result.contains("Rule.Phoneme.this.phonemeText"), "The result should contain direct this accessor for field: " + result);
 		canBeBuilt(output, 7);
 	}
 
@@ -250,7 +251,7 @@ public class PrinterTest {
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String result = printer.getResult();
 
-		assertTrue("The result should contain direct this accessor for field: "+result, !result.contains("Rule.Phoneme.this.phonemeText"));
+		assertTrue(!result.contains("Rule.Phoneme.this.phonemeText"), "The result should contain direct this accessor for field: " + result);
 		canBeBuilt(output, 7);
 	}
 
@@ -366,7 +367,7 @@ public class PrinterTest {
 					checkRepeatingOfTokens("writeSeparator");
 					checkTokenWhitespace(separator, false);					
 					//one of the separators
-					assertTrue("Unexpected separator: "+separator, separators.contains(separator));
+					assertTrue(separators.contains(separator), "Unexpected separator: " + separator);
 					handleTabs();
 					allTokens.append(separator);
 					return this;
@@ -376,7 +377,7 @@ public class PrinterTest {
 				public TokenWriter writeOperator(String operator) {
 					checkRepeatingOfTokens("writeOperator");
 					checkTokenWhitespace(operator, false);					
-					assertTrue("Unexpected operator: "+operator, operators.contains(operator));
+					assertTrue(operators.contains(operator), "Unexpected operator: " + operator);
 					handleTabs();
 					allTokens.append(operator);
 					return this;
@@ -395,7 +396,7 @@ public class PrinterTest {
 				public TokenWriter writeKeyword(String keyword) {
 					checkRepeatingOfTokens("writeKeyword");
 					checkTokenWhitespace(keyword, false);					
-					assertTrue("Unexpected java keyword: "+keyword, javaKeywords.contains(keyword));
+					assertTrue(javaKeywords.contains(keyword), "Unexpected java keyword: " + keyword);
 					handleTabs();
 					allTokens.append(keyword);
 					return this;
@@ -416,7 +417,7 @@ public class PrinterTest {
 							assertTrue(Character.isJavaIdentifierPart(c));
 						}
 					}
-					assertEquals("Keyword found in Identifier: " + identifier, false, javaKeywords.contains(identifier));
+					assertEquals(false, javaKeywords.contains(identifier), "Keyword found in Identifier: " + identifier);
 					handleTabs();
 					allTokens.append(identifier);
 					return this;
@@ -510,7 +511,7 @@ public class PrinterTest {
 						// nothing
 					} else {
 						//check only other tokens then writeln, which is the only one which can repeat
-						assertEquals("Two tokens of same type current:" + tokenType + " " + allTokens.toString(), false, tokenType.equals(this.lastToken));
+						assertEquals(false, tokenType.equals(this.lastToken), "Two tokens of same type current:" + tokenType + " " + allTokens.toString());
 					}
 					this.lastToken = tokenType;
 				}
@@ -602,5 +603,46 @@ public class PrinterTest {
 		// the pretty-printed code is in folder ./spooned (default value that can be set with setOutputDirectory)
 
 		assertTrue(FileUtils.readFileToString(new File("spooned/HelloWorld.java"), "UTF-8").contains("  class"));
+	}
+
+	
+	@Test
+	public void testTypeLostPrintingStringClassReference() {
+		// contract: when a class reference is printed, the type is not lost
+		String expected = "class A {\n" +
+			"    void m() {\n" +
+			"        Stream.empty().map(v -> String.class).close();\n" +
+			"    }\n" +
+			"}";
+		CtType<?> type = Launcher.parseClass("class A { void m() { Stream.empty().map(v-> String.class).close(); } }");
+		assertEquals(expected, normalizeLineEnds(type.toString()));
+	}
+
+	@Test
+	public void testTypeLostPrintingListClassReference() {
+		// contract: when a class reference is printed, the type is not lost
+		String expected = "class A {\n" +
+			"    void m() {\n" +
+			"        Stream.empty().map(v -> List.class).close();\n" +
+			"    }\n" +
+			"}";
+		CtType<?> type = Launcher.parseClass("class A { void m() { Stream.empty().map(v-> List.class).close(); } }");
+		assertEquals(expected, normalizeLineEnds(type.toString()));
+	}
+
+	@Test
+	public void testTypeLostPrintingFQListClassReference() {
+		// contract: when a class reference is printed, the type is not lost
+		String expected = "class A {\n" +
+			"    void m() {\n" +
+				"        Stream.empty().map(v -> List.class).close();\n" +
+			"    }\n" +
+			"}";
+		CtType<?> type = Launcher.parseClass("class A { void m() { Stream.empty().map(v-> java.util.List.class).close(); } }");
+		assertEquals(expected, normalizeLineEnds(type.toString()));
+	}
+
+	private static String normalizeLineEnds(String s) {
+		return s.lines().collect(Collectors.joining("\n"));
 	}
 }

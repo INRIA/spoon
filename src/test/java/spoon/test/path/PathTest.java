@@ -16,8 +16,15 @@
  */
 package spoon.test.path;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtIf;
@@ -36,24 +43,18 @@ import spoon.reflect.path.CtElementPathBuilder;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtPathBuilder;
 import spoon.reflect.path.CtPathException;
+import spoon.reflect.path.CtPathStringBuilder;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.reflect.path.CtPathStringBuilder;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Created by nicolas on 10/06/2015.
@@ -62,7 +63,7 @@ public class PathTest {
 
 	Factory factory;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		Launcher spoon = new Launcher();
 		factory = spoon.createFactory();
@@ -304,7 +305,7 @@ public class PathTest {
 		for (CtTypeMember typeMember : type.getTypeMembers()) {
 			CtPath path = typeMember.getPath();
 			List<CtElement> elements = path.evaluateOn(factory.getModel().getRootPackage());
-			assertEquals("ambiguous path " + path + " on element " + typeMember.toString(), 1, elements.size());
+			assertEquals(1, elements.size(), "ambiguous path " + path + " on element " + typeMember.toString());
 			assertSame(typeMember, elements.get(0));
 		}
 	}

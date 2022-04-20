@@ -16,7 +16,11 @@
  */
 package spoon.test.annotation;
 
-import org.junit.Test;
+import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.reflect.code.CtConstructorCall;
@@ -37,14 +41,10 @@ import spoon.test.annotation.testclasses.AnnotationValues;
 import spoon.test.annotation.testclasses.BoundNumber;
 import spoon.test.annotation.testclasses.Summary;
 
-import java.lang.annotation.Annotation;
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.test.annotation.AnnotationValuesTest.Request.on;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -181,7 +181,7 @@ public class AnnotationValuesTest {
 		}
 
 		public Request giveMeAnnotationValue(String key) {
-			assertTrue("Element given in the method on should be an CtAnnotation.", element instanceof CtAnnotation);
+			assertTrue(element instanceof CtAnnotation, "Element given in the method on should be an CtAnnotation.");
 			CtAnnotation<?> ctAnnotation = (CtAnnotation<?>) element;
 			CtExpression value = null;
 			try {

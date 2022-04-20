@@ -7,47 +7,46 @@
  */
 package spoon;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.AstParentConsistencyChecker;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * FluentLauncherTest
  */
 public class FluentLauncherTest {
-	@Rule
-	public TemporaryFolder folderFactory = new TemporaryFolder();
 
 	@Test
-	public void testSimpleUsage() throws IOException {
+	public void testSimpleUsage(@TempDir Path tempDir) throws IOException {
 		CtModel model = new FluentLauncher().inputResource("src/test/resources/deprecated/input")
 				.noClasspath(true)
-				.outputDirectory(folderFactory.newFolder().getPath())
+				.outputDirectory(tempDir.toString())
 				.buildModel();
 		assertNotNull(model);
 	}
 
 	@Test
-	public void testProcessor() throws IOException {
+	public void testProcessor(@TempDir Path tempDir) throws IOException {
 		List<String> output = new ArrayList<>();
 		List<String> output2 = new ArrayList<>();
 		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
-				.outputDirectory(folderFactory.newFolder().getPath())
+				.outputDirectory(tempDir.toString())
 				.processor(Arrays.asList(new AbstractProcessor<CtType<?>>() {
 					public void process(CtType<?> element) {
 						output.add(element.toString());
@@ -67,24 +66,24 @@ public class FluentLauncherTest {
 	}
 
 	@Test
-	public void testConsistency() throws IOException {
+	public void testConsistency(@TempDir Path tempDir) throws IOException {
 		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
 				.noClasspath(true)
 				.complianceLevel(11)
 				.disableConsistencyChecks()
-				.outputDirectory(folderFactory.newFolder().getPath())
+				.outputDirectory(tempDir.toString())
 				.buildModel()
 				.getUnnamedModule()
 				.accept(new AstParentConsistencyChecker());
 	}
 
 	@Test
-	public void testSettings() throws IOException {
+	public void testSettings(@TempDir Path tempDir) throws IOException {
 		CtModel model = new FluentLauncher().inputResource("src/test/resources/deprecated/input")
 				.noClasspath(true)
 				.encoding(Charset.defaultCharset())
 				.autoImports(true)
-				.outputDirectory(folderFactory.newFolder())
+				.outputDirectory(tempDir.toString())
 				.buildModel();
 		assertNotNull(model);
 	}
@@ -95,10 +94,10 @@ public class FluentLauncherTest {
 	 * @throws IOException
 	 */
 	@Test
-	public void testMavenLauncher() throws IOException {
+	public void testMavenLauncher(@TempDir Path tempDir) throws IOException {
 		CtModel model = new FluentLauncher(new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.ALL_SOURCE))
 				.complianceLevel(11)
-				.outputDirectory(folderFactory.newFolder().getPath())
+				.outputDirectory(tempDir.toString())
 				.buildModel();
 		assertNotNull(model);
 	}

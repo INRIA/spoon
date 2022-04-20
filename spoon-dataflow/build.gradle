@@ -5,7 +5,7 @@ plugins {
     // always depends on the latest snapshot of Spoon
     // https://github.com/patrikerdes/gradle-use-latest-versions-plugin
     id 'se.patrikerdes.use-latest-versions' version '0.2.18'
-    id 'com.github.ben-manes.versions' version '0.40.0'
+    id 'com.github.ben-manes.versions' version '0.41.0'
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
@@ -23,7 +23,7 @@ dependencies {
     implementation group: 'fr.inria.gforge.spoon', name: 'spoon-core', version: '+'
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
     implementation group: 'com.microsoft', name: 'z3', version: '4.8.4'
-    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 }
 
 application {
@@ -36,3 +36,6 @@ shadowJar {
     archiveVersion.set('')
 }
 
+test {
+    useJUnitPlatform()
+}

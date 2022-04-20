@@ -7,7 +7,9 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
@@ -23,8 +25,8 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.UnsettableProperty;
-import spoon.support.visitor.GenericTypeAdapter;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -244,15 +246,25 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 		if (superTypeRef instanceof CtTypeParameterReference) {
 			//the type is type parameter too. Use appropriate sub type checking algorithm
 			CtTypeParameter superTypeParam = (CtTypeParameter) superTypeRef.getDeclaration();
-			return isSubtypeOf(getFactory().Type().createTypeAdapter(getTypeParameterDeclarer()), this, superTypeParam);
+			TypeAdaptor typeAdaptor;
+			if (getTypeParameterDeclarer() instanceof CtType) {
+				typeAdaptor = new TypeAdaptor((CtType<?>) getTypeParameterDeclarer());
+			} else if (getTypeParameterDeclarer() instanceof CtMethod) {
+				typeAdaptor = new TypeAdaptor((CtMethod<?>) getTypeParameterDeclarer());
+			} else if (getTypeParameterDeclarer() instanceof CtConstructor) {
+				typeAdaptor = new TypeAdaptor((CtConstructor<?>) getTypeParameterDeclarer());
+			} else {
+				throw new SpoonException("Unknown type parameter declarer: " + getTypeParameterDeclarer());
+			}
+			return isSubtypeOf(typeAdaptor, this, superTypeParam);
 		}
 		//type is normal type
 		return getTypeErasure().isSubtypeOf(superTypeRef);
 	}
 
-	private static boolean isSubtypeOf(GenericTypeAdapter typeAdapter, CtTypeParameter subTypeParam, CtTypeParameter superTypeParam) {
+	private static boolean isSubtypeOf(TypeAdaptor typeAdaptor, CtTypeParameter subTypeParam, CtTypeParameter superTypeParam) {
 		while (subTypeParam != null) {
-			if (isSameInSameScope(subTypeParam, typeAdapter.adaptType(superTypeParam))) {
+			if (isSameInSameScope(subTypeParam, typeAdaptor.adaptType(superTypeParam.getReference()))) {
 				//both type params are same
 				return true;
 			}
