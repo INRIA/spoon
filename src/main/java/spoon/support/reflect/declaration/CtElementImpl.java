@@ -421,7 +421,7 @@ public abstract class CtElementImpl implements CtElement {
 			EarlyTerminatingScanner<CtRole> ets = new EarlyTerminatingScanner<CtRole>() {
 				@Override
 				public void scan(CtRole role, CtElement element) {
-					if (element == CtElementImpl.this) {
+					if (CtElementImpl.this.equals(element)) {
 						setResult(role);
 						terminate();
 					}
