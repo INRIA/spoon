@@ -268,12 +268,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		for (CtStatement s : block.getStatements()) {
 			CtElement res = evaluate(s);
 			if (res != null) {
-				if (res instanceof CtStatement) {
-					b.addStatement((CtStatement) res);
-				} else {
-					//the context expects statement. We cannot simplify in this case
-					b.addStatement(s.clone());
-				}
+				b.addStatement((CtStatement) res.clone());
 			}
 			// do not copy unreachable statements
 			if (flowEnded) {
