@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
@@ -53,14 +54,14 @@ public @interface GitHubIssue {
 	 * This is useful to check if each testcase fails as expected. Internal in junit 5 failing testcases simply throw an exception.
 	 * Swallowing this exceptions marks the testcase as not failing.
 	 */
-	 static class UnresolvedBugExtension implements TestWatcher, TestExecutionExceptionHandler {
-
-		private Set<ExtensionContext> correctFailingTestCases = new HashSet<>();
+	 class UnresolvedBugExtension implements AfterTestExecutionCallback, TestExecutionExceptionHandler {
+		private final Set<ExtensionContext> correctFailingTestCases = new HashSet<>();
 
 		@Override
-		public void testSuccessful(ExtensionContext context) {
-			if (shouldFail(context) && !correctFailingTestCases.contains(context)) {
-				fail("Method " + context.getTestMethod().get().getName() + " must fail");
+		public void afterTestExecution(ExtensionContext context) {
+			boolean failed = correctFailingTestCases.contains(context);
+			if (shouldFail(context) && !failed) {
+				fail("Method " + context.getRequiredTestMethod().getName() + " must fail");
 			}
 		}
 
@@ -68,6 +69,8 @@ public @interface GitHubIssue {
 		public void handleTestExecutionException(ExtensionContext context, Throwable throwable)
 				throws Throwable {
 			if (shouldFail(context)) {
+				// Swallow the exception so the test does not fail. Remember it for later though, so we don't
+				// accidentally fail the test in #afterTestExecution
 				correctFailingTestCases.add(context);
 				return;
 			}
