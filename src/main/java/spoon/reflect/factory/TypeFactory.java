@@ -358,10 +358,14 @@ public class TypeFactory extends SubFactory {
 	public <T> CtTypeReference<T> createReference(CtType<T> type, boolean includingFormalTypeParameter) {
 		CtTypeReference<T> ref = factory.Core().createTypeReference();
 		HashMap<String, CtType<?>> typeCacheInstance = typeCache.get();
+		HashMap<String, CtTypeReference<?>> typeRefCacheInstance = typeRefCache.get();
+
 		if (!typeCacheInstance.containsKey(type.getQualifiedName())) {
 			typeCacheInstance.put(type.getQualifiedName(), type);
-		} else {
-			return (CtTypeReference<T>) typeCacheInstance.get(type.getQualifiedName()).getReference();
+		}
+
+		if (typeRefCacheInstance.containsKey(type.getQualifiedName())) {
+			return (CtTypeReference<T>) typeRefCacheInstance.get(type.getQualifiedName());
 		}
 
 		if (type.getDeclaringType() != null) {
@@ -377,6 +381,9 @@ public class TypeFactory extends SubFactory {
 				ref.addActualTypeArgument(formalTypeParam.getReference());
 			}
 		}
+
+		typeRefCacheInstance.put(ref.getQualifiedName(), ref);
+
 		return ref;
 	}
 
