@@ -41,14 +41,7 @@ import spoon.support.visitor.MethodTypingContext;
 import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 
 import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -61,6 +54,9 @@ public class TypeFactory extends SubFactory {
 			"void", "boolean", "byte", "short", "char", "int", "float", "long", "double",
 			// TODO (leventov) it is questionable to me that nulltype should also be here
 			CtTypeReference.NULL_TYPE_NAME);
+
+	private ThreadLocal<HashMap<String, CtTypeReference<?>>> typeRefCache =  ThreadLocal.withInitial(() -> new HashMap<>(512));
+	private ThreadLocal<HashMap<String, CtType<?>>> typeCache = ThreadLocal.withInitial(() -> new HashMap<>(512));
 
 	public final CtTypeReference<?> NULL_TYPE = createReference(CtTypeReference.NULL_TYPE_NAME);
 	public final CtTypeReference<Void> VOID = createReference(Void.class);
@@ -315,10 +311,13 @@ public class TypeFactory extends SubFactory {
 	/**
 	 * Creates a reference to a simple type
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> CtTypeReference<T> createReference(Class<T> type, boolean includingFormalTypeParameter) {
+		HashMap<String, CtTypeReference<?>> typeRefCacheInstance = typeRefCache.get();
 		if (type == null) {
 			return null;
 		}
+		if (typeRefCacheInstance.containsKey(type.getName())) return (CtTypeReference<T>) typeRefCacheInstance.get(type.getName());
 		if (type.isArray()) {
 			CtArrayTypeReference<T> array = factory.Core().createArrayTypeReference();
 			array.setComponentType(createReference(type.getComponentType(), includingFormalTypeParameter));
@@ -332,6 +331,7 @@ public class TypeFactory extends SubFactory {
 			}
 		}
 
+		typeRefCacheInstance.put(type.getName(), typeReference);
 		return typeReference;
 	}
 
@@ -357,6 +357,14 @@ public class TypeFactory extends SubFactory {
 	 */
 	public <T> CtTypeReference<T> createReference(CtType<T> type, boolean includingFormalTypeParameter) {
 		CtTypeReference<T> ref = factory.Core().createTypeReference();
+		HashMap<String, CtType<?>> typeCacheInstance = typeCache.get();
+
+		if (!typeCacheInstance.containsKey(type.getQualifiedName())) {
+			typeCacheInstance.put(type.getQualifiedName(), type);
+		}
+		else {
+			return (CtTypeReference<T>) typeRefCache.get().get(type.getQualifiedName());
+		}
 
 		if (type.getDeclaringType() != null) {
 			ref.setDeclaringType(createReference(type.getDeclaringType(), includingFormalTypeParameter));
@@ -388,9 +396,16 @@ public class TypeFactory extends SubFactory {
 	 * Create a reference to a simple type
 	 */
 	public <T> CtTypeReference<T> createReference(String qualifiedName) {
+		HashMap<String, CtTypeReference<?>> typeRefCacheInstance = typeRefCache.get();
+
 		if (qualifiedName.endsWith("[]")) {
 			return createArrayReference(qualifiedName.substring(0, qualifiedName.length() - 2));
 		}
+
+		if (typeRefCacheInstance.containsKey(qualifiedName)) {
+			return (CtTypeReference<T>) typeRefCacheInstance.get(qualifiedName);
+		}
+
 		CtTypeReference<T> ref = factory.Core().createTypeReference();
 		if (hasInnerType(qualifiedName) > 0) {
 			ref.setDeclaringType(createReference(getDeclaringTypeName(qualifiedName)));
@@ -400,6 +415,9 @@ public class TypeFactory extends SubFactory {
 			ref.setPackage(factory.Package().topLevel());
 		}
 		ref.setSimpleName(getSimpleName(qualifiedName));
+
+		typeRefCacheInstance.put(qualifiedName, ref);
+
 		return ref;
 	}
 
@@ -423,6 +441,11 @@ public class TypeFactory extends SubFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtType<T> get(final String qualifiedName) {
+		HashMap<String, CtType<?>> typeCacheInstance = typeCache.get();
+		if (typeCacheInstance.containsKey(qualifiedName)) {
+			return (CtType<T>) typeCacheInstance.get(qualifiedName);
+		}
+
 		int packageIndex = qualifiedName.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
 		CtPackage pack;
 		if (packageIndex > 0) {
