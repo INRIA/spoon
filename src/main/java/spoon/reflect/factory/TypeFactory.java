@@ -317,7 +317,7 @@ public class TypeFactory extends SubFactory {
 		if (type == null) {
 			return null;
 		}
-		if (typeRefCacheInstance.containsKey(type.getName())) return (CtTypeReference<T>) typeRefCacheInstance.get(type.getName());
+		if (typeRefCacheInstance.containsKey(type.getName())) return (CtTypeReference<T>) typeRefCacheInstance.get(type.getName()).clone();
 		if (type.isArray()) {
 			CtArrayTypeReference<T> array = factory.Core().createArrayTypeReference();
 			array.setComponentType(createReference(type.getComponentType(), includingFormalTypeParameter));
@@ -332,7 +332,7 @@ public class TypeFactory extends SubFactory {
 		}
 
 		typeRefCacheInstance.put(type.getName(), typeReference);
-		return typeReference;
+		return typeReference.clone();
 	}
 
 	/**
@@ -365,7 +365,7 @@ public class TypeFactory extends SubFactory {
 		}
 
 		if (typeRefCacheInstance.containsKey(type.getQualifiedName())) {
-			return (CtTypeReference<T>) typeRefCacheInstance.get(type.getQualifiedName());
+			return (CtTypeReference<T>) typeRefCacheInstance.get(type.getQualifiedName()).clone();
 		}
 
 		if (type.getDeclaringType() != null) {
@@ -408,7 +408,7 @@ public class TypeFactory extends SubFactory {
 		}
 
 		if (typeRefCacheInstance.containsKey(qualifiedName)) {
-			return (CtTypeReference<T>) typeRefCacheInstance.get(qualifiedName);
+			return (CtTypeReference<T>) typeRefCacheInstance.get(qualifiedName).clone();
 		}
 
 		CtTypeReference<T> ref = factory.Core().createTypeReference();
@@ -423,7 +423,7 @@ public class TypeFactory extends SubFactory {
 
 		typeRefCacheInstance.put(qualifiedName, ref);
 
-		return ref;
+		return ref.clone();
 	}
 
 	/**
