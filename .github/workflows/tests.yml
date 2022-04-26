@@ -38,7 +38,7 @@ jobs:
       - name: Disable Git's autocrlf
         run: git config --global core.autocrlf false
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
-      - uses: actions/setup-java@9519cf1382ac8dc61ad461f7f7cb45f033220189 # tag=v3.1.1
+      - uses: actions/setup-java@4fe61d24fe5472910b93bdeffb8aad49f979d862 # tag=v3.2.0
         with:
           java-version: ${{ matrix.java }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -75,7 +75,7 @@ jobs:
     name: Test with coverage
     steps:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
-      - uses: actions/setup-java@9519cf1382ac8dc61ad461f7f7cb45f033220189 # tag=v3.1.1
+      - uses: actions/setup-java@4fe61d24fe5472910b93bdeffb8aad49f979d862 # tag=v3.2.0
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -111,7 +111,7 @@ jobs:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@9519cf1382ac8dc61ad461f7f7cb45f033220189 # tag=v3.1.1
+      - uses: actions/setup-java@4fe61d24fe5472910b93bdeffb8aad49f979d862 # tag=v3.2.0
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -148,7 +148,7 @@ jobs:
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
         with:
           path: pull_request
-      - uses: actions/setup-java@9519cf1382ac8dc61ad461f7f7cb45f033220189 # tag=v3.1.1
+      - uses: actions/setup-java@4fe61d24fe5472910b93bdeffb8aad49f979d862 # tag=v3.2.0
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -179,7 +179,7 @@ jobs:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@9519cf1382ac8dc61ad461f7f7cb45f033220189 # tag=v3.1.1
+      - uses: actions/setup-java@4fe61d24fe5472910b93bdeffb8aad49f979d862 # tag=v3.2.0
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}
