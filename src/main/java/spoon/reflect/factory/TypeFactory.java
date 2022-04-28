@@ -55,8 +55,8 @@ public class TypeFactory extends SubFactory {
 			// TODO (leventov) it is questionable to me that nulltype should also be here
 			CtTypeReference.NULL_TYPE_NAME);
 
-	private ThreadLocal<HashMap<String, CtTypeReference<?>>> typeRefCache =  ThreadLocal.withInitial(() -> new HashMap<>(512));
-	private ThreadLocal<HashMap<String, CtType<?>>> typeCache = ThreadLocal.withInitial(() -> new HashMap<>(512));
+	private final ConcurrentHashMap<String, CtTypeReference<?>> typeRefCache =  new ConcurrentHashMap<>(512);
+	private final ConcurrentHashMap<String, CtType<?>> typeCache = new ConcurrentHashMap<>(512);
 
 	public final CtTypeReference<?> NULL_TYPE = createReference(CtTypeReference.NULL_TYPE_NAME);
 	public final CtTypeReference<Void> VOID = createReference(Void.class);
@@ -313,11 +313,10 @@ public class TypeFactory extends SubFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtTypeReference<T> createReference(Class<T> type, boolean includingFormalTypeParameter) {
-		HashMap<String, CtTypeReference<?>> typeRefCacheInstance = typeRefCache.get();
 		if (type == null) {
 			return null;
 		}
-		if (typeRefCacheInstance.containsKey(type.getName())) return (CtTypeReference<T>) typeRefCacheInstance.get(type.getName()).clone();
+		if (typeRefCache.containsKey(type.getName())) return (CtTypeReference<T>) typeRefCache.get(type.getName()).clone();
 		if (type.isArray()) {
 			CtArrayTypeReference<T> array = factory.Core().createArrayTypeReference();
 			array.setComponentType(createReference(type.getComponentType(), includingFormalTypeParameter));
@@ -331,7 +330,7 @@ public class TypeFactory extends SubFactory {
 			}
 		}
 
-		typeRefCacheInstance.put(type.getName(), typeReference);
+		typeRefCache.put(type.getName(), typeReference);
 		return typeReference.clone();
 	}
 
@@ -357,15 +356,13 @@ public class TypeFactory extends SubFactory {
 	 */
 	public <T> CtTypeReference<T> createReference(CtType<T> type, boolean includingFormalTypeParameter) {
 		CtTypeReference<T> ref = factory.Core().createTypeReference();
-		HashMap<String, CtType<?>> typeCacheInstance = typeCache.get();
-		HashMap<String, CtTypeReference<?>> typeRefCacheInstance = typeRefCache.get();
 
-		if (!typeCacheInstance.containsKey(type.getQualifiedName())) {
-			typeCacheInstance.put(type.getQualifiedName(), type);
+		if (!typeCache.containsKey(type.getQualifiedName())) {
+			typeCache.put(type.getQualifiedName(), type);
 		}
 
-		if (typeRefCacheInstance.containsKey(type.getQualifiedName())) {
-			return (CtTypeReference<T>) typeRefCacheInstance.get(type.getQualifiedName()).clone();
+		if (typeRefCache.containsKey(type.getQualifiedName())) {
+			return (CtTypeReference<T>) typeRefCache.get(type.getQualifiedName()).clone();
 		}
 
 		if (type.getDeclaringType() != null) {
@@ -382,7 +379,7 @@ public class TypeFactory extends SubFactory {
 			}
 		}
 
-		typeRefCacheInstance.put(ref.getQualifiedName(), ref);
+		typeRefCache.put(ref.getQualifiedName(), ref);
 
 		return ref;
 	}
@@ -401,14 +398,12 @@ public class TypeFactory extends SubFactory {
 	 * Create a reference to a simple type
 	 */
 	public <T> CtTypeReference<T> createReference(String qualifiedName) {
-		HashMap<String, CtTypeReference<?>> typeRefCacheInstance = typeRefCache.get();
-
 		if (qualifiedName.endsWith("[]")) {
 			return createArrayReference(qualifiedName.substring(0, qualifiedName.length() - 2));
 		}
 
-		if (typeRefCacheInstance.containsKey(qualifiedName)) {
-			return (CtTypeReference<T>) typeRefCacheInstance.get(qualifiedName).clone();
+		if (typeRefCache.containsKey(qualifiedName)) {
+			return (CtTypeReference<T>) typeRefCache.get(qualifiedName).clone();
 		}
 
 		CtTypeReference<T> ref = factory.Core().createTypeReference();
@@ -421,9 +416,9 @@ public class TypeFactory extends SubFactory {
 		}
 		ref.setSimpleName(getSimpleName(qualifiedName));
 
-		typeRefCacheInstance.put(qualifiedName, ref);
+		typeRefCache.put(qualifiedName, ref);
 
-		return ref.clone();
+		return ref;
 	}
 
 	/**
@@ -446,9 +441,8 @@ public class TypeFactory extends SubFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtType<T> get(final String qualifiedName) {
-		HashMap<String, CtType<?>> typeCacheInstance = typeCache.get();
-		if (typeCacheInstance.containsKey(qualifiedName)) {
-			return (CtType<T>) typeCacheInstance.get(qualifiedName);
+		if (typeCache.containsKey(qualifiedName)) {
+			return (CtType<T>) typeCache.get(qualifiedName);
 		}
 
 		int packageIndex = qualifiedName.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
