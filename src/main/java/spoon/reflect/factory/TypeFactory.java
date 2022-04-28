@@ -50,13 +50,13 @@ import java.util.function.Function;
  */
 public class TypeFactory extends SubFactory {
 
+	private final ConcurrentHashMap<String, CtTypeReference<?>> typeRefCache = new ConcurrentHashMap<>(512);
+	private final ConcurrentHashMap<String, CtType<?>> typeCache = new ConcurrentHashMap<>(512);
+
 	private static final Set<String> NULL_PACKAGE_CLASSES = Set.of(
 			"void", "boolean", "byte", "short", "char", "int", "float", "long", "double",
 			// TODO (leventov) it is questionable to me that nulltype should also be here
 			CtTypeReference.NULL_TYPE_NAME);
-
-	private final ConcurrentHashMap<String, CtTypeReference<?>> typeRefCache =  new ConcurrentHashMap<>(512);
-	private final ConcurrentHashMap<String, CtType<?>> typeCache = new ConcurrentHashMap<>(512);
 
 	public final CtTypeReference<?> NULL_TYPE = createReference(CtTypeReference.NULL_TYPE_NAME);
 	public final CtTypeReference<Void> VOID = createReference(Void.class);
