@@ -4,7 +4,7 @@ tags: [semantic-patching]
 keywords: patch, patching, semantic, smpl, spoon
 ---
 
-The [spoon-smpl](https://github.com/mkforsb/spoon/tree/smpl/spoon-smpl) submodule provides a
+The [spoon-smpl](https://github.com/INRIA/spoon/tree/master/spoon-smpl) submodule provides a
 prototype implementation of a subset of [SmPL](http://coccinelle.lip6.fr/) (Semantic Patch Language)
 for a subset of Java. SmPL patches can be thought of as traditional plain text patches with enhanced
 expressiveness thanks to support for the syntax and semantics of specific programming languages. For
@@ -19,7 +19,7 @@ On a Unix-like system, the following set of commands should be sufficient for ge
 and running from scratch.
 
 ```
-$ git clone -b smpl https://github.com/mkforsb/spoon.git
+$ git clone -b smpl https://github.com/INRIA/spoon.git
 $ cd spoon/spoon-smpl
 $ mvn package
 $ ./tools/smplcli.sh
