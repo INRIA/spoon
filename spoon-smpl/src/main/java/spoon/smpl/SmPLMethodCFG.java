@@ -62,8 +62,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
 
 import static fr.inria.controlflow.NaiveExceptionControlFlowStrategy.Options.AddPathsForEmptyTryBlocks;
 import static fr.inria.controlflow.NaiveExceptionControlFlowStrategy.Options.ReturnWithoutFinalizers;
