@@ -60,6 +60,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -192,28 +193,21 @@ public class SmPLMethodCFG {
 		 * @param e Element about to be replaced
 		 */
 		private void logReplacementWarning(CtElement e) {
-			// orElse(f: () -> str, els: str) -> f() if f() != null and does not throw exception, otherwise els
-			BiFunction<Supplier<String>, String, String> orElse = (Supplier<String> f, String els) -> {
-				try {
-					return (f.get() != null) ? f.get() : els;
-				} catch (Exception ignored) {
-					return els;
-				}
-			};
+			String file = Optional.ofNullable(e.getPosition())
+									.map(x -> x.getFile())
+									.map(x -> x.getName())
+									.orElse("[unknown file]");
 
-			String file = orElse.apply(() ->
-				e.getOriginalSourceFragment()
-					.getSourcePosition()
-					.getFile()
-					.getName(), "[unknown file]");
+			String line = Optional.ofNullable(e.getPosition())
+									.map(x -> x.getLine())
+									.map(x -> Integer.toString(x))
+									.orElse("-");
 
-			String line = orElse.apply(() ->
-				Integer.toString(e.getOriginalSourceFragment()
-							.getSourcePosition()
-							.getLine()), "-");
-
-			String code = orElse.apply(() ->
-				e.getOriginalSourceFragment().getSourceCode(), e.toString());
+			String code = Optional.ofNullable(e.getPosition())
+									.map(x -> x.getFile())
+									.map(x -> e.getOriginalSourceFragment())
+									.map(x -> x.getSourceCode())
+									.orElse(e.toString());
 
 			code = code.strip()
 				.replace("\n", " ")
