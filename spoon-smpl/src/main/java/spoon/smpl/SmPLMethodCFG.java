@@ -32,6 +32,8 @@ import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFor;
+import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
@@ -59,9 +61,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 import static fr.inria.controlflow.NaiveExceptionControlFlowStrategy.Options.AddPathsForEmptyTryBlocks;
 import static fr.inria.controlflow.NaiveExceptionControlFlowStrategy.Options.ReturnWithoutFinalizers;
+
+import org.slf4j.LoggerFactory;
 
 // TODO: rename since its not just methods but rather executables?
 
@@ -118,6 +124,16 @@ public class SmPLMethodCFG {
 		}
 
 		@Override
+		public void visitCtFor(CtFor forLoop) {
+			replace(forLoop);
+		}
+
+		@Override
+		public void visitCtForEach(CtForEach forLoop) {
+			replace(forLoop);
+		}
+
+		@Override
 		public void visitCtBreak(CtBreak breakStatement) {
 			replace(breakStatement);
 		}
@@ -163,10 +179,50 @@ public class SmPLMethodCFG {
 				throw new IllegalStateException("there should never be a call to replace() while restoring");
 			}
 
+			logReplacementWarning(e);
+
 			swappedElements.put(swapIndex, e);
 			e.replace(createReplacementInvocation(e.getFactory(), swapIndex));
 
 			swapIndex += 1;
+		}
+
+		/**
+		 * Log a warning about a replaced element.
+		 * @param e Element about to be replaced
+		 */
+		private void logReplacementWarning(CtElement e) {
+			// orElse(f: () -> str, els: str) -> f() if f() != null and does not throw exception, otherwise els
+			BiFunction<Supplier<String>, String, String> orElse = (Supplier<String> f, String els) -> {
+				try {
+					return (f.get() != null) ? f.get() : els;
+				} catch (Exception ignored) {
+					return els;
+				}
+			};
+
+			String file = orElse.apply(() ->
+				e.getOriginalSourceFragment()
+					.getSourcePosition()
+					.getFile()
+					.getName(), "[unknown file]");
+
+			String line = orElse.apply(() ->
+				Integer.toString(e.getOriginalSourceFragment()
+							.getSourcePosition()
+							.getLine()), "-");
+
+			String code = orElse.apply(() ->
+				e.getOriginalSourceFragment().getSourceCode(), e.toString());
+
+			code = code.strip()
+				.replace("\n", " ")
+				.substring(0, Math.min(40, code.length()));
+
+			LoggerFactory.getLogger("spoon-smpl")
+					.warn("Unsupported element excluded from control flow graph: "
+						+ e.getClass().getSimpleName()
+						+ "(" + file + ":" + line + " \"" +  code + " ..\")");
 		}
 
 		/**
