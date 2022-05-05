@@ -40,25 +40,4 @@ public class ToStringBugTest {
             fail(e.toString());
         }
     }
-
-    @GitHubIssue(issueNumber = 1, fixed = false)
-    public void failButOkay() {
-        assertTrue(false);
-    }
-
-    @GitHubIssue(issueNumber = 1, fixed = true)
-    public void failButError() {
-        assertTrue(false);
-
-    }
-
-    @GitHubIssue(issueNumber = 1, fixed = false)
-    public void noFailError() {
-        assertTrue(true);
-    }
-    
-    @GitHubIssue(issueNumber = 1, fixed = true)
-    public void noFailNoError() {
-        assertTrue(true);
-    }
 }
