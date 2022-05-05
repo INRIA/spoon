@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtType;
-import spoon.test.GitHubIssue;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class ToStringBugTest {
@@ -39,26 +38,5 @@ public class ToStringBugTest {
         } catch (SpoonException e) {
             fail(e.toString());
         }
-    }
-
-    @GitHubIssue(issueNumber = 1, fixed = false)
-    public void failButOkay() {
-        assertTrue(false);
-    }
-
-    @GitHubIssue(issueNumber = 1, fixed = true)
-    public void failButError() {
-        assertTrue(false);
-
-    }
-
-    @GitHubIssue(issueNumber = 1, fixed = false)
-    public void noFailError() {
-        assertTrue(true);
-    }
-    
-    @GitHubIssue(issueNumber = 1, fixed = true)
-    public void noFailNoError() {
-        assertTrue(true);
     }
 }
