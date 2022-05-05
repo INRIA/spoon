@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtType;
-import spoon.test.GitHubIssue;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class ToStringBugTest {
