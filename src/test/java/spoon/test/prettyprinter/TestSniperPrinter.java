@@ -797,7 +797,7 @@ public class TestSniperPrinter {
 		testSniper("superCall.SuperCallSniperTestClass", deleteForUpdate, assertContainsSuperWithUnaryOperator);
 	}
 
-	@GitHubIssue(issueNumber = 3911, fixed = true)
+	@GitHubIssue(issueNumber = 3911, fixed = false)
 	void testRoundBracketPrintingInComplexArithmeticExpression() {
 		Consumer<CtType<?>> noOpModifyFieldAssignment = type ->
 				type.getField("value")
