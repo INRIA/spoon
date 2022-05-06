@@ -811,7 +811,7 @@ public class TestSniperPrinter {
 		testSniper("ArithmeticExpression", noOpModifyFieldAssignment, assertPrintsRoundBracketsCorrectly);
 	}
 
-	@GitHubIssue(issueNumber = 4218, fixed = true)
+	@GitHubIssue(issueNumber = 4218, fixed = false)
 	void testSniperDoesNotPrintTheDeletedAnnotation() {
 		Consumer<CtType<?>> deleteAnnotation = type -> {
 			type.getAnnotations().forEach(CtAnnotation::delete);
@@ -1096,7 +1096,7 @@ public class TestSniperPrinter {
 	 */
 	@ParameterizedTest
 	@MethodSource("noChangeDiffTestFiles")
-	@GitHubIssue(issueNumber = 3811, fixed = true)
+	@GitHubIssue(issueNumber = 3811, fixed = false)
 	public void testNoChangeDiff(File file) throws IOException {
 		String fileName = file.getName();
 		Path outputPath = Paths.get("target/test-output");
