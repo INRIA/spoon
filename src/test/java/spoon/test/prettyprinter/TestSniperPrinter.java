@@ -1096,7 +1096,7 @@ public class TestSniperPrinter {
 	 */
 	@ParameterizedTest
 	@MethodSource("noChangeDiffTestFiles")
-	@GitHubIssue(issueNumber = 3811, fixed = false)
+	@GitHubIssue(issueNumber = 3811, fixed = true)
 	public void testNoChangeDiff(File file) throws IOException {
 		String fileName = file.getName();
 		Path outputPath = Paths.get("target/test-output");
