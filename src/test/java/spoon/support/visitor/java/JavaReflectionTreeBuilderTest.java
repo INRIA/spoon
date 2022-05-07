@@ -642,8 +642,8 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testInnerClass() {
-		// contract: JavaReflectionTreeBuilder works on internal named classes
+	public void testInnerClassOfSourceCodeClass() {
+		// contract: JavaReflectionTreeBuilder does not rescan the type if source information is available
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/java/spoon/support/visitor/java/JavaReflectionTreeBuilderTest.java");
 		launcher.buildModel();
@@ -651,6 +651,28 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("Diff", ctType.getSimpleName());
 		assertEquals(false, ctType.isAnonymous());
 		assertEquals(false, ctType.isShadow());
+
+		Class<?> klass = ctType.getActualClass();
+		assertEquals("spoon.support.visitor.java.JavaReflectionTreeBuilderTest$Diff", klass.getName());
+		assertEquals(false, klass.isAnonymousClass());
+
+		CtType<?> ctClass = new JavaReflectionTreeBuilder(launcher.getFactory()).scan(klass);
+		assertEquals("Diff", ctClass.getSimpleName());
+		assertEquals(false, ctClass.isAnonymous());
+		assertEquals(false, ctClass.isShadow());
+		assertEquals("element", ctClass.getFields().toArray(new CtField[0])[0].getSimpleName());
+	}
+
+	@Test
+	public void testPurelyReflectiveInnerClass() {
+		// contract: JavaReflectionTreeBuilder works for named nested classes
+		Launcher launcher = new Launcher();
+		// No resources, as we only want to check the reflection tree builder
+		launcher.buildModel();
+		CtType ctType = launcher.getFactory().Type().get(Diff.class);
+		assertEquals("Diff", ctType.getSimpleName());
+		assertEquals(false, ctType.isAnonymous());
+		assertEquals(true, ctType.isShadow());
 
 		Class<?> klass = ctType.getActualClass();
 		assertEquals("spoon.support.visitor.java.JavaReflectionTreeBuilderTest$Diff", klass.getName());
