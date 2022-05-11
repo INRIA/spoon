@@ -53,6 +53,7 @@ import spoon.test.annotation.testclasses.GlobalAnnotation;
 import spoon.test.pkg.name.PackageTestClass;
 import spoon.test.pkg.processors.ElementProcessor;
 import spoon.test.pkg.testclasses.Foo;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 
@@ -279,25 +280,19 @@ public class PackageTest {
 		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME, rootPackageName);
 	}
 
-	@Test
-	public void testAddAnnotationToPackage() throws Exception {
+	@ModelTest(value = "./src/test/java/spoon/test/pkg/testclasses/Foo.java", autoImport = true)
+	public void testAddAnnotationToPackage(Launcher launcher, Factory factory) throws Exception {
 		// contract: Created package-info should used imports in auto-import
-		final Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/java/spoon/test/pkg/testclasses/Foo.java");
-		spoon.getEnvironment().setAutoImports(true);
 		File outputDir = new File("./target/spoon-packageinfo");
-		spoon.getEnvironment().setSourceOutputDirectory(outputDir);
+		launcher.getEnvironment().setSourceOutputDirectory(outputDir);
 
-		spoon.buildModel();
-
-		CtAnnotationType annotationType = (CtAnnotationType)spoon.getFactory().Annotation().get(GlobalAnnotation.class);
-		CtAnnotation annotation = spoon.getFactory().Core().createAnnotation();
+		CtAnnotationType annotationType = (CtAnnotationType) factory.Annotation().get(GlobalAnnotation.class);
+		CtAnnotation annotation = factory.Core().createAnnotation();
 		annotation.setAnnotationType(annotationType.getReference());
-		CtPackage ctPackage = spoon.getFactory().Package().get("spoon.test.pkg.testclasses");
+		CtPackage ctPackage = factory.Package().get("spoon.test.pkg.testclasses");
 		ctPackage.addAnnotation(annotation);
 
-
-		JavaOutputProcessor outputProcessor = spoon.createOutputWriter();
+		JavaOutputProcessor outputProcessor = launcher.createOutputWriter();
 		outputProcessor.process(ctPackage);
 
 		File packageInfo = new File(outputDir, "spoon/test/pkg/testclasses/package-info.java");
