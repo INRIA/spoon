@@ -77,6 +77,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;

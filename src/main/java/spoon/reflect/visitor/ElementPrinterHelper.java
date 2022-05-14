@@ -548,7 +548,16 @@ public class ElementPrinterHelper {
 		}
 	}
 
-	public void printPermits(CtSealable sealable) {
+	/**
+	 * Prints the {@code permits} keyword followed by the permitted
+	 * types of a {@link CtSealable}.
+	 * <p>
+	 * If the given sealed type does not have any
+	 * explicit permitted types, nothing is printed.
+	 *
+	 * @param sealable the sealed type to print the permitted types for.
+	 */
+	protected void printPermits(CtSealable sealable) {
 		if (sealable.getPermittedTypes().isEmpty() || sealable.getPermittedTypes().stream().allMatch(CtElement::isImplicit)) {
 			return;
 		}

@@ -1,18 +1,9 @@
-/**
- * Copyright (C) 2006-2018 INRIA and contributors
- * Spoon - http://spoon.gforge.inria.fr/
+/*
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify
- * and/or redistribute the software under the terms of the CeCILL-C license as
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.replace;
 /**
@@ -1003,9 +994,9 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	static class CtSealablePermittedTypesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
-		private final spoon.reflect.declaration.CtClass element;
+		private final spoon.reflect.declaration.CtSealable element;
 
-		CtSealablePermittedTypesReplaceListener(spoon.reflect.declaration.CtClass element) {
+		CtSealablePermittedTypesReplaceListener(spoon.reflect.declaration.CtSealable element) {
 			this.element = element;
 		}
 
