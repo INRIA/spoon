@@ -12,4 +12,12 @@ public class JavadocBlockTag implements JavadocElement {
 		this.tagType = tagType;
 		this.elements = elements;
 	}
+
+	@Override
+	public String toString() {
+		return "JavadocBlockTag{" +
+			"tagType=" + tagType.getName() +
+			", elements=" + elements +
+			'}';
+	}
 }

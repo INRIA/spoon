@@ -6,4 +6,11 @@ public class JavadocText implements JavadocElement {
 	public JavadocText(String rawFragment) {
 		this.rawFragment = rawFragment;
 	}
+
+	@Override
+	public String toString() {
+		return "JavadocText{" +
+			"rawFragment='" + rawFragment + '\'' +
+			'}';
+	}
 }

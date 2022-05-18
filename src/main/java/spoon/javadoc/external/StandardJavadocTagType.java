@@ -1,6 +1,8 @@
 package spoon.javadoc.external;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 
 import static spoon.javadoc.external.JavadocTagCategory.BLOCK;
@@ -27,7 +29,7 @@ public enum StandardJavadocTagType implements JavadocTagType {
 	SERIAL_FIELD("serialField", BLOCK),
 	SINCE("since", BLOCK),
 	SNIPPET("snippet", INLINE),
-	SUMMARY("summary", BLOCK),
+	SUMMARY("summary", INLINE),
 	SYSTEM_PROPERTY("systemProperty", INLINE),
 	THROWS("throws", BLOCK),
 	USES("uses", BLOCK),
@@ -50,5 +52,12 @@ public enum StandardJavadocTagType implements JavadocTagType {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	public static Optional<JavadocTagType> fromString(String name) {
+		return Arrays.stream(values())
+			.filter(it -> it.getName().equalsIgnoreCase(name))
+			.map(it -> (JavadocTagType) it)
+			.findFirst();
 	}
 }

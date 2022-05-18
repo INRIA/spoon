@@ -1,6 +1,7 @@
 package spoon.javadoc.external;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface JavadocTagType {
 
@@ -18,4 +19,18 @@ public interface JavadocTagType {
 	}
 
 	String getName();
+
+	static JavadocTagType unknown(String name, JavadocTagCategory category) {
+		return new JavadocTagType() {
+			@Override
+			public Collection<JavadocTagCategory> categories() {
+				return List.of(category);
+			}
+
+			@Override
+			public String getName() {
+				return name;
+			}
+		};
+	}
 }

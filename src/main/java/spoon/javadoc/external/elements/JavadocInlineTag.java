@@ -13,4 +13,12 @@ public class JavadocInlineTag implements JavadocElement {
 		this.elements = elements;
 		this.tagType = tagType;
 	}
+
+	@Override
+	public String toString() {
+		return "JavadocInlineTag{" +
+			"elements=" + elements +
+			", tagType=" + tagType.getName() +
+			'}';
+	}
 }
