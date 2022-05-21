@@ -15,6 +15,7 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -308,10 +309,17 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : constructor.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
-		boolean isInnerClass = isInnerClass(constructor.getDeclaringClass());
 		RtParameter[] parametersOf = RtParameter.parametersOf(constructor);
-		for (int i = isInnerClass ? 1 : 0; i < parametersOf.length; i++) {
-			visitParameter(parametersOf[i]);
+		Parameter[] parameters = constructor.getParameters();
+		for (int i = 0; i < parametersOf.length; i++) {
+			if (parameters[i].isImplicit()) {
+				continue;
+			}
+			if (i == 0 && parameters[i].getType() == constructor.getDeclaringClass().getEnclosingClass()) {
+				continue;
+			}
+			RtParameter rtParameter = parametersOf[i];
+			visitParameter(rtParameter);
 		}
 		for (TypeVariable<Constructor<T>> aTypeParameter : constructor.getTypeParameters()) {
 			visitTypeParameter(aTypeParameter);
@@ -319,10 +327,6 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Class<?> exceptionType : constructor.getExceptionTypes()) {
 			visitTypeReference(CtRole.THROWN, exceptionType);
 		}
-	}
-
-	private boolean isInnerClass(Class<?> clazz) {
-		return !Modifier.isStatic(clazz.getModifiers()) && clazz.getEnclosingClass() != null;
 	}
 
 	@Override

@@ -96,6 +96,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -799,7 +800,7 @@ public class JavaReflectionTreeBuilderTest {
 		for (String inner : inners) {
 			current = current.getNestedType(inner);
 		}
-		assertThat(current, CoreMatchers.instanceOf(CtClass.class));
+		assertThat(current, instanceOf(CtClass.class));
 		CtClass<?> asClass = (CtClass<?>) current;
 		assertThat(asClass.getConstructors().size(), equalTo(1));
 		assertThat(asClass.getConstructors().iterator().next().getParameters().size(), equalTo(inners.size()));
