@@ -16,34 +16,8 @@
  */
 package spoon.support.visitor.java;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static spoon.testing.utils.ModelUtils.createFactory;
-import java.io.File;
-import java.io.ObjectInputStream;
-import java.lang.annotation.Retention;
-import java.net.CookieManager;
-import java.net.URLClassLoader;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import com.mysema.query.support.ProjectableQuery;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -60,6 +34,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
@@ -75,7 +50,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtElementPathBuilder;
@@ -95,10 +69,42 @@ import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.test.generics.testclasses3.ComparableComparatorBug;
+import spoon.test.innerclasses.InnerClasses;
 import spoon.test.pkg.PackageTest;
 import spoon.test.pkg.cyclic.Outside;
 import spoon.test.pkg.cyclic.direct.Cyclic;
 import spoon.test.pkg.cyclic.indirect.Indirect;
+
+import java.io.File;
+import java.io.ObjectInputStream;
+import java.lang.annotation.Retention;
+import java.net.CookieManager;
+import java.net.URLClassLoader;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class JavaReflectionTreeBuilderTest {
 
@@ -780,5 +786,22 @@ public class JavaReflectionTreeBuilderTest {
 		assertDoesNotThrow(() -> new JavaReflectionTreeBuilder(factory).scan(Indirect.class));
 		// an independent starting point, causing Cyclic and Indirect to be visited too
 		assertDoesNotThrow(() -> new JavaReflectionTreeBuilder(factory).scan(Outside.class));
+	}
+
+	@Test
+	void testInnerClassesConstructorParameters() {
+		// contract: inner classes have exactly one parameter for the immediately enclosing instance
+		Factory factory = createFactory();
+
+		CtType<InnerClasses> scan = new JavaReflectionTreeBuilder(factory).scan(InnerClasses.class);
+		List<String> inners = List.of("A", "B", "C", "D", "E", "F");
+		CtType<?> current = scan;
+		for (String inner : inners) {
+			current = current.getNestedType(inner);
+		}
+		assertThat(current, CoreMatchers.instanceOf(CtClass.class));
+		CtClass<?> asClass = (CtClass<?>) current;
+		assertThat(asClass.getConstructors().size(), equalTo(1));
+		assertThat(asClass.getConstructors().iterator().next().getParameters().size(), equalTo(inners.size()));
 	}
 }

@@ -308,14 +308,10 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : constructor.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
-		int nrEnclosingClasses = getNumberOfEnclosingClasses(constructor.getDeclaringClass());
-		for (RtParameter parameter : RtParameter.parametersOf(constructor)) {
-			//ignore implicit parameters of enclosing classes
-			if (nrEnclosingClasses > 0) {
-				nrEnclosingClasses--;
-				continue;
-			}
-			visitParameter(parameter);
+		boolean isInnerClass = isInnerClass(constructor.getDeclaringClass());
+		RtParameter[] parametersOf = RtParameter.parametersOf(constructor);
+		for (int i = isInnerClass ? 1 : 0; i < parametersOf.length; i++) {
+			visitParameter(parametersOf[i]);
 		}
 		for (TypeVariable<Constructor<T>> aTypeParameter : constructor.getTypeParameters()) {
 			visitTypeParameter(aTypeParameter);
@@ -325,12 +321,8 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		}
 	}
 
-	private int getNumberOfEnclosingClasses(Class<?> clazz) {
-		int depth = 0;
-		while (Modifier.isStatic(clazz.getModifiers()) == false && (clazz = clazz.getEnclosingClass()) != null) {
-			depth++;
-		}
-		return depth;
+	private boolean isInnerClass(Class<?> clazz) {
+		return !Modifier.isStatic(clazz.getModifiers()) && clazz.getEnclosingClass() != null;
 	}
 
 	@Override
