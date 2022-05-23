@@ -38,7 +38,7 @@ jobs:
       - name: Disable Git's autocrlf
         run: git config --global core.autocrlf false
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
-      - uses: actions/setup-java@4fe61d24fe5472910b93bdeffb8aad49f979d862 # tag=v3.2.0
+      - uses: actions/setup-java@860f60056505705214d223b91ed7a30f173f6142 # tag=v3.3.0
         with:
           java-version: ${{ matrix.java }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -75,7 +75,7 @@ jobs:
     name: Test with coverage
     steps:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
-      - uses: actions/setup-java@4fe61d24fe5472910b93bdeffb8aad49f979d862 # tag=v3.2.0
+      - uses: actions/setup-java@860f60056505705214d223b91ed7a30f173f6142 # tag=v3.3.0
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -111,7 +111,7 @@ jobs:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@4fe61d24fe5472910b93bdeffb8aad49f979d862 # tag=v3.2.0
+      - uses: actions/setup-java@860f60056505705214d223b91ed7a30f173f6142 # tag=v3.3.0
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -148,14 +148,14 @@ jobs:
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
         with:
           path: pull_request
-      - uses: actions/setup-java@4fe61d24fe5472910b93bdeffb8aad49f979d862 # tag=v3.2.0
+      - uses: actions/setup-java@860f60056505705214d223b91ed7a30f173f6142 # tag=v3.3.0
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}
       - name: git reset
         run: cd pull_request && git fetch && git reset --soft origin/master
       - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@53bd9f02f006a4e67ceec0b8562f10f1bce177e5 # tag=v5.0.4
+        uses: JetBrains/qodana-action@b06a3f2289e63df0b6746cfd80f5af9fb6a6c65a # tag=v5.1.0
         with:
           linter: ${{ env.QODANA_LINTER }}
           project-dir: "${{ github.workspace }}/pull_request"
@@ -165,7 +165,7 @@ jobs:
           fail-threshold: 0
           use-annotations: false
           use-caches: false # we disable cache for consistent results
-      - uses: github/codeql-action/upload-sarif@7502d6e991ca767d2db617bfd823a1ed925a0d59 # tag=v2
+      - uses: github/codeql-action/upload-sarif@2f58583a1b24a7d3c7034f6bf9fa506d23b1183b # tag=v2
         if: always()
         with:
           sarif_file: "${{ github.workspace }}/result/qodana.sarif.json"
@@ -179,7 +179,7 @@ jobs:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@4fe61d24fe5472910b93bdeffb8aad49f979d862 # tag=v3.2.0
+      - uses: actions/setup-java@860f60056505705214d223b91ed7a30f173f6142 # tag=v3.3.0
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}

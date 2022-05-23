@@ -15,6 +15,7 @@ import org.eclipse.jdt.internal.compiler.ast.FieldReference;
 import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
 import org.eclipse.jdt.internal.compiler.ast.OpensStatement;
+import org.eclipse.jdt.internal.compiler.ast.PackageVisibilityStatement;
 import org.eclipse.jdt.internal.compiler.ast.ProvidesStatement;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
@@ -849,40 +850,18 @@ public class JDTTreeBuilderHelper {
 		return moduleRequirement;
 	}
 
-	CtPackageExport createModuleExport(ExportsStatement exportsStatement) {
-		String packageName = new String(exportsStatement.pkgName);
-		int sourceStart = exportsStatement.sourceStart;
-		int sourceEnd = exportsStatement.sourceEnd;
+	CtPackageExport createModuleExport(PackageVisibilityStatement statement) {
+		String packageName = new String(statement.pkgName);
+		int sourceStart = statement.sourceStart;
+		int sourceEnd = statement.sourceEnd;
 
 		CtPackageReference ctPackageReference = jdtTreeBuilder.references.getPackageReference(packageName);
 		CtPackageExport moduleExport = jdtTreeBuilder.getFactory().Module().createPackageExport(ctPackageReference);
 
-		if (exportsStatement.targets != null && exportsStatement.targets.length > 0) {
+		if (statement.targets != null && statement.targets.length > 0) {
 			List<CtModuleReference> moduleReferences = new ArrayList<>();
 
-			for (ModuleReference moduleReference : exportsStatement.targets) {
-				moduleReferences.add(this.jdtTreeBuilder.references.getModuleReference(moduleReference));
-			}
-
-			moduleExport.setTargetExport(moduleReferences);
-		}
-
-		moduleExport.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
-		return moduleExport;
-	}
-
-	CtPackageExport createModuleExport(OpensStatement opensStatement) {
-		String packageName = new String(opensStatement.pkgName);
-		int sourceStart = opensStatement.sourceStart;
-		int sourceEnd = opensStatement.sourceEnd;
-
-		CtPackageReference ctPackageReference = jdtTreeBuilder.references.getPackageReference(packageName);
-		CtPackageExport moduleExport = jdtTreeBuilder.getFactory().Module().createPackageExport(ctPackageReference);
-
-		if (opensStatement.targets != null && opensStatement.targets.length > 0) {
-			List<CtModuleReference> moduleReferences = new ArrayList<>();
-
-			for (ModuleReference moduleReference : opensStatement.targets) {
+			for (ModuleReference moduleReference : statement.targets) {
 				moduleReferences.add(this.jdtTreeBuilder.references.getModuleReference(moduleReference));
 			}
 
