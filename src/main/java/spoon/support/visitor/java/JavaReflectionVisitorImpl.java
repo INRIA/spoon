@@ -315,6 +315,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			if (parameters[i].isImplicit()) {
 				continue;
 			}
+			// isImplicit does not work for code compiled with Java <8, therefore we need this best effort fallback
 			if (i == 0 && parameters[i].getType() == constructor.getDeclaringClass().getEnclosingClass()) {
 				continue;
 			}
