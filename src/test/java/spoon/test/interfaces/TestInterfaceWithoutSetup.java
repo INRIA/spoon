@@ -52,9 +52,9 @@ public class TestInterfaceWithoutSetup {
 
 		Set<CtExtendedModifier> extendedModifierSet = fieldImplicit.getExtendedModifiers();
 		assertEquals(3, extendedModifierSet.size());
-		assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.FINAL, true)));
-		assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
-		assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.STATIC, true)));
+		assertTrue(extendedModifierSet.contains(CtExtendedModifier.implicit(ModifierKind.FINAL)));
+		assertTrue(extendedModifierSet.contains(CtExtendedModifier.implicit(ModifierKind.PUBLIC)));
+		assertTrue(extendedModifierSet.contains(CtExtendedModifier.implicit(ModifierKind.STATIC)));
 
 		for (CtExtendedModifier extendedModifier : extendedModifierSet) {
 			assertTrue(extendedModifier.isImplicit());
@@ -69,9 +69,9 @@ public class TestInterfaceWithoutSetup {
 
 		extendedModifierSet = fieldExplicit.getExtendedModifiers();
 		assertEquals(3, extendedModifierSet.size());
-		assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.FINAL, true)));
-		assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.PUBLIC, false)));
-		assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.STATIC, false)));
+		assertTrue(extendedModifierSet.contains(CtExtendedModifier.implicit(ModifierKind.FINAL)));
+		assertTrue(extendedModifierSet.contains(CtExtendedModifier.explicit(ModifierKind.PUBLIC)));
+		assertTrue(extendedModifierSet.contains(CtExtendedModifier.explicit(ModifierKind.STATIC)));
 
 		int counter = 0;
 		for (CtExtendedModifier extendedModifier : extendedModifierSet) {
@@ -101,8 +101,8 @@ public class TestInterfaceWithoutSetup {
 
 		extendedModifierSet = staticMethod.getExtendedModifiers();
 		assertEquals(2, extendedModifierSet.size());
-		assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
-		assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.STATIC, false)));
+		assertTrue(extendedModifierSet.contains(CtExtendedModifier.implicit(ModifierKind.PUBLIC)));
+		assertTrue(extendedModifierSet.contains(CtExtendedModifier.explicit(ModifierKind.STATIC)));
 
 		CtMethod publicMethod = (CtMethod) dumbType.getMethodsByName("machin").get(0);
 		assertTrue(publicMethod.hasModifier(ModifierKind.PUBLIC));
@@ -110,8 +110,8 @@ public class TestInterfaceWithoutSetup {
 
 		extendedModifierSet = publicMethod.getExtendedModifiers();
 		assertEquals(2, extendedModifierSet.size());
-		assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
-		assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.ABSTRACT, true)));
+		assertTrue(extendedModifierSet.contains(CtExtendedModifier.implicit(ModifierKind.PUBLIC)));
+		assertTrue(extendedModifierSet.contains(CtExtendedModifier.implicit(ModifierKind.ABSTRACT)));
 
 		CtMethod defaultMethod = (CtMethod) dumbType.getMethodsByName("bla").get(0);
 		assertTrue(defaultMethod.hasModifier(ModifierKind.PUBLIC));
@@ -120,15 +120,15 @@ public class TestInterfaceWithoutSetup {
 
 		extendedModifierSet = defaultMethod.getExtendedModifiers();
 		assertEquals(1, extendedModifierSet.size());
-		assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
+		assertTrue(extendedModifierSet.contains(CtExtendedModifier.implicit(ModifierKind.PUBLIC)));
 
 		CtMethod explicitDefaultMethod = (CtMethod) dumbType.getMethodsByName("anotherOne").get(0);
 		assertTrue(explicitDefaultMethod.hasModifier(ModifierKind.PUBLIC));
 
 		extendedModifierSet = explicitDefaultMethod.getExtendedModifiers();
 		assertEquals(2, extendedModifierSet.size());
-		assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.PUBLIC, false)));
-		assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.ABSTRACT, true)));
+		assertTrue(extendedModifierSet.contains(CtExtendedModifier.explicit(ModifierKind.PUBLIC)));
+		assertTrue(extendedModifierSet.contains(CtExtendedModifier.implicit(ModifierKind.ABSTRACT)));
 	}
 
 	@Test

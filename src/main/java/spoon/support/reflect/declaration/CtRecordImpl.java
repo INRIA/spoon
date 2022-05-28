@@ -233,9 +233,9 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 	public <E extends CtElement> E setParent(CtElement parent) {
 		Set<CtExtendedModifier> extendedModifiers = new HashSet<>(getExtendedModifiers());
 		if (parent instanceof CtType) {
-			extendedModifiers.add(new CtExtendedModifier(ModifierKind.STATIC, true));
+			extendedModifiers.add(CtExtendedModifier.implicit(ModifierKind.STATIC));
 		} else {
-			extendedModifiers.remove(new CtExtendedModifier(ModifierKind.STATIC, true));
+			extendedModifiers.remove(CtExtendedModifier.implicit(ModifierKind.STATIC));
 		}
 		setExtendedModifiers(extendedModifiers);
 		return super.setParent(parent);
