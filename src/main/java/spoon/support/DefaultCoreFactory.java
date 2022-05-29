@@ -1181,7 +1181,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	public CtRecord createRecord() {
 		CtRecord recordType = new CtRecordImpl();
 		Set<CtExtendedModifier> modifier = new HashSet<>(recordType.getExtendedModifiers());
-		modifier.add(new CtExtendedModifier(ModifierKind.FINAL, true));
+		modifier.add(CtExtendedModifier.implicit(ModifierKind.FINAL));
 		recordType.setExtendedModifiers(modifier);
 		recordType.setFactory(getMainFactory());
 		return recordType;
