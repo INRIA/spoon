@@ -337,10 +337,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			return true;
 		}
 		// best effort fallback
-		if (isFirstParameter && parameter.getType() == constructor.getDeclaringClass().getEnclosingClass()) {
-			return true;
-		}
-		return false;
+		return isFirstParameter && parameter.getType() == constructor.getDeclaringClass().getEnclosingClass();
 	}
 
 	@Override
