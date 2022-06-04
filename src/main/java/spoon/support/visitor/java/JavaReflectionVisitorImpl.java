@@ -312,14 +312,8 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		RtParameter[] parametersOf = RtParameter.parametersOf(constructor);
 		Parameter[] parameters = constructor.getParameters();
 		for (int i = 0; i < parametersOf.length; i++) {
-			if (parameters[i].isImplicit()) {
-				continue;
-			}
-			// isImplicit does not work for code compiled with Java <8, therefore we need this best effort fallback
-			if (i == 0 && parameters[i].getType() == constructor.getDeclaringClass().getEnclosingClass()) {
-				continue;
-			}
 			RtParameter rtParameter = parametersOf[i];
+			if (isImplicitParameter(parameters[i], constructor, i == 0)) continue;
 			visitParameter(rtParameter);
 		}
 		for (TypeVariable<Constructor<T>> aTypeParameter : constructor.getTypeParameters()) {
@@ -328,6 +322,23 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Class<?> exceptionType : constructor.getExceptionTypes()) {
 			visitTypeReference(CtRole.THROWN, exceptionType);
 		}
+	}
+
+	/**
+	 * Check whether the constructor parameter is implicit.
+	 * It is not enough to simply use {@link Parameter#isImplicit()} as the class file format before Java 8
+	 * has no way to embed the required information. As of Java 8, the information is stored in the
+	 * MethodParameters attribute, however javac does not emit the attribute by default in current Java versions.
+	 */
+	private boolean isImplicitParameter(Parameter parameter, Constructor<?> constructor, boolean isFirstParameter) {
+		if (parameter.isImplicit()) {
+			return true;
+		}
+		// best effort fallback
+		if (isFirstParameter && parameter.getType() == constructor.getDeclaringClass().getEnclosingClass()) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
