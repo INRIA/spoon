@@ -313,7 +313,9 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		Parameter[] parameters = constructor.getParameters();
 		for (int i = 0; i < parametersOf.length; i++) {
 			RtParameter rtParameter = parametersOf[i];
-			if (isImplicitParameter(parameters[i], constructor, i == 0)) continue;
+			if (isImplicitParameter(parameters[i], constructor, i == 0)) {
+				continue;
+			}
 			visitParameter(rtParameter);
 		}
 		for (TypeVariable<Constructor<T>> aTypeParameter : constructor.getTypeParameters()) {
