@@ -2,6 +2,7 @@ package spoon.javadoc.external.elements;
 
 import spoon.javadoc.external.JavadocTagType;
 
+import java.util.Collections;
 import java.util.List;
 
 // TODO: WellKnown.Inline.link(CtTypeReference, "Label");
@@ -12,6 +13,19 @@ public class JavadocInlineTag implements JavadocElement {
 	public JavadocInlineTag(List<JavadocElement> elements, JavadocTagType tagType) {
 		this.elements = elements;
 		this.tagType = tagType;
+	}
+
+	public JavadocTagType getTagType() {
+		return tagType;
+	}
+
+	public List<JavadocElement> getElements() {
+		return elements;
+	}
+
+	@Override
+	public void accept(JavadocVisitor visitor) {
+		visitor.visitInlineTag(this);
 	}
 
 	@Override

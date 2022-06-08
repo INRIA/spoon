@@ -28,7 +28,7 @@ public class StringReader {
 		if (peek() != '{') {
 			throw new RuntimeException(":( no brace at start");
 		}
-		int start = position;
+		int start = position + 1;
 		int depth = 0;
 		do {
 			if (peek() == '{') {
@@ -43,7 +43,7 @@ public class StringReader {
 			}
 		} while (canRead());
 
-		return underlying.substring(start, position);
+		return underlying.substring(start, position - 1);
 	}
 
 	public boolean matches(String needle) {

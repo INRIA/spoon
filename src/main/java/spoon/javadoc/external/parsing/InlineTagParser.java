@@ -6,11 +6,18 @@ import spoon.javadoc.external.StringReader;
 import spoon.javadoc.external.elements.JavadocElement;
 import spoon.javadoc.external.elements.JavadocInlineTag;
 import spoon.javadoc.external.elements.JavadocText;
+import spoon.javadoc.external.references.JavadocReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class InlineTagParser {
+
+	private final LinkResolver linkResolver;
+
+	public InlineTagParser(LinkResolver linkResolver) {
+		this.linkResolver = linkResolver;
+	}
 
 	public JavadocInlineTag parse(StringReader reader, JavadocTagType type) {
 		if (!(type instanceof StandardJavadocTagType)) {
@@ -36,6 +43,7 @@ public class InlineTagParser {
 
 			case LINK:
 			case LINKPLAIN:
+				return parseLinkTag(reader, type);
 			case SYSTEM_PROPERTY:
 			case VALUE:
 				return parseStandardTagWithArgument(reader, type);
@@ -45,6 +53,33 @@ public class InlineTagParser {
 			default:
 				throw new AssertionError("Unreachable");
 		}
+	}
+
+	private JavadocInlineTag parseLinkTag(StringReader reader, StandardJavadocTagType type) {
+		StringBuilder referenceText = new StringBuilder(reader.readWhile(it -> !Character.isWhitespace(it)));
+		if (referenceText.toString().contains("(")) {
+			referenceText.append(reader.readWhile(it -> it != ')'));
+			referenceText.append(reader.read(1));
+
+			// Skip whitespace between reference and label
+			if (Character.isWhitespace(reader.peek())) {
+				reader.read(1);
+			}
+		}
+		List<JavadocElement> elements = new ArrayList<>();
+
+		elements.add(
+			linkResolver.resolve(referenceText.toString())
+				.<JavadocElement>map(ctReference -> new JavadocReference(referenceText.toString(), ctReference))
+				.orElse(new JavadocText(referenceText.toString()))
+		);
+
+		String label = reader.readRemaining().strip();
+		if (!label.isEmpty()) {
+			elements.add(new JavadocText(label));
+		}
+
+		return new JavadocInlineTag(elements, type);
 	}
 
 	private JavadocInlineTag parseIndexTag(StringReader reader) {

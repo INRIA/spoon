@@ -7,6 +7,15 @@ public class JavadocText implements JavadocElement {
 		this.rawFragment = rawFragment;
 	}
 
+	public String getRawFragment() {
+		return rawFragment;
+	}
+
+	@Override
+	public void accept(JavadocVisitor visitor) {
+		visitor.visitText(this);
+	}
+
 	@Override
 	public String toString() {
 		return "JavadocText{" +
