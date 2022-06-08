@@ -67,12 +67,27 @@ public class JavadocParser {
 		StringBuilder read = new StringBuilder();
 		while (underlying.canRead()) {
 			read.append(underlying.readWhile(it -> it != '{' && it != '@'));
-			if (inlineTagStarts() || blockTagStarts()) {
+			if (inlineTagStarts()) {
+				break;
+			}
+			if (blockTagStarts() && endsWithNewline(read.toString())) {
 				break;
 			}
 			read.append(underlying.read(1));
 		}
 		return new JavadocText(read.toString());
+	}
+
+	private boolean endsWithNewline(String input) {
+		for (int index = input.length() - 1; index >= 0; index--) {
+			if (!Character.isWhitespace(input.charAt(index))) {
+				return false;
+			}
+			if (input.charAt(index) == '\n') {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private JavadocElement readInlineTag() {
@@ -147,6 +162,7 @@ public class JavadocParser {
 	 * How are you doing? I am just fine :)
 	 * This is an inline link {@link String} and one with a {@link String label}
 	 * and a {@link String#CASE_INSENSITIVE_ORDER field} and {@link String#replace(char, char) with a space}.
+	 * {@link java.lang.annotation.Target @Target} chained to @Target.
 	 * <p>
 	 * We can also write <em>very HTML</em> {@code code}.
 	 * And an index: {@index "Hello world" With a phrase} or {@index without Without a phrase}.
