@@ -56,10 +56,10 @@ public class InlineTagParser {
 	}
 
 	private JavadocInlineTag parseLinkTag(StringReader reader, StandardJavadocTagType type) {
-		StringBuilder referenceText = new StringBuilder(reader.readWhile(it -> !Character.isWhitespace(it)));
-		if (referenceText.toString().contains("(")) {
-			referenceText.append(reader.readWhile(it -> it != ')'));
-			referenceText.append(reader.read(1));
+		String referenceText = reader.readWhile(it -> !Character.isWhitespace(it));
+		if (referenceText.contains("(")) {
+			referenceText += reader.readWhile(it -> it != ')');
+			referenceText += reader.read(1);
 
 			// Skip whitespace between reference and label
 			if (Character.isWhitespace(reader.peek())) {
@@ -69,9 +69,9 @@ public class InlineTagParser {
 		List<JavadocElement> elements = new ArrayList<>();
 
 		elements.add(
-			linkResolver.resolve(referenceText.toString())
-				.<JavadocElement>map(ctReference -> new JavadocReference(referenceText.toString(), ctReference))
-				.orElse(new JavadocText(referenceText.toString()))
+			linkResolver.resolve(referenceText)
+				.<JavadocElement>map(JavadocReference::new)
+				.orElse(new JavadocText(referenceText))
 		);
 
 		String label = reader.readRemaining().strip();

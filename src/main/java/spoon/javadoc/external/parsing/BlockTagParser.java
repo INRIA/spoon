@@ -84,15 +84,15 @@ public class BlockTagParser {
 			// html tag
 			elements.add(new JavadocText(reader.readRemaining()));
 		} else {
-			StringBuilder raw = new StringBuilder(reader.readWhile(it -> !Character.isWhitespace(it)));
-			if (raw.toString().contains("(")) {
-				raw.append(reader.readWhile(it -> it != ')'));
-				raw.append(reader.read(1));
+			String reference = reader.readWhile(it -> !Character.isWhitespace(it));
+			if (reference.contains("(")) {
+				reference += reader.readWhile(it -> it != ')');
+				reference += reader.read(1);
 			}
 			elements.add(
-				linkResolver.resolve(raw.toString())
-					.<JavadocElement>map(it -> new JavadocReference(raw.toString(), it))
-					.orElse(new JavadocText(raw.toString()))
+				linkResolver.resolve(reference)
+					.<JavadocElement>map(JavadocReference::new)
+					.orElse(new JavadocText(reference))
 			);
 			// label
 			elements.add(new JavadocText(reader.readRemaining()));

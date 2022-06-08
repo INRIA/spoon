@@ -196,7 +196,7 @@ public class JavadocParser {
 
 		@Override
 		public void visitText(JavadocText text) {
-			System.out.print(text.getRawFragment());
+			System.out.print(text.getText());
 		}
 
 		@Override

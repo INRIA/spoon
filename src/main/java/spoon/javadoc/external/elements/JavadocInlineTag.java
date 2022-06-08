@@ -2,7 +2,6 @@ package spoon.javadoc.external.elements;
 
 import spoon.javadoc.external.JavadocTagType;
 
-import java.util.Collections;
 import java.util.List;
 
 // TODO: WellKnown.Inline.link(CtTypeReference, "Label");

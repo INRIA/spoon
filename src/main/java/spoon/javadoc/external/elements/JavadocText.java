@@ -1,14 +1,14 @@
 package spoon.javadoc.external.elements;
 
 public class JavadocText implements JavadocElement {
-	private final String rawFragment;
+	private final String text;
 
-	public JavadocText(String rawFragment) {
-		this.rawFragment = rawFragment;
+	public JavadocText(String text) {
+		this.text = text;
 	}
 
-	public String getRawFragment() {
-		return rawFragment;
+	public String getText() {
+		return text;
 	}
 
 	@Override
@@ -19,7 +19,7 @@ public class JavadocText implements JavadocElement {
 	@Override
 	public String toString() {
 		return "JavadocText{" +
-			"rawFragment='" + rawFragment + '\'' +
+			"text='" + text + '\'' +
 			'}';
 	}
 }
