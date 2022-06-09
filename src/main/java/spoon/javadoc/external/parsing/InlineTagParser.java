@@ -6,10 +6,13 @@ import spoon.javadoc.external.StringReader;
 import spoon.javadoc.external.elements.JavadocElement;
 import spoon.javadoc.external.elements.JavadocInlineTag;
 import spoon.javadoc.external.elements.JavadocText;
+import spoon.javadoc.external.elements.snippets.JavadocSnippet;
 import spoon.javadoc.external.references.JavadocReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InlineTagParser {
 
@@ -49,7 +52,7 @@ public class InlineTagParser {
 				return parseStandardTagWithArgument(reader, type);
 
 			case SNIPPET:
-				throw new UnsupportedOperationException(":( no snippet yet");
+				return parseSnippetTag(reader);
 			default:
 				throw new AssertionError("Unreachable");
 		}
@@ -127,5 +130,39 @@ public class InlineTagParser {
 		}
 
 		return new JavadocInlineTag(elements, type);
+	}
+
+	private JavadocInlineTag parseSnippetTag(StringReader reader) {
+		Map<String, String> attributes = parseSnippetAttributes(new StringReader(reader.readWhile(it -> it != ':')));
+
+		reader.readWhile(Character::isWhitespace);
+		if (reader.canRead() && reader.peek() == ':') {
+			reader.read(":");
+		}
+
+		JavadocText content = new JavadocText(reader.readRemaining());
+
+		return new JavadocSnippet(content, attributes);
+	}
+
+	private Map<String, String> parseSnippetAttributes(StringReader reader) {
+		Map<String, String> attributes = new HashMap<>();
+		reader.readWhile(Character::isWhitespace);
+
+		while (reader.canRead()) {
+			String name = reader.readWhile(it -> it != '=').strip();
+			if (!reader.canRead() || reader.peek() != '=') {
+				break;
+			}
+			reader.read("=");
+			reader.readWhile(Character::isWhitespace);
+
+			String value = reader.readPotentiallyQuoted();
+			attributes.put(name, value);
+
+			reader.readWhile(Character::isWhitespace);
+		}
+
+		return attributes;
 	}
 }

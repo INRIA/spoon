@@ -93,4 +93,17 @@ public class StringReader {
 	public String readRemaining() {
 		return read(remaining());
 	}
+
+	public String readPotentiallyQuoted() {
+		if (peek() != '"' && peek() != '\'') {
+			return readWhile(it -> !Character.isWhitespace(it));
+		}
+
+		int quoteEndChar = peek();
+		read(Character.toString(quoteEndChar));
+		String text = readWhile(it -> it != quoteEndChar);
+		read(Character.toString(quoteEndChar));
+
+		return text;
+	}
 }

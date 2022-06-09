@@ -10,6 +10,7 @@ import spoon.javadoc.external.elements.JavadocElement;
 import spoon.javadoc.external.elements.JavadocInlineTag;
 import spoon.javadoc.external.elements.JavadocText;
 import spoon.javadoc.external.elements.JavadocVisitor;
+import spoon.javadoc.external.elements.snippets.JavadocSnippet;
 import spoon.javadoc.external.references.JavadocReference;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -18,6 +19,7 @@ import spoon.reflect.declaration.CtType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -166,6 +168,11 @@ public class JavadocParser {
 	 * <p>
 	 * We can also write <em>very HTML</em> {@code code}.
 	 * And an index: {@index "Hello world" With a phrase} or {@index without Without a phrase}.
+	 * {@snippet lang = java id = "example me" foo = 'bar':
+	 * 	   public void HelloWorld(){
+	 * 	      System.out.println("Hello World!");
+	 * 	   }
+	 *}
 	 *
 	 * @param args some argument
 	 * @author a poor {@literal man}
@@ -218,6 +225,26 @@ public class JavadocParser {
 		@Override
 		public void visitReference(JavadocReference reference) {
 			System.out.print("\033[31m" + reference.getReference() + "\033[0m");
+		}
+
+		@Override
+		public void visitSnippet(JavadocSnippet snippet) {
+			System.out.print("{@\033[36m" + snippet.getTagType().getName() + "\033[0m ");
+			System.out.print(
+				snippet.getAttributes()
+					.entrySet()
+					.stream()
+					.sorted(Map.Entry.comparingByKey())
+					.map(entry -> entry.getKey() + "='" + entry.getValue() + "'")
+					.collect(Collectors.joining(" "))
+			);
+
+			System.out.print(" : ");
+			for (JavadocElement element : snippet.getElements()) {
+				element.accept(this);
+			}
+
+			System.out.println("}");
 		}
 	}
 }
