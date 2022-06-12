@@ -5,6 +5,7 @@ import spoon.javadoc.external.StandardJavadocTagType;
 import spoon.javadoc.external.StringReader;
 import spoon.javadoc.external.elements.JavadocBlockTag;
 import spoon.javadoc.external.elements.JavadocElement;
+import spoon.javadoc.external.elements.JavadocInlineTag;
 import spoon.javadoc.external.elements.JavadocText;
 import spoon.javadoc.external.references.JavadocReference;
 import spoon.reflect.declaration.CtElement;
@@ -22,7 +23,7 @@ public class BlockTagParser {
 		this.linkResolver = linkResolver;
 	}
 
-	public JavadocBlockTag parse(StringReader reader, JavadocTagType type) {
+	public JavadocElement parse(StringReader reader, JavadocTagType type) {
 		if (!(type instanceof StandardJavadocTagType)) {
 			return new JavadocBlockTag(parseRestFromScratch(reader), type);
 		}
@@ -30,7 +31,7 @@ public class BlockTagParser {
 		return parseStandardTag(reader, (StandardJavadocTagType) type);
 	}
 
-	private JavadocBlockTag parseStandardTag(StringReader reader, StandardJavadocTagType type) {
+	private JavadocElement parseStandardTag(StringReader reader, StandardJavadocTagType type) {
 		switch (type) {
 			case AUTHOR:
 			case DEPRECATED:
@@ -51,6 +52,8 @@ public class BlockTagParser {
 				return parseTagSee(reader);
 			case SERIAL_FIELD:
 				return parseTagSerialField(reader);
+			case INHERIT_DOC:
+				return new JavadocInlineTag(List.of(), StandardJavadocTagType.INHERIT_DOC);
 			default:
 				throw new AssertionError("Unreachable, was " + type);
 		}
