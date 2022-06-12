@@ -47,6 +47,8 @@ public class InlineTagParser {
 			case LINK:
 			case LINKPLAIN:
 				return parseLinkTag(reader, type);
+			case SEE:
+				return parseLinkTag(reader, StandardJavadocTagType.LINK);
 			case SYSTEM_PROPERTY:
 			case VALUE:
 				return parseStandardTagWithArgument(reader, type);
