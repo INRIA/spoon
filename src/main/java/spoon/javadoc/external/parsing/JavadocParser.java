@@ -11,6 +11,8 @@ import spoon.javadoc.external.elements.JavadocInlineTag;
 import spoon.javadoc.external.elements.JavadocText;
 import spoon.javadoc.external.elements.JavadocVisitor;
 import spoon.javadoc.external.elements.snippets.JavadocSnippet;
+import spoon.javadoc.external.elements.snippets.JavadocSnippetBody;
+import spoon.javadoc.external.elements.snippets.JavadocSnippetTag;
 import spoon.javadoc.external.references.JavadocReference;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -169,10 +171,12 @@ public class JavadocParser {
 	 * We can also write <em>very HTML</em> {@code code}.
 	 * And an index: {@index "Hello world" With a phrase} or {@index without Without a phrase}.
 	 * {@snippet lang = java id = "example me" foo = 'bar':
-	 * 	   public void HelloWorld(){
-	 * 	      System.out.println("Hello World!");
-	 * 	   }
-	 *}
+	 * 	   public void HelloWorld(){ //@start region = "foo"
+	 * 	      System.out.println("Hello World!"); // @highlight substring="println"
+	 *        int a = 10;  // @start foo=bar :
+	 *        int a = 10;  // @end
+	 * 	   } // @end region=foo
+	 * }
 	 *
 	 * @param args some argument
 	 * @author a poor {@literal man}
@@ -192,8 +196,26 @@ public class JavadocParser {
 
 		List<JavadocElement> elements = new JavadocParser(text, method).parse();
 		JavadocVisitor visitor = new MyJavadocVisitor();
+//		for (JavadocElement element : elements) {
+//			element.accept(visitor);
+//		}
+//
 		for (JavadocElement element : elements) {
-			element.accept(visitor);
+			element.accept(new JavadocVisitor() {
+				@Override
+				public void visitSnippet(JavadocSnippet snippet) {
+					System.out.println("AAYYY");
+					JavadocText text = (JavadocText) snippet.getElements().get(0);
+					List<String> lines = text.getText().lines().collect(Collectors.toList());
+					for (int i = 0; i < lines.size(); i++) {
+						String line = lines.get(i);
+						System.out.printf("%02d  |  %s%n", i, line);
+					}
+					for (JavadocSnippetTag snippetTag : JavadocSnippetBody.fromString(text.getText()).getTags()) {
+						System.out.println(snippetTag);
+					}
+				}
+			});
 		}
 	}
 

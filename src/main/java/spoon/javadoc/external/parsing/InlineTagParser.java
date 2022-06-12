@@ -145,7 +145,7 @@ public class InlineTagParser {
 		return new JavadocSnippet(content, attributes);
 	}
 
-	private Map<String, String> parseSnippetAttributes(StringReader reader) {
+	static Map<String, String> parseSnippetAttributes(StringReader reader) {
 		Map<String, String> attributes = new HashMap<>();
 		reader.readWhile(Character::isWhitespace);
 

@@ -7,10 +7,10 @@ public class StringReader {
 	private int position;
 
 	public StringReader(String underlying) {
-		this.underlying = underlying;
+		this(underlying, 0);
 	}
 
-	private StringReader(String underlying, int position) {
+	public StringReader(String underlying, int position) {
 		this.underlying = underlying;
 		this.position = position;
 	}
@@ -61,6 +61,10 @@ public class StringReader {
 		return underlying.substring(position, position + chars);
 	}
 
+	public boolean peek(String needle) {
+		return peek(needle.length()).equals(needle);
+	}
+
 	public String read(int amount) {
 		int start = position;
 		position = Math.min(underlying.length(), position + amount);
@@ -94,6 +98,13 @@ public class StringReader {
 		return read(remaining());
 	}
 
+	public String readLine() {
+		String text = readWhile(it -> it != '\n');
+		read("\n");
+
+		return text;
+	}
+
 	public String readPotentiallyQuoted() {
 		if (peek() != '"' && peek() != '\'') {
 			return readWhile(it -> !Character.isWhitespace(it));
@@ -105,5 +116,22 @@ public class StringReader {
 		read(Character.toString(quoteEndChar));
 
 		return text;
+	}
+
+	public String getUnderlying() {
+		return underlying;
+	}
+
+	public int getPosition() {
+		return position;
+	}
+
+	public int getLastLinebreakPosition() {
+		for (int i = position - 1; i >= 0; i--) {
+			if (underlying.charAt(i) == '\n') {
+				return i;
+			}
+		}
+		return -1;
 	}
 }
