@@ -50,9 +50,9 @@ public class SnippetFileParser {
 			}
 
 			Map<String, String> attributes = InlineTagParser.parseSnippetAttributes(
-				new StringReader(line.readWhile(it -> it != ':' && it != '\n'))
+				new StringReader(line.readRemaining())
 			);
-			boolean forNextLine = line.peek(":");
+			boolean forNextLine = line.getUnderlying().stripTrailing().endsWith(":");
 			closeOnNext = forNextLine && regionType.get() != SnippetRegionType.START;
 
 			int startLine = forNextLine ? lineNumber + 1 : lineNumber;
