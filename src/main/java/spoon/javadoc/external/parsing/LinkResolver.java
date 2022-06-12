@@ -250,9 +250,15 @@ public class LinkResolver {
 				return Optional.ofNullable(type.get().getTypeDeclaration());
 			}
 
-			CtType<?> siblingType = contextType.getPackage().getType(name);
-			if (siblingType != null) {
-				return Optional.of(siblingType);
+			CtPackage contextPackage = contextType.getPackage();
+			if (contextPackage == null && contextType.getDeclaringType() != null) {
+				contextPackage = contextType.getDeclaringType().getPackage();
+			}
+			if (contextPackage != null) {
+				CtType<?> siblingType = contextPackage.getType(name);
+				if (siblingType != null) {
+					return Optional.of(siblingType);
+				}
 			}
 		}
 		if (contextType != null && name.isBlank()) {
