@@ -17,7 +17,7 @@ public class JavadocSnippetBody {
 
 	public List<JavadocSnippetTag> getActiveTagsAtLine(int line) {
 		return tags.stream()
-			.filter(it -> it.getStartLine() >= line && it.getEndLine() <= line)
+			.filter(it -> line >= it.getStartLine() && line <= it.getEndLine())
 			.collect(Collectors.toList());
 	}
 
