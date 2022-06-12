@@ -65,7 +65,7 @@ public class InlineTagParser {
 			referenceText += reader.read(1);
 
 			// Skip whitespace between reference and label
-			if (Character.isWhitespace(reader.peek())) {
+			if (reader.canRead() && Character.isWhitespace(reader.peek())) {
 				reader.read(1);
 			}
 		}
