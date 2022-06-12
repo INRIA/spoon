@@ -30,6 +30,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Just a {@code JavadocParser}.
+ */
 public class JavadocParser {
 
 	private final StringReader underlying;
@@ -192,26 +195,84 @@ public class JavadocParser {
 	 */
 	public static void main(String[] args) {
 		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/main/java/spoon/javadoc/external/parsing/JavadocParser.java");
-		launcher.buildModel();
-		CtMethod<?> method = launcher.getFactory().Type().get(JavadocParser.class).getMethodsByName("main").get(0);
-		String text = method.getComments().get(0).getRawContent();
-		System.out.println(text);
-		System.out.println();
-		System.out.println();
+//		launcher.addInputResource("src/main/java/spoon/javadoc/external/parsing/JavadocParser.java");
+//		launcher.addInputResource("src/main/java/spoon/SpoonModelBuilder.java");
+		launcher.addInputResource("src/main/java/spoon");
+		launcher.addInputResource("src/test/java/spoon");
+		CtModel model = launcher.buildModel();
 
-		List<JavadocElement> elements = new JavadocParser(text, method).parse();
+		var scanner = new CtScanner() {
+			@Override
+			public void scan(CtElement element) {
+				if (element == null) {
+					return;
+				}
+				try {
+					parseJavadoc(element, PrintAction.PRINT);
+					parseSnippetData(element, PrintAction.PRINT);
+				} catch (RuntimeException e) {
+					System.out.println(element);
+					throw e;
+				}
+
+				if (element.getComments().stream().anyMatch(it -> it.getCommentType() == CtComment.CommentType.JAVADOC)) {
+					System.out.println("\n");
+				}
+
+				super.scan(element);
+			}
+		};
+		for (CtModule module : model.getAllModules()) {
+			module.accept(scanner);
+		}
+
+		debugStuff(launcher);
+	}
+
+	private static void debugStuff(Launcher launcher) {
+		CtMethod<?> method = launcher.getFactory().Type().get(JavadocParser.class).getMethodsByName("main").get(0);
+
+		parseJavadoc(method, PrintAction.NO_PRINT);
+		parseSnippetData(method, PrintAction.NO_PRINT);
+	}
+
+	enum PrintAction {PRINT, NO_PRINT}
+
+	private static void parseJavadoc(CtElement elem, PrintAction printAction) {
 		JavadocVisitor visitor = new MyJavadocVisitor();
-//		for (JavadocElement element : elements) {
-//			element.accept(visitor);
-//		}
-//
+		if (printAction == PrintAction.NO_PRINT) {
+			visitor = new JavadocVisitor() {
+			};
+		}
+		for (CtComment comment : elem.getComments()) {
+			if (comment.getCommentType() != CtComment.CommentType.JAVADOC) {
+				continue;
+			}
+			for (JavadocElement element : new JavadocParser(comment.getRawContent(), elem).parse()) {
+				element.accept(visitor);
+			}
+		}
+	}
+
+	private static void parseSnippetData(CtElement elem, PrintAction printAction) {
+		List<JavadocElement> elements = new ArrayList<>();
+		for (CtComment comment : elem.getComments()) {
+			if (comment.getCommentType() != CtComment.CommentType.JAVADOC) {
+				continue;
+			}
+			elements.addAll(new JavadocParser(comment.getRawContent(), comment).parse());
+		}
+
 		for (JavadocElement element : elements) {
 			element.accept(new JavadocVisitor() {
 				@Override
 				public void visitSnippet(JavadocSnippet snippet) {
-					System.out.println("AAYYY");
 					JavadocText text = (JavadocText) snippet.getElements().get(0);
+					if (printAction == PrintAction.NO_PRINT) {
+						JavadocSnippetBody.fromString(text.getText()).getTags();
+						return;
+					}
+					System.out.println("AAYYY");
 					List<String> lines = text.getText().lines().collect(Collectors.toList());
 					for (int i = 0; i < lines.size(); i++) {
 						String line = lines.get(i);
