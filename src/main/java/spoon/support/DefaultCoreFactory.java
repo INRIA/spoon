@@ -1124,7 +1124,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	public CtModule createModule() {
 		CtModule module = new CtModuleImpl();
 		module.setFactory(getMainFactory());
-		this.getMainFactory().Module().getUnnamedModule().addModule(module);
+		module.setParent(this.getMainFactory().Module().getUnnamedModule());
 		return module;
 	}
 
