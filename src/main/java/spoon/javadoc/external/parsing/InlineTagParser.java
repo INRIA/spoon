@@ -99,7 +99,10 @@ public class InlineTagParser {
 		elements.add(new JavadocText(reader.readWhile(it -> it != '"')));
 
 		// Closing paren, I guess that might be missing...
-		reader.read("\" ");
+		reader.read("\"");
+		if (reader.canRead() && Character.isWhitespace(reader.peek())) {
+			reader.read(1);
+		}
 
 		// And our description
 		if (reader.canRead()) {
