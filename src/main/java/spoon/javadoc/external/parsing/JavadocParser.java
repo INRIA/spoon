@@ -14,9 +14,13 @@ import spoon.javadoc.external.elements.snippets.JavadocSnippet;
 import spoon.javadoc.external.elements.snippets.JavadocSnippetBody;
 import spoon.javadoc.external.elements.snippets.JavadocSnippetTag;
 import spoon.javadoc.external.references.JavadocReference;
+import spoon.reflect.CtModel;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.visitor.CtScanner;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +40,9 @@ public class JavadocParser {
 		if (documentedElement instanceof CtType) {
 			this.documentedElement = documentedElement;
 		} else {
-			this.documentedElement = documentedElement.getParent(CtType.class);
+			// Try to generify to the enclosing type
+			CtType<?> typeParent = documentedElement.getParent(CtType.class);
+			this.documentedElement = typeParent != null ? typeParent : documentedElement;
 		}
 	}
 

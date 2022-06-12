@@ -118,20 +118,49 @@ public class LinkResolver {
 		List<Optional<CtTypeReference<?>>> parameters
 	) {
 		if (parameters.isEmpty()) {
-			Optional<CtReference> field = enclosingType.getAllFields()
-				.stream()
-				.filter(it -> it.getSimpleName().equals(memberName))
-				.map(it -> (CtReference) it)
-				.findFirst();
+			CtType<?> next = enclosingType;
+			while (next != null) {
+				Optional<CtReference> field = qualifyTypeNameForField(enclosingType, memberName);
+				if (field.isPresent()) {
+					return field;
+				}
+				next = next.getParent(CtType.class);
+			}
 
 			// Try again as an executable
-			return field.or(() -> qualifyTypeNameForExecutable(memberName, List.of(), enclosingType));
+			return qualifyTypeNameForExecutable(memberName, List.of(), enclosingType);
 		}
 
 		return qualifyTypeNameForExecutable(memberName, parameters, enclosingType);
 	}
 
+	private Optional<CtReference> qualifyTypeNameForField(CtType<?> enclosingType, String memberName) {
+		return enclosingType.getAllFields()
+			.stream()
+			.filter(it -> it.getSimpleName().equals(memberName))
+			.map(it -> (CtReference) it)
+			.findFirst();
+	}
+
 	private Optional<CtReference> qualifyTypeNameForExecutable(
+		String elementName,
+		List<Optional<CtTypeReference<?>>> parameters,
+		CtType<?> type
+	) {
+		// References in Javadoc for inner classes can just "#name" reference elements of the enclosing class
+		CtType<?> next = type;
+		while (next != null) {
+			Optional<CtReference> ref = qualifyTypeNameForExecutableForExactType(elementName, parameters, next);
+			if (ref.isPresent()) {
+				return ref;
+			}
+			next = next.getParent(CtType.class);
+		}
+
+		return Optional.empty();
+	}
+
+	private Optional<CtReference> qualifyTypeNameForExecutableForExactType(
 		String elementName,
 		List<Optional<CtTypeReference<?>>> parameters,
 		CtType<?> type
