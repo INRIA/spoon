@@ -23,7 +23,7 @@ public class JavadocSnippet extends JavadocInlineTag {
 	}
 
 	@Override
-	public void accept(JavadocVisitor visitor) {
-		visitor.visitSnippet(this);
+	public <T> T accept(JavadocVisitor<T> visitor) {
+		return visitor.visitSnippet(this);
 	}
 }

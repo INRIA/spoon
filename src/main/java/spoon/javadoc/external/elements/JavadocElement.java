@@ -2,5 +2,5 @@ package spoon.javadoc.external.elements;
 
 public interface JavadocElement {
 
-	void accept(JavadocVisitor visitor);
+	<T> T accept(JavadocVisitor<T> visitor);
 }

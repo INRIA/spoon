@@ -23,8 +23,8 @@ public class JavadocInlineTag implements JavadocElement {
 	}
 
 	@Override
-	public void accept(JavadocVisitor visitor) {
-		visitor.visitInlineTag(this);
+	public <T> T accept(JavadocVisitor<T> visitor) {
+		return visitor.visitInlineTag(this);
 	}
 
 	@Override

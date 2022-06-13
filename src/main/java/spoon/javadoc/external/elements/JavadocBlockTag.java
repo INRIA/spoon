@@ -23,8 +23,8 @@ public class JavadocBlockTag implements JavadocElement {
 	}
 
 	@Override
-	public void accept(JavadocVisitor visitor) {
-		visitor.visitBlockTag(this);
+	public <T> T accept(JavadocVisitor<T> visitor) {
+		return visitor.visitBlockTag(this);
 	}
 
 	@Override

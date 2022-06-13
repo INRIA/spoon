@@ -17,8 +17,8 @@ public class JavadocReference implements JavadocElement {
 	}
 
 	@Override
-	public void accept(JavadocVisitor visitor) {
-		visitor.visitReference(this);
+	public <T> T accept(JavadocVisitor<T> visitor) {
+		return visitor.visitReference(this);
 	}
 
 	@Override

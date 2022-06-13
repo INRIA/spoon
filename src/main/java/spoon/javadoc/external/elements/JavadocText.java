@@ -12,8 +12,8 @@ public class JavadocText implements JavadocElement {
 	}
 
 	@Override
-	public void accept(JavadocVisitor visitor) {
-		visitor.visitText(this);
+	public <T> T accept(JavadocVisitor<T> visitor) {
+		return visitor.visitText(this);
 	}
 
 	@Override

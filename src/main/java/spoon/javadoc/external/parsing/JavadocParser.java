@@ -1,6 +1,7 @@
 package spoon.javadoc.external.parsing;
 
 import spoon.Launcher;
+import spoon.OutputType;
 import spoon.javadoc.external.JavadocTagCategory;
 import spoon.javadoc.external.JavadocTagType;
 import spoon.javadoc.external.StandardJavadocTagType;
@@ -17,11 +18,11 @@ import spoon.javadoc.external.references.JavadocReference;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtScanner;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +33,10 @@ import java.util.stream.Collectors;
 
 /**
  * Just a {@code JavadocParser}.
+ * {@snippet id = "oh no":
+ * 	int a = 20; // @replace substring="=20" replacement=" // Note: Hello" :
+ *  int b = 10;
+ *}
  */
 public class JavadocParser {
 
@@ -185,7 +190,8 @@ public class JavadocParser {
 	 *        int a = 10;  // @start foo=bar :
 	 *        int a = 10;  // @end
 	 * 	   } // @end region=foo
-	 * }
+	 *}
+	 * <h2><a id="resolution"></a>{@index "Module Resolution"}</h2>
 	 *
 	 * @param args some argument
 	 * @author a poor {@literal man}
@@ -193,12 +199,13 @@ public class JavadocParser {
 	 * @see String#contains(CharSequence) with a label
 	 * @see String#replace(char, char)
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		Launcher launcher = new Launcher();
 //		launcher.addInputResource("src/main/java/spoon/javadoc/external/parsing/JavadocParser.java");
-//		launcher.addInputResource("src/main/java/spoon/SpoonModelBuilder.java");
-		launcher.addInputResource("src/main/java/spoon");
-		launcher.addInputResource("src/test/java/spoon");
+//		launcher.addInputResource("/tmp/jdk-source");
+		launcher.addInputResource("/tmp/jdk-source");
+		launcher.getEnvironment().setComplianceLevel(17);
+		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
 		CtModel model = launcher.buildModel();
 
 		var scanner = new CtScanner() {
@@ -208,35 +215,35 @@ public class JavadocParser {
 					return;
 				}
 				try {
-					parseJavadoc(element, PrintAction.PRINT);
-					parseSnippetData(element, PrintAction.PRINT);
-				} catch (RuntimeException e) {
-					System.out.println(element);
-					throw e;
+					parseJavadoc(element, PrintAction.NO_PRINT);
+					parseSnippetData(element, PrintAction.NO_PRINT);
+				} catch (Throwable e) {
+					System.out.println("Error caught");
+					e.printStackTrace();
+					for (CtComment comment : element.getComments()) {
+						System.out.println(comment.getRawContent());
+					}
+					System.out.println("======");
 				}
 
 				if (element.getComments().stream().anyMatch(it -> it.getCommentType() == CtComment.CommentType.JAVADOC)) {
-					System.out.println("\n");
+//					System.out.println("\n");
 				}
 
 				super.scan(element);
 			}
 		};
 		for (CtModule module : model.getAllModules()) {
-			module.accept(scanner);
+			System.out.println(module.getSimpleName());
+			if (module.getSimpleName().equals("java.security.jgss")) {
+				module.accept(scanner);
+			}
 		}
-
-		debugStuff(launcher);
 	}
 
-	private static void debugStuff(Launcher launcher) {
-		CtMethod<?> method = launcher.getFactory().Type().get(JavadocParser.class).getMethodsByName("main").get(0);
-
-		parseJavadoc(method, PrintAction.NO_PRINT);
-		parseSnippetData(method, PrintAction.NO_PRINT);
+	enum PrintAction {
+		PRINT, NO_PRINT
 	}
-
-	enum PrintAction {PRINT, NO_PRINT}
 
 	private static void parseJavadoc(CtElement elem, PrintAction printAction) {
 		JavadocVisitor visitor = new MyJavadocVisitor();
@@ -264,13 +271,13 @@ public class JavadocParser {
 		}
 
 		for (JavadocElement element : elements) {
-			element.accept(new JavadocVisitor() {
+			element.accept(new JavadocVisitor<Void>() {
 				@Override
-				public void visitSnippet(JavadocSnippet snippet) {
+				public Void visitSnippet(JavadocSnippet snippet) {
 					JavadocText text = (JavadocText) snippet.getElements().get(0);
 					if (printAction == PrintAction.NO_PRINT) {
 						JavadocSnippetBody.fromString(text.getText()).getTags();
-						return;
+						return null;
 					}
 					System.out.println("AAYYY");
 					List<String> lines = text.getText().lines().collect(Collectors.toList());
@@ -281,43 +288,49 @@ public class JavadocParser {
 					for (JavadocSnippetTag snippetTag : JavadocSnippetBody.fromString(text.getText()).getTags()) {
 						System.out.println(snippetTag);
 					}
+
+					return null;
 				}
 			});
 		}
 	}
 
-	private static class MyJavadocVisitor implements JavadocVisitor {
+	private static class MyJavadocVisitor implements JavadocVisitor<Void> {
 		@Override
-		public void visitInlineTag(JavadocInlineTag tag) {
+		public Void visitInlineTag(JavadocInlineTag tag) {
 			System.out.print("{@\033[36m" + tag.getTagType().getName() + "\033[0m");
 			for (JavadocElement element : tag.getElements()) {
 				System.out.print(" ");
 				element.accept(this);
 			}
 			System.out.print("}");
+			return null;
 		}
 
 		@Override
-		public void visitBlockTag(JavadocBlockTag tag) {
+		public Void visitBlockTag(JavadocBlockTag tag) {
 			System.out.print("@\033[36m" + tag.getTagType().getName() + "\033[0m ");
 			for (JavadocElement element : tag.getElements()) {
 				element.accept(this);
 			}
 			System.out.println();
+			return null;
 		}
 
 		@Override
-		public void visitText(JavadocText text) {
+		public Void visitText(JavadocText text) {
 			System.out.print(text.getText());
+			return null;
 		}
 
 		@Override
-		public void visitReference(JavadocReference reference) {
+		public Void visitReference(JavadocReference reference) {
 			System.out.print("\033[31m" + reference.getReference() + "\033[0m");
+			return null;
 		}
 
 		@Override
-		public void visitSnippet(JavadocSnippet snippet) {
+		public Void visitSnippet(JavadocSnippet snippet) {
 			System.out.print("{@\033[36m" + snippet.getTagType().getName() + "\033[0m ");
 			System.out.print(
 				snippet.getAttributes()
@@ -334,6 +347,7 @@ public class JavadocParser {
 			}
 
 			System.out.println("}");
+			return null;
 		}
 	}
 }
