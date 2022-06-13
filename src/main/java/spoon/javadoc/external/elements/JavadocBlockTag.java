@@ -29,9 +29,9 @@ public class JavadocBlockTag implements JavadocElement {
 
 	@Override
 	public String toString() {
-		return "JavadocBlockTag{" +
-			"tagType=" + tagType.getName() +
-			", elements=" + elements +
-			'}';
+		return "JavadocBlockTag{"
+			+ "tagType=" + tagType.getName()
+			+ ", elements=" + elements
+			+ '}';
 	}
 }

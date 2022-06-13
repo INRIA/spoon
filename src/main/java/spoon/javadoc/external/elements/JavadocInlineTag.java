@@ -29,9 +29,9 @@ public class JavadocInlineTag implements JavadocElement {
 
 	@Override
 	public String toString() {
-		return "JavadocInlineTag{" +
-			"elements=" + elements +
-			", tagType=" + tagType.getName() +
-			'}';
+		return "JavadocInlineTag{"
+			+ "elements=" + elements
+			+ ", tagType=" + tagType.getName()
+			+ '}';
 	}
 }

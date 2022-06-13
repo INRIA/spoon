@@ -18,8 +18,8 @@ public class JavadocText implements JavadocElement {
 
 	@Override
 	public String toString() {
-		return "JavadocText{" +
-			"text='" + text + '\'' +
-			'}';
+		return "JavadocText{"
+			+ "text='" + text + '\''
+			+ '}';
 	}
 }

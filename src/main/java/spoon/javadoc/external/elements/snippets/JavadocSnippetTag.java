@@ -45,12 +45,12 @@ public class JavadocSnippetTag {
 
 	@Override
 	public String toString() {
-		return "SnippetTag{" +
-			"name='" + name + '\'' +
-			", startLine=" + startLine +
-			", endLine=" + endLine +
-			", attributes=" + attributes +
-			", type=" + type +
-			'}';
+		return "SnippetTag{"
+			+ "name='" + name + '\''
+			+ ", startLine=" + startLine
+			+ ", endLine=" + endLine
+			+ ", attributes=" + attributes
+			+ ", type=" + type
+			+ '}';
 	}
 }
