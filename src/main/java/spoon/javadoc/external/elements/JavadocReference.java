@@ -1,9 +1,12 @@
-package spoon.javadoc.external.references;
+package spoon.javadoc.external.elements;
 
-import spoon.javadoc.external.elements.JavadocElement;
-import spoon.javadoc.external.elements.JavadocVisitor;
 import spoon.reflect.reference.CtReference;
 
+/**
+ * A reference to a java element inside a javadoc comment.
+ * <p>
+ * This is typically a {@code {@link Element}} inline tag or a {@code {@see Element}} block tag.
+ */
 public class JavadocReference implements JavadocElement {
 
 	private final CtReference reference;
@@ -12,6 +15,9 @@ public class JavadocReference implements JavadocElement {
 		this.reference = reference;
 	}
 
+	/**
+	 * @return the reference to the java element
+	 */
 	public CtReference getReference() {
 		return reference;
 	}

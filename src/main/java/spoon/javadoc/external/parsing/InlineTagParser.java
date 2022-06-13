@@ -2,26 +2,38 @@ package spoon.javadoc.external.parsing;
 
 import spoon.javadoc.external.JavadocTagType;
 import spoon.javadoc.external.StandardJavadocTagType;
-import spoon.javadoc.external.StringReader;
 import spoon.javadoc.external.elements.JavadocElement;
 import spoon.javadoc.external.elements.JavadocInlineTag;
+import spoon.javadoc.external.elements.JavadocReference;
 import spoon.javadoc.external.elements.JavadocText;
-import spoon.javadoc.external.elements.snippets.JavadocSnippet;
-import spoon.javadoc.external.references.JavadocReference;
+import spoon.javadoc.external.elements.snippets.JavadocSnippetTag;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InlineTagParser {
+/**
+ * A parser for inline tags
+ */
+class InlineTagParser {
 
 	private final LinkResolver linkResolver;
 
-	public InlineTagParser(LinkResolver linkResolver) {
+	/**
+	 * @param linkResolver the link resolver to use
+	 */
+	InlineTagParser(LinkResolver linkResolver) {
 		this.linkResolver = linkResolver;
 	}
 
+	/**
+	 * Parses a given reader as a single inline tag of the given type.
+	 *
+	 * @param reader the reader to parse
+	 * @param type the type of the tag
+	 * @return the created inline tag
+	 */
 	public JavadocInlineTag parse(StringReader reader, JavadocTagType type) {
 		if (!(type instanceof StandardJavadocTagType)) {
 			String content = reader.readRemaining();
@@ -147,7 +159,7 @@ public class InlineTagParser {
 
 		JavadocText content = new JavadocText(reader.readRemaining());
 
-		return new JavadocSnippet(content, attributes);
+		return new JavadocSnippetTag(content, attributes);
 	}
 
 	static Map<String, String> parseSnippetAttributes(StringReader reader) {

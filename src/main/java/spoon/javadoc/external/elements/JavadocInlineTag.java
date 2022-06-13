@@ -4,20 +4,32 @@ import spoon.javadoc.external.JavadocTagType;
 
 import java.util.List;
 
-// TODO: WellKnown.Inline.link(CtTypeReference, "Label");
+/**
+ * A javadoc inline tag (e.g. {@code @literal} or {@code @link}).
+ */
 public class JavadocInlineTag implements JavadocElement {
 	private final List<JavadocElement> elements;
 	private final JavadocTagType tagType;
 
+	/**
+	 * @param elements the arguments of the tag
+	 * @param tagType the type of the tag
+	 */
 	public JavadocInlineTag(List<JavadocElement> elements, JavadocTagType tagType) {
 		this.elements = elements;
 		this.tagType = tagType;
 	}
 
+	/**
+	 * @return the type of the tag
+	 */
 	public JavadocTagType getTagType() {
 		return tagType;
 	}
 
+	/**
+	 * @return the arguments of the tag
+	 */
 	public List<JavadocElement> getElements() {
 		return elements;
 	}

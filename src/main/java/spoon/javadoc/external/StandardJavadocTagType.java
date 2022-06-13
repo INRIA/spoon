@@ -8,6 +8,9 @@ import java.util.Set;
 import static spoon.javadoc.external.JavadocTagCategory.BLOCK;
 import static spoon.javadoc.external.JavadocTagCategory.INLINE;
 
+/**
+ * Contains all standard javadoc tag types.
+ */
 public enum StandardJavadocTagType implements JavadocTagType {
 	AUTHOR("author", BLOCK),
 	CODE("code", INLINE),
@@ -54,6 +57,12 @@ public enum StandardJavadocTagType implements JavadocTagType {
 		return name;
 	}
 
+	/**
+	 * Tries to parse a tag type from its string representation (see {@link #getName()}).
+	 *
+	 * @param name the name to parse
+	 * @return the matching standard tag, if any
+	 */
 	public static Optional<JavadocTagType> fromString(String name) {
 		return Arrays.stream(values())
 			.filter(it -> it.getName().equalsIgnoreCase(name))

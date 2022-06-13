@@ -1,8 +1,8 @@
 package spoon.javadoc.external.parsing;
 
-import spoon.javadoc.external.StringReader;
-import spoon.javadoc.external.elements.snippets.SnippetRegionType;
-import spoon.javadoc.external.elements.snippets.JavadocSnippetTag;
+import spoon.javadoc.external.elements.snippets.JavadocSnippetMarkupRegion;
+import spoon.javadoc.external.elements.snippets.JavadocSnippetRegionType;
+import spoon.support.Internal;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -12,17 +12,29 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * A parser for snippet files and bodies.
+ */
+@Internal
 public class SnippetFileParser {
 	private final List<String> lines;
 	private final Deque<OpenRegion> openRegions;
 
+	/**
+	 * @param lines the lines of the snippet body
+	 */
 	public SnippetFileParser(List<String> lines) {
 		this.lines = lines;
 		this.openRegions = new ArrayDeque<>();
 	}
 
-	public List<JavadocSnippetTag> parse() {
-		List<JavadocSnippetTag> regions = new ArrayList<>();
+	/**
+	 * Parses the body to a list of markup regions.
+	 *
+	 * @return the parsed markup regions
+	 */
+	public List<JavadocSnippetMarkupRegion> parse() {
+		List<JavadocSnippetMarkupRegion> regions = new ArrayList<>();
 		boolean closeOnNext = false;
 
 		for (int lineNumber = 0; lineNumber < lines.size(); lineNumber++) {
@@ -44,7 +56,7 @@ public class SnippetFileParser {
 				continue;
 			}
 
-			Optional<SnippetRegionType> regionType = SnippetRegionType.fromString(tag.strip().toLowerCase(Locale.ROOT));
+			Optional<JavadocSnippetRegionType> regionType = JavadocSnippetRegionType.fromString(tag.strip().toLowerCase(Locale.ROOT));
 			if (regionType.isEmpty()) {
 				continue;
 			}
@@ -53,13 +65,13 @@ public class SnippetFileParser {
 				new StringReader(line.readRemaining())
 			);
 			boolean forNextLine = line.getUnderlying().stripTrailing().endsWith(":");
-			closeOnNext = forNextLine && regionType.get() != SnippetRegionType.START;
+			closeOnNext = forNextLine && regionType.get() != JavadocSnippetRegionType.START;
 
 			int startLine = forNextLine ? lineNumber + 1 : lineNumber;
 			openRegions.push(new OpenRegion(startLine, attributes, regionType.get()));
 
 			// A one-line region
-			if (!attributes.containsKey("region") && regionType.get() != SnippetRegionType.START && !closeOnNext) {
+			if (!attributes.containsKey("region") && regionType.get() != JavadocSnippetRegionType.START && !closeOnNext) {
 				endRegion(line, lineNumber).ifPresent(regions::add);
 			}
 		}
@@ -72,7 +84,7 @@ public class SnippetFileParser {
 		return regions;
 	}
 
-	private Optional<JavadocSnippetTag> endRegion(StringReader reader, int line) {
+	private Optional<JavadocSnippetMarkupRegion> endRegion(StringReader reader, int line) {
 		reader.readWhile(it -> Character.isWhitespace(it) && it != '\n');
 		if (openRegions.isEmpty()) {
 			return Optional.empty();
@@ -96,7 +108,7 @@ public class SnippetFileParser {
 			.map(it -> it.close(line));
 	}
 
-	private Optional<JavadocSnippetTag> endClosestRegion(int endLine) {
+	private Optional<JavadocSnippetMarkupRegion> endClosestRegion(int endLine) {
 		// end without argument
 		OpenRegion openRegion = openRegions.pop();
 		return Optional.of(openRegion.close(endLine));
@@ -106,17 +118,17 @@ public class SnippetFileParser {
 		private final int startLine;
 		private final String name;
 		private final Map<String, String> attributes;
-		private final SnippetRegionType type;
+		private final JavadocSnippetRegionType type;
 
-		private OpenRegion(int startLine, Map<String, String> attributes, SnippetRegionType type) {
+		private OpenRegion(int startLine, Map<String, String> attributes, JavadocSnippetRegionType type) {
 			this.startLine = startLine;
 			this.name = attributes.getOrDefault("region", "");
 			this.attributes = attributes;
 			this.type = type;
 		}
 
-		public JavadocSnippetTag close(int endLine) {
-			return new JavadocSnippetTag(name, startLine, endLine, attributes, type);
+		public JavadocSnippetMarkupRegion close(int endLine) {
+			return new JavadocSnippetMarkupRegion(name, startLine, endLine, attributes, type);
 		}
 	}
 }

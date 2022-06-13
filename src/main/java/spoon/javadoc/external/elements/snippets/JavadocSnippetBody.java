@@ -2,36 +2,59 @@ package spoon.javadoc.external.elements.snippets;
 
 import spoon.javadoc.external.parsing.SnippetFileParser;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * A representation of a {@code @snippet} tag body (or a file referenced by it).
+ * <p>
+ * Snippet bodies consist of normal code with a list of (potentially overlapping) regions.
+ * This class contains lines, regions, and is able to answer "what regions apply here" queries.
+ */
 public class JavadocSnippetBody {
 
-	private final List<JavadocSnippetTag> tags;
+	private final List<JavadocSnippetMarkupRegion> tags;
 	private final List<String> lines;
 
-	public JavadocSnippetBody(List<String> lines, List<JavadocSnippetTag> tags) {
+	public JavadocSnippetBody(List<String> lines, List<JavadocSnippetMarkupRegion> tags) {
 		this.tags = tags;
 		this.lines = lines;
 	}
 
-	public List<JavadocSnippetTag> getActiveTagsAtLine(int line) {
+	/**
+	 * @param line the line to check
+	 * @return all markup regions that overlap with the given line
+	 */
+	public List<JavadocSnippetMarkupRegion> getActiveTagsAtLine(int line) {
 		return tags.stream()
 			.filter(it -> line >= it.getStartLine() && line <= it.getEndLine())
 			.collect(Collectors.toList());
 	}
 
+	/**
+	 * @return all lines of this snippet body
+	 */
 	public List<String> getLines() {
-		return lines;
+		return Collections.unmodifiableList(lines);
 	}
 
-	public List<JavadocSnippetTag> getTags() {
-		return tags;
+	/**
+	 * @return all markup regions in this snippet
+	 */
+	public List<JavadocSnippetMarkupRegion> getMarkupRegions() {
+		return Collections.unmodifiableList(tags);
 	}
 
+	/**
+	 * Parses the given text as a snippet body.
+	 *
+	 * @param text the text to parse
+	 * @return the parsed snippet body
+	 */
 	public static JavadocSnippetBody fromString(String text) {
 		List<String> lines = text.lines().collect(Collectors.toList());
-		List<JavadocSnippetTag> tags = new SnippetFileParser(lines).parse();
+		List<JavadocSnippetMarkupRegion> tags = new SnippetFileParser(lines).parse();
 
 		return new JavadocSnippetBody(lines, tags);
 	}

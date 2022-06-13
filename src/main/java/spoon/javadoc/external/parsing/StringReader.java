@@ -1,16 +1,19 @@
-package spoon.javadoc.external;
+package spoon.javadoc.external.parsing;
 
 import java.util.function.IntPredicate;
 
-public class StringReader {
+/**
+ * A string reader to help with building hand-written parsers.
+ */
+class StringReader {
 	private final String underlying;
 	private int position;
 
-	public StringReader(String underlying) {
+	StringReader(String underlying) {
 		this(underlying, 0);
 	}
 
-	public StringReader(String underlying, int position) {
+	StringReader(String underlying, int position) {
 		this.underlying = underlying;
 		this.position = position;
 	}

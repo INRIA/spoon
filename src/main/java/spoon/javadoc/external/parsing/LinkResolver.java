@@ -17,18 +17,28 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class LinkResolver {
+/**
+ * Resolves a string to a {@link CtReference}.
+ */
+class LinkResolver {
 	private final CtElement context;
 	private final Factory factory;
 
 	/**
 	 * @param context the annotated type
+	 * @param factory the factory to use
 	 */
-	public LinkResolver(CtElement context, Factory factory) {
+	LinkResolver(CtElement context, Factory factory) {
 		this.context = context;
 		this.factory = factory;
 	}
 
+	/**
+	 * Tries to resolve a string to a {@link CtReference}.
+	 *
+	 * @param string the content of a {@code @see} or {@code @link} tag
+	 * @return the referenced element, if any
+	 */
 	public Optional<CtReference> resolve(String string) {
 		// Format:
 		//   <classname>

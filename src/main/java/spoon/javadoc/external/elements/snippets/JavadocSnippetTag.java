@@ -1,56 +1,45 @@
 package spoon.javadoc.external.elements.snippets;
 
+import spoon.javadoc.external.StandardJavadocTagType;
+import spoon.javadoc.external.elements.JavadocInlineTag;
+import spoon.javadoc.external.elements.JavadocText;
+import spoon.javadoc.external.elements.JavadocVisitor;
+
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
-public class JavadocSnippetTag {
-	private final String name;
-	private final int startLine;
-	private final int endLine;
+/**
+ * An {@code @snippet} inline tag.
+ * <p>
+ * This class also contains the attributes of the tag and the body as its first element.
+ * The body can be parsed using the {@link spoon.javadoc.external.parsing.SnippetFileParser}.
+ */
+public class JavadocSnippetTag extends JavadocInlineTag {
+
 	private final Map<String, String> attributes;
-	private final SnippetRegionType type;
 
-	public JavadocSnippetTag(
-		String name,
-		int startLine,
-		int endLine,
-		Map<String, String> attributes,
-		SnippetRegionType type
-	) {
-		this.name = name;
-		this.startLine = startLine;
-		this.endLine = endLine;
+	/**
+	 * Creates a new snippet inline tag with the given body and attributes.
+	 *
+	 * @param body the body of the snippet
+	 * @param attributes the attributes of the snippet
+	 */
+	public JavadocSnippetTag(JavadocText body, Map<String, String> attributes) {
+		super(List.of(body), StandardJavadocTagType.SNIPPET);
+
 		this.attributes = attributes;
-		this.type = type;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public int getStartLine() {
-		return startLine;
-	}
-
-	public int getEndLine() {
-		return endLine;
-	}
-
+	/**
+	 * @return the snippet attributes
+	 */
 	public Map<String, String> getAttributes() {
-		return attributes;
-	}
-
-	public SnippetRegionType getType() {
-		return type;
+		return Collections.unmodifiableMap(attributes);
 	}
 
 	@Override
-	public String toString() {
-		return "SnippetTag{"
-			+ "name='" + name + '\''
-			+ ", startLine=" + startLine
-			+ ", endLine=" + endLine
-			+ ", attributes=" + attributes
-			+ ", type=" + type
-			+ '}';
+	public <T> T accept(JavadocVisitor<T> visitor) {
+		return visitor.visitSnippet(this);
 	}
 }

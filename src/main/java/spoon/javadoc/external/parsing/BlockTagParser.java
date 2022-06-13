@@ -2,27 +2,42 @@ package spoon.javadoc.external.parsing;
 
 import spoon.javadoc.external.JavadocTagType;
 import spoon.javadoc.external.StandardJavadocTagType;
-import spoon.javadoc.external.StringReader;
 import spoon.javadoc.external.elements.JavadocBlockTag;
 import spoon.javadoc.external.elements.JavadocElement;
 import spoon.javadoc.external.elements.JavadocInlineTag;
+import spoon.javadoc.external.elements.JavadocReference;
 import spoon.javadoc.external.elements.JavadocText;
-import spoon.javadoc.external.references.JavadocReference;
 import spoon.reflect.declaration.CtElement;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockTagParser {
+/**
+ * A parser for javadoc block tags.
+ */
+class BlockTagParser {
 
 	private final CtElement documentedElement;
 	private final LinkResolver linkResolver;
 
-	public BlockTagParser(CtElement documentedElement, LinkResolver linkResolver) {
+	/**
+	 * Creates a new parser with a given element as context and a given link resolver.
+	 *
+	 * @param documentedElement the element the comment belongs to. Used for relative link lookups
+	 * @param linkResolver the link resolver for {@code @link} and {@code @see} tags
+	 */
+	BlockTagParser(CtElement documentedElement, LinkResolver linkResolver) {
 		this.documentedElement = documentedElement;
 		this.linkResolver = linkResolver;
 	}
 
+	/**
+	 * Parses a blocktag found in the passed reader. Assumes the complete reader contains a single tag.
+	 *
+	 * @param reader the reader to read from
+	 * @param type the type of the block tag
+	 * @return the created block or inline tag
+	 */
 	public JavadocElement parse(StringReader reader, JavadocTagType type) {
 		if (!(type instanceof StandardJavadocTagType)) {
 			return new JavadocBlockTag(parseRestFromScratch(reader), type);
