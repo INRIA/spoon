@@ -12,8 +12,6 @@ import spoon.reflect.declaration.CtType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -157,12 +155,15 @@ public class JavadocParser {
 	}
 
 	private static String stripStar(String line) {
-		Pattern pattern = Pattern.compile("\\s+\\* ?(.*)");
-		Matcher matcher = pattern.matcher(line);
-		if (!matcher.find()) {
+		int starIndex = line.indexOf('*');
+		if (starIndex < 0 || !line.substring(0, starIndex).isBlank()) {
 			return line;
 		}
-		return matcher.group(1);
-	}
 
+		// Also swallow a single whitespace after the star
+		if (starIndex + 1 < line.length() && Character.isWhitespace(line.charAt(starIndex + 1))) {
+			return line.substring(starIndex + 2);
+		}
+		return line.substring(starIndex + 1);
+	}
 }
