@@ -18,6 +18,9 @@ public class JavadocReference implements JavadocElement {
 
 	private final CtReference reference;
 
+	/**
+	 * @param reference the underlying reference
+	 */
 	public JavadocReference(CtReference reference) {
 		this.reference = reference;
 	}

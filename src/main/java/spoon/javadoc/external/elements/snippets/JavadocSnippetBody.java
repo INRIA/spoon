@@ -24,7 +24,7 @@ public class JavadocSnippetBody {
 	private final List<JavadocSnippetMarkupRegion> tags;
 	private final List<String> lines;
 
-	public JavadocSnippetBody(List<String> lines, List<JavadocSnippetMarkupRegion> tags) {
+	private JavadocSnippetBody(List<String> lines, List<JavadocSnippetMarkupRegion> tags) {
 		this.tags = tags;
 		this.lines = lines;
 	}

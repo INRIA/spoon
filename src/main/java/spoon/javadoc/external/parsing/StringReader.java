@@ -34,6 +34,11 @@ class StringReader {
 		return underlying.substring(start, position);
 	}
 
+	/**
+	 * Reads text (which may contain balanced braces) enclosed by braces ({@literal {}}).
+	 *
+	 * @return the text excluding the braces
+	 */
 	public String readBalancedBraced() {
 		if (peek() != '{') {
 			throw new RuntimeException(":( no brace at start");
@@ -115,6 +120,11 @@ class StringReader {
 		return text;
 	}
 
+	/**
+	 * Reads text enclosed by single or double quotes.
+	 *
+	 * @return the text excluding the quotes
+	 */
 	public String readPotentiallyQuoted() {
 		if (peek() != '"' && peek() != '\'') {
 			return readWhile(it -> !Character.isWhitespace(it));

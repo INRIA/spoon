@@ -7,45 +7,68 @@
  */
 package spoon.javadoc.external.elements.snippets;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 public class JavadocSnippetMarkupRegion {
-	private final String name;
 	private final int startLine;
 	private final int endLine;
 	private final Map<String, String> attributes;
 	private final JavadocSnippetRegionType type;
 
+	/**
+	 * Creates a new snippet markup region representing some markup tag.
+	 *
+	 * @param startLine the starting line (inclusive)
+	 * @param endLine the end line (inclusive)
+	 * @param attributes the attributes of the region
+	 * @param type the type of the region
+	 */
 	public JavadocSnippetMarkupRegion(
-		String name,
 		int startLine,
 		int endLine,
 		Map<String, String> attributes,
 		JavadocSnippetRegionType type
 	) {
-		this.name = name;
 		this.startLine = startLine;
 		this.endLine = endLine;
 		this.attributes = attributes;
 		this.type = type;
 	}
 
-	public String getName() {
-		return name;
+	/**
+	 * @return the name of this region
+	 * @implNote this implementation is equivalent to {@code Optional.ofNullable(attributes.get("region"))}
+	 */
+	public Optional<String> getName() {
+		return Optional.ofNullable(attributes.get("region"));
 	}
 
+	/**
+	 * @return the line this region starts on (inclusive)
+	 */
 	public int getStartLine() {
 		return startLine;
 	}
 
+	/**
+	 * @return the line this region ends on (inclusive)
+	 */
 	public int getEndLine() {
 		return endLine;
 	}
 
+	/**
+	 * @return an unmodifiable map with the region's attributes
+	 */
 	public Map<String, String> getAttributes() {
-		return attributes;
+		return Collections.unmodifiableMap(attributes);
 	}
 
+	/**
+	 * @return the type of the region
+	 */
 	public JavadocSnippetRegionType getType() {
 		return type;
 	}
@@ -53,7 +76,7 @@ public class JavadocSnippetMarkupRegion {
 	@Override
 	public String toString() {
 		return "SnippetTag{"
-			+ "name='" + name + '\''
+			+ "name='" + getName() + '\''
 			+ ", startLine=" + startLine
 			+ ", endLine=" + endLine
 			+ ", attributes=" + attributes

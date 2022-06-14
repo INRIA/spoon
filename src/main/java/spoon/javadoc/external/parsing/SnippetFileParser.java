@@ -135,7 +135,7 @@ public class SnippetFileParser {
 		}
 
 		public JavadocSnippetMarkupRegion close(int endLine) {
-			return new JavadocSnippetMarkupRegion(name, startLine, endLine, attributes, type);
+			return new JavadocSnippetMarkupRegion(startLine, endLine, attributes, type);
 		}
 	}
 }
