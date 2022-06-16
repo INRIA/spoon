@@ -219,4 +219,13 @@ public class MavenLauncherTest {
 		assertTrue(mavenHome.exists());
 		assertTrue(mavenHome.isDirectory());
 	}
+
+	@Test
+	public void testClasspathShouldBeResolvedForATestResourceInsideSorald() {
+		// contract: it should resolve the classpath
+		File c = new File("src/test/resources/maven-launcher/classpath-dependent-project");
+		MavenLauncher launcher =
+				new MavenLauncher(c.getAbsolutePath(), MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		assertTrue(launcher.getEnvironment().getSourceClasspath().length > 0);
+	}
 }
