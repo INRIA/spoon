@@ -8,150 +8,81 @@
 package spoon.reflect.factory;
 
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import spoon.reflect.CtModelImpl;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtModuleRequirement;
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtPackageExport;
-import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtUsedService;
-import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtVisitor;
-import spoon.support.reflect.declaration.CtElementImpl;
-import spoon.support.reflect.declaration.CtModuleImpl;
 
+import java.util.Collection;
 
 public class ModuleFactory extends SubFactory {
+    public ModuleFactory(Factory factory) {
+        super(factory);
+    }
 
-	public static class CtUnnamedModule extends CtModuleImpl {
-		final Set<CtModule> allModules = new HashSet<>();
-		final CtElement parent = new CtElementImpl() {
-			@Override
-			public void accept(CtVisitor visitor) {
+    public CtModule getUnnamedModule() {
+        return factory.getModel().getUnnamedModule();
+    }
 
-			}
+    public Collection<CtModule> getAllModules() {
+        return factory.getModel().getAllModules();
+    }
 
-			@Override
-			public CtElement getParent() throws ParentNotInitializedException {
-				return null;
-			}
-
-			@Override
-			public Factory getFactory() {
-				return CtUnnamedModule.this.getFactory();
-			}
-		};
-
-
-		{
-			this.setSimpleName(CtModule.TOP_LEVEL_MODULE_NAME);
-			this.addModule(this);
-		}
-
-		public boolean addModule(CtModule module) {
-			return this.allModules.add(module);
-		}
-
-		public CtModule getModule(String name) {
-			for (CtModule module : this.allModules) {
-				if (module.getSimpleName().equals(name)) {
-					return module;
-				}
-			}
-			return null;
-		}
-
-		public Collection<CtModule> getAllModules() {
-			return Collections.unmodifiableCollection(allModules);
-		}
-
-		@Override
-		public <T extends CtNamedElement> T setSimpleName(String name) {
-			if (name == null) {
-				return (T) this;
-			}
-
-			if (name.equals(CtModule.TOP_LEVEL_MODULE_NAME)) {
-				return super.setSimpleName(name);
-			}
-
-			return (T) this;
-		}
-
-		@Override
-		public String toString() {
-			return CtModule.TOP_LEVEL_MODULE_NAME;
-		}
-
-		@Override
-		public void accept(CtVisitor visitor) {
-			visitor.visitCtModule(this);
-		}
-
-		@Override
-		public CtElement getParent() {
-			return this.parent;
-		}
-	}
-
-	public ModuleFactory(Factory factory) {
-		super(factory);
-	}
-
-	public CtUnnamedModule getUnnamedModule() {
-		return (CtUnnamedModule) factory.getModel().getUnnamedModule();
-	}
-
-	public Collection<CtModule> getAllModules() {
-		return getUnnamedModule().getAllModules();
-	}
-
-	public CtModule getModule(String moduleName) {
-		return getUnnamedModule().getModule(moduleName);
-	}
-
-	public CtModule getOrCreate(String moduleName) {
+    public CtModule getModule(String moduleName) {
 		if (moduleName == null || moduleName.isEmpty()) {
 			return getUnnamedModule();
 		}
 
-		CtModule ctModule = getUnnamedModule().getModule(moduleName);
-		if (ctModule == null) {
-			ctModule = factory.Core().createModule().setSimpleName(moduleName);
-			ctModule.setRootPackage(new CtModelImpl.CtRootPackage());
-			ctModule.setParent(getUnnamedModule());
-			getUnnamedModule().addModule(ctModule);
+        return factory.getModel().getModule(moduleName);
+    }
+
+    public CtModule getOrCreate(String moduleName) {
+        if (moduleName == null || moduleName.isEmpty()) {
+            return getUnnamedModule();
+        }
+
+		CtModule known = getModule(moduleName);
+		if (known != null) {
+			return known;
 		}
 
-		return ctModule;
-	}
+		CtModule fresh = factory.Core().createModule().setSimpleName(moduleName);
+		factory.getModel().addModule(fresh);
+		return fresh;
+    }
 
-	public CtModuleReference createReference(CtModule module) {
-		return factory.Core().createModuleReference().setSimpleName(module.getSimpleName());
-	}
+    public CtModuleReference createReference(CtModule module) {
+        return createReference(module.getSimpleName());
+    }
 
-	public CtModuleRequirement createModuleRequirement(CtModuleReference moduleReference) {
-		return factory.Core().createModuleRequirement().setModuleReference(moduleReference);
-	}
+    public CtModuleReference createReference(String name) {
+        return factory.Core()
+                .createModuleReference()
+                .setSimpleName(name);
+    }
 
-	public CtPackageExport createPackageExport(CtPackageReference ctPackageReference) {
-		return factory.Core().createPackageExport().setPackageReference(ctPackageReference);
-	}
+    public CtModuleRequirement createModuleRequirement(CtModuleReference moduleReference) {
+        return factory.Core()
+                .createModuleRequirement()
+                .setModuleReference(moduleReference);
+    }
 
-	public CtProvidedService createProvidedService(CtTypeReference typeReference) {
-		return factory.Core().createProvidedService().setServiceType(typeReference);
-	}
+    public CtPackageExport createPackageExport(CtPackageReference ctPackageReference) {
+        return factory.Core()
+                .createPackageExport()
+                .setPackageReference(ctPackageReference);
+    }
 
-	public CtUsedService createUsedService(CtTypeReference typeReference) {
-		return factory.Core().createUsedService().setServiceType(typeReference);
-	}
+    public CtProvidedService createProvidedService(CtTypeReference typeReference) {
+        return factory.Core()
+                .createProvidedService()
+                .setServiceType(typeReference);
+    }
+
+    public CtUsedService createUsedService(CtTypeReference typeReference) {
+        return factory.Core()
+                .createUsedService()
+                .setServiceType(typeReference);
+    }
 }
 

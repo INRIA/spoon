@@ -768,6 +768,11 @@ public interface Factory {
 	CtPackage createPackage();
 
 	/**
+	 *  @see CoreFactory#createPackage(CtModule)
+	 */
+	CtPackage createPackage(CtModule parent);
+
+	/**
 	 *  @see CoreFactory#createTypeParameter()
 	 */
 	CtTypeParameter createTypeParameter();

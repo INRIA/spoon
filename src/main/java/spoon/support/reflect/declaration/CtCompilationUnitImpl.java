@@ -232,7 +232,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 		if (declaredTypeReferences.size() > 0) {
 			return declaredTypeReferences.get(0).getPackage().getDeclaration();
 		}
-		return getFactory().getModel().getRootPackage();
+		return getFactory().Package().getRootPackage();
 	}
 
 	@Override
@@ -242,7 +242,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 			if (declaredTypeReferences.size() > 0) {
 				packRef = declaredTypeReferences.get(0).getPackage().clone();
 			} else {
-				packRef = getFactory().getModel().getRootPackage().getReference();
+				packRef = getFactory().Package().getRootPackage().getReference();
 			}
 			packageDeclaration = getFactory().Package().createPackageDeclaration(packRef);
 		}

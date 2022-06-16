@@ -40,6 +40,16 @@ public interface CtModel extends Serializable, CtQueryable {
 	CtModule getUnnamedModule();
 
 	/**
+	 * searches for a package in any module
+	 */
+	CtPackage getPackage(String qualifiedName);
+
+	/**
+	 * searches for a module
+	 */
+	CtModule getModule(String name);
+
+	/**
 	 * returns all modules of the model
 	 */
 	Collection<CtModule> getAllModules();
@@ -55,6 +65,16 @@ public interface CtModel extends Serializable, CtQueryable {
 	 * This value should be false at the beginning of {@link SpoonModelBuilder#build()} and true at this end.
 	 */
 	boolean isBuildModelFinished();
+
+	/**
+	 * adds a module to the model.
+	 */
+	<T extends CtModel> T addModule(CtModule module);
+
+	/**
+	 * removes a module to the model.
+	 */
+	<T extends CtModel> T removeModule(CtModule module);
 
 	/**
 	 * Set to true to flag that a build model has been finished.

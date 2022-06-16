@@ -37,6 +37,7 @@ import javax.swing.tree.TreePath;
 
 import spoon.Launcher;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.factory.Factory;
 import spoon.support.SerializationModelStreamer;
 
@@ -66,7 +67,10 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 	 */
 	public SpoonModelTree(Factory factory) {
 		SpoonTreeBuilder cst = new SpoonTreeBuilder();
-		cst.scan(factory.Package().getRootPackage());
+		for(CtModule ctModule : factory.getModel().getAllModules()) {
+			cst.scan(ctModule.getRootPackage());
+		}
+
 		this.factory = factory;
 		root = cst.getRoot();
 		initialize();

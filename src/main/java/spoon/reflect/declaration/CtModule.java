@@ -12,6 +12,7 @@ import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.support.DerivedProperty;
 
+import java.util.Collection;
 import java.util.List;
 
 import static spoon.reflect.path.CtRole.EXPORTED_PACKAGE;
@@ -43,7 +44,7 @@ import static spoon.reflect.path.CtRole.SUB_PACKAGE;
  * grants access at compile time to types in only those packages which are explicitly exported,
  * but grants access at run time to types in all its packages, as if all packages had been exported.
  */
-public interface CtModule extends CtNamedElement {
+public interface CtModule extends CtNamedElement, CtShadowable {
 
 	/**
 	 * The name for the top level module.
@@ -61,6 +62,12 @@ public interface CtModule extends CtNamedElement {
 
 	@PropertySetter(role = MODIFIER)
 	<T extends CtModule> T setIsOpenModule(boolean openModule);
+
+	@PropertyGetter(role = MODIFIER)
+	boolean isAutomatic();
+
+	@PropertySetter(role = MODIFIER)
+	<T extends CtModule> T setIsAutomatic(boolean isAutomatic);
 
 	@PropertySetter(role = MODULE_DIRECTIVE)
 	<T extends CtModule> T setModuleDirectives(List<CtModuleDirective> moduleDirectives);
@@ -166,6 +173,14 @@ public interface CtModule extends CtNamedElement {
 
 	@PropertySetter(role = SUB_PACKAGE)
 	<T extends CtModule> T setRootPackage(CtPackage rootPackage);
+
+	CtPackage getPackage(String packName);
+
+	Collection<CtPackage> getAllPackages();
+
+	boolean isAttributed();
+
+	<T extends CtModule> T setIsAttributed(boolean isAttributed);
 
 	@DerivedProperty
 	@Override

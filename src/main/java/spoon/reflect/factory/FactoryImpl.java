@@ -1011,6 +1011,11 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
+	public CtPackage createPackage(CtModule parent) {
+		return Core().createPackage(parent);
+	}
+
+	@Override
 	public CtTypeParameter createTypeParameter() {
 		return Core().createTypeParameter();
 	}

@@ -609,7 +609,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public void visitCtPackage(final spoon.reflect.declaration.CtPackage ctPackage) {
-		spoon.reflect.declaration.CtPackage aCtPackage = ctPackage.getFactory().Core().createPackage();
+		spoon.reflect.declaration.CtPackage aCtPackage = ctPackage.getFactory().Core().createPackage(ctPackage.getDeclaringModule());
 		this.builder.copy(ctPackage, aCtPackage);
 		aCtPackage.setAnnotations(this.cloneHelper.clone(ctPackage.getAnnotations()));
 		aCtPackage.setPackages(this.cloneHelper.clone(ctPackage.getPackages()));

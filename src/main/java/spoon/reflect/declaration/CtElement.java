@@ -239,6 +239,12 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	<E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
 
 	/**
+	 * Gets the declaring module.
+	 */
+	@DerivedProperty
+	CtModule getDeclaringModule();
+
+	/**
 	 * Gets the parent of current reference.
 	 *
 	 * @throws ParentNotInitializedException

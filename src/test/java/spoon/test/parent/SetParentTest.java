@@ -18,16 +18,11 @@ package spoon.test.parent;
 
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import spoon.reflect.CtModelImpl;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtTypePattern;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.reference.CtReference;
 import spoon.test.SpoonTestHelpers;
 
@@ -77,10 +72,10 @@ public class SetParentTest{
 				|| "CtPackage".equals(toTest.getSimpleName())
 				) {
 			// contract: root package is the parent for those classes
-			assertTrue(receiver.getParent() instanceof CtModelImpl.CtRootPackage);
+			assertTrue(receiver.getParent() instanceof CtPackage && ((CtPackage) receiver.getParent()).isUnnamedPackage());
 		} else if ("CtModule".equals(toTest.getSimpleName())) {
 			// contract: module parent is necessarily the unnamedmodule
-			assertTrue(receiver.getParent() instanceof ModuleFactory.CtUnnamedModule);
+			assertTrue(receiver.getParent() instanceof CtModule && ((CtModule) receiver.getParent()).isUnnamedModule());
 		} else if ("CtCompilationUnit".equals(toTest.getSimpleName())) {
 			// contract: CtCompilationUnit parent is null
 			assertNull(receiver.getParent());

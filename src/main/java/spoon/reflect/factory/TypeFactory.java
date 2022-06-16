@@ -424,13 +424,8 @@ public class TypeFactory extends SubFactory {
 	@SuppressWarnings("unchecked")
 	public <T> CtType<T> get(final String qualifiedName) {
 		int packageIndex = qualifiedName.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
-		CtPackage pack;
-		if (packageIndex > 0) {
-			pack = factory.Package().get(qualifiedName.substring(0, packageIndex));
-		} else {
-			pack = factory.Package().getRootPackage();
-		}
-
+		CtPackage pack = packageIndex > 0 ? factory.Package().get(qualifiedName.substring(0, packageIndex))
+				: factory.Package().getRootPackage();
 		if (pack != null) {
 			CtType<T> type = pack.getType(qualifiedName.substring(packageIndex + 1));
 			if (type != null) {

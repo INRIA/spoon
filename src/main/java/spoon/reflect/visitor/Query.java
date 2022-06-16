@@ -8,12 +8,15 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class provides some useful methods to retrieve program elements and
@@ -40,7 +43,13 @@ public abstract class Query {
 	 */
 	public static <E extends CtElement> List<E> getElements(Factory factory,
 															Filter<E> filter) {
-		return getElements(factory.Package().getRootPackage(), filter);
+		return factory.getModel()
+				.getAllModules()
+				.stream()
+				.map(CtModule::getRootPackage)
+				.map(ctPackage -> getElements(ctPackage, filter))
+				.flatMap(Collection::stream)
+				.collect(Collectors.toUnmodifiableList());
 	}
 
 	/**
@@ -92,7 +101,13 @@ public abstract class Query {
 	 */
 	public static <R extends CtReference> List<R> getReferences(
 			Factory factory, Filter<R> filter) {
-		return getReferences(factory.Package().getRootPackage(), filter);
+		return factory.getModel()
+				.getAllModules()
+				.stream()
+				.map(CtModule::getRootPackage)
+				.map(ctPackage -> getReferences(ctPackage, filter))
+				.flatMap(Collection::stream)
+				.collect(Collectors.toUnmodifiableList());
 	}
 
 }

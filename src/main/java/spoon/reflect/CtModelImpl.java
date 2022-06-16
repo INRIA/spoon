@@ -7,105 +7,87 @@
  */
 package spoon.reflect;
 
+import spoon.SpoonException;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.ModuleFactory;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
-import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.QueueProcessingManager;
-import spoon.support.reflect.declaration.CtPackageImpl;
+import spoon.support.reflect.declaration.CtUnnamedModuleImpl;
+import spoon.support.util.internal.ElementNameMap;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CtModelImpl implements CtModel {
 
 	private static final long serialVersionUID = 1L;
 
-	private boolean buildModelFinished = false;
+	private final CtModule unnamedModule;
+	private final Modules modules;
+	private boolean buildModelFinished;
+
+	public CtModelImpl(Factory factory) {
+		this.unnamedModule = new CtUnnamedModuleImpl(factory);
+		this.modules = new Modules();
+		addModule(unnamedModule);
+	}
 
 	@Override
 	public <R extends CtElement> CtQuery filterChildren(Filter<R> filter) {
-		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).filterChildren(filter);
+		return getUnnamedModule()
+				.getFactory()
+				.Query()
+				.createQuery(this.getAllModules().toArray())
+				.filterChildren(filter);
 	}
 
 	@Override
 	public <I, R> CtQuery map(CtFunction<I, R> function) {
-		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).map(function);
+		return getUnnamedModule()
+				.getFactory()
+				.Query()
+				.createQuery(this.getAllModules().toArray())
+				.map(function);
 	}
 
 	@Override
 	public <I> CtQuery map(CtConsumableFunction<I> queryStep) {
-		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).map(queryStep);
+		return getUnnamedModule()
+				.getFactory()
+				.Query()
+				.createQuery(this.getAllModules().toArray())
+				.map(queryStep);
 	}
-
-	public static class CtRootPackage extends CtPackageImpl {
-		{
-			this.setSimpleName(CtPackage.TOP_LEVEL_PACKAGE_NAME);
-		}
-
-		@Override
-		public <T extends CtNamedElement> T setSimpleName(String name) {
-			if (name == null) {
-				return (T) this;
-			}
-
-			if (name.equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
-				return super.setSimpleName(name);
-			}
-
-			return (T) this;
-		}
-
-		@Override
-		public String getQualifiedName() {
-			return "";
-		}
-
-		@Override
-		public String toString() {
-			return TOP_LEVEL_PACKAGE_NAME;
-		}
-	}
-
-	private final CtModule unnamedModule;
-
-	public CtModelImpl(Factory f) {
-		this.unnamedModule = new ModuleFactory.CtUnnamedModule();
-		this.unnamedModule.setFactory(f);
-		this.unnamedModule.setRootPackage(new CtModelImpl.CtRootPackage());
-		getRootPackage().setFactory(f);
-	}
-
-	@Override
-	public CtPackage getRootPackage() {
-		return getUnnamedModule().getRootPackage();
-	}
-
 
 	@Override
 	public Collection<CtType<?>> getAllTypes() {
-		final List<CtType<?>> result = new ArrayList<>();
-		getAllPackages().forEach(ctPackage -> {
-			result.addAll(ctPackage.getTypes());
-		});
-		return result;
+		return getAllPackages()
+				.stream()
+				.flatMap(ctPackage -> ctPackage.getTypes().stream())
+				.collect(Collectors.toUnmodifiableList());
 	}
-
 
 	@Override
 	public Collection<CtPackage> getAllPackages() {
-		return Collections.unmodifiableCollection(getElements(new TypeFilter<>(CtPackage.class)));
+		return getAllModules()
+				.stream()
+				.map(CtModule::getAllPackages)
+				.flatMap(Collection::stream)
+				.collect(Collectors.toUnmodifiableList());
+	}
+
+	@Override
+	@Deprecated
+	public CtPackage getRootPackage() {
+		return getUnnamedModule().getRootPackage();
 	}
 
 	@Override
@@ -114,10 +96,36 @@ public class CtModelImpl implements CtModel {
 	}
 
 	@Override
-	public Collection<CtModule> getAllModules() {
-		return ((ModuleFactory.CtUnnamedModule) this.unnamedModule).getAllModules();
+	public CtModule getModule(String name) {
+		return modules.get(name);
 	}
 
+	@Override
+	public Collection<CtModule> getAllModules() {
+		return Collections.unmodifiableCollection(modules.values());
+	}
+
+	@Override
+	public CtPackage getPackage(String qualifiedName) {
+		if(qualifiedName == null || qualifiedName.isEmpty()){
+			return unnamedModule.getRootPackage();
+		}
+
+		return getAllModules()
+				.stream()
+				.map(ctModule -> ctModule.getPackage(qualifiedName))
+				.filter(Objects::nonNull)
+				.reduce((u, v) -> throwDuplicateException(qualifiedName))
+				.orElse(null);
+	}
+
+	private <T> T throwDuplicateException(String qualifiedName) {
+		throw new SpoonException(
+				"Ambiguous package name detected. If you believe the code you analyzed is correct, please"
+						+ " file an issue and reference https://github.com/INRIA/spoon/issues/4051. "
+						+ "Error details: " + qualifiedName
+		);
+	}
 
 	@Override
 	public void processWith(Processor<?> processor) {
@@ -138,9 +146,32 @@ public class CtModelImpl implements CtModel {
 	}
 
 	@Override
+	public <T extends CtModel> T addModule(CtModule module) {
+		modules.put(module.getSimpleName(), module);
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtModel> T removeModule(CtModule module) {
+		modules.remove(module.getSimpleName());
+		return (T) this;
+	}
+
+	@Override
 	public <T extends CtModel> T setBuildModelIsFinished(boolean buildModelFinished) {
 		this.buildModelFinished = buildModelFinished;
 		return (T) this;
 	}
 
+	private static class Modules extends ElementNameMap<CtModule>{
+		@Override
+		protected CtElement getOwner() {
+			return null;
+		}
+
+		@Override
+		protected CtRole getRole() {
+			return CtRole.DECLARED_MODULE;
+		}
+	}
 }

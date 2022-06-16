@@ -7,60 +7,21 @@
  */
 package spoon.support.visitor.java;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.GenericDeclaration;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.Set;
 import spoon.reflect.code.CtLiteral;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtAnnotationMethod;
-import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtRecord;
-import spoon.reflect.declaration.CtRecordComponent;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.reference.CtArrayTypeReference;
-import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtTypeParameterReference;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.reference.*;
 import spoon.support.util.RtHelper;
-import spoon.support.visitor.java.internal.AnnotationRuntimeBuilderContext;
-import spoon.support.visitor.java.internal.ExecutableRuntimeBuilderContext;
-import spoon.support.visitor.java.internal.PackageRuntimeBuilderContext;
-import spoon.support.visitor.java.internal.RecordComponentRuntimeBuilderContext;
-import spoon.support.visitor.java.internal.RuntimeBuilderContext;
-import spoon.support.visitor.java.internal.TypeReferenceRuntimeBuilderContext;
-import spoon.support.visitor.java.internal.TypeRuntimeBuilderContext;
-import spoon.support.visitor.java.internal.VariableRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.*;
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
+
+import java.lang.annotation.Annotation;
+import java.lang.module.ModuleDescriptor;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.stream.Collectors;
 /**
  * Builds Spoon model from class file using the reflection api. The Spoon model
  * contains only the declaration part (type, field, method, etc.). Everything
@@ -71,11 +32,12 @@ import spoon.support.visitor.java.reflect.RtParameter;
  * element comes from the reflection api, use {@link spoon.reflect.declaration.CtShadowable#isShadow()}.
  */
 public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
-	private Deque<RuntimeBuilderContext> contexts = new ArrayDeque<>();
-	private Factory factory;
+	private final Deque<RuntimeBuilderContext> contexts;
+	private final Factory factory;
 
 	public JavaReflectionTreeBuilder(Factory factory) {
 		this.factory = factory;
+		this.contexts = new ArrayDeque<>();
 	}
 
 	private void enter(RuntimeBuilderContext context) {
@@ -88,47 +50,140 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	/** transforms a java.lang.Class into a CtType (ie a shadow type in Spoon's parlance) */
 	public <T, R extends CtType<T>> R scan(Class<T> clazz) {
-		CtPackage ctPackage;
-		CtType<?> ctEnclosingClass;
 		if (clazz.getEnclosingClass() != null && !clazz.isAnonymousClass()) {
-			ctEnclosingClass = factory.Type().get(clazz.getEnclosingClass());
+			CtType<?> ctEnclosingClass = factory.Type().get(clazz.getEnclosingClass());
 			return ctEnclosingClass.getNestedType(clazz.getSimpleName());
 		} else {
-			if (clazz.getPackage() == null) {
-				ctPackage = factory.Package().getRootPackage();
-			} else {
-				ctPackage = factory.Package().getOrCreate(clazz.getPackage().getName());
+			CtPackage ctPackage = clazz.getPackage() != null ? factory.Package().getOrCreate(clazz.getPackage().getName())
+					: factory.Package().getRootPackage();
+			if(contexts.isEmpty()){
+				contexts.add(new PackageRuntimeBuilderContext(ctPackage));
 			}
-			if (contexts.isEmpty()) {
-				enter(new PackageRuntimeBuilderContext(ctPackage));
-			}
-			boolean visited = false;
+
 			if (clazz.isAnnotation()) {
-				visited = true;
 				visitAnnotationClass((Class<Annotation>) clazz);
-			}
-			if (clazz.isInterface() && !visited) {
-				visited = true;
+			}else if (clazz.isInterface()) {
 				visitInterface(clazz);
-			}
-			if (clazz.isEnum() && !visited) {
-				visited = true;
+			}else if (clazz.isEnum()) {
 				visitEnum(clazz);
-			}
-			if (MethodHandleUtils.isRecord(clazz) && !visited) {
-				visited = true;
+			}else if (MethodHandleUtils.isRecord(clazz)) {
 				visitRecord(clazz);
-			}
-			if (!visited) {
+			}else {
 				visitClass(clazz);
 			}
+
 			exit();
 			final R type = ctPackage.getType(clazz.getSimpleName());
 			if (clazz.isPrimitive() && type.getParent() instanceof CtPackage) {
 				type.setParent(null); // primitive type isn't in a package.
 			}
+
 			return type;
 		}
+	}
+
+	@Override
+	public void visitModule(Module module) {
+		CtModule know = factory.Module().getModule(module.getName());
+		if (know != null && know.isAttributed()) {
+			return;
+		}
+
+		CtModule fresh = know != null ? know : factory.Module().getOrCreate(module.getName());
+		ModuleDescriptor descriptor = module.getDescriptor();
+		if(descriptor != null){
+			attributeModule(fresh, descriptor);
+		}
+
+		fresh.setIsAttributed(true);
+		enter(new ModuleRuntimeBuilderContext(fresh));
+		super.visitModule(module);
+		exit();
+	}
+
+	private void attributeModule(CtModule fresh, ModuleDescriptor descriptor) {
+		fresh.setIsOpenModule(descriptor.isOpen());
+		fresh.setIsAutomatic(descriptor.isAutomatic());
+
+		List<CtModuleRequirement> requires = descriptor.requires()
+				.stream()
+				.map(this::createRequires)
+				.collect(Collectors.toUnmodifiableList());
+		fresh.setRequiredModules(requires);
+
+		List<CtPackageExport> exports = descriptor.exports()
+				.stream()
+				.map(instruction -> createExport(instruction.source(), instruction.targets(), false))
+				.collect(Collectors.toUnmodifiableList());
+		fresh.setExportedPackages(exports);
+
+		List<CtPackageExport> opens = descriptor.opens()
+				.stream()
+				.map(instruction -> createExport(instruction.source(), instruction.targets(), true))
+				.collect(Collectors.toUnmodifiableList());
+		fresh.setOpenedPackages(opens);
+
+		List<CtProvidedService> provides = descriptor.provides()
+				.stream()
+				.map(this::createProvides)
+				.collect(Collectors.toUnmodifiableList());
+		fresh.setProvidedServices(provides);
+
+		List<CtUsedService> uses = descriptor.uses()
+				.stream()
+				.map(this::createUses)
+				.collect(Collectors.toUnmodifiableList());
+		fresh.setUsedServices(uses);
+	}
+
+	private CtModuleRequirement createRequires(ModuleDescriptor.Requires instruction) {
+		CtModuleReference requiredModule = factory.Module().createReference(instruction.name());
+		Set<CtModuleRequirement.RequiresModifier> modifiers = new HashSet<>();
+		if(instruction.modifiers().contains(ModuleDescriptor.Requires.Modifier.STATIC)){
+			modifiers.add(CtModuleRequirement.RequiresModifier.STATIC);
+		}
+
+		if(instruction.modifiers().contains(ModuleDescriptor.Requires.Modifier.TRANSITIVE)){
+			modifiers.add(CtModuleRequirement.RequiresModifier.TRANSITIVE);
+		}
+
+		CtModuleRequirement requires = factory.Core().createModuleRequirement();
+		requires.setModuleReference(requiredModule);
+		requires.setRequiresModifiers(modifiers);
+		return requires;
+	}
+
+	private CtUsedService createUses(String used) {
+		CtTypeReference usedType = factory.Type().createReference(used);
+		CtUsedService usedService = factory.Core().createUsedService();
+		usedService.setServiceType(usedType);
+		return usedService;
+	}
+
+	private CtProvidedService createProvides(ModuleDescriptor.Provides instruction) {
+		CtTypeReference serviceType = factory.Type().createReference(instruction.service());
+		List<CtTypeReference> serviceImplementations = instruction.providers()
+				.stream()
+				.map(factory.Type()::createReference)
+				.collect(Collectors.toUnmodifiableList());
+
+		CtProvidedService export = factory.Core().createProvidedService();
+		export.setServiceType(serviceType);
+		export.setImplementationTypes(serviceImplementations);
+		return export;
+	}
+
+	private CtPackageExport createExport(String instruction, Set<String> instruction1, boolean openedPackage) {
+		CtPackageReference exported = factory.Package().createReference(instruction);
+		List<CtModuleReference> targets = instruction1
+				.stream()
+				.map(factory.Module()::createReference)
+				.collect(Collectors.toUnmodifiableList());
+		CtPackageExport export = factory.Core().createPackageExport();
+		export.setOpenedPackage(openedPackage);
+		export.setPackageReference(exported);
+		export.setTargetExport(targets);
+		return export;
 	}
 
 	@Override
@@ -177,13 +232,14 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			public void addConstructor(CtConstructor<?> ctConstructor) {
 				ctClass.addConstructor(ctConstructor);
 			}
+
 			@Override
 			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
-				switch (role) {
-					case SUPER_TYPE:
-						ctClass.setSuperclass(typeReference);
-						return;
+				if (role == CtRole.SUPER_TYPE) {
+					ctClass.setSuperclass(typeReference);
+					return;
 				}
+
 				super.addTypeReference(role, typeReference);
 			}
 		});
@@ -302,10 +358,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitMethod(RtMethod method, Annotation parent) {
 		final CtMethod<Object> ctMethod = factory.Core().createMethod();
 		ctMethod.setSimpleName(method.getName());
-		/**
-		 * java 8 static interface methods are marked as abstract but has body
-		 */
-		if (Modifier.isAbstract(method.getModifiers()) == false) {
+		// java 8 static interface methods are marked as abstract but has body
+		if (!Modifier.isAbstract(method.getModifiers())) {
 			ctMethod.setBody(factory.Core().createBlock());
 		}
 		setModifier(ctMethod, method.getModifiers(), method.getDeclaringClass());

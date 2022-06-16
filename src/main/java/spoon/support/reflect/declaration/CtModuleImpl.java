@@ -8,14 +8,8 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtModuleDirective;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtPackageExport;
-import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtModuleRequirement;
-import spoon.reflect.declaration.CtUsedService;
+import spoon.reflect.declaration.*;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -23,26 +17,59 @@ import spoon.support.DerivedProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private boolean openModule;
 
+	@MetamodelPropertyField(role = CtRole.MODIFIER)
+	private boolean automaticModule;
+
+	@MetamodelPropertyField(role = CtRole.MODIFIER)
+	private boolean attributed;
+
 	@MetamodelPropertyField(role = CtRole.MODULE_DIRECTIVE)
-	private List<CtModuleDirective> moduleDirectives = CtElementImpl.emptyList();
+	private List<CtModuleDirective> moduleDirectives;
+
+	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
+	private boolean shadow;
 
 	@MetamodelPropertyField(role = CtRole.SUB_PACKAGE)
 	private CtPackage rootPackage;
 
-	public CtModuleImpl() {
+	public CtModuleImpl(Factory factory){
+		this.setFactory(factory);
+		this.moduleDirectives = CtElementImpl.emptyList();
+		this.rootPackage = new CtRootPackageImpl(this);
+	}
+
+	@Override
+	public boolean isAutomatic() {
+		return automaticModule;
+	}
+
+	@Override
+	public <T extends CtModule> T setIsAutomatic(boolean automaticModule) {
+		this.automaticModule = automaticModule;
+		return (T) this;
+	}
+
+	@Override
+	public boolean isShadow() {
+		return shadow;
+	}
+
+	@Override
+	public <E extends CtShadowable> E setShadow(boolean shadow) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_SHADOW, shadow, this.shadow);
+		this.shadow = shadow;
+		return (E) this;
 	}
 
 	@Override
 	public boolean isUnnamedModule() {
-		return TOP_LEVEL_MODULE_NAME.equals(this.getSimpleName());
+		return false;
 	}
 
 	@Override
@@ -390,22 +417,39 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		if (providedService == null) {
 			return (T) this;
 		}
+
 		return this.removeModuleDirective(providedService);
 	}
 
 	@Override
+	@Deprecated
 	public CtPackage getRootPackage() {
-		return this.rootPackage;
+		return rootPackage;
 	}
 
 	@Override
 	public <T extends CtModule> T setRootPackage(CtPackage rootPackage) {
-		if (rootPackage != null) {
-			rootPackage.setParent(this);
+		this.rootPackage = new CtRootPackageImpl(this);
+		if(rootPackage != null && rootPackage.isUnnamedPackage()){
+			this.rootPackage = rootPackage;
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.SUB_PACKAGE, rootPackage, this.rootPackage);
-		this.rootPackage = rootPackage;
+
 		return (T) this;
+	}
+
+	@Override
+	public CtPackage getPackage(String qualifiedName) {
+		if (qualifiedName == null || qualifiedName.isEmpty()) {
+			return getRootPackage();
+		}
+
+		return getAllPackages()
+				.stream()
+				.map(CtPackage::getPackages)
+				.flatMap(Collection::stream)
+				.filter(entry -> entry.getQualifiedName().equals(qualifiedName))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override
@@ -430,8 +474,42 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
+	public Collection<CtPackage> getAllPackages() {
+		return getAllPackages(getRootPackage());
+	}
+
+	private List<CtPackage> getAllPackages(CtPackage source) {
+		List<CtPackage> results = new ArrayList<>();
+		results.add(source);
+		source.getPackages().forEach(entry -> {
+			results.add(entry);
+			entry.getPackages()
+					.stream()
+					.map(this::getAllPackages)
+					.forEach(results::addAll);
+		});
+
+		return results;
+	}
+
+	@Override
+	public CtModule getDeclaringModule() {
+		return this;
+	}
+
+	@Override
 	@DerivedProperty
 	public CtElement getParent() {
-		return getFactory().getModel().getUnnamedModule();
+		return null;
+	}
+
+	public boolean isAttributed() {
+		return attributed;
+	}
+
+	@Override
+	public <T extends CtModule> T setIsAttributed(boolean attributed) {
+		this.attributed = attributed;
+		return (T) this;
 	}
 }

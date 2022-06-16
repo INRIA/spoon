@@ -26,6 +26,9 @@ import java.lang.reflect.WildcardType;
  * Client code should not rely on it.
  */
 interface JavaReflectionVisitor {
+	/** Visits a {@link java.lang.Module} */
+	void visitModule(Module module);
+
 	/** Visits a {@link java.lang.Package} */
 	void visitPackage(Package aPackage);
 

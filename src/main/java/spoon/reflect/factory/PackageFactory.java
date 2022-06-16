@@ -7,18 +7,10 @@
  */
 package spoon.reflect.factory;
 
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.StringTokenizer;
-import spoon.SpoonException;
-import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtPackageDeclaration;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtPackageReference;
-
 
 /**
  * The {@link CtPackage} sub-factory.
@@ -63,7 +55,10 @@ public class PackageFactory extends SubFactory {
 	 * Returns a reference on the top level package.
 	 */
 	public CtPackageReference topLevel() {
-		return factory.getModel().getRootPackage().getReference();
+		return factory.getModel()
+				.getUnnamedModule()
+				.getRootPackage()
+				.getReference();
 	}
 
 	/**
@@ -102,7 +97,7 @@ public class PackageFactory extends SubFactory {
 		if (parent == null) {
 			return getOrCreate(simpleName);
 		} else {
-			return getOrCreate(parent.toString() + CtPackage.PACKAGE_SEPARATOR + simpleName);
+			return getOrCreate(parent + CtPackage.PACKAGE_SEPARATOR + simpleName);
 		}
 	}
 
@@ -114,7 +109,19 @@ public class PackageFactory extends SubFactory {
 	 *
 	 */
 	public CtPackage getOrCreate(String qualifiedName) {
-		return this.getOrCreate(qualifiedName, factory.getModel().getUnnamedModule());
+		return this.getOrCreate(qualifiedName, findModuleByPackage(qualifiedName));
+	}
+
+	private CtModule findModuleByPackage(String qualifiedName) {
+		return ModuleLayer
+				.boot()
+				.modules()
+				.stream()
+				.filter(module -> module.getPackages().contains(qualifiedName))
+				.findFirst()
+				.map(Module::getName)
+				.map(factory.Module()::getOrCreate)
+				.orElseGet(factory.getModel()::getUnnamedModule);
 	}
 
 	/**
@@ -123,28 +130,46 @@ public class PackageFactory extends SubFactory {
 	 * @param qualifiedName
 	 * 		the full name of the package
 	 *
-	 * @param rootModule
+	 * @param module
 	 * 		The parent module of the package
 	 */
-	public CtPackage getOrCreate(String qualifiedName, CtModule rootModule) {
-		if (qualifiedName.isEmpty()) {
-			return rootModule.getRootPackage();
+	public CtPackage getOrCreate(String qualifiedName, CtModule module) {
+		CtPackage known = module.getPackage(qualifiedName);
+		if(known != null){
+			return known;
 		}
-		StringTokenizer token = new StringTokenizer(qualifiedName, CtPackage.PACKAGE_SEPARATOR);
-		CtPackage last = rootModule.getRootPackage();
 
+		StringTokenizer token = new StringTokenizer(qualifiedName, CtPackage.PACKAGE_SEPARATOR);
+		CtPackage fresh = null;
 		while (token.hasMoreElements()) {
 			String name = token.nextToken();
-			CtPackage next = last.getPackage(name);
-			if (next == null) {
-				next = factory.Core().createPackage();
-				next.setSimpleName(name);
-				last.addPackage(next);
-			}
-			last = next;
+			fresh = createPackage(module, fresh, name);
 		}
 
-		return last;
+		return fresh;
+	}
+
+	private CtPackage createPackage(CtModule module, CtPackage parent, String name) {
+		CtPackage known = parent != null ? parent.getPackage(name)
+				: module.getPackage(name);
+		if(known != null){
+			return known;
+		}
+
+		CtPackage fresh = factory.Core().createPackage(module);
+		fresh.setSimpleName(name);
+		if(parent != null){
+			fresh.setParent(parent);
+		}
+
+		return fresh;
+	}
+
+	/**
+	 * Return the unnamed top-level package.
+	 */
+	public CtPackage getRootPackage() {
+		return factory.getModel().getUnnamedModule().getRootPackage();
 	}
 
 	/**
@@ -155,77 +180,7 @@ public class PackageFactory extends SubFactory {
 	 * @return a found package or null
 	 */
 	public CtPackage get(String qualifiedName) {
-		if (qualifiedName.contains(CtType.INNERTTYPE_SEPARATOR)) {
-			throw new RuntimeException("Invalid package name " + qualifiedName);
-		}
-
-		// Find package with the most contained types. If a module exports package "foo.bar" and the
-		// other "foo.bar.baz", *both modules* will contain a "foo.bar" package in spoon. As
-		// javac (yes, javac. This is not in the spec but would be a colossal pain for many things if
-		// it were ever allowed) does not allow overlapping packages, one of them will be a synthetic
-		// package spoon creates as a parent for "foo.bar.baz". This package will *never* have any
-		// types in it.
-		// JDT does allow it, but the chances of a real-word program actually having overlap are slim.
-		//
-		// However, if the "foo.bar.baz" module is found first in "getAllModules()", we will find the
-		// synthetic "foo.bar" package in it. As that one contains no types, all queries for types in
-		// it will fail!
-		//
-		// To solve this we look for the package with at least one contained type, effectively
-		// filtering out any synthetic packages.
-		int foundPackageCount = 0;
-		CtPackage packageWithTypes = null;
-		CtPackage lastNonNullPackage = null;
-		for (CtModule module : factory.getModel().getAllModules()) {
-			CtPackage aPackage = getPackageFromModule(qualifiedName, module);
-			if (aPackage == null) {
-				continue;
-			}
-			lastNonNullPackage = aPackage;
-			if (!aPackage.getTypes().isEmpty()) {
-				packageWithTypes = aPackage;
-				foundPackageCount++;
-			}
-		}
-
-		if (foundPackageCount > 1) {
-			throw new SpoonException(
-					"Ambiguous package name detected. If you believe the code you analyzed is correct, please"
-							+ " file an issue and reference https://github.com/INRIA/spoon/issues/4051. "
-							+ "Error details: Found " + foundPackageCount + " non-empty packages with name "
-							+ "'" + qualifiedName + "'"
-			);
-		}
-
-		// Return a non synthetic package but if *no* package had any types we return the last one.
-		// This ensures that you can also retrieve empty packages with this API
-		return packageWithTypes != null ? packageWithTypes : lastNonNullPackage;
-	}
-
-	/**
-	 * @param qualifiedName Qualified name of a package.
-	 * @param ctModule A module in which to search for the package.
-	 * @return The package if found in this module, otherwise null.
-	 */
-	private static CtPackage getPackageFromModule(String qualifiedName, CtModule ctModule) {
-		int index = 0;
-		int nextIndex;
-		CtPackage current = ctModule.getRootPackage();
-
-		if (qualifiedName.isEmpty() || current == null) {
-			return current;
-		}
-
-		while ((nextIndex = qualifiedName.indexOf(CtPackage.PACKAGE_SEPARATOR_CHAR, index)) >= 0) {
-			current = current.getPackage(qualifiedName.substring(index, nextIndex));
-			index = nextIndex + 1;
-
-			if (current == null) {
-				return null;
-			}
-		}
-
-		return current.getPackage(qualifiedName.substring(index));
+		return factory.getModel().getPackage(qualifiedName);
 	}
 
 	/**
@@ -235,22 +190,5 @@ public class PackageFactory extends SubFactory {
 	public Collection<CtPackage> getAll() {
 		return factory.getModel().getAllPackages();
 	}
-
-	/**
-	 * Return the unnamed top-level package.
-	 */
-	public CtPackage getRootPackage() {
-		return factory.getModel().getRootPackage();
-	}
-
-	private List<CtPackage> getSubPackageList(CtPackage pack) {
-		List<CtPackage> packs = new ArrayList<>();
-		packs.add(pack);
-		for (CtPackage p : pack.getPackages()) {
-			packs.addAll(getSubPackageList(p));
-		}
-		return packs;
-	}
-
 }
 

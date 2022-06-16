@@ -29,58 +29,24 @@ import spoon.support.util.internal.ElementNameMap;
  */
 public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	private static final long serialVersionUID = 1L;
+	private final Packages packs;
+	private final Types types;
+	private CtModule declaringModule;
+	protected CtPackageImpl() {
+		this.types = new Types();
+		this.packs = new Packages();
+	}
 
-	@MetamodelPropertyField(role = CtRole.SUB_PACKAGE)
-	protected ElementNameMap<CtPackage> packs = new ElementNameMap<CtPackage>() {
-		private static final long serialVersionUID = 1L;
-		@Override
-		protected CtElement getOwner() {
-			return CtPackageImpl.this;
-		}
+	public CtPackageImpl(CtModule declaringModule) {
+		this();
+		this.setDeclaringModule(declaringModule);
+		this.setFactory(declaringModule.getFactory());
+		this.setParent(declaringModule.getRootPackage());
+	}
 
-		@Override
-		protected CtRole getRole() {
-			return CtRole.SUB_PACKAGE;
-		}
-
-		@Override
-		public CtPackage put(String simpleName, CtPackage pack) {
-			if (pack == null) {
-				return null;
-			}
-			// they are the same
-			if (CtPackageImpl.this.getQualifiedName().equals(pack.getQualifiedName())) {
-				addAllTypes(pack, CtPackageImpl.this);
-				addAllPackages(pack, CtPackageImpl.this);
-				return null;
-			}
-
-			// it already exists
-			CtPackage ctPackage = get(simpleName);
-			if (ctPackage != null) {
-				addAllTypes(pack, ctPackage);
-				addAllPackages(pack, ctPackage);
-				return null;
-			}
-
-			return super.put(simpleName, pack);
-		}
-	};
-
-	@MetamodelPropertyField(role = CtRole.CONTAINED_TYPE)
-	private final ElementNameMap<CtType<?>> types = new ElementNameMap<CtType<?>>() {
-		private static final long serialVersionUID = 1L;
-		@Override
-		protected CtElement getOwner() {
-			return CtPackageImpl.this;
-		}
-		@Override
-		protected CtRole getRole() {
-			return CtRole.CONTAINED_TYPE;
-		}
-	};
-
-	public CtPackageImpl() {
+	@Override
+	public boolean isUnnamedPackage() {
+		return false;
 	}
 
 	@Override
@@ -97,69 +63,31 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return (T) this;
 	}
 
-	/** add all types of "from" in "to" */
-	private void addAllTypes(CtPackage from, CtPackage to) {
-		for (CtType<?> t : from.getTypes()) {
-			for (CtType<?> t2: to.getTypes()) {
-				if (t2.getQualifiedName().equals(t.getQualifiedName()) && !t2.equals(t)) {
-					throw new IllegalStateException("types with same qualified names and different code cannot be merged");
-				}
-			}
-			to.addType(t);
-		}
-	}
-
-	/** add all packages of "from" in "to" */
-	private void addAllPackages(CtPackage from, CtPackage to) {
-		for (CtPackage p : from.getPackages()) {
-			to.addPackage(p);
-		}
-	}
-
 	@Override
 	public boolean removePackage(CtPackage pack) {
 		return packs.remove(pack.getSimpleName()) != null;
 	}
 
 	@Override
-	public CtModule getDeclaringModule() {
-		return getParent(CtModule.class);
-	}
-
-	@Override
-	public CtPackage getDeclaringPackage() {
-		return getParent(CtPackage.class);
-	}
-
-	@Override
-	public CtPackage getPackage(String simpleName) {
-		return this.packs.get(simpleName);
-	}
-
-	@Override
-	public Set<CtPackage> getPackages() {
-		return new LinkedHashSet<>(packs.values());
-	}
-
-	@Override
-	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
-		String oldName = getSimpleName();
-		super.setSimpleName(simpleName);
-
-		if (parent instanceof CtPackageImpl) {
-			((CtPackageImpl) parent).updatePackageName(this, oldName);
+	public <T extends CtPackage> T setPackages(Set<CtPackage> packs) {
+		this.packs.clear();
+		for (CtPackage pack : packs) {
+			this.packs.put(pack.getSimpleName(), pack);
 		}
-
 		return (T) this;
 	}
 
 	@Override
 	public String getQualifiedName() {
-		if (getDeclaringPackage() == null || getDeclaringPackage().isUnnamedPackage()) {
+		if (!isParentInitialized()
+				|| parent instanceof CtRootPackageImpl
+				|| parent instanceof CtModule) {
 			return getSimpleName();
-		} else {
-			return getDeclaringPackage().getQualifiedName() + "." + getSimpleName();
 		}
+
+		return ((CtPackage) parent).getQualifiedName()
+				+ CtPackage.PACKAGE_SEPARATOR_CHAR
+				+ getSimpleName();
 	}
 
 	@Override
@@ -174,20 +102,12 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
-	public <T extends CtPackage> T setPackages(Set<CtPackage> packs) {
-		this.packs.clear();
-		for (CtPackage pack : packs) {
-			this.packs.put(pack.getSimpleName(), pack);
-		}
-		return (T) this;
-	}
-
-	@Override
 	public <T extends CtPackage> T setTypes(Set<CtType<?>> types) {
 		this.types.clear();
 		for (CtType<?> type : types) {
 			this.types.put(type.getSimpleName(), type);
 		}
+
 		return (T) this;
 	}
 
@@ -197,13 +117,19 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
-	public <T extends CtPackage> T addType(CtType<?> type) {
+	public <T extends CtPackage> T addType(String simpleName, CtType<?> type) {
 		if (type == null) {
 			return (T) this;
 		}
+
 		// type map will take care of setting the parent
 		types.put(type.getSimpleName(), type);
 		return (T) this;
+	}
+
+	@Override
+	public <T extends CtPackage> T addType(CtType<?> type) {
+		return addType(type.getSimpleName(), type);
 	}
 
 	@Override
@@ -237,11 +163,6 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
-	public boolean isUnnamedPackage() {
-		return TOP_LEVEL_PACKAGE_NAME.equals(getSimpleName());
-	}
-
-	@Override
 	public boolean hasPackageInfo() {
 		return !(getPosition() instanceof NoSourcePosition);
 	}
@@ -251,11 +172,149 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return getPackages().isEmpty() && getTypes().isEmpty();
 	}
 
-	void updateTypeName(CtType<?> newType, String oldName) {
+	@Override
+	public CtModule getDeclaringModule() {
+		return declaringModule;
+	}
+
+	@Override
+	public CtPackage getDeclaringPackage() {
+		return getParent(CtPackage.class);
+	}
+
+	@Override
+	public CtPackage getPackage(String name) {
+		return factory.getModel()
+				.getPackage(getQualifiedName() + CtPackage.PACKAGE_SEPARATOR_CHAR + name);
+	}
+
+	@Override
+	public Set<CtPackage> getPackages() {
+		return Set.copyOf(packs.values());
+	}
+
+	@Override
+	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
+		String oldName = getSimpleName();
+		super.setSimpleName(simpleName);
+
+		if (parent instanceof CtPackageImpl) {
+			((CtPackageImpl) parent).updatePackageName(this, oldName);
+		}
+
+		return (T) this;
+	}
+
+	@Override
+	public <E extends CtElement> E setParent(CtElement newParent) {
+		if(newParent == null){
+			return super.setParent(null);
+		}
+
+		if(parent instanceof CtPackage){
+			CtPackage oldPackage = (CtPackage) parent;
+			oldPackage.removePackage(this);
+		}
+
+		if(newParent instanceof CtPackageImpl){
+			CtPackageImpl newPackage = (CtPackageImpl) newParent;
+			newPackage.getPackagesImpl()
+					.getBacking()
+					.put(getSimpleName(), this);
+		}
+
+		return super.setParent(newParent);
+	}
+
+	private Packages getPackagesImpl(){
+		return packs;
+	}
+
+	protected void setDeclaringModule(CtModule declaringModule) {
+		this.declaringModule = declaringModule;
+	}
+
+	protected void updateTypeName(CtType<?> newType, String oldName) {
 		types.updateKey(oldName, newType.getSimpleName());
 	}
 
-	void updatePackageName(CtPackage newPackage, String oldName) {
+	protected void updatePackageName(CtPackage newPackage, String oldName) {
 		packs.updateKey(oldName, newPackage.getSimpleName());
+	}
+
+	// FIXME: 16/06/2022 This is a workaround
+	@Override
+	public CtRole getRoleInParent() {
+		if(getParent() instanceof CtRootPackageImpl){
+			return null;
+		}
+
+		return super.getRoleInParent();
+	}
+
+	private class Packages extends ElementNameMap<CtPackage> {
+		private static final long serialVersionUID = 1L;
+		@Override
+		protected CtElement getOwner() {
+			return CtPackageImpl.this;
+		}
+
+		@Override
+		protected CtRole getRole() {
+			return CtRole.SUB_PACKAGE;
+		}
+
+		@Override
+		public CtPackage put(String simpleName, CtPackage pack) {
+			if (pack == null) {
+				return null;
+			}
+
+			if (CtPackageImpl.this.getQualifiedName().equals(pack.getQualifiedName())) {
+				addAllTypes(pack, CtPackageImpl.this);
+				addAllPackages(pack, CtPackageImpl.this);
+				return null;
+			}
+
+			CtPackage ctPackage = get(simpleName);
+			if (ctPackage != null) {
+				addAllTypes(pack, ctPackage);
+				addAllPackages(pack, ctPackage);
+				return null;
+			}
+
+			return super.put(simpleName, pack);
+		}
+
+		private void addAllTypes(CtPackage from, CtPackage to) {
+			for (CtType<?> t : from.getTypes()) {
+				for (CtType<?> t2: to.getTypes()) {
+					if (t2.getQualifiedName().equals(t.getQualifiedName()) && !t2.equals(t)) {
+						throw new IllegalStateException("types with same qualified names and different code cannot be merged");
+					}
+				}
+				to.addType(t);
+			}
+		}
+
+		private void addAllPackages(CtPackage from, CtPackage to) {
+			for (CtPackage p : from.getPackages()) {
+				to.addPackage(p);
+			}
+		}
+	}
+
+	private class Types extends ElementNameMap<CtType<?>> {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		protected CtElement getOwner() {
+			return CtPackageImpl.this;
+		}
+
+		@Override
+		protected CtRole getRole() {
+			return CtRole.CONTAINED_TYPE;
+		}
 	}
 }

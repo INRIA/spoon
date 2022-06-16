@@ -29,17 +29,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtCompilationUnit;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtImport;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
@@ -1052,8 +1042,8 @@ public class TestSniperPrinter {
 
 
 		ops.stream()
-				.filter(el -> !(el instanceof spoon.reflect.CtModelImpl.CtRootPackage)
-				&& !(el instanceof spoon.reflect.factory.ModuleFactory.CtUnnamedModule)
+				.filter(el -> !(el instanceof CtPackage && ((CtPackage) el).isUnnamedPackage())
+				&& !(el instanceof CtModule && ((CtModule) el).isUnnamedModule())
 				).forEach(el -> {
 			try {
 				sp.reset();

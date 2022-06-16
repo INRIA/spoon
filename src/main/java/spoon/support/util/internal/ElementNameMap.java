@@ -69,8 +69,10 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 			return null;
 		}
 		CtElement owner = getOwner();
-		linkToParent(owner, e);
-		getModelChangeListener().onMapAdd(owner, getRole(), map, key, e);
+		if(owner != null) {
+			linkToParent(owner, e);
+			getModelChangeListener().onMapAdd(owner, getRole(), map, key, e);
+		}
 
 		// We make sure that then last added type is kept (and previous types overwritten) as client
 		// code expects that
@@ -85,13 +87,15 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 			return null;
 		}
 
-		getModelChangeListener().onMapDelete(
-				getOwner(),
-				getRole(),
-				map,
-				(String) key,
-				removed
-		);
+		if(getOwner() != null) {
+			getModelChangeListener().onMapDelete(
+					getOwner(),
+					getRole(),
+					map,
+					(String) key,
+					removed
+			);
+		}
 
 		return removed;
 	}
@@ -104,12 +108,14 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 		// Only an approximation as the concurrent map is only weakly consistent
 		Map<String, T> old = new LinkedHashMap<>(map);
 		map.clear();
-		getModelChangeListener().onMapDeleteAll(
-				getOwner(),
-				getRole(),
-				map,
-				old
-		);
+		if(getOwner() != null){
+			getModelChangeListener().onMapDeleteAll(
+					getOwner(),
+					getRole(),
+					map,
+					old
+			);
+		}
 	}
 
 	@Override
@@ -136,7 +142,10 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 	}
 
 	private FineModelChangeListener getModelChangeListener() {
-		return getOwner().getFactory().getEnvironment().getModelChangeListener();
+		return Objects.requireNonNull(getOwner(), "Cannot access model change listener without an owner")
+				.getFactory()
+				.getEnvironment()
+				.getModelChangeListener();
 	}
 
 	@Override
@@ -154,5 +163,9 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 	@Override
 	public int hashCode() {
 		return Objects.hash(map);
+	}
+
+	public ConcurrentSkipListMap<String, T> getBacking() {
+		return map;
 	}
 }

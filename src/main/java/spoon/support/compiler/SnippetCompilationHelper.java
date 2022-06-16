@@ -18,13 +18,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtCodeSnippet;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.reference.CtTypeReference;
@@ -98,8 +92,10 @@ public class SnippetCompilationHelper {
 		CtType<?> newClass = f.Type().get(initialClass.getQualifiedName());
 
 		// we find the snippets that are now ASTs
-		for (CtPath p : elements2before.keySet()) {
-			elements2after.put(p, p.evaluateOn(f.getModel().getRootPackage()).iterator().next());
+		for(CtModule ctModule : f.getModel().getAllModules()) {
+			for (CtPath p : elements2before.keySet()) {
+				elements2after.put(p, p.evaluateOn(ctModule.getRootPackage()).iterator().next());
+			}
 		}
 
 		// and we replace the new class in the factory by the initial one
@@ -208,7 +204,7 @@ public class SnippetCompilationHelper {
 
 		if (ret instanceof CtClass) {
 			CtClass klass = (CtClass) ret;
-			ret.getFactory().Package().getRootPackage().addType(klass);
+			klass.getDeclaringModule().getRootPackage().addType(klass);
 			klass.setSimpleName(klass.getSimpleName().replaceAll("^[0-9]*", ""));
 		}
 		return ret;

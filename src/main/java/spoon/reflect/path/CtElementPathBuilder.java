@@ -7,7 +7,6 @@
  */
 package spoon.reflect.path;
 
-import spoon.reflect.CtModelImpl;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -41,7 +40,7 @@ public class CtElementPathBuilder {
 	 * @return CtPath from model root package to el
 	 */
 	public CtPath fromElement(CtElement el) throws CtPathException {
-		return fromElement(el, el.getParent(CtModelImpl.CtRootPackage.class));
+		return fromElement(el, el.getDeclaringModule().getRootPackage());
 	}
 	/**
 	 * Build path to a CtElement el, from one of its parent.

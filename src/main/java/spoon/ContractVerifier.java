@@ -597,7 +597,7 @@ public class ContractVerifier {
 		// checking method JavaIdentifiers.isLegalJavaPackageIdentifier
 		_rootPackage.getElements(new TypeFilter<>(CtPackage.class)).parallelStream().forEach(element -> {
 			// the default package is excluded (called "unnamed package")
-			if (element instanceof CtModelImpl.CtRootPackage) {
+			if (element.isUnnamedPackage()) {
 				return;
 			}
 
