@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -42,6 +41,7 @@ import spoon.test.constructorcallnewclass.testclasses.Panini;
 
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -220,5 +220,19 @@ public class ConstructorCallTest {
 				model.getElements(element -> element.getExecutable().getType().getSimpleName().equals(simpleName));
 		assert calls.size() == 1;
 		return calls.get(0).getExecutable().getType();
+	}
+	
+	@Test
+	public void testConstructorCorrectTyped() {
+		// no constructorcall from the input has the simple object type in noclasspathmode
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/constructorcall-type/ConstructorCallWithTypesNotOnClasspath.java");
+		CtModel model = launcher.buildModel();
+		for (CtConstructorCall<?> ctConstructorCall : model
+				.getElements(new TypeFilter<>(CtConstructorCall.class))) {
+			assertThat(ctConstructorCall.getExecutable().getType().getSimpleName(), not(equalTo("Object")));
+			assertThat(ctConstructorCall.getType(), not(ctConstructorCall.getFactory().Type().objectType()));
+		}
 	}
 }
