@@ -125,9 +125,9 @@ public class EnumsTest {
 	void testNestedPrivateEnumValues(CtEnum<?> type) {
 		// contract: enum values have correct modifiers matching the produced bytecode
 		assertThat(type.getField("VALUE").getExtendedModifiers(), contentEquals(
-				new CtExtendedModifier(ModifierKind.PUBLIC, true),
-				new CtExtendedModifier(ModifierKind.STATIC, true),
-				new CtExtendedModifier(ModifierKind.FINAL, true)
+				CtExtendedModifier.implicit(ModifierKind.PUBLIC),
+				CtExtendedModifier.implicit(ModifierKind.STATIC),
+				CtExtendedModifier.implicit(ModifierKind.FINAL)
 		));
 	}
 
@@ -207,8 +207,8 @@ public class EnumsTest {
 		// package-level enum, isn't static but implicitly final
 		CtType<?> publicFinalEnum = build("spoon.test.enums.testclasses", "Burritos");
 		assertThat(publicFinalEnum.getExtendedModifiers(), contentEquals(
-				new CtExtendedModifier(ModifierKind.PUBLIC, false),
-				new CtExtendedModifier(ModifierKind.FINAL, true)
+				CtExtendedModifier.explicit(ModifierKind.PUBLIC),
+				CtExtendedModifier.implicit(ModifierKind.FINAL)
 		));
 	}
 
@@ -218,7 +218,7 @@ public class EnumsTest {
 		// pre Java 17, enums aren't implicitly final if an enum value declares an anonymous type
 		CtType<?> publicEnum = build("spoon.test.enums.testclasses", "AnonEnum");
 		assertThat(publicEnum.getExtendedModifiers(), contentEquals(
-				new CtExtendedModifier(ModifierKind.PUBLIC, false)
+				CtExtendedModifier.explicit(ModifierKind.PUBLIC)
 		));
 	}
 
@@ -247,7 +247,7 @@ public class EnumsTest {
 		// it has to be a CtNewClass, otherwise it wouldn't declare an anonymous type
 		assertTrue(defaultExpression instanceof CtNewClass);
 		assertThat(((CtNewClass<?>) defaultExpression).getAnonymousClass().getExtendedModifiers(), contentEquals(
-				new CtExtendedModifier(ModifierKind.FINAL, true)
+				CtExtendedModifier.implicit(ModifierKind.FINAL)
 		));
 	}
 
@@ -275,8 +275,8 @@ public class EnumsTest {
 		assertThat(enumType.getEnumValues().size(), is(2));
 		assertThat(enumType.getMethods().size(), is(1));
 		assertThat(enumType.getExtendedModifiers(), contentEquals(
-				new CtExtendedModifier(ModifierKind.STATIC, true),
-				new CtExtendedModifier(ModifierKind.FINAL, true)
+				CtExtendedModifier.implicit(ModifierKind.STATIC),
+				CtExtendedModifier.implicit(ModifierKind.FINAL)
 		));
 	}
 

@@ -302,7 +302,7 @@ public class TryCatchTest {
 		Set<CtExtendedModifier> extendedModifierSet = catchVariable.getExtendedModifiers();
 		assertEquals(1, extendedModifierSet.size());
 
-		assertEquals(new CtExtendedModifier(ModifierKind.FINAL, false), extendedModifierSet.iterator().next());
+		assertEquals(CtExtendedModifier.explicit(ModifierKind.FINAL), extendedModifierSet.iterator().next());
 
 		launcher = new Launcher();
 		launcher.addInputResource(inputResource);

@@ -167,8 +167,8 @@ public class InterfaceTest {
 		assertThat(interfaceType.getFields().size(), is(1));
 		assertThat(interfaceType.getMethods().size(), is(1));
 		MatcherAssert.assertThat(interfaceType.getExtendedModifiers(), contentEquals(
-				new CtExtendedModifier(ModifierKind.STATIC, true),
-				new CtExtendedModifier(ModifierKind.ABSTRACT, true)
+				CtExtendedModifier.implicit(ModifierKind.STATIC),
+				CtExtendedModifier.implicit(ModifierKind.ABSTRACT)
 		));
 	}
 
@@ -178,8 +178,8 @@ public class InterfaceTest {
 		// see https://docs.oracle.com/javase/specs/jls/se17/html/jls-9.html#jls-9.1.1
 		CtType<?> emptyInterface = build("spoon.test.interfaces.testclasses", "EmptyInterface");
 		assertThat(emptyInterface.getExtendedModifiers(), contentEquals(
-				new CtExtendedModifier(ModifierKind.ABSTRACT, true),
-				new CtExtendedModifier(ModifierKind.PUBLIC, false)
+				CtExtendedModifier.implicit(ModifierKind.ABSTRACT),
+				CtExtendedModifier.explicit(ModifierKind.PUBLIC)
 		));
 	}
 

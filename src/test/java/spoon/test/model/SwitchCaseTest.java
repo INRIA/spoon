@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -41,13 +42,16 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSwitchExpression;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
+import spoon.test.GitHubIssue;
 
 @DisplayName("Switchcase Tests")
 public class SwitchCaseTest {
@@ -229,6 +233,35 @@ public class SwitchCaseTest {
 			);
 		}
 
+		@GitHubIssue(issueNumber = 4696, fixed = true)
+		void testVariableScopeInSwitch() {
+			// contract: different cases do not introduce different scopes in colon-switches
+			String code = "public class A {\n" +
+					"  public void function(int value) {\n" +
+					"    switch (value) {\n" +
+					"      case 1: { String test; }\n" + // decoy variable declaration, should not be found
+					"        String test;\n" +
+					"        test = \"first\";\n" +
+					"        break;\n" +
+					"      default:\n" +
+					"        test = \"not first\";\n" +
+					"    }\n" +
+					"  }\n" +
+					"}";
+			CtModel model = createModelFromString(code);
+			List<CtVariableAccess<?>> accesses = model.<CtVariableAccess<?>>getElements(new TypeFilter<>(CtVariableAccess.class))
+					.stream()
+					.filter(a -> a.getVariable().getSimpleName().equals("test"))
+					.collect(Collectors.<CtVariableAccess<?>>toList());
+			assertEquals(2, accesses.size());
+
+			// access their declarations
+			CtVariable<?> caseOneVariableDeclaration = accesses.get(0).getVariable().getDeclaration();
+			CtVariable<?> defaultVariableDeclaration = accesses.get(1).getVariable().getDeclaration();
+
+			// expect the declarations to be equal (writing to the same variable)
+			assertEquals(caseOneVariableDeclaration, defaultVariableDeclaration);
+		}
 	}
 
 	@Nested

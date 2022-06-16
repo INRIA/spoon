@@ -407,4 +407,17 @@ public class TestModule {
 		);
 		assertNotNull(launcher.getFactory().Type().get("test.parent.nested.Foo"), "");
 	}
+
+	@Test
+	public void testModulePrintDoesNotDuplicate() {
+		// contract: Printing a module does not duplicate it in Model#getAllModules()
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.addInputResource(MODULE_RESOURCES_PATH + "/code-multiple-modules");
+		CtModel ctModel = launcher.buildModel();
+		assertEquals(3, ctModel.getAllModules().size());
+		//noinspection ResultOfMethodCallIgnored   I wish it had no effect too, unspecified static analysis tool
+		launcher.getFactory().Module().getModule("bar").toString();
+		assertEquals(3, ctModel.getAllModules().size());
+	}
 }

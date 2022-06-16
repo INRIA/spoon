@@ -75,7 +75,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>10.1.0</version>
+            <version>10.1.1</version>
         </dependency>
 
         <dependency>
