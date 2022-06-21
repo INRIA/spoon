@@ -14,10 +14,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
+import org.junit.jupiter.api.extension.*;
 
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -52,13 +49,14 @@ public @interface GitHubIssue {
 	 * This is useful to check if each testcase fails as expected. Internal in junit 5 failing testcases simply throw an exception.
 	 * Swallowing this exceptions marks the testcase as not failing.
 	 */
-	static class UnresolvedBugExtension implements AfterEachCallback, TestExecutionExceptionHandler {
+	static class UnresolvedBugExtension implements AfterTestExecutionCallback, TestExecutionExceptionHandler {
 
 		@Override
 		public void handleTestExecutionException(ExtensionContext context, Throwable throwable)
 				throws Throwable {
 			if (shouldFail(context)) {
-				context.getStore(ExtensionContext.Namespace.create(GitHubIssue.class)).put("failed", true);
+				context.getStore(ExtensionContext.Namespace.create(GitHubIssue.class,
+						context.getUniqueId())).put("failed", true);
 				return;
 			}
 			// rethrow the exception to fail the test case if it was not expected to fail
@@ -66,8 +64,9 @@ public @interface GitHubIssue {
 		}
 
 		@Override
-		public void afterEach(ExtensionContext context) throws Exception {
-			if (shouldFail(context) && !context.getStore(ExtensionContext.Namespace.create(GitHubIssue.class)).getOrDefault("failed", Boolean.class, false)) {
+		public void afterTestExecution(ExtensionContext context) throws Exception {
+			if (shouldFail(context) && !context
+					.getStore(ExtensionContext.Namespace.create(GitHubIssue.class, context.getUniqueId())).getOrDefault("failed", Boolean.class, false)) {
 				fail("Test " + context.getDisplayName() + " must fail");
 			}
 		}
