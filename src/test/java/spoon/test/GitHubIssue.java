@@ -55,8 +55,7 @@ public @interface GitHubIssue {
 		public void handleTestExecutionException(ExtensionContext context, Throwable throwable)
 				throws Throwable {
 			if (shouldFail(context)) {
-				context.getStore(ExtensionContext.Namespace.create(GitHubIssue.class,
-						context.getUniqueId())).put("failed", true);
+				context.getStore(ExtensionContext.Namespace.create(GitHubIssue.class)).put("failed", true);
 				return;
 			}
 			// rethrow the exception to fail the test case if it was not expected to fail
@@ -66,7 +65,8 @@ public @interface GitHubIssue {
 		@Override
 		public void afterTestExecution(ExtensionContext context) throws Exception {
 			if (shouldFail(context) && !context
-					.getStore(ExtensionContext.Namespace.create(GitHubIssue.class, context.getUniqueId())).getOrDefault("failed", Boolean.class, false)) {
+					.getStore(ExtensionContext.Namespace.create(GitHubIssue.class))
+					.getOrDefault("failed", Boolean.class, false)) {
 				fail("Test " + context.getDisplayName() + " must fail");
 			}
 		}
