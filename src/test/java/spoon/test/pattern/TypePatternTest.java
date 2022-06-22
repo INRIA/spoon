@@ -74,7 +74,7 @@ public class TypePatternTest {
 		assertThrows(SpoonException.class, () -> pattern.setParent(launcher.getFactory().createBlock()));
 	}
 
-	@ModelTest(value = "src/test/resources/patternmatching/InstanceofPatternmatch.java", complianceLevel = 16)
+	@ModelTest(value = "src/test/resources/patternmatching/InstanceofPatternMatch.java", complianceLevel = 16)
 	void testTypePatternSourcePosition(Factory factory) {
 		// contract: the source position of the CtTypePattern is equal to its CtLocalVariableDeclaration
 		CtType<?> x = factory.Type().get("X");
