@@ -15,13 +15,19 @@ import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtTypePattern;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.code.CtTypePatternImpl;
+import spoon.testing.utils.ModelTest;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TypePatternTest {
 
@@ -66,5 +72,14 @@ public class TypePatternTest {
 		assertDoesNotThrow(() -> pattern.setParent(null));
 		// setting something else as parent must fail
 		assertThrows(SpoonException.class, () -> pattern.setParent(launcher.getFactory().createBlock()));
+	}
+
+	@ModelTest(value = "src/test/resources/patternmatching/InstanceofPatternmatch.java", complianceLevel = 16)
+	void testTypePatternSourcePosition(Factory factory) {
+		// contract: the source position of the CtTypePattern is equal to its CtLocalVariableDeclaration
+		CtType<?> x = factory.Type().get("X");
+		CtTypePattern typePattern = x.getElements(new TypeFilter<>(CtTypePattern.class)).get(0);
+		assertTrue(typePattern.getPosition().isValidPosition());
+		assertThat(typePattern.getPosition(), equalTo(typePattern.getVariable().getPosition()));
 	}
 }
