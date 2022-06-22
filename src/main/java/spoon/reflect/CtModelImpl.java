@@ -9,10 +9,7 @@ package spoon.reflect;
 
 import spoon.SpoonException;
 import spoon.processing.Processor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.Filter;
@@ -20,6 +17,7 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.support.QueueProcessingManager;
+import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtUnnamedModuleImpl;
 import spoon.support.util.internal.ElementNameMap;
 
@@ -42,50 +40,31 @@ public class CtModelImpl implements CtModel {
 
 	@Override
 	public <R extends CtElement> CtQuery filterChildren(Filter<R> filter) {
-		return getUnnamedModule()
-				.getFactory()
-				.Query()
-				.createQuery(this.getAllModules().toArray())
-				.filterChildren(filter);
+		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).filterChildren(filter);
 	}
 
 	@Override
 	public <I, R> CtQuery map(CtFunction<I, R> function) {
-		return getUnnamedModule()
-				.getFactory()
-				.Query()
-				.createQuery(this.getAllModules().toArray())
-				.map(function);
+		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).map(function);
 	}
 
 	@Override
 	public <I> CtQuery map(CtConsumableFunction<I> queryStep) {
-		return getUnnamedModule()
-				.getFactory()
-				.Query()
-				.createQuery(this.getAllModules().toArray())
-				.map(queryStep);
+		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).map(queryStep);
 	}
 
 	@Override
 	public Collection<CtType<?>> getAllTypes() {
-		return getAllPackages()
-				.stream()
-				.flatMap(ctPackage -> ctPackage.getTypes().stream())
+		return getAllPackages().stream().flatMap(ctPackage -> ctPackage.getTypes().stream())
 				.collect(Collectors.toUnmodifiableList());
 	}
 
 	@Override
 	public Collection<CtPackage> getAllPackages() {
-		return getAllModules()
-				.stream()
-				.map(CtModule::getAllPackages)
-				.flatMap(Collection::stream)
-				.collect(Collectors.toUnmodifiableList());
+		return getAllModules().stream().map(CtModule::getAllPackages).flatMap(Collection::stream).collect(Collectors.toUnmodifiableList());
 	}
 
 	@Override
-	@Deprecated
 	public CtPackage getRootPackage() {
 		return getUnnamedModule().getRootPackage();
 	}
@@ -111,12 +90,7 @@ public class CtModelImpl implements CtModel {
 			return unnamedModule.getRootPackage();
 		}
 
-		return getAllModules()
-				.stream()
-				.map(ctModule -> ctModule.getPackage(qualifiedName))
-				.filter(Objects::nonNull)
-				.reduce((u, v) -> throwDuplicateException(qualifiedName))
-				.orElse(null);
+		return getAllModules().stream().map(ctModule -> ctModule.getPackage(qualifiedName)).filter(Objects::nonNull).reduce((u, v) -> throwDuplicateException(qualifiedName)).orElse(null);
 	}
 
 	private <T> T throwDuplicateException(String qualifiedName) {
@@ -161,6 +135,10 @@ public class CtModelImpl implements CtModel {
 	public <T extends CtModel> T setBuildModelIsFinished(boolean buildModelFinished) {
 		this.buildModelFinished = buildModelFinished;
 		return (T) this;
+	}
+
+	public void updateModuleName(CtModule newModule, String oldName) {
+		modules.updateKey(oldName, newModule.getSimpleName());
 	}
 
 	private static class Modules extends ElementNameMap<CtModule>{

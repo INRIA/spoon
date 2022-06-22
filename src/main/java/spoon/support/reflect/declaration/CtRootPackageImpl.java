@@ -9,10 +9,8 @@ import java.util.Objects;
 
 public class CtRootPackageImpl extends CtPackageImpl {
     public CtRootPackageImpl(CtModule module) {
-        super();
-        this.setFactory(module.getFactory());
+        super(module);
         this.setSimpleName(CtPackage.TOP_LEVEL_PACKAGE_NAME);
-        this.setDeclaringModule(module);
         this.setParent(module);
     }
 
@@ -39,5 +37,10 @@ public class CtRootPackageImpl extends CtPackageImpl {
     @Override
     public void accept(CtVisitor visitor) {
         visitor.visitCtPackage(this);
+    }
+
+    @Override
+    public CtPackageImpl clone() {
+        return (CtPackageImpl) super.clone();
     }
 }

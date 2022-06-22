@@ -575,7 +575,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 
 	@Override
 	public CtPackage createPackage(CtModule parent) {
-		return new CtPackageImpl(parent);
+		CtPackage e = new CtPackageImpl(parent);
+		e.setParent(parent.getRootPackage());
+		return e;
 	}
 
 	@Override

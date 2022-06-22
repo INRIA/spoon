@@ -239,12 +239,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	<E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
 
 	/**
-	 * Gets the declaring module.
-	 */
-	@DerivedProperty
-	CtModule getDeclaringModule();
-
-	/**
 	 * Gets the parent of current reference.
 	 *
 	 * @throws ParentNotInitializedException
@@ -416,6 +410,12 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @return the most straightforward and explicit version of this element.
 	 */
 	String toStringDebug();
+
+	/**
+	 * Gets the declaring module.
+	 */
+	@DerivedProperty
+	CtModule getDeclaringModule();
 
 	/**
 	 * @return the source code of this element with the pretty-printing rules of Spoon

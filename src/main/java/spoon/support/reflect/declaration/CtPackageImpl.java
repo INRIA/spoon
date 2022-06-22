@@ -32,16 +32,11 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	private final Packages packs;
 	private final Types types;
 	private CtModule declaringModule;
-	protected CtPackageImpl() {
+	public CtPackageImpl(CtModule declaringModule) {
 		this.types = new Types();
 		this.packs = new Packages();
-	}
-
-	public CtPackageImpl(CtModule declaringModule) {
-		this();
 		this.setDeclaringModule(declaringModule);
 		this.setFactory(declaringModule.getFactory());
-		this.setParent(declaringModule.getRootPackage());
 	}
 
 	@Override
@@ -79,15 +74,11 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public String getQualifiedName() {
-		if (!isParentInitialized()
-				|| parent instanceof CtRootPackageImpl
-				|| parent instanceof CtModule) {
+		if (!isParentInitialized() || parent instanceof CtRootPackageImpl || parent instanceof CtModule) {
 			return getSimpleName();
 		}
 
-		return ((CtPackage) parent).getQualifiedName()
-				+ CtPackage.PACKAGE_SEPARATOR_CHAR
-				+ getSimpleName();
+		return ((CtPackage) parent).getQualifiedName() + CtPackage.PACKAGE_SEPARATOR_CHAR + getSimpleName();
 	}
 
 	@Override
@@ -116,14 +107,13 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return getFactory().Package().createReference(this);
 	}
 
-	@Override
 	public <T extends CtPackage> T addType(String simpleName, CtType<?> type) {
 		if (type == null) {
 			return (T) this;
 		}
 
 		// type map will take care of setting the parent
-		types.put(type.getSimpleName(), type);
+		types.put(simpleName, type);
 		return (T) this;
 	}
 
@@ -184,8 +174,8 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public CtPackage getPackage(String name) {
-		return factory.getModel()
-				.getPackage(getQualifiedName() + CtPackage.PACKAGE_SEPARATOR_CHAR + name);
+		var qualifiedName = isUnnamedPackage() ? name : getQualifiedName() + CtPackage.PACKAGE_SEPARATOR_CHAR + name;
+		return factory.getModel().getPackage(qualifiedName);
 	}
 
 	@Override
@@ -205,31 +195,6 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return (T) this;
 	}
 
-	@Override
-	public <E extends CtElement> E setParent(CtElement newParent) {
-		if(newParent == null){
-			return super.setParent(null);
-		}
-
-		if(parent instanceof CtPackage){
-			CtPackage oldPackage = (CtPackage) parent;
-			oldPackage.removePackage(this);
-		}
-
-		if(newParent instanceof CtPackageImpl){
-			CtPackageImpl newPackage = (CtPackageImpl) newParent;
-			newPackage.getPackagesImpl()
-					.getBacking()
-					.put(getSimpleName(), this);
-		}
-
-		return super.setParent(newParent);
-	}
-
-	private Packages getPackagesImpl(){
-		return packs;
-	}
-
 	protected void setDeclaringModule(CtModule declaringModule) {
 		this.declaringModule = declaringModule;
 	}
@@ -240,16 +205,6 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	protected void updatePackageName(CtPackage newPackage, String oldName) {
 		packs.updateKey(oldName, newPackage.getSimpleName());
-	}
-
-	// FIXME: 16/06/2022 This is a workaround
-	@Override
-	public CtRole getRoleInParent() {
-		if(getParent() instanceof CtRootPackageImpl){
-			return null;
-		}
-
-		return super.getRoleInParent();
 	}
 
 	private class Packages extends ElementNameMap<CtPackage> {

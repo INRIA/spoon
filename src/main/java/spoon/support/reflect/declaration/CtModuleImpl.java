@@ -7,9 +7,11 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.CtModelImpl;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -23,10 +25,10 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private boolean openModule;
 
-	@MetamodelPropertyField(role = CtRole.MODIFIER)
+	@MetamodelPropertyField(role = CtRole.IS_AUTOMATIC)
 	private boolean automaticModule;
 
-	@MetamodelPropertyField(role = CtRole.MODIFIER)
+	@MetamodelPropertyField(role = CtRole.IS_ATTRIBUTED)
 	private boolean attributed;
 
 	@MetamodelPropertyField(role = CtRole.MODULE_DIRECTIVE)
@@ -58,6 +60,19 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	@Override
 	public boolean isShadow() {
 		return shadow;
+	}
+
+	@Override
+	public <E extends CtNamedElement> E setSimpleName(String simpleName) {
+		String oldName = getSimpleName();
+		super.setSimpleName(simpleName);
+
+		CtModelImpl ctModel = (CtModelImpl) factory.getModel();
+		if(ctModel != null) {
+			ctModel.updateModuleName(this, oldName);
+		}
+
+		return (E) this;
 	}
 
 	@Override
@@ -422,20 +437,21 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	@Deprecated
 	public CtPackage getRootPackage() {
-		return rootPackage;
+		return this.rootPackage;
 	}
 
 	@Override
 	public <T extends CtModule> T setRootPackage(CtPackage rootPackage) {
-		this.rootPackage = new CtRootPackageImpl(this);
-		if(rootPackage != null && rootPackage.isUnnamedPackage()){
-			this.rootPackage = rootPackage;
+		if (rootPackage != null) {
+			rootPackage.setParent(this);
 		}
 
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.SUB_PACKAGE, rootPackage, this.rootPackage);
+		this.rootPackage = rootPackage;
 		return (T) this;
 	}
+
 
 	@Override
 	public CtPackage getPackage(String qualifiedName) {
@@ -443,13 +459,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 			return getRootPackage();
 		}
 
-		return getAllPackages()
-				.stream()
-				.map(CtPackage::getPackages)
-				.flatMap(Collection::stream)
-				.filter(entry -> entry.getQualifiedName().equals(qualifiedName))
-				.findFirst()
-				.orElse(null);
+		return getAllPackages().stream().map(CtPackage::getPackages).flatMap(Collection::stream).filter(entry -> entry.getQualifiedName().equals(qualifiedName)).findFirst().orElse(null);
 	}
 
 	@Override
@@ -474,7 +484,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public Collection<CtPackage> getAllPackages() {
+	public List<CtPackage> getAllPackages() {
 		return getAllPackages(getRootPackage());
 	}
 
@@ -483,10 +493,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		results.add(source);
 		source.getPackages().forEach(entry -> {
 			results.add(entry);
-			entry.getPackages()
-					.stream()
-					.map(this::getAllPackages)
-					.forEach(results::addAll);
+			entry.getPackages().stream().map(this::getAllPackages).forEach(results::addAll);
 		});
 
 		return results;

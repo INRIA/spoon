@@ -990,7 +990,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtModule.setComments(this.cloneHelper.clone(module.getComments()));
 		aCtModule.setAnnotations(this.cloneHelper.clone(module.getAnnotations()));
 		aCtModule.setModuleDirectives(this.cloneHelper.clone(module.getModuleDirectives()));
-		aCtModule.setRootPackage(this.cloneHelper.clone(module.getRootPackage()));
 		this.cloneHelper.tailor(module, aCtModule);
 		this.other = aCtModule;
 	}

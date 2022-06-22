@@ -19,7 +19,6 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -289,15 +288,5 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 			l.add(anon.getReference());
 		}
 		return l;
-	}
-
-	// FIXME: 16/06/2022 This is a workaround
-	@Override
-	public CtRole getRoleInParent() {
-		if(getParent() instanceof CtRootPackageImpl){
-			return null;
-		}
-
-		return super.getRoleInParent();
 	}
 }

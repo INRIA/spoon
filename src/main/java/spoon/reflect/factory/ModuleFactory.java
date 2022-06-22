@@ -55,34 +55,24 @@ public class ModuleFactory extends SubFactory {
         return createReference(module.getSimpleName());
     }
 
-    public CtModuleReference createReference(String name) {
-        return factory.Core()
-                .createModuleReference()
-                .setSimpleName(name);
-    }
+	public CtModuleReference createReference(String module) {
+		return factory.Core().createModuleReference().setSimpleName(module);
+	}
 
-    public CtModuleRequirement createModuleRequirement(CtModuleReference moduleReference) {
-        return factory.Core()
-                .createModuleRequirement()
-                .setModuleReference(moduleReference);
-    }
+	public CtModuleRequirement createModuleRequirement(CtModuleReference moduleReference) {
+		return factory.Core().createModuleRequirement().setModuleReference(moduleReference);
+	}
 
-    public CtPackageExport createPackageExport(CtPackageReference ctPackageReference) {
-        return factory.Core()
-                .createPackageExport()
-                .setPackageReference(ctPackageReference);
-    }
+	public CtPackageExport createPackageExport(CtPackageReference ctPackageReference) {
+		return factory.Core().createPackageExport().setPackageReference(ctPackageReference);
+	}
 
-    public CtProvidedService createProvidedService(CtTypeReference typeReference) {
-        return factory.Core()
-                .createProvidedService()
-                .setServiceType(typeReference);
-    }
+	public CtProvidedService createProvidedService(CtTypeReference typeReference) {
+		return factory.Core().createProvidedService().setServiceType(typeReference);
+	}
 
-    public CtUsedService createUsedService(CtTypeReference typeReference) {
-        return factory.Core()
-                .createUsedService()
-                .setServiceType(typeReference);
-    }
+	public CtUsedService createUsedService(CtTypeReference typeReference) {
+		return factory.Core().createUsedService().setServiceType(typeReference);
+	}
 }
 

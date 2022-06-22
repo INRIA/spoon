@@ -96,12 +96,6 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	<T extends CtPackage> T addType(CtType<?> type);
 
 	/**
-	 * Adds a type to this package.
-	 */
-	@PropertySetter(role = CONTAINED_TYPE)
-	<T extends CtPackage> T addType(String simpleName, CtType<?> type);
-
-	/**
 	 * Removes a type from this package.
 	 */
 	@PropertySetter(role = CONTAINED_TYPE)

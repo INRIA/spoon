@@ -637,7 +637,6 @@ public abstract class CtElementImpl implements CtElement {
 
 	@Override
 	public CtModule getDeclaringModule() {
-		return Objects.requireNonNullElse(getParent(CtModule.class),
-				getFactory().getModel().getUnnamedModule());
+		return Objects.requireNonNullElse(getParent(CtModule.class), getFactory().getModel().getUnnamedModule());
 	}
 }

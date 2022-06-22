@@ -31,4 +31,9 @@ public class CtUnnamedModuleImpl extends CtModuleImpl {
     public void accept(CtVisitor visitor) {
         visitor.visitCtModule(this);
     }
+
+    @Override
+    public CtModuleImpl clone() {
+        return (CtModuleImpl) super.clone();
+    }
 }

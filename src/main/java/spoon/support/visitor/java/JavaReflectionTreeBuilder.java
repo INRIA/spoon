@@ -105,34 +105,19 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		fresh.setIsOpenModule(descriptor.isOpen());
 		fresh.setIsAutomatic(descriptor.isAutomatic());
 
-		List<CtModuleRequirement> requires = descriptor.requires()
-				.stream()
-				.map(this::createRequires)
-				.collect(Collectors.toUnmodifiableList());
+		List<CtModuleRequirement> requires = descriptor.requires().stream().map(this::createRequires).collect(Collectors.toUnmodifiableList());
 		fresh.setRequiredModules(requires);
 
-		List<CtPackageExport> exports = descriptor.exports()
-				.stream()
-				.map(instruction -> createExport(instruction.source(), instruction.targets(), false))
-				.collect(Collectors.toUnmodifiableList());
+		List<CtPackageExport> exports = descriptor.exports().stream().map(instruction -> createExport(instruction.source(), instruction.targets(), false)).collect(Collectors.toUnmodifiableList());
 		fresh.setExportedPackages(exports);
 
-		List<CtPackageExport> opens = descriptor.opens()
-				.stream()
-				.map(instruction -> createExport(instruction.source(), instruction.targets(), true))
-				.collect(Collectors.toUnmodifiableList());
+		List<CtPackageExport> opens = descriptor.opens().stream().map(instruction -> createExport(instruction.source(), instruction.targets(), true)).collect(Collectors.toUnmodifiableList());
 		fresh.setOpenedPackages(opens);
 
-		List<CtProvidedService> provides = descriptor.provides()
-				.stream()
-				.map(this::createProvides)
-				.collect(Collectors.toUnmodifiableList());
+		List<CtProvidedService> provides = descriptor.provides().stream().map(this::createProvides).collect(Collectors.toUnmodifiableList());
 		fresh.setProvidedServices(provides);
 
-		List<CtUsedService> uses = descriptor.uses()
-				.stream()
-				.map(this::createUses)
-				.collect(Collectors.toUnmodifiableList());
+		List<CtUsedService> uses = descriptor.uses().stream().map(this::createUses).collect(Collectors.toUnmodifiableList());
 		fresh.setUsedServices(uses);
 	}
 
@@ -162,23 +147,16 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	private CtProvidedService createProvides(ModuleDescriptor.Provides instruction) {
 		CtTypeReference serviceType = factory.Type().createReference(instruction.service());
-		List<CtTypeReference> serviceImplementations = instruction.providers()
-				.stream()
-				.map(factory.Type()::createReference)
-				.collect(Collectors.toUnmodifiableList());
-
+		List<CtTypeReference> serviceImplementations = instruction.providers().stream().map(factory.Type()::createReference).collect(Collectors.toUnmodifiableList());
 		CtProvidedService export = factory.Core().createProvidedService();
 		export.setServiceType(serviceType);
 		export.setImplementationTypes(serviceImplementations);
 		return export;
 	}
 
-	private CtPackageExport createExport(String instruction, Set<String> instruction1, boolean openedPackage) {
+	private CtPackageExport createExport(String instruction, Set<String> instructions, boolean openedPackage) {
 		CtPackageReference exported = factory.Package().createReference(instruction);
-		List<CtModuleReference> targets = instruction1
-				.stream()
-				.map(factory.Module()::createReference)
-				.collect(Collectors.toUnmodifiableList());
+		List<CtModuleReference> targets = instructions.stream().map(factory.Module()::createReference).collect(Collectors.toUnmodifiableList());
 		CtPackageExport export = factory.Core().createPackageExport();
 		export.setOpenedPackage(openedPackage);
 		export.setPackageReference(exported);

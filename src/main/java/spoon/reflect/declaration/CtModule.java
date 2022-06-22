@@ -12,17 +12,9 @@ import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.support.DerivedProperty;
 
-import java.util.Collection;
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.EXPORTED_PACKAGE;
-import static spoon.reflect.path.CtRole.MODIFIER;
-import static spoon.reflect.path.CtRole.MODULE_DIRECTIVE;
-import static spoon.reflect.path.CtRole.OPENED_PACKAGE;
-import static spoon.reflect.path.CtRole.PROVIDED_SERVICE;
-import static spoon.reflect.path.CtRole.REQUIRED_MODULE;
-import static spoon.reflect.path.CtRole.SERVICE_TYPE;
-import static spoon.reflect.path.CtRole.SUB_PACKAGE;
+import static spoon.reflect.path.CtRole.*;
 
 /**
  * Represents a Java module as defined in Java 9.
@@ -63,10 +55,10 @@ public interface CtModule extends CtNamedElement, CtShadowable {
 	@PropertySetter(role = MODIFIER)
 	<T extends CtModule> T setIsOpenModule(boolean openModule);
 
-	@PropertyGetter(role = MODIFIER)
+	@PropertyGetter(role = IS_AUTOMATIC)
 	boolean isAutomatic();
 
-	@PropertySetter(role = MODIFIER)
+	@PropertySetter(role = IS_AUTOMATIC)
 	<T extends CtModule> T setIsAutomatic(boolean isAutomatic);
 
 	@PropertySetter(role = MODULE_DIRECTIVE)
@@ -164,23 +156,23 @@ public interface CtModule extends CtNamedElement, CtShadowable {
 	@DerivedProperty
 	<T extends CtModule> T removeProvidedService(CtProvidedService providedService);
 
-	/**
-	 * returns the root package of the unnamed module
-	 * If there are several modules, it throws an exception
-	 */
+	@DerivedProperty
+	CtPackage getPackage(String packName);
+
+	@PropertyGetter(role = IS_ATTRIBUTED)
+	boolean isAttributed();
+
+	@PropertySetter(role = IS_ATTRIBUTED)
+	<T extends CtModule> T setIsAttributed(boolean isAttributed);
+
 	@PropertyGetter(role = SUB_PACKAGE)
 	CtPackage getRootPackage();
 
 	@PropertySetter(role = SUB_PACKAGE)
 	<T extends CtModule> T setRootPackage(CtPackage rootPackage);
 
-	CtPackage getPackage(String packName);
-
-	Collection<CtPackage> getAllPackages();
-
-	boolean isAttributed();
-
-	<T extends CtModule> T setIsAttributed(boolean isAttributed);
+	@DerivedProperty
+	List<CtPackage> getAllPackages();
 
 	@DerivedProperty
 	@Override

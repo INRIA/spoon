@@ -55,10 +55,7 @@ public class PackageFactory extends SubFactory {
 	 * Returns a reference on the top level package.
 	 */
 	public CtPackageReference topLevel() {
-		return factory.getModel()
-				.getUnnamedModule()
-				.getRootPackage()
-				.getReference();
+		return factory.getModel().getUnnamedModule().getRootPackage().getReference();
 	}
 
 	/**
@@ -113,15 +110,11 @@ public class PackageFactory extends SubFactory {
 	}
 
 	private CtModule findModuleByPackage(String qualifiedName) {
-		return ModuleLayer
-				.boot()
-				.modules()
-				.stream()
-				.filter(module -> module.getPackages().contains(qualifiedName))
-				.findFirst()
-				.map(Module::getName)
-				.map(factory.Module()::getOrCreate)
-				.orElseGet(factory.getModel()::getUnnamedModule);
+		return findJavaModule(qualifiedName).map(Module::getName).map(factory.Module()::getOrCreate).orElseGet(factory.getModel()::getUnnamedModule);
+	}
+
+	private static Optional<Module> findJavaModule(String qualifiedName) {
+		return ModuleLayer.boot().modules().stream().filter(module -> module.getPackages().contains(qualifiedName)).findFirst();
 	}
 
 	/**
@@ -140,7 +133,7 @@ public class PackageFactory extends SubFactory {
 		}
 
 		StringTokenizer token = new StringTokenizer(qualifiedName, CtPackage.PACKAGE_SEPARATOR);
-		CtPackage fresh = null;
+		CtPackage fresh = module.getRootPackage();
 		while (token.hasMoreElements()) {
 			String name = token.nextToken();
 			fresh = createPackage(module, fresh, name);
@@ -159,7 +152,7 @@ public class PackageFactory extends SubFactory {
 		CtPackage fresh = factory.Core().createPackage(module);
 		fresh.setSimpleName(name);
 		if(parent != null){
-			fresh.setParent(parent);
+			parent.addPackage(fresh);
 		}
 
 		return fresh;

@@ -43,13 +43,7 @@ public abstract class Query {
 	 */
 	public static <E extends CtElement> List<E> getElements(Factory factory,
 															Filter<E> filter) {
-		return factory.getModel()
-				.getAllModules()
-				.stream()
-				.map(CtModule::getRootPackage)
-				.map(ctPackage -> getElements(ctPackage, filter))
-				.flatMap(Collection::stream)
-				.collect(Collectors.toUnmodifiableList());
+		return getAllModules(factory).stream().map(ctModule -> getElements(ctModule.getRootPackage(), filter)).flatMap(Collection::stream).collect(Collectors.toUnmodifiableList());
 	}
 
 	/**
@@ -101,13 +95,11 @@ public abstract class Query {
 	 */
 	public static <R extends CtReference> List<R> getReferences(
 			Factory factory, Filter<R> filter) {
-		return factory.getModel()
-				.getAllModules()
-				.stream()
-				.map(CtModule::getRootPackage)
-				.map(ctPackage -> getReferences(ctPackage, filter))
-				.flatMap(Collection::stream)
-				.collect(Collectors.toUnmodifiableList());
+		return getAllModules(factory).stream().map(ctModule -> getReferences(ctModule.getRootPackage(), filter)).flatMap(Collection::stream).collect(Collectors.toUnmodifiableList());
 	}
 
+	private static Collection<CtModule> getAllModules(Factory factory) {
+		return factory.getModel()
+				.getAllModules();
+	}
 }

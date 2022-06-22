@@ -51,8 +51,6 @@ public class ClassFactory extends TypeFactory {
 	public <T> CtClass<T> create(CtPackage owner, String simpleName) {
 		CtClass<T> c = factory.Core().createClass();
 		c.setSimpleName(simpleName);
-		// TODO: 16/06/2022 test without this
-		c.setParent(owner);
 		owner.addType(c);
 		return c;
 	}

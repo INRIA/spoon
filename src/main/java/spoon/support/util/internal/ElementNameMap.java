@@ -142,10 +142,7 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 	}
 
 	private FineModelChangeListener getModelChangeListener() {
-		return Objects.requireNonNull(getOwner(), "Cannot access model change listener without an owner")
-				.getFactory()
-				.getEnvironment()
-				.getModelChangeListener();
+		return Objects.requireNonNull(getOwner(), "Cannot access model change listener without an owner").getFactory().getEnvironment().getModelChangeListener();
 	}
 
 	@Override
@@ -163,9 +160,5 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 	@Override
 	public int hashCode() {
 		return Objects.hash(map);
-	}
-
-	public ConcurrentSkipListMap<String, T> getBacking() {
-		return map;
 	}
 }
