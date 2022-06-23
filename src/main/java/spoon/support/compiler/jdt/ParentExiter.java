@@ -421,6 +421,8 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (child instanceof CtLocalVariable && operator.getKind() == INSTANCEOF && operator.getLeftHandOperand() != null) {
 			CtTypePattern typePattern = child.getFactory().Core().createTypePattern();
 			typePattern.setVariable((CtLocalVariable<?>) child);
+			// as we create the type pattern just here, we need to set its source position - which is luckily the same
+			typePattern.setPosition(child.getPosition());
 			child = typePattern; // replace the local variable with a pattern (which is a CtExpression)
 		}
 		if (child instanceof CtExpression) {
