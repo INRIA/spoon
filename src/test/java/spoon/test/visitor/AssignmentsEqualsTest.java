@@ -8,19 +8,15 @@ import spoon.reflect.code.CtAssignment;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class AssignmentsEqualsTest {
 
-	@Test
-	public void testEquals() {
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/spoon/test/visitor/Assignments.java");
-		launcher.buildModel();
-
-		Factory factory = launcher.getFactory();
+	@ModelTest("./src/test/resources/spoon/test/visitor/Assignments.java")
+	public void testEquals(Factory factory) {
 		List<CtAssignment> assignments = Query.getElements(factory, new TypeFilter<>(CtAssignment.class));
 		assertEquals(assignments.size(), 10);
 		assertNotEquals(assignments.get(0), assignments.get(1));
