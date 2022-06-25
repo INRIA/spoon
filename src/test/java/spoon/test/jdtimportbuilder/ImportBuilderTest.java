@@ -16,6 +16,7 @@
  */
 package spoon.test.jdtimportbuilder;
 
+import spoon.reflect.factory.Factory;
 import spoon.test.imports.testclasses.A;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.test.jdtimportbuilder.testclasses.StaticImport;
@@ -31,6 +32,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.test.jdtimportbuilder.testclasses.StarredImport;
 import spoon.test.imports.testclasses.ClassWithInvocation;
 import org.junit.jupiter.api.Test;
+import spoon.testing.utils.ModelTest;
 
 import java.util.stream.Collectors;
 import java.util.Set;
@@ -45,29 +47,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class ImportBuilderTest {
 
-	@Test
-	public void testWithNoImport() {
+	@ModelTest(value = "./src/test/java/spoon/test/imports/testclasses/A.java", autoImport = true)
+	public void testWithNoImport(Factory factory) {
 		// contract: when the source code has no import, none is created when building model
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/A.java");
-		spoon.getEnvironment().setAutoImports(true);
-		spoon.buildModel();
-
-		CtClass classA = spoon.getFactory().Class().get(A.class);
-		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtClass classA = factory.Class().get(A.class);
+		CompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		assertTrue(unitA.getImports().isEmpty());
 	}
 
-	@Test
-	public void testWithSimpleImport() {
+	@ModelTest(value = "./src/test/java/spoon/test/imports/testclasses/ClassWithInvocation.java", autoImport = true)
+	public void testWithSimpleImport(Factory factory) {
 		// contract: when the source has one import, the same import is created as a reference in auto-import mode
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/ClassWithInvocation.java");
-		spoon.getEnvironment().setAutoImports(true);
-		spoon.buildModel();
-
-		CtClass classA = spoon.getFactory().Class().get(ClassWithInvocation.class);
-		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtClass classA = factory.Class().get(ClassWithInvocation.class);
+		CompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitA.getImports();
 
 		assertEquals(1, imports.size());
@@ -94,17 +86,11 @@ public class ImportBuilderTest {
 		assertTrue(unitA.getImports().isEmpty());
 	}
 
-	@Test
-	public void testInternalImportWhenNoClasspath() {
+	@ModelTest(value = "./src/test/resources/noclasspath/Attachment.java", autoImport = true)
+	public void testInternalImportWhenNoClasspath(Factory factory) {
 		// contract: in no-classpath anything which is not loaded becomes CtUnresolvedImport, even if original source code has imports
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/resources/noclasspath/Attachment.java");
-		spoon.getEnvironment().setAutoImports(true);
-		spoon.getEnvironment().setNoClasspath(true);
-		spoon.buildModel();
-
-		CtClass classA = spoon.getFactory().Class().get("it.feio.android.omninotes.models.Attachment");
-		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtClass classA = factory.Class().get("it.feio.android.omninotes.models.Attachment");
+		CompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 
 		assertTrue(unitA.getImports().stream().filter(i -> !(i instanceof CtUnresolvedImport)).collect(Collectors.toList()).isEmpty());
 		assertEquals(3, unitA.getImports().size());
@@ -115,16 +101,11 @@ public class ImportBuilderTest {
 		assertTrue(importRefs.contains("android.os.Parcelable"));
 	}
 
-	@Test
-	public void testSimpleStaticImport() {
+	@ModelTest(value = "./src/test/java/spoon/test/jdtimportbuilder/testclasses/StaticImport.java", autoImport = true)
+	public void testSimpleStaticImport(Factory factory) {
 		// contract: simple static import are imported correctly
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/StaticImport.java");
-		spoon.getEnvironment().setAutoImports(true);
-		spoon.buildModel();
-
-		CtClass classA = spoon.getFactory().Class().get(StaticImport.class);
-		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtClass classA = factory.Class().get(StaticImport.class);
+		CompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitA.getImports();
 
 		assertEquals(1, imports.size());
@@ -135,17 +116,17 @@ public class ImportBuilderTest {
 		assertEquals("spoon.test.jdtimportbuilder.testclasses.staticimport.Dependency#ANY", ((CtFieldReference) ref.getReference()).getQualifiedName());
 	}
 
-	@Test
-	public void testWithStaticStarredImportFromInterface() {
+	@ModelTest(
+		value = {
+			"./src/test/java/spoon/test/jdtimportbuilder/testclasses/StarredImport.java",
+			"./src/test/java/spoon/test/jdtimportbuilder/testclasses/fullpack/",
+		},
+		autoImport = true
+	)
+	public void testWithStaticStarredImportFromInterface(Factory factory) {
 		// contract: when a starred import is used with a target package, all classes of the package should be imported
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/StarredImport.java");
-		spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/fullpack/");
-		spoon.getEnvironment().setAutoImports(true);
-		spoon.buildModel();
-
-		CtClass classA = spoon.getFactory().Class().get(StarredImport.class);
-		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtClass classA = factory.Class().get(StarredImport.class);
+		CompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitA.getImports();
 
 		assertEquals(1, imports.size());
@@ -161,19 +142,17 @@ public class ImportBuilderTest {
 		assertEquals("spoon.test.jdtimportbuilder.testclasses.fullpack", ref.getQualifiedName());
 	}
 
-	@Test
-	public void testWithStaticInheritedImport() {
+	@ModelTest(
+		value = {
+			"./src/test/java/spoon/test/jdtimportbuilder/testclasses/StaticImportWithInheritance.java",
+			"./src/test/java/spoon/test/jdtimportbuilder/testclasses/staticimport",
+		},
+		autoImport = true
+	)
+	public void testWithStaticInheritedImport(Factory factory) {
 		// contract: When using starred static import of a type, it imports a starred type
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/StaticImportWithInheritance.java");
-		spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/staticimport");
-		spoon.getEnvironment().setAutoImports(true);
-		spoon.getEnvironment().setShouldCompile(true);
-		spoon.setSourceOutputDirectory("./target/spoon-jdtimport-inheritedstatic");
-		spoon.run();
-
-		CtClass classStatic = spoon.getFactory().Class().get(StaticImportWithInheritance.class);
-		CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
+		CtClass classStatic = factory.Class().get(StaticImportWithInheritance.class);
+		CompilationUnit unitStatic = factory.CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitStatic.getImports();
 
 		assertEquals(1, imports.size());
@@ -182,18 +161,11 @@ public class ImportBuilderTest {
 		assertEquals("import static spoon.test.jdtimportbuilder.testclasses.staticimport.DependencySubClass.*;", ctImport.toString());
 	}
 
-	@Test
-	public void testWithImportFromItf() {
+	@ModelTest(value = "./src/test/resources/jdtimportbuilder/", autoImport = true)
+	public void testWithImportFromItf(Factory factory) {
 		// contract: When using starred static import of an interface, it imports a starred type
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/resources/jdtimportbuilder/");
-		spoon.getEnvironment().setAutoImports(true);
-		spoon.getEnvironment().setShouldCompile(true);
-		spoon.setSourceOutputDirectory("./target/spoon-jdtimport-itfimport");
-		spoon.run();
-
-		CtClass classStatic = spoon.getFactory().Class().get("jdtimportbuilder.ItfImport");
-		CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
+		CtClass classStatic = factory.Class().get("jdtimportbuilder.ItfImport");
+		CompilationUnit unitStatic = factory.CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitStatic.getImports();
 
 		assertEquals(1, imports.size(), imports.toString());
