@@ -400,17 +400,7 @@ public abstract class CtElementImpl implements CtElement {
 	@Override
 	public boolean hasParent(CtElement candidate) {
 		try {
-			if(this instanceof CtPackage && ((CtPackage) this).isUnnamedPackage()){
-				return false;
-			}
-
-			CtElement parent = getParent();
-			if(parent == null){
-				return false;
-			}
-
-			return parent == candidate
-					|| parent.hasParent(candidate);
+			return !(this instanceof CtModule && ((CtModule) this).isUnnamedModule()) && (getParent() == candidate || (getParent() != null  && getParent().hasParent(candidate)));
 		} catch (ParentNotInitializedException e) {
 			return false;
 		}

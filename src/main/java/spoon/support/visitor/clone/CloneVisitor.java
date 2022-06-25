@@ -1,11 +1,5 @@
-/*
- * SPDX-License-Identifier: (MIT OR CECILL-C)
- *
- * Copyright (C) 2006-2019 INRIA and contributors
- *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
- */
 package spoon.support.visitor.clone;
+
 /**
  * Used to clone a given element.
  *
@@ -609,7 +603,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public void visitCtPackage(final spoon.reflect.declaration.CtPackage ctPackage) {
-		spoon.reflect.declaration.CtPackage aCtPackage = ctPackage.getFactory().Core().createPackage(ctPackage.getDeclaringModule());
+		spoon.reflect.declaration.CtPackage aCtPackage = ctPackage.getFactory().Core().createPackage();
 		this.builder.copy(ctPackage, aCtPackage);
 		aCtPackage.setAnnotations(this.cloneHelper.clone(ctPackage.getAnnotations()));
 		aCtPackage.setPackages(this.cloneHelper.clone(ctPackage.getPackages()));
@@ -990,6 +984,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtModule.setComments(this.cloneHelper.clone(module.getComments()));
 		aCtModule.setAnnotations(this.cloneHelper.clone(module.getAnnotations()));
 		aCtModule.setModuleDirectives(this.cloneHelper.clone(module.getModuleDirectives()));
+		aCtModule.setRootPackage(this.cloneHelper.clone(module.getRootPackage()));
 		this.cloneHelper.tailor(module, aCtModule);
 		this.other = aCtModule;
 	}

@@ -282,6 +282,7 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	@java.lang.Override
 	public void visitCtModule(spoon.reflect.declaration.CtModule module) {
 		((spoon.reflect.declaration.CtModule) (other)).setIsOpenModule(module.isOpenModule());
+		((spoon.reflect.declaration.CtModule) (other)).setShadow(module.isShadow());
 		super.visitCtModule(module);
 	}
 

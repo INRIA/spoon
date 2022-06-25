@@ -55,12 +55,6 @@ public interface CtModule extends CtNamedElement, CtShadowable {
 	@PropertySetter(role = MODIFIER)
 	<T extends CtModule> T setIsOpenModule(boolean openModule);
 
-	@PropertyGetter(role = IS_AUTOMATIC)
-	boolean isAutomatic();
-
-	@PropertySetter(role = IS_AUTOMATIC)
-	<T extends CtModule> T setIsAutomatic(boolean isAutomatic);
-
 	@PropertySetter(role = MODULE_DIRECTIVE)
 	<T extends CtModule> T setModuleDirectives(List<CtModuleDirective> moduleDirectives);
 
@@ -156,15 +150,10 @@ public interface CtModule extends CtNamedElement, CtShadowable {
 	@DerivedProperty
 	<T extends CtModule> T removeProvidedService(CtProvidedService providedService);
 
-	@DerivedProperty
-	CtPackage getPackage(String packName);
-
-	@PropertyGetter(role = IS_ATTRIBUTED)
-	boolean isAttributed();
-
-	@PropertySetter(role = IS_ATTRIBUTED)
-	<T extends CtModule> T setIsAttributed(boolean isAttributed);
-
+	/**
+	 * returns the root package of the unnamed module
+	 * If there are several modules, it throws an exception
+	 */
 	@PropertyGetter(role = SUB_PACKAGE)
 	CtPackage getRootPackage();
 
@@ -172,11 +161,12 @@ public interface CtModule extends CtNamedElement, CtShadowable {
 	<T extends CtModule> T setRootPackage(CtPackage rootPackage);
 
 	@DerivedProperty
-	List<CtPackage> getAllPackages();
-
-	@DerivedProperty
 	@Override
 	CtModuleReference getReference();
+
+	// TODO: 25/06/2022 annotations
+	CtPackage getPackage(String packName);
+	List<CtPackage> getAllPackages();
 
 	@Override
 	CtModule clone();

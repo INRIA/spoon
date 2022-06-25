@@ -12,6 +12,7 @@ import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.*;
+import spoon.support.reflect.declaration.CtModuleImpl;
 import spoon.support.util.RtHelper;
 import spoon.support.visitor.java.internal.*;
 import spoon.support.visitor.java.reflect.RtMethod;
@@ -82,10 +83,12 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		}
 	}
 
+	private static final List<String> ATTRIBUTED = new ArrayList<>();
+
 	@Override
 	public void visitModule(Module module) {
 		CtModule know = factory.Module().getModule(module.getName());
-		if (know != null && know.isAttributed()) {
+		if (know != null && ATTRIBUTED.contains(know.getSimpleName())) {
 			return;
 		}
 
@@ -95,7 +98,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			attributeModule(fresh, descriptor);
 		}
 
-		fresh.setIsAttributed(true);
+		ATTRIBUTED.add(fresh.getSimpleName());
 		enter(new ModuleRuntimeBuilderContext(fresh));
 		super.visitModule(module);
 		exit();
@@ -103,7 +106,6 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	private void attributeModule(CtModule fresh, ModuleDescriptor descriptor) {
 		fresh.setIsOpenModule(descriptor.isOpen());
-		fresh.setIsAutomatic(descriptor.isAutomatic());
 
 		List<CtModuleRequirement> requires = descriptor.requires().stream().map(this::createRequires).collect(Collectors.toUnmodifiableList());
 		fresh.setRequiredModules(requires);

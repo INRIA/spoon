@@ -25,12 +25,6 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private boolean openModule;
 
-	@MetamodelPropertyField(role = CtRole.IS_AUTOMATIC)
-	private boolean automaticModule;
-
-	@MetamodelPropertyField(role = CtRole.IS_ATTRIBUTED)
-	private boolean attributed;
-
 	@MetamodelPropertyField(role = CtRole.MODULE_DIRECTIVE)
 	private List<CtModuleDirective> moduleDirectives;
 
@@ -44,17 +38,6 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		this.setFactory(factory);
 		this.moduleDirectives = CtElementImpl.emptyList();
 		this.rootPackage = new CtRootPackageImpl(this);
-	}
-
-	@Override
-	public boolean isAutomatic() {
-		return automaticModule;
-	}
-
-	@Override
-	public <T extends CtModule> T setIsAutomatic(boolean automaticModule) {
-		this.automaticModule = automaticModule;
-		return (T) this;
 	}
 
 	@Override
@@ -508,15 +491,5 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	@DerivedProperty
 	public CtElement getParent() {
 		return null;
-	}
-
-	public boolean isAttributed() {
-		return attributed;
-	}
-
-	@Override
-	public <T extends CtModule> T setIsAttributed(boolean attributed) {
-		this.attributed = attributed;
-		return (T) this;
 	}
 }
