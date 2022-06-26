@@ -834,7 +834,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <E extends CtNamedElement> E setSimpleName(String simpleName) {
+	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
 		String oldName = getSimpleName();
 		super.setSimpleName(simpleName);
 
@@ -842,7 +842,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			((CtPackageImpl) parent).updateTypeName(this, oldName);
 		}
 
-		return (E) this;
+		return (T) this;
 	}
 
 	@Override

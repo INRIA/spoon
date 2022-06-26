@@ -177,7 +177,8 @@ public class MetamodelTest {
 			"lineSeparatorPositions",
 			"rootFragment",
 			"originalSourceCode",
-			"myPartialSourcePosition"));
+			"myPartialSourcePosition",
+			"declaringModule"));
 
 	@Test
 	public void testRoleOnField() {

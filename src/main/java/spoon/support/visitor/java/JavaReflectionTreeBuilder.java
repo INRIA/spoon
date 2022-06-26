@@ -12,7 +12,6 @@ import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.*;
-import spoon.support.reflect.declaration.CtModuleImpl;
 import spoon.support.util.RtHelper;
 import spoon.support.visitor.java.internal.*;
 import spoon.support.visitor.java.reflect.RtMethod;
@@ -33,6 +32,8 @@ import java.util.stream.Collectors;
  * element comes from the reflection api, use {@link spoon.reflect.declaration.CtShadowable#isShadow()}.
  */
 public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
+	private static final Set<String> attributedModules = new HashSet<>();
+
 	private final Deque<RuntimeBuilderContext> contexts;
 	private final Factory factory;
 
@@ -83,28 +84,34 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		}
 	}
 
-	private static final List<String> ATTRIBUTED = new ArrayList<>();
-
 	@Override
 	public void visitModule(Module module) {
 		CtModule know = factory.Module().getModule(module.getName());
-		if (know != null && ATTRIBUTED.contains(know.getSimpleName())) {
+		if (know != null && isAttributed(know)) {
 			return;
 		}
 
 		CtModule fresh = know != null ? know : factory.Module().getOrCreate(module.getName());
 		ModuleDescriptor descriptor = module.getDescriptor();
 		if(descriptor != null){
-			attributeModule(fresh, descriptor);
+			createModuleData(fresh, descriptor);
 		}
 
-		ATTRIBUTED.add(fresh.getSimpleName());
+		setAttributed(fresh);
 		enter(new ModuleRuntimeBuilderContext(fresh));
 		super.visitModule(module);
 		exit();
 	}
 
-	private void attributeModule(CtModule fresh, ModuleDescriptor descriptor) {
+	private boolean isAttributed(CtModule know) {
+		return attributedModules.contains(know.getSimpleName());
+	}
+
+	private static void setAttributed(CtModule fresh) {
+		attributedModules.add(fresh.getSimpleName());
+	}
+
+	private void createModuleData(CtModule fresh, ModuleDescriptor descriptor) {
 		fresh.setIsOpenModule(descriptor.isOpen());
 
 		List<CtModuleRequirement> requires = descriptor.requires().stream().map(this::createRequires).collect(Collectors.toUnmodifiableList());

@@ -7,7 +7,6 @@
  */
 package spoon.reflect;
 
-import spoon.SpoonException;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
@@ -16,9 +15,9 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.QueueProcessingManager;
-import spoon.support.reflect.declaration.CtPackageImpl;
-import spoon.support.reflect.declaration.CtUnnamedModuleImpl;
+import spoon.support.reflect.declaration.CtModuleImpl;
 import spoon.support.util.internal.ElementNameMap;
 
 import java.util.*;
@@ -33,7 +32,7 @@ public class CtModelImpl implements CtModel {
 	private boolean buildModelFinished;
 
 	public CtModelImpl(Factory factory) {
-		this.unnamedModule = new CtUnnamedModuleImpl(factory);
+		this.unnamedModule = new CtModuleImpl.UnnamedModule(factory);
 		this.modules = new Modules();
 		addModule(unnamedModule);
 	}
@@ -55,13 +54,13 @@ public class CtModelImpl implements CtModel {
 
 	@Override
 	public Collection<CtType<?>> getAllTypes() {
-		return getAllPackages().stream().flatMap(ctPackage -> ctPackage.getTypes().stream())
-				.collect(Collectors.toUnmodifiableList());
+		return getAllPackages().stream().map(CtPackage::getTypes).flatMap(Collection::stream).collect(Collectors.toList());
 	}
+
 
 	@Override
 	public Collection<CtPackage> getAllPackages() {
-		return getAllModules().stream().map(CtModule::getAllPackages).flatMap(Collection::stream).collect(Collectors.toUnmodifiableList());
+		return Collections.unmodifiableCollection(getElements(new TypeFilter<>(CtPackage.class)));
 	}
 
 	@Override
@@ -82,23 +81,6 @@ public class CtModelImpl implements CtModel {
 	@Override
 	public Collection<CtModule> getAllModules() {
 		return Collections.unmodifiableCollection(modules.values());
-	}
-
-	@Override
-	public CtPackage getPackage(String qualifiedName) {
-		if(qualifiedName == null || qualifiedName.isEmpty()){
-			return unnamedModule.getRootPackage();
-		}
-
-		return getAllModules().stream().map(ctModule -> ctModule.getPackage(qualifiedName)).filter(Objects::nonNull).reduce((u, v) -> throwDuplicateException(qualifiedName)).orElse(null);
-	}
-
-	private <T> T throwDuplicateException(String qualifiedName) {
-		throw new SpoonException(
-				"Ambiguous package name detected. If you believe the code you analyzed is correct, please"
-						+ " file an issue and reference https://github.com/INRIA/spoon/issues/4051. "
-						+ "Error details: " + qualifiedName
-		);
 	}
 
 	@Override

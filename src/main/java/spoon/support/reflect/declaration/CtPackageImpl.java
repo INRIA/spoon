@@ -8,15 +8,11 @@
 package spoon.support.reflect.declaration;
 
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.cu.position.NoSourcePosition;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtShadowable;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.*;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -31,17 +27,12 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	private static final long serialVersionUID = 1L;
 	private final Packages packs;
 	private final Types types;
-	private CtModule declaringModule;
+	private final CtModule declaringModule;
 	public CtPackageImpl(CtModule declaringModule) {
 		this.types = new Types();
 		this.packs = new Packages();
-		this.setDeclaringModule(declaringModule);
+		this.declaringModule = declaringModule;
 		this.setFactory(declaringModule.getFactory());
-	}
-
-	@Override
-	public boolean isUnnamedPackage() {
-		return false;
 	}
 
 	@Override
@@ -64,17 +55,40 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
-	public <T extends CtPackage> T setPackages(Set<CtPackage> packs) {
-		this.packs.clear();
-		for (CtPackage pack : packs) {
-			this.packs.put(pack.getSimpleName(), pack);
+	public CtModule getDeclaringModule() {
+		return declaringModule;
+	}
+
+	@Override
+	public CtPackage getDeclaringPackage() {
+		return getParent(CtPackage.class);
+	}
+
+	@Override
+	public CtPackage getPackage(String simpleName) {
+		return this.packs.get(simpleName);
+	}
+
+	@Override
+	public Set<CtPackage> getPackages() {
+		return new LinkedHashSet<>(packs.values());
+	}
+
+	@Override
+	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
+		String oldName = getSimpleName();
+		super.setSimpleName(simpleName);
+
+		if (parent instanceof CtPackageImpl) {
+			((CtPackageImpl) parent).updatePackageName(this, oldName);
 		}
+
 		return (T) this;
 	}
 
 	@Override
 	public String getQualifiedName() {
-		if (!isParentInitialized() || parent instanceof CtRootPackageImpl || parent instanceof CtModule) {
+		if (!isParentInitialized() || parent instanceof RootPackage || parent instanceof CtModule) {
 			return getSimpleName();
 		}
 
@@ -90,6 +104,15 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	@Override
 	public Set<CtType<?>> getTypes() {
 		return new LinkedHashSet<>(types.values());
+	}
+
+	@Override
+	public <T extends CtPackage> T setPackages(Set<CtPackage> packs) {
+		this.packs.clear();
+		for (CtPackage pack : packs) {
+			this.packs.put(pack.getSimpleName(), pack);
+		}
+		return (T) this;
 	}
 
 	@Override
@@ -119,6 +142,10 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T addType(CtType<?> type) {
+		if (type == null) {
+			return (T) this;
+		}
+
 		return addType(type.getSimpleName(), type);
 	}
 
@@ -153,6 +180,11 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
+	public boolean isUnnamedPackage() {
+		return false;
+	}
+
+	@Override
 	public boolean hasPackageInfo() {
 		return !(getPosition() instanceof NoSourcePosition);
 	}
@@ -160,43 +192,6 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	@Override
 	public boolean isEmpty() {
 		return getPackages().isEmpty() && getTypes().isEmpty();
-	}
-
-	@Override
-	public CtModule getDeclaringModule() {
-		return declaringModule;
-	}
-
-	@Override
-	public CtPackage getDeclaringPackage() {
-		return getParent(CtPackage.class);
-	}
-
-	@Override
-	public CtPackage getPackage(String name) {
-		var qualifiedName = isUnnamedPackage() ? name : getQualifiedName() + CtPackage.PACKAGE_SEPARATOR_CHAR + name;
-		return factory.getModel().getPackage(qualifiedName);
-	}
-
-	@Override
-	public Set<CtPackage> getPackages() {
-		return Set.copyOf(packs.values());
-	}
-
-	@Override
-	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
-		String oldName = getSimpleName();
-		super.setSimpleName(simpleName);
-
-		if (parent instanceof CtPackageImpl) {
-			((CtPackageImpl) parent).updatePackageName(this, oldName);
-		}
-
-		return (T) this;
-	}
-
-	protected void setDeclaringModule(CtModule declaringModule) {
-		this.declaringModule = declaringModule;
 	}
 
 	protected void updateTypeName(CtType<?> newType, String oldName) {
@@ -270,6 +265,44 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		@Override
 		protected CtRole getRole() {
 			return CtRole.CONTAINED_TYPE;
+		}
+	}
+
+	public static class RootPackage extends CtPackageImpl {
+		public RootPackage(CtModule module) {
+			super(module);
+			this.setSimpleName(CtPackage.TOP_LEVEL_PACKAGE_NAME);
+			this.setParent(module);
+		}
+
+		@Override
+		public boolean isUnnamedPackage() {
+			return true;
+		}
+
+		@Override
+		public String getQualifiedName() {
+			return "";
+		}
+
+		@Override
+		public <T extends CtNamedElement> T setSimpleName(String name) {
+			return Objects.equals(name, CtPackage.TOP_LEVEL_PACKAGE_NAME) ? super.setSimpleName(name) : (T) this;
+		}
+
+		@Override
+		public String toString() {
+			return this.getSimpleName();
+		}
+
+		@Override
+		public void accept(CtVisitor visitor) {
+			visitor.visitCtPackage(this);
+		}
+
+		@Override
+		public CtPackageImpl clone() {
+			return (CtPackageImpl) super.clone();
 		}
 	}
 }

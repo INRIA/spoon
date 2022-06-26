@@ -164,10 +164,12 @@ public interface CtModule extends CtNamedElement, CtShadowable {
 	@Override
 	CtModuleReference getReference();
 
-	// TODO: 25/06/2022 annotations
-	CtPackage getPackage(String packName);
-	List<CtPackage> getAllPackages();
-
 	@Override
 	CtModule clone();
+
+	@DerivedProperty
+	CtPackage getPackage(String qualifiedName);
+
+	@DerivedProperty
+	List<CtPackage> getAllPackages();
 }

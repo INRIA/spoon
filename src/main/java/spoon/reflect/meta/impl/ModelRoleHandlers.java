@@ -1,8 +1,107 @@
 package spoon.reflect.meta.impl;
-
+import java.lang.annotation.Annotation;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CaseKind;
+import spoon.reflect.code.CtAbstractInvocation;
+import spoon.reflect.code.CtAbstractSwitch;
+import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtAssert;
+import spoon.reflect.code.CtAssignment;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBodyHolder;
+import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtExecutableReferenceExpression;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFor;
+import spoon.reflect.code.CtForEach;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.code.CtLabelledFlowBreak;
+import spoon.reflect.code.CtLambda;
+import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtNewArray;
+import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRHSReceiver;
+import spoon.reflect.code.CtResource;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.code.CtTextBlock;
+import spoon.reflect.code.CtThrow;
+import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
+import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
+import spoon.reflect.code.LiteralBase;
+import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
+import spoon.reflect.declaration.CtAnonymousExecutable;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCodeSnippet;
+import spoon.reflect.declaration.CtCompilationUnit;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleDirective;
+import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.declaration.CtMultiTypedElement;
+import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageDeclaration;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
+import spoon.reflect.declaration.CtShadowable;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeInformation;
+import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.declaration.CtUsedService;
+import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.path.CtRole;
-
+import spoon.reflect.reference.CtActualTypeContainer;
+import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
+import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtVariableReference;
+import spoon.reflect.reference.CtWildcardReference;
+import spoon.support.reflect.CtExtendedModifier;
 /**
  * Contains implementations of {@link RoleHandler}s for all {@link CtRole}s of all model elements
  */
@@ -10,2387 +109,2387 @@ class ModelRoleHandlers {
 	private ModelRoleHandlers() {
 	}
 
-	static final spoon.reflect.meta.RoleHandler[] roleHandlers = new spoon.reflect.meta.RoleHandler[]{ new spoon.reflect.meta.impl.ModelRoleHandlers.CtTypeAccess_ACCESSED_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtElement_ANNOTATION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtAnnotation_ANNOTATION_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtAbstractInvocation_ARGUMENT_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtExecutableReference_ARGUMENT_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtAssignment_ASSIGNED_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtRHSReceiver_ASSIGNMENT_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtBodyHolder_BODY_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtSynchronized_BODY_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtIntersectionTypeReference_BOUND_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtWildcardReference_BOUNDING_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtAbstractSwitch_CASE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtCase_CASE_KIND_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtExpression_CAST_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtTry_CATCH_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtElement_COMMENT_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtComment_COMMENT_CONTENT_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtJavaDocTag_COMMENT_CONTENT_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtJavaDoc_COMMENT_TAG_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtComment_COMMENT_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtConstructor_COMPACT_CONSTRUCTOR_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtAssert_CONDITION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtConditional_CONDITION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtIf_CONDITION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtClass_CONSTRUCTOR_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtPackage_CONTAINED_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtCompilationUnit_DECLARED_IMPORT_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtCompilationUnit_DECLARED_MODULE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtCompilationUnit_DECLARED_MODULE_REF_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtCompilationUnit_DECLARED_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtCompilationUnit_DECLARED_TYPE_REF_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtExecutableReference_DECLARING_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtFieldReference_DECLARING_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtTypeReference_DECLARING_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtAnnotationMethod_DEFAULT_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtVariable_DEFAULT_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtNewArray_DIMENSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtJavaDocTag_DOCUMENTATION_TYPE_REALNAME_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtConditional_ELSE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtIf_ELSE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtModifiable_EMODIFIER_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtAbstractInvocation_EXECUTABLE_REF_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtExecutableReferenceExpression_EXECUTABLE_REF_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtModule_EXPORTED_PACKAGE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtAbstractSwitch_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtArrayAccess_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtAssert_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtCase_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtDo_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtFor_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtForEach_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtLambda_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtNewArray_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtReturn_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtSynchronized_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtThrow_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtUnaryOperator_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtWhile_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtYieldStatement_EXPRESSION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtType_FIELD_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtTry_FINALIZER_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtForEach_FOREACH_VARIABLE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtFor_FOR_INIT_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtFor_FOR_UPDATE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtProvidedService_IMPLEMENTATION_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtImport_IMPORT_REFERENCE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtType_INTERFACE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtTypeInformation_INTERFACE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtMethod_IS_DEFAULT_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtFieldReference_IS_FINAL_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtElement_IS_IMPLICIT_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtLocalVariable_IS_INFERRED_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtParameter_IS_INFERRED_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtShadowable_IS_SHADOW_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtExecutableReference_IS_STATIC_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtFieldReference_IS_STATIC_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtWildcardReference_IS_UPPER_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtParameter_IS_VARARGS_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtJavaDocTag_JAVADOC_TAG_VALUE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtStatement_LABEL_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtBinaryOperator_LEFT_OPERAND_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtLiteral_LITERAL_BASE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtType_METHOD_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtModifiable_MODIFIER_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtModule_MODIFIER_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtModuleRequirement_MODIFIER_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtTypeInformation_MODIFIER_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtModule_MODULE_DIRECTIVE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtModuleRequirement_MODULE_REF_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtPackageExport_MODULE_REF_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtMultiTypedElement_MULTI_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtNamedElement_NAME_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtReference_NAME_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtNewClass_NESTED_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtType_NESTED_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtModule_OPENED_PACKAGE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtPackageExport_OPENED_PACKAGE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtBinaryOperator_OPERATOR_KIND_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtOperatorAssignment_OPERATOR_KIND_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtUnaryOperator_OPERATOR_KIND_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtCompilationUnit_PACKAGE_DECLARATION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtPackageDeclaration_PACKAGE_REF_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtPackageExport_PACKAGE_REF_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtTypeReference_PACKAGE_REF_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtCatch_PARAMETER_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtExecutable_PARAMETER_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtElement_POSITION_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtModule_PROVIDED_SERVICE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtRecord_RECORD_COMPONENT_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtModule_REQUIRED_MODULE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtBinaryOperator_RIGHT_OPERAND_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtModule_SERVICE_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtProvidedService_SERVICE_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtUsedService_SERVICE_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtCodeSnippet_SNIPPET_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtStatementList_STATEMENT_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtModule_SUB_PACKAGE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtPackage_SUB_PACKAGE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtType_SUPER_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtTypeInformation_SUPER_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtTargetedExpression_TARGET_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtLabelledFlowBreak_TARGET_LABEL_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtConditional_THEN_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtIf_THEN_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtExecutable_THROWN_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtTryWithResource_TRY_RESOURCE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtArrayTypeReference_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtExecutableReference_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtTypedElement_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtVariableReference_TYPE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtActualTypeContainer_TYPE_ARGUMENT_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtType_TYPE_MEMBER_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtFormalTypeDeclarer_TYPE_PARAMETER_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtTypeMemberWildcardImportReference_TYPE_REF_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtAnnotation_VALUE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtEnum_VALUE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtLiteral_VALUE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtTextBlock_VALUE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtTypePattern_VARIABLE_RoleHandler(), new spoon.reflect.meta.impl.ModelRoleHandlers.CtVariableAccess_VARIABLE_RoleHandler() };
+	static final RoleHandler[] roleHandlers = new RoleHandler[]{ new ModelRoleHandlers.CtTypeAccess_ACCESSED_TYPE_RoleHandler(), new ModelRoleHandlers.CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler(), new ModelRoleHandlers.CtElement_ANNOTATION_RoleHandler(), new ModelRoleHandlers.CtAnnotation_ANNOTATION_TYPE_RoleHandler(), new ModelRoleHandlers.CtAbstractInvocation_ARGUMENT_RoleHandler(), new ModelRoleHandlers.CtExecutableReference_ARGUMENT_TYPE_RoleHandler(), new ModelRoleHandlers.CtAssignment_ASSIGNED_RoleHandler(), new ModelRoleHandlers.CtRHSReceiver_ASSIGNMENT_RoleHandler(), new ModelRoleHandlers.CtBodyHolder_BODY_RoleHandler(), new ModelRoleHandlers.CtSynchronized_BODY_RoleHandler(), new ModelRoleHandlers.CtIntersectionTypeReference_BOUND_RoleHandler(), new ModelRoleHandlers.CtWildcardReference_BOUNDING_TYPE_RoleHandler(), new ModelRoleHandlers.CtAbstractSwitch_CASE_RoleHandler(), new ModelRoleHandlers.CtCase_CASE_KIND_RoleHandler(), new ModelRoleHandlers.CtExpression_CAST_RoleHandler(), new ModelRoleHandlers.CtTry_CATCH_RoleHandler(), new ModelRoleHandlers.CtElement_COMMENT_RoleHandler(), new ModelRoleHandlers.CtComment_COMMENT_CONTENT_RoleHandler(), new ModelRoleHandlers.CtJavaDocTag_COMMENT_CONTENT_RoleHandler(), new ModelRoleHandlers.CtJavaDoc_COMMENT_TAG_RoleHandler(), new ModelRoleHandlers.CtComment_COMMENT_TYPE_RoleHandler(), new ModelRoleHandlers.CtConstructor_COMPACT_CONSTRUCTOR_RoleHandler(), new ModelRoleHandlers.CtAssert_CONDITION_RoleHandler(), new ModelRoleHandlers.CtConditional_CONDITION_RoleHandler(), new ModelRoleHandlers.CtIf_CONDITION_RoleHandler(), new ModelRoleHandlers.CtClass_CONSTRUCTOR_RoleHandler(), new ModelRoleHandlers.CtPackage_CONTAINED_TYPE_RoleHandler(), new ModelRoleHandlers.CtCompilationUnit_DECLARED_IMPORT_RoleHandler(), new ModelRoleHandlers.CtCompilationUnit_DECLARED_MODULE_RoleHandler(), new ModelRoleHandlers.CtCompilationUnit_DECLARED_MODULE_REF_RoleHandler(), new ModelRoleHandlers.CtCompilationUnit_DECLARED_TYPE_RoleHandler(), new ModelRoleHandlers.CtCompilationUnit_DECLARED_TYPE_REF_RoleHandler(), new ModelRoleHandlers.CtExecutableReference_DECLARING_TYPE_RoleHandler(), new ModelRoleHandlers.CtFieldReference_DECLARING_TYPE_RoleHandler(), new ModelRoleHandlers.CtTypeReference_DECLARING_TYPE_RoleHandler(), new ModelRoleHandlers.CtAnnotationMethod_DEFAULT_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtVariable_DEFAULT_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtNewArray_DIMENSION_RoleHandler(), new ModelRoleHandlers.CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler(), new ModelRoleHandlers.CtJavaDocTag_DOCUMENTATION_TYPE_REALNAME_RoleHandler(), new ModelRoleHandlers.CtConditional_ELSE_RoleHandler(), new ModelRoleHandlers.CtIf_ELSE_RoleHandler(), new ModelRoleHandlers.CtModifiable_EMODIFIER_RoleHandler(), new ModelRoleHandlers.CtAbstractInvocation_EXECUTABLE_REF_RoleHandler(), new ModelRoleHandlers.CtExecutableReferenceExpression_EXECUTABLE_REF_RoleHandler(), new ModelRoleHandlers.CtModule_EXPORTED_PACKAGE_RoleHandler(), new ModelRoleHandlers.CtAbstractSwitch_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtArrayAccess_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtAssert_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtCase_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtDo_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtFor_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtForEach_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtLambda_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtNewArray_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtReturn_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtSynchronized_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtThrow_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtUnaryOperator_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtWhile_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtYieldStatement_EXPRESSION_RoleHandler(), new ModelRoleHandlers.CtType_FIELD_RoleHandler(), new ModelRoleHandlers.CtTry_FINALIZER_RoleHandler(), new ModelRoleHandlers.CtForEach_FOREACH_VARIABLE_RoleHandler(), new ModelRoleHandlers.CtFor_FOR_INIT_RoleHandler(), new ModelRoleHandlers.CtFor_FOR_UPDATE_RoleHandler(), new ModelRoleHandlers.CtProvidedService_IMPLEMENTATION_TYPE_RoleHandler(), new ModelRoleHandlers.CtImport_IMPORT_REFERENCE_RoleHandler(), new ModelRoleHandlers.CtType_INTERFACE_RoleHandler(), new ModelRoleHandlers.CtTypeInformation_INTERFACE_RoleHandler(), new ModelRoleHandlers.CtMethod_IS_DEFAULT_RoleHandler(), new ModelRoleHandlers.CtFieldReference_IS_FINAL_RoleHandler(), new ModelRoleHandlers.CtElement_IS_IMPLICIT_RoleHandler(), new ModelRoleHandlers.CtLocalVariable_IS_INFERRED_RoleHandler(), new ModelRoleHandlers.CtParameter_IS_INFERRED_RoleHandler(), new ModelRoleHandlers.CtShadowable_IS_SHADOW_RoleHandler(), new ModelRoleHandlers.CtExecutableReference_IS_STATIC_RoleHandler(), new ModelRoleHandlers.CtFieldReference_IS_STATIC_RoleHandler(), new ModelRoleHandlers.CtWildcardReference_IS_UPPER_RoleHandler(), new ModelRoleHandlers.CtParameter_IS_VARARGS_RoleHandler(), new ModelRoleHandlers.CtJavaDocTag_JAVADOC_TAG_VALUE_RoleHandler(), new ModelRoleHandlers.CtStatement_LABEL_RoleHandler(), new ModelRoleHandlers.CtBinaryOperator_LEFT_OPERAND_RoleHandler(), new ModelRoleHandlers.CtLiteral_LITERAL_BASE_RoleHandler(), new ModelRoleHandlers.CtType_METHOD_RoleHandler(), new ModelRoleHandlers.CtModifiable_MODIFIER_RoleHandler(), new ModelRoleHandlers.CtModule_MODIFIER_RoleHandler(), new ModelRoleHandlers.CtModuleRequirement_MODIFIER_RoleHandler(), new ModelRoleHandlers.CtTypeInformation_MODIFIER_RoleHandler(), new ModelRoleHandlers.CtModule_MODULE_DIRECTIVE_RoleHandler(), new ModelRoleHandlers.CtModuleRequirement_MODULE_REF_RoleHandler(), new ModelRoleHandlers.CtPackageExport_MODULE_REF_RoleHandler(), new ModelRoleHandlers.CtMultiTypedElement_MULTI_TYPE_RoleHandler(), new ModelRoleHandlers.CtNamedElement_NAME_RoleHandler(), new ModelRoleHandlers.CtReference_NAME_RoleHandler(), new ModelRoleHandlers.CtNewClass_NESTED_TYPE_RoleHandler(), new ModelRoleHandlers.CtType_NESTED_TYPE_RoleHandler(), new ModelRoleHandlers.CtModule_OPENED_PACKAGE_RoleHandler(), new ModelRoleHandlers.CtPackageExport_OPENED_PACKAGE_RoleHandler(), new ModelRoleHandlers.CtBinaryOperator_OPERATOR_KIND_RoleHandler(), new ModelRoleHandlers.CtOperatorAssignment_OPERATOR_KIND_RoleHandler(), new ModelRoleHandlers.CtUnaryOperator_OPERATOR_KIND_RoleHandler(), new ModelRoleHandlers.CtCompilationUnit_PACKAGE_DECLARATION_RoleHandler(), new ModelRoleHandlers.CtPackageDeclaration_PACKAGE_REF_RoleHandler(), new ModelRoleHandlers.CtPackageExport_PACKAGE_REF_RoleHandler(), new ModelRoleHandlers.CtTypeReference_PACKAGE_REF_RoleHandler(), new ModelRoleHandlers.CtCatch_PARAMETER_RoleHandler(), new ModelRoleHandlers.CtExecutable_PARAMETER_RoleHandler(), new ModelRoleHandlers.CtElement_POSITION_RoleHandler(), new ModelRoleHandlers.CtModule_PROVIDED_SERVICE_RoleHandler(), new ModelRoleHandlers.CtRecord_RECORD_COMPONENT_RoleHandler(), new ModelRoleHandlers.CtModule_REQUIRED_MODULE_RoleHandler(), new ModelRoleHandlers.CtBinaryOperator_RIGHT_OPERAND_RoleHandler(), new ModelRoleHandlers.CtModule_SERVICE_TYPE_RoleHandler(), new ModelRoleHandlers.CtProvidedService_SERVICE_TYPE_RoleHandler(), new ModelRoleHandlers.CtUsedService_SERVICE_TYPE_RoleHandler(), new ModelRoleHandlers.CtCodeSnippet_SNIPPET_RoleHandler(), new ModelRoleHandlers.CtStatementList_STATEMENT_RoleHandler(), new ModelRoleHandlers.CtModule_SUB_PACKAGE_RoleHandler(), new ModelRoleHandlers.CtPackage_SUB_PACKAGE_RoleHandler(), new ModelRoleHandlers.CtType_SUPER_TYPE_RoleHandler(), new ModelRoleHandlers.CtTypeInformation_SUPER_TYPE_RoleHandler(), new ModelRoleHandlers.CtTargetedExpression_TARGET_RoleHandler(), new ModelRoleHandlers.CtLabelledFlowBreak_TARGET_LABEL_RoleHandler(), new ModelRoleHandlers.CtConditional_THEN_RoleHandler(), new ModelRoleHandlers.CtIf_THEN_RoleHandler(), new ModelRoleHandlers.CtExecutable_THROWN_RoleHandler(), new ModelRoleHandlers.CtTryWithResource_TRY_RESOURCE_RoleHandler(), new ModelRoleHandlers.CtArrayTypeReference_TYPE_RoleHandler(), new ModelRoleHandlers.CtExecutableReference_TYPE_RoleHandler(), new ModelRoleHandlers.CtTypedElement_TYPE_RoleHandler(), new ModelRoleHandlers.CtVariableReference_TYPE_RoleHandler(), new ModelRoleHandlers.CtActualTypeContainer_TYPE_ARGUMENT_RoleHandler(), new ModelRoleHandlers.CtType_TYPE_MEMBER_RoleHandler(), new ModelRoleHandlers.CtFormalTypeDeclarer_TYPE_PARAMETER_RoleHandler(), new ModelRoleHandlers.CtTypeMemberWildcardImportReference_TYPE_REF_RoleHandler(), new ModelRoleHandlers.CtAnnotation_VALUE_RoleHandler(), new ModelRoleHandlers.CtEnum_VALUE_RoleHandler(), new ModelRoleHandlers.CtLiteral_VALUE_RoleHandler(), new ModelRoleHandlers.CtTextBlock_VALUE_RoleHandler(), new ModelRoleHandlers.CtTypePattern_VARIABLE_RoleHandler(), new ModelRoleHandlers.CtVariableAccess_VARIABLE_RoleHandler() };
 
-	static class CtVariableAccess_VARIABLE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtVariableAccess, spoon.reflect.reference.CtVariableReference<?>> {
+	static class CtVariableAccess_VARIABLE_RoleHandler extends SingleHandler<CtVariableAccess, CtVariableReference<?>> {
 		private CtVariableAccess_VARIABLE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.VARIABLE, spoon.reflect.code.CtVariableAccess.class, spoon.reflect.reference.CtVariableReference.class);
+			super(CtRole.VARIABLE, CtVariableAccess.class, CtVariableReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getVariable())));
+			return ((U) ((Object) (castTarget(element).getVariable())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setVariable(castValue(value));
 		}
 	}
 
-	static class CtTypePattern_VARIABLE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtTypePattern, spoon.reflect.code.CtLocalVariable<? extends java.lang.Object>> {
+	static class CtTypePattern_VARIABLE_RoleHandler extends SingleHandler<CtTypePattern, CtLocalVariable<? extends Object>> {
 		private CtTypePattern_VARIABLE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.VARIABLE, spoon.reflect.code.CtTypePattern.class, spoon.reflect.code.CtLocalVariable.class);
+			super(CtRole.VARIABLE, CtTypePattern.class, CtLocalVariable.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getVariable())));
+			return ((U) ((Object) (castTarget(element).getVariable())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setVariable(castValue(value));
 		}
 	}
 
-	static class CtTextBlock_VALUE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtTextBlock, java.lang.String> {
+	static class CtTextBlock_VALUE_RoleHandler extends SingleHandler<CtTextBlock, String> {
 		private CtTextBlock_VALUE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.VALUE, spoon.reflect.code.CtTextBlock.class, java.lang.String.class);
+			super(CtRole.VALUE, CtTextBlock.class, String.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getValue())));
+			return ((U) ((Object) (castTarget(element).getValue())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setValue(castValue(value));
 		}
 	}
 
-	static class CtLiteral_VALUE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtLiteral, java.lang.Object> {
+	static class CtLiteral_VALUE_RoleHandler extends SingleHandler<CtLiteral, Object> {
 		private CtLiteral_VALUE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.VALUE, spoon.reflect.code.CtLiteral.class, java.lang.Object.class);
+			super(CtRole.VALUE, CtLiteral.class, Object.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getValue())));
+			return ((U) ((Object) (castTarget(element).getValue())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setValue(castValue(value));
 		}
 	}
 
-	static class CtEnum_VALUE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtEnum, spoon.reflect.declaration.CtEnumValue<? extends java.lang.Object>> {
+	static class CtEnum_VALUE_RoleHandler extends ListHandler<CtEnum, CtEnumValue<? extends Object>> {
 		private CtEnum_VALUE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.VALUE, spoon.reflect.declaration.CtEnum.class, spoon.reflect.declaration.CtEnumValue.class);
+			super(CtRole.VALUE, CtEnum.class, CtEnumValue.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getEnumValues())));
+			return ((U) ((Object) (castTarget(element).getEnumValues())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setEnumValues(castValue(value));
 		}
 	}
 
-	static class CtAnnotation_VALUE_RoleHandler extends spoon.reflect.meta.impl.MapHandler<spoon.reflect.declaration.CtAnnotation, spoon.reflect.code.CtExpression> {
+	static class CtAnnotation_VALUE_RoleHandler extends MapHandler<CtAnnotation, CtExpression> {
 		private CtAnnotation_VALUE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.VALUE, spoon.reflect.declaration.CtAnnotation.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.VALUE, CtAnnotation.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getValues())));
+			return ((U) ((Object) (castTarget(element).getValues())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setValues(castValue(value));
 		}
 	}
 
-	static class CtTypeMemberWildcardImportReference_TYPE_REF_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.reference.CtTypeMemberWildcardImportReference, spoon.reflect.reference.CtTypeReference<? extends java.lang.Object>> {
+	static class CtTypeMemberWildcardImportReference_TYPE_REF_RoleHandler extends SingleHandler<CtTypeMemberWildcardImportReference, CtTypeReference<? extends Object>> {
 		private CtTypeMemberWildcardImportReference_TYPE_REF_RoleHandler() {
-			super(spoon.reflect.path.CtRole.TYPE_REF, spoon.reflect.reference.CtTypeMemberWildcardImportReference.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.TYPE_REF, CtTypeMemberWildcardImportReference.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getTypeReference())));
+			return ((U) ((Object) (castTarget(element).getTypeReference())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setTypeReference(castValue(value));
 		}
 	}
 
-	static class CtFormalTypeDeclarer_TYPE_PARAMETER_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtFormalTypeDeclarer, spoon.reflect.declaration.CtTypeParameter> {
+	static class CtFormalTypeDeclarer_TYPE_PARAMETER_RoleHandler extends ListHandler<CtFormalTypeDeclarer, CtTypeParameter> {
 		private CtFormalTypeDeclarer_TYPE_PARAMETER_RoleHandler() {
-			super(spoon.reflect.path.CtRole.TYPE_PARAMETER, spoon.reflect.declaration.CtFormalTypeDeclarer.class, spoon.reflect.declaration.CtTypeParameter.class);
+			super(CtRole.TYPE_PARAMETER, CtFormalTypeDeclarer.class, CtTypeParameter.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getFormalCtTypeParameters())));
+			return ((U) ((Object) (castTarget(element).getFormalCtTypeParameters())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setFormalCtTypeParameters(castValue(value));
 		}
 	}
 
-	static class CtType_TYPE_MEMBER_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtType, spoon.reflect.declaration.CtTypeMember> {
+	static class CtType_TYPE_MEMBER_RoleHandler extends ListHandler<CtType, CtTypeMember> {
 		private CtType_TYPE_MEMBER_RoleHandler() {
-			super(spoon.reflect.path.CtRole.TYPE_MEMBER, spoon.reflect.declaration.CtType.class, spoon.reflect.declaration.CtTypeMember.class);
+			super(CtRole.TYPE_MEMBER, CtType.class, CtTypeMember.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getTypeMembers())));
+			return ((U) ((Object) (castTarget(element).getTypeMembers())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setTypeMembers(castValue(value));
 		}
 	}
 
-	static class CtActualTypeContainer_TYPE_ARGUMENT_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.reference.CtActualTypeContainer, spoon.reflect.reference.CtTypeReference<?>> {
+	static class CtActualTypeContainer_TYPE_ARGUMENT_RoleHandler extends ListHandler<CtActualTypeContainer, CtTypeReference<?>> {
 		private CtActualTypeContainer_TYPE_ARGUMENT_RoleHandler() {
-			super(spoon.reflect.path.CtRole.TYPE_ARGUMENT, spoon.reflect.reference.CtActualTypeContainer.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.TYPE_ARGUMENT, CtActualTypeContainer.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getActualTypeArguments())));
+			return ((U) ((Object) (castTarget(element).getActualTypeArguments())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setActualTypeArguments(castValue(value));
 		}
 	}
 
-	static class CtVariableReference_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.reference.CtVariableReference, spoon.reflect.reference.CtTypeReference<?>> {
+	static class CtVariableReference_TYPE_RoleHandler extends SingleHandler<CtVariableReference, CtTypeReference<?>> {
 		private CtVariableReference_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.TYPE, spoon.reflect.reference.CtVariableReference.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.TYPE, CtVariableReference.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getType())));
+			return ((U) ((Object) (castTarget(element).getType())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setType(castValue(value));
 		}
 	}
 
-	static class CtTypedElement_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtTypedElement, spoon.reflect.reference.CtTypeReference<?>> {
+	static class CtTypedElement_TYPE_RoleHandler extends SingleHandler<CtTypedElement, CtTypeReference<?>> {
 		private CtTypedElement_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.TYPE, spoon.reflect.declaration.CtTypedElement.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.TYPE, CtTypedElement.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getType())));
+			return ((U) ((Object) (castTarget(element).getType())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setType(castValue(value));
 		}
 	}
 
-	static class CtExecutableReference_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.reference.CtExecutableReference, spoon.reflect.reference.CtTypeReference<?>> {
+	static class CtExecutableReference_TYPE_RoleHandler extends SingleHandler<CtExecutableReference, CtTypeReference<?>> {
 		private CtExecutableReference_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.TYPE, spoon.reflect.reference.CtExecutableReference.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.TYPE, CtExecutableReference.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getType())));
+			return ((U) ((Object) (castTarget(element).getType())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setType(castValue(value));
 		}
 	}
 
-	static class CtArrayTypeReference_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.reference.CtArrayTypeReference, spoon.reflect.reference.CtTypeReference<? extends java.lang.Object>> {
+	static class CtArrayTypeReference_TYPE_RoleHandler extends SingleHandler<CtArrayTypeReference, CtTypeReference<? extends Object>> {
 		private CtArrayTypeReference_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.TYPE, spoon.reflect.reference.CtArrayTypeReference.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.TYPE, CtArrayTypeReference.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getComponentType())));
+			return ((U) ((Object) (castTarget(element).getComponentType())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setComponentType(castValue(value));
 		}
 	}
 
-	static class CtTryWithResource_TRY_RESOURCE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.code.CtTryWithResource, spoon.reflect.code.CtResource<? extends java.lang.Object>> {
+	static class CtTryWithResource_TRY_RESOURCE_RoleHandler extends ListHandler<CtTryWithResource, CtResource<? extends Object>> {
 		private CtTryWithResource_TRY_RESOURCE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.TRY_RESOURCE, spoon.reflect.code.CtTryWithResource.class, spoon.reflect.code.CtResource.class);
+			super(CtRole.TRY_RESOURCE, CtTryWithResource.class, CtResource.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getResources())));
+			return ((U) ((Object) (castTarget(element).getResources())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setResources(castValue(value));
 		}
 	}
 
-	static class CtExecutable_THROWN_RoleHandler extends spoon.reflect.meta.impl.SetHandler<spoon.reflect.declaration.CtExecutable, spoon.reflect.reference.CtTypeReference<? extends java.lang.Throwable>> {
+	static class CtExecutable_THROWN_RoleHandler extends SetHandler<CtExecutable, CtTypeReference<? extends Throwable>> {
 		private CtExecutable_THROWN_RoleHandler() {
-			super(spoon.reflect.path.CtRole.THROWN, spoon.reflect.declaration.CtExecutable.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.THROWN, CtExecutable.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getThrownTypes())));
+			return ((U) ((Object) (castTarget(element).getThrownTypes())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setThrownTypes(castValue(value));
 		}
 	}
 
-	static class CtIf_THEN_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtIf, spoon.reflect.code.CtStatement> {
+	static class CtIf_THEN_RoleHandler extends SingleHandler<CtIf, CtStatement> {
 		private CtIf_THEN_RoleHandler() {
-			super(spoon.reflect.path.CtRole.THEN, spoon.reflect.code.CtIf.class, spoon.reflect.code.CtStatement.class);
+			super(CtRole.THEN, CtIf.class, CtStatement.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getThenStatement())));
+			return ((U) ((Object) (castTarget(element).getThenStatement())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setThenStatement(castValue(value));
 		}
 	}
 
-	static class CtConditional_THEN_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtConditional, spoon.reflect.code.CtExpression<?>> {
+	static class CtConditional_THEN_RoleHandler extends SingleHandler<CtConditional, CtExpression<?>> {
 		private CtConditional_THEN_RoleHandler() {
-			super(spoon.reflect.path.CtRole.THEN, spoon.reflect.code.CtConditional.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.THEN, CtConditional.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getThenExpression())));
+			return ((U) ((Object) (castTarget(element).getThenExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setThenExpression(castValue(value));
 		}
 	}
 
-	static class CtLabelledFlowBreak_TARGET_LABEL_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtLabelledFlowBreak, java.lang.String> {
+	static class CtLabelledFlowBreak_TARGET_LABEL_RoleHandler extends SingleHandler<CtLabelledFlowBreak, String> {
 		private CtLabelledFlowBreak_TARGET_LABEL_RoleHandler() {
-			super(spoon.reflect.path.CtRole.TARGET_LABEL, spoon.reflect.code.CtLabelledFlowBreak.class, java.lang.String.class);
+			super(CtRole.TARGET_LABEL, CtLabelledFlowBreak.class, String.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getTargetLabel())));
+			return ((U) ((Object) (castTarget(element).getTargetLabel())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setTargetLabel(castValue(value));
 		}
 	}
 
-	static class CtTargetedExpression_TARGET_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtTargetedExpression, spoon.reflect.code.CtExpression<?>> {
+	static class CtTargetedExpression_TARGET_RoleHandler extends SingleHandler<CtTargetedExpression, CtExpression<?>> {
 		private CtTargetedExpression_TARGET_RoleHandler() {
-			super(spoon.reflect.path.CtRole.TARGET, spoon.reflect.code.CtTargetedExpression.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.TARGET, CtTargetedExpression.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getTarget())));
+			return ((U) ((Object) (castTarget(element).getTarget())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setTarget(castValue(value));
 		}
 	}
 
-	static class CtTypeInformation_SUPER_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtTypeInformation, spoon.reflect.reference.CtTypeReference<?>> {
+	static class CtTypeInformation_SUPER_TYPE_RoleHandler extends SingleHandler<CtTypeInformation, CtTypeReference<?>> {
 		private CtTypeInformation_SUPER_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.SUPER_TYPE, spoon.reflect.declaration.CtTypeInformation.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.SUPER_TYPE, CtTypeInformation.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getSuperclass())));
+			return ((U) ((Object) (castTarget(element).getSuperclass())));
 		}
 	}
 
-	static class CtType_SUPER_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtType, spoon.reflect.reference.CtTypeReference<? extends java.lang.Object>> {
+	static class CtType_SUPER_TYPE_RoleHandler extends SingleHandler<CtType, CtTypeReference<? extends Object>> {
 		private CtType_SUPER_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.SUPER_TYPE, spoon.reflect.declaration.CtType.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.SUPER_TYPE, CtType.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getSuperclass())));
+			return ((U) ((Object) (castTarget(element).getSuperclass())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setSuperclass(castValue(value));
 		}
 	}
 
-	static class CtPackage_SUB_PACKAGE_RoleHandler extends spoon.reflect.meta.impl.SetHandler<spoon.reflect.declaration.CtPackage, spoon.reflect.declaration.CtPackage> {
+	static class CtPackage_SUB_PACKAGE_RoleHandler extends SetHandler<CtPackage, CtPackage> {
 		private CtPackage_SUB_PACKAGE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.SUB_PACKAGE, spoon.reflect.declaration.CtPackage.class, spoon.reflect.declaration.CtPackage.class);
+			super(CtRole.SUB_PACKAGE, CtPackage.class, CtPackage.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getPackages())));
+			return ((U) ((Object) (castTarget(element).getPackages())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setPackages(castValue(value));
 		}
 	}
 
-	static class CtModule_SUB_PACKAGE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtModule, spoon.reflect.declaration.CtPackage> {
+	static class CtModule_SUB_PACKAGE_RoleHandler extends SingleHandler<CtModule, CtPackage> {
 		private CtModule_SUB_PACKAGE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.SUB_PACKAGE, spoon.reflect.declaration.CtModule.class, spoon.reflect.declaration.CtPackage.class);
+			super(CtRole.SUB_PACKAGE, CtModule.class, CtPackage.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getRootPackage())));
+			return ((U) ((Object) (castTarget(element).getRootPackage())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setRootPackage(castValue(value));
 		}
 	}
 
-	static class CtStatementList_STATEMENT_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.code.CtStatementList, spoon.reflect.code.CtStatement> {
+	static class CtStatementList_STATEMENT_RoleHandler extends ListHandler<CtStatementList, CtStatement> {
 		private CtStatementList_STATEMENT_RoleHandler() {
-			super(spoon.reflect.path.CtRole.STATEMENT, spoon.reflect.code.CtStatementList.class, spoon.reflect.code.CtStatement.class);
+			super(CtRole.STATEMENT, CtStatementList.class, CtStatement.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getStatements())));
+			return ((U) ((Object) (castTarget(element).getStatements())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setStatements(castValue(value));
 		}
 	}
 
-	static class CtCodeSnippet_SNIPPET_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtCodeSnippet, java.lang.String> {
+	static class CtCodeSnippet_SNIPPET_RoleHandler extends SingleHandler<CtCodeSnippet, String> {
 		private CtCodeSnippet_SNIPPET_RoleHandler() {
-			super(spoon.reflect.path.CtRole.SNIPPET, spoon.reflect.declaration.CtCodeSnippet.class, java.lang.String.class);
+			super(CtRole.SNIPPET, CtCodeSnippet.class, String.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getValue())));
+			return ((U) ((Object) (castTarget(element).getValue())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setValue(castValue(value));
 		}
 	}
 
-	static class CtUsedService_SERVICE_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtUsedService, spoon.reflect.reference.CtTypeReference> {
+	static class CtUsedService_SERVICE_TYPE_RoleHandler extends SingleHandler<CtUsedService, CtTypeReference> {
 		private CtUsedService_SERVICE_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.SERVICE_TYPE, spoon.reflect.declaration.CtUsedService.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.SERVICE_TYPE, CtUsedService.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getServiceType())));
+			return ((U) ((Object) (castTarget(element).getServiceType())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setServiceType(castValue(value));
 		}
 	}
 
-	static class CtProvidedService_SERVICE_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtProvidedService, spoon.reflect.reference.CtTypeReference> {
+	static class CtProvidedService_SERVICE_TYPE_RoleHandler extends SingleHandler<CtProvidedService, CtTypeReference> {
 		private CtProvidedService_SERVICE_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.SERVICE_TYPE, spoon.reflect.declaration.CtProvidedService.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.SERVICE_TYPE, CtProvidedService.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getServiceType())));
+			return ((U) ((Object) (castTarget(element).getServiceType())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setServiceType(castValue(value));
 		}
 	}
 
-	static class CtModule_SERVICE_TYPE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtModule, spoon.reflect.declaration.CtUsedService> {
+	static class CtModule_SERVICE_TYPE_RoleHandler extends ListHandler<CtModule, CtUsedService> {
 		private CtModule_SERVICE_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.SERVICE_TYPE, spoon.reflect.declaration.CtModule.class, spoon.reflect.declaration.CtUsedService.class);
+			super(CtRole.SERVICE_TYPE, CtModule.class, CtUsedService.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getUsedServices())));
+			return ((U) ((Object) (castTarget(element).getUsedServices())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setUsedServices(castValue(value));
 		}
 	}
 
-	static class CtBinaryOperator_RIGHT_OPERAND_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtBinaryOperator, spoon.reflect.code.CtExpression<? extends java.lang.Object>> {
+	static class CtBinaryOperator_RIGHT_OPERAND_RoleHandler extends SingleHandler<CtBinaryOperator, CtExpression<? extends Object>> {
 		private CtBinaryOperator_RIGHT_OPERAND_RoleHandler() {
-			super(spoon.reflect.path.CtRole.RIGHT_OPERAND, spoon.reflect.code.CtBinaryOperator.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.RIGHT_OPERAND, CtBinaryOperator.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getRightHandOperand())));
+			return ((U) ((Object) (castTarget(element).getRightHandOperand())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setRightHandOperand(castValue(value));
 		}
 	}
 
-	static class CtModule_REQUIRED_MODULE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtModule, spoon.reflect.declaration.CtModuleRequirement> {
+	static class CtModule_REQUIRED_MODULE_RoleHandler extends ListHandler<CtModule, CtModuleRequirement> {
 		private CtModule_REQUIRED_MODULE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.REQUIRED_MODULE, spoon.reflect.declaration.CtModule.class, spoon.reflect.declaration.CtModuleRequirement.class);
+			super(CtRole.REQUIRED_MODULE, CtModule.class, CtModuleRequirement.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getRequiredModules())));
+			return ((U) ((Object) (castTarget(element).getRequiredModules())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setRequiredModules(castValue(value));
 		}
 	}
 
-	static class CtRecord_RECORD_COMPONENT_RoleHandler extends spoon.reflect.meta.impl.SetHandler<spoon.reflect.declaration.CtRecord, spoon.reflect.declaration.CtRecordComponent> {
+	static class CtRecord_RECORD_COMPONENT_RoleHandler extends SetHandler<CtRecord, CtRecordComponent> {
 		private CtRecord_RECORD_COMPONENT_RoleHandler() {
-			super(spoon.reflect.path.CtRole.RECORD_COMPONENT, spoon.reflect.declaration.CtRecord.class, spoon.reflect.declaration.CtRecordComponent.class);
+			super(CtRole.RECORD_COMPONENT, CtRecord.class, CtRecordComponent.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getRecordComponents())));
+			return ((U) ((Object) (castTarget(element).getRecordComponents())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setRecordComponents(castValue(value));
 		}
 	}
 
-	static class CtModule_PROVIDED_SERVICE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtModule, spoon.reflect.declaration.CtProvidedService> {
+	static class CtModule_PROVIDED_SERVICE_RoleHandler extends ListHandler<CtModule, CtProvidedService> {
 		private CtModule_PROVIDED_SERVICE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.PROVIDED_SERVICE, spoon.reflect.declaration.CtModule.class, spoon.reflect.declaration.CtProvidedService.class);
+			super(CtRole.PROVIDED_SERVICE, CtModule.class, CtProvidedService.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getProvidedServices())));
+			return ((U) ((Object) (castTarget(element).getProvidedServices())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setProvidedServices(castValue(value));
 		}
 	}
 
-	static class CtElement_POSITION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtElement, spoon.reflect.cu.SourcePosition> {
+	static class CtElement_POSITION_RoleHandler extends SingleHandler<CtElement, SourcePosition> {
 		private CtElement_POSITION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.POSITION, spoon.reflect.declaration.CtElement.class, spoon.reflect.cu.SourcePosition.class);
+			super(CtRole.POSITION, CtElement.class, SourcePosition.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getPosition())));
+			return ((U) ((Object) (castTarget(element).getPosition())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setPosition(castValue(value));
 		}
 	}
 
-	static class CtExecutable_PARAMETER_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtExecutable, spoon.reflect.declaration.CtParameter<? extends java.lang.Object>> {
+	static class CtExecutable_PARAMETER_RoleHandler extends ListHandler<CtExecutable, CtParameter<? extends Object>> {
 		private CtExecutable_PARAMETER_RoleHandler() {
-			super(spoon.reflect.path.CtRole.PARAMETER, spoon.reflect.declaration.CtExecutable.class, spoon.reflect.declaration.CtParameter.class);
+			super(CtRole.PARAMETER, CtExecutable.class, CtParameter.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getParameters())));
+			return ((U) ((Object) (castTarget(element).getParameters())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setParameters(castValue(value));
 		}
 	}
 
-	static class CtCatch_PARAMETER_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtCatch, spoon.reflect.code.CtCatchVariable<? extends java.lang.Throwable>> {
+	static class CtCatch_PARAMETER_RoleHandler extends SingleHandler<CtCatch, CtCatchVariable<? extends Throwable>> {
 		private CtCatch_PARAMETER_RoleHandler() {
-			super(spoon.reflect.path.CtRole.PARAMETER, spoon.reflect.code.CtCatch.class, spoon.reflect.code.CtCatchVariable.class);
+			super(CtRole.PARAMETER, CtCatch.class, CtCatchVariable.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getParameter())));
+			return ((U) ((Object) (castTarget(element).getParameter())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setParameter(castValue(value));
 		}
 	}
 
-	static class CtTypeReference_PACKAGE_REF_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.reference.CtTypeReference, spoon.reflect.reference.CtPackageReference> {
+	static class CtTypeReference_PACKAGE_REF_RoleHandler extends SingleHandler<CtTypeReference, CtPackageReference> {
 		private CtTypeReference_PACKAGE_REF_RoleHandler() {
-			super(spoon.reflect.path.CtRole.PACKAGE_REF, spoon.reflect.reference.CtTypeReference.class, spoon.reflect.reference.CtPackageReference.class);
+			super(CtRole.PACKAGE_REF, CtTypeReference.class, CtPackageReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getPackage())));
+			return ((U) ((Object) (castTarget(element).getPackage())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setPackage(castValue(value));
 		}
 	}
 
-	static class CtPackageExport_PACKAGE_REF_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtPackageExport, spoon.reflect.reference.CtPackageReference> {
+	static class CtPackageExport_PACKAGE_REF_RoleHandler extends SingleHandler<CtPackageExport, CtPackageReference> {
 		private CtPackageExport_PACKAGE_REF_RoleHandler() {
-			super(spoon.reflect.path.CtRole.PACKAGE_REF, spoon.reflect.declaration.CtPackageExport.class, spoon.reflect.reference.CtPackageReference.class);
+			super(CtRole.PACKAGE_REF, CtPackageExport.class, CtPackageReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getPackageReference())));
+			return ((U) ((Object) (castTarget(element).getPackageReference())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setPackageReference(castValue(value));
 		}
 	}
 
-	static class CtPackageDeclaration_PACKAGE_REF_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtPackageDeclaration, spoon.reflect.reference.CtPackageReference> {
+	static class CtPackageDeclaration_PACKAGE_REF_RoleHandler extends SingleHandler<CtPackageDeclaration, CtPackageReference> {
 		private CtPackageDeclaration_PACKAGE_REF_RoleHandler() {
-			super(spoon.reflect.path.CtRole.PACKAGE_REF, spoon.reflect.declaration.CtPackageDeclaration.class, spoon.reflect.reference.CtPackageReference.class);
+			super(CtRole.PACKAGE_REF, CtPackageDeclaration.class, CtPackageReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getReference())));
+			return ((U) ((Object) (castTarget(element).getReference())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setReference(castValue(value));
 		}
 	}
 
-	static class CtCompilationUnit_PACKAGE_DECLARATION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtCompilationUnit, spoon.reflect.declaration.CtPackageDeclaration> {
+	static class CtCompilationUnit_PACKAGE_DECLARATION_RoleHandler extends SingleHandler<CtCompilationUnit, CtPackageDeclaration> {
 		private CtCompilationUnit_PACKAGE_DECLARATION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.PACKAGE_DECLARATION, spoon.reflect.declaration.CtCompilationUnit.class, spoon.reflect.declaration.CtPackageDeclaration.class);
+			super(CtRole.PACKAGE_DECLARATION, CtCompilationUnit.class, CtPackageDeclaration.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getPackageDeclaration())));
+			return ((U) ((Object) (castTarget(element).getPackageDeclaration())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setPackageDeclaration(castValue(value));
 		}
 	}
 
-	static class CtUnaryOperator_OPERATOR_KIND_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtUnaryOperator, spoon.reflect.code.UnaryOperatorKind> {
+	static class CtUnaryOperator_OPERATOR_KIND_RoleHandler extends SingleHandler<CtUnaryOperator, UnaryOperatorKind> {
 		private CtUnaryOperator_OPERATOR_KIND_RoleHandler() {
-			super(spoon.reflect.path.CtRole.OPERATOR_KIND, spoon.reflect.code.CtUnaryOperator.class, spoon.reflect.code.UnaryOperatorKind.class);
+			super(CtRole.OPERATOR_KIND, CtUnaryOperator.class, UnaryOperatorKind.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getKind())));
+			return ((U) ((Object) (castTarget(element).getKind())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setKind(castValue(value));
 		}
 	}
 
-	static class CtOperatorAssignment_OPERATOR_KIND_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtOperatorAssignment, spoon.reflect.code.BinaryOperatorKind> {
+	static class CtOperatorAssignment_OPERATOR_KIND_RoleHandler extends SingleHandler<CtOperatorAssignment, BinaryOperatorKind> {
 		private CtOperatorAssignment_OPERATOR_KIND_RoleHandler() {
-			super(spoon.reflect.path.CtRole.OPERATOR_KIND, spoon.reflect.code.CtOperatorAssignment.class, spoon.reflect.code.BinaryOperatorKind.class);
+			super(CtRole.OPERATOR_KIND, CtOperatorAssignment.class, BinaryOperatorKind.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getKind())));
+			return ((U) ((Object) (castTarget(element).getKind())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setKind(castValue(value));
 		}
 	}
 
-	static class CtBinaryOperator_OPERATOR_KIND_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtBinaryOperator, spoon.reflect.code.BinaryOperatorKind> {
+	static class CtBinaryOperator_OPERATOR_KIND_RoleHandler extends SingleHandler<CtBinaryOperator, BinaryOperatorKind> {
 		private CtBinaryOperator_OPERATOR_KIND_RoleHandler() {
-			super(spoon.reflect.path.CtRole.OPERATOR_KIND, spoon.reflect.code.CtBinaryOperator.class, spoon.reflect.code.BinaryOperatorKind.class);
+			super(CtRole.OPERATOR_KIND, CtBinaryOperator.class, BinaryOperatorKind.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getKind())));
+			return ((U) ((Object) (castTarget(element).getKind())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setKind(castValue(value));
 		}
 	}
 
-	static class CtPackageExport_OPENED_PACKAGE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtPackageExport, java.lang.Boolean> {
+	static class CtPackageExport_OPENED_PACKAGE_RoleHandler extends SingleHandler<CtPackageExport, Boolean> {
 		private CtPackageExport_OPENED_PACKAGE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.OPENED_PACKAGE, spoon.reflect.declaration.CtPackageExport.class, java.lang.Boolean.class);
+			super(CtRole.OPENED_PACKAGE, CtPackageExport.class, Boolean.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).isOpenedPackage())));
+			return ((U) ((Object) (castTarget(element).isOpenedPackage())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setOpenedPackage(castValue(value));
 		}
 	}
 
-	static class CtModule_OPENED_PACKAGE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtModule, spoon.reflect.declaration.CtPackageExport> {
+	static class CtModule_OPENED_PACKAGE_RoleHandler extends ListHandler<CtModule, CtPackageExport> {
 		private CtModule_OPENED_PACKAGE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.OPENED_PACKAGE, spoon.reflect.declaration.CtModule.class, spoon.reflect.declaration.CtPackageExport.class);
+			super(CtRole.OPENED_PACKAGE, CtModule.class, CtPackageExport.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getOpenedPackages())));
+			return ((U) ((Object) (castTarget(element).getOpenedPackages())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setOpenedPackages(castValue(value));
 		}
 	}
 
-	static class CtType_NESTED_TYPE_RoleHandler extends spoon.reflect.meta.impl.SetHandler<spoon.reflect.declaration.CtType, spoon.reflect.declaration.CtType<? extends java.lang.Object>> {
+	static class CtType_NESTED_TYPE_RoleHandler extends SetHandler<CtType, CtType<? extends Object>> {
 		private CtType_NESTED_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.NESTED_TYPE, spoon.reflect.declaration.CtType.class, spoon.reflect.declaration.CtType.class);
+			super(CtRole.NESTED_TYPE, CtType.class, CtType.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getNestedTypes())));
+			return ((U) ((Object) (castTarget(element).getNestedTypes())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setNestedTypes(castValue(value));
 		}
 	}
 
-	static class CtNewClass_NESTED_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtNewClass, spoon.reflect.declaration.CtClass<? extends java.lang.Object>> {
+	static class CtNewClass_NESTED_TYPE_RoleHandler extends SingleHandler<CtNewClass, CtClass<? extends Object>> {
 		private CtNewClass_NESTED_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.NESTED_TYPE, spoon.reflect.code.CtNewClass.class, spoon.reflect.declaration.CtClass.class);
+			super(CtRole.NESTED_TYPE, CtNewClass.class, CtClass.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getAnonymousClass())));
+			return ((U) ((Object) (castTarget(element).getAnonymousClass())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setAnonymousClass(castValue(value));
 		}
 	}
 
-	static class CtReference_NAME_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.reference.CtReference, java.lang.String> {
+	static class CtReference_NAME_RoleHandler extends SingleHandler<CtReference, String> {
 		private CtReference_NAME_RoleHandler() {
-			super(spoon.reflect.path.CtRole.NAME, spoon.reflect.reference.CtReference.class, java.lang.String.class);
+			super(CtRole.NAME, CtReference.class, String.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getSimpleName())));
+			return ((U) ((Object) (castTarget(element).getSimpleName())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setSimpleName(castValue(value));
 		}
 	}
 
-	static class CtNamedElement_NAME_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtNamedElement, java.lang.String> {
+	static class CtNamedElement_NAME_RoleHandler extends SingleHandler<CtNamedElement, String> {
 		private CtNamedElement_NAME_RoleHandler() {
-			super(spoon.reflect.path.CtRole.NAME, spoon.reflect.declaration.CtNamedElement.class, java.lang.String.class);
+			super(CtRole.NAME, CtNamedElement.class, String.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getSimpleName())));
+			return ((U) ((Object) (castTarget(element).getSimpleName())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setSimpleName(castValue(value));
 		}
 	}
 
-	static class CtMultiTypedElement_MULTI_TYPE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtMultiTypedElement, spoon.reflect.reference.CtTypeReference<?>> {
+	static class CtMultiTypedElement_MULTI_TYPE_RoleHandler extends ListHandler<CtMultiTypedElement, CtTypeReference<?>> {
 		private CtMultiTypedElement_MULTI_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.MULTI_TYPE, spoon.reflect.declaration.CtMultiTypedElement.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.MULTI_TYPE, CtMultiTypedElement.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getMultiTypes())));
+			return ((U) ((Object) (castTarget(element).getMultiTypes())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setMultiTypes(castValue(value));
 		}
 	}
 
-	static class CtPackageExport_MODULE_REF_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtPackageExport, spoon.reflect.reference.CtModuleReference> {
+	static class CtPackageExport_MODULE_REF_RoleHandler extends ListHandler<CtPackageExport, CtModuleReference> {
 		private CtPackageExport_MODULE_REF_RoleHandler() {
-			super(spoon.reflect.path.CtRole.MODULE_REF, spoon.reflect.declaration.CtPackageExport.class, spoon.reflect.reference.CtModuleReference.class);
+			super(CtRole.MODULE_REF, CtPackageExport.class, CtModuleReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getTargetExport())));
+			return ((U) ((Object) (castTarget(element).getTargetExport())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setTargetExport(castValue(value));
 		}
 	}
 
-	static class CtModuleRequirement_MODULE_REF_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtModuleRequirement, spoon.reflect.reference.CtModuleReference> {
+	static class CtModuleRequirement_MODULE_REF_RoleHandler extends SingleHandler<CtModuleRequirement, CtModuleReference> {
 		private CtModuleRequirement_MODULE_REF_RoleHandler() {
-			super(spoon.reflect.path.CtRole.MODULE_REF, spoon.reflect.declaration.CtModuleRequirement.class, spoon.reflect.reference.CtModuleReference.class);
+			super(CtRole.MODULE_REF, CtModuleRequirement.class, CtModuleReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getModuleReference())));
+			return ((U) ((Object) (castTarget(element).getModuleReference())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setModuleReference(castValue(value));
 		}
 	}
 
-	static class CtModule_MODULE_DIRECTIVE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtModule, spoon.reflect.declaration.CtModuleDirective> {
+	static class CtModule_MODULE_DIRECTIVE_RoleHandler extends ListHandler<CtModule, CtModuleDirective> {
 		private CtModule_MODULE_DIRECTIVE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.MODULE_DIRECTIVE, spoon.reflect.declaration.CtModule.class, spoon.reflect.declaration.CtModuleDirective.class);
+			super(CtRole.MODULE_DIRECTIVE, CtModule.class, CtModuleDirective.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getModuleDirectives())));
+			return ((U) ((Object) (castTarget(element).getModuleDirectives())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setModuleDirectives(castValue(value));
 		}
 	}
 
-	static class CtTypeInformation_MODIFIER_RoleHandler extends spoon.reflect.meta.impl.SetHandler<spoon.reflect.declaration.CtTypeInformation, spoon.reflect.declaration.ModifierKind> {
+	static class CtTypeInformation_MODIFIER_RoleHandler extends SetHandler<CtTypeInformation, ModifierKind> {
 		private CtTypeInformation_MODIFIER_RoleHandler() {
-			super(spoon.reflect.path.CtRole.MODIFIER, spoon.reflect.declaration.CtTypeInformation.class, spoon.reflect.declaration.ModifierKind.class);
+			super(CtRole.MODIFIER, CtTypeInformation.class, ModifierKind.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getModifiers())));
+			return ((U) ((Object) (castTarget(element).getModifiers())));
 		}
 	}
 
-	static class CtModuleRequirement_MODIFIER_RoleHandler extends spoon.reflect.meta.impl.SetHandler<spoon.reflect.declaration.CtModuleRequirement, spoon.reflect.declaration.CtModuleRequirement.RequiresModifier> {
+	static class CtModuleRequirement_MODIFIER_RoleHandler extends SetHandler<CtModuleRequirement, CtModuleRequirement.RequiresModifier> {
 		private CtModuleRequirement_MODIFIER_RoleHandler() {
-			super(spoon.reflect.path.CtRole.MODIFIER, spoon.reflect.declaration.CtModuleRequirement.class, spoon.reflect.declaration.CtModuleRequirement.RequiresModifier.class);
+			super(CtRole.MODIFIER, CtModuleRequirement.class, CtModuleRequirement.RequiresModifier.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getRequiresModifiers())));
+			return ((U) ((Object) (castTarget(element).getRequiresModifiers())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setRequiresModifiers(castValue(value));
 		}
 	}
 
-	static class CtModule_MODIFIER_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtModule, java.lang.Boolean> {
+	static class CtModule_MODIFIER_RoleHandler extends SingleHandler<CtModule, Boolean> {
 		private CtModule_MODIFIER_RoleHandler() {
-			super(spoon.reflect.path.CtRole.MODIFIER, spoon.reflect.declaration.CtModule.class, java.lang.Boolean.class);
+			super(CtRole.MODIFIER, CtModule.class, Boolean.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).isOpenModule())));
+			return ((U) ((Object) (castTarget(element).isOpenModule())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setIsOpenModule(castValue(value));
 		}
 	}
 
-	static class CtModifiable_MODIFIER_RoleHandler extends spoon.reflect.meta.impl.SetHandler<spoon.reflect.declaration.CtModifiable, spoon.reflect.declaration.ModifierKind> {
+	static class CtModifiable_MODIFIER_RoleHandler extends SetHandler<CtModifiable, ModifierKind> {
 		private CtModifiable_MODIFIER_RoleHandler() {
-			super(spoon.reflect.path.CtRole.MODIFIER, spoon.reflect.declaration.CtModifiable.class, spoon.reflect.declaration.ModifierKind.class);
+			super(CtRole.MODIFIER, CtModifiable.class, ModifierKind.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getModifiers())));
+			return ((U) ((Object) (castTarget(element).getModifiers())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setModifiers(castValue(value));
 		}
 	}
 
-	static class CtType_METHOD_RoleHandler extends spoon.reflect.meta.impl.SetHandler<spoon.reflect.declaration.CtType, spoon.reflect.declaration.CtMethod<? extends java.lang.Object>> {
+	static class CtType_METHOD_RoleHandler extends SetHandler<CtType, CtMethod<? extends Object>> {
 		private CtType_METHOD_RoleHandler() {
-			super(spoon.reflect.path.CtRole.METHOD, spoon.reflect.declaration.CtType.class, spoon.reflect.declaration.CtMethod.class);
+			super(CtRole.METHOD, CtType.class, CtMethod.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getMethods())));
+			return ((U) ((Object) (castTarget(element).getMethods())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setMethods(castValue(value));
 		}
 	}
 
-	static class CtLiteral_LITERAL_BASE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtLiteral, spoon.reflect.code.LiteralBase> {
+	static class CtLiteral_LITERAL_BASE_RoleHandler extends SingleHandler<CtLiteral, LiteralBase> {
 		private CtLiteral_LITERAL_BASE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.LITERAL_BASE, spoon.reflect.code.CtLiteral.class, spoon.reflect.code.LiteralBase.class);
+			super(CtRole.LITERAL_BASE, CtLiteral.class, LiteralBase.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getBase())));
+			return ((U) ((Object) (castTarget(element).getBase())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setBase(castValue(value));
 		}
 	}
 
-	static class CtBinaryOperator_LEFT_OPERAND_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtBinaryOperator, spoon.reflect.code.CtExpression<? extends java.lang.Object>> {
+	static class CtBinaryOperator_LEFT_OPERAND_RoleHandler extends SingleHandler<CtBinaryOperator, CtExpression<? extends Object>> {
 		private CtBinaryOperator_LEFT_OPERAND_RoleHandler() {
-			super(spoon.reflect.path.CtRole.LEFT_OPERAND, spoon.reflect.code.CtBinaryOperator.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.LEFT_OPERAND, CtBinaryOperator.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getLeftHandOperand())));
+			return ((U) ((Object) (castTarget(element).getLeftHandOperand())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setLeftHandOperand(castValue(value));
 		}
 	}
 
-	static class CtStatement_LABEL_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtStatement, java.lang.String> {
+	static class CtStatement_LABEL_RoleHandler extends SingleHandler<CtStatement, String> {
 		private CtStatement_LABEL_RoleHandler() {
-			super(spoon.reflect.path.CtRole.LABEL, spoon.reflect.code.CtStatement.class, java.lang.String.class);
+			super(CtRole.LABEL, CtStatement.class, String.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getLabel())));
+			return ((U) ((Object) (castTarget(element).getLabel())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setLabel(castValue(value));
 		}
 	}
 
-	static class CtJavaDocTag_JAVADOC_TAG_VALUE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtJavaDocTag, java.lang.String> {
+	static class CtJavaDocTag_JAVADOC_TAG_VALUE_RoleHandler extends SingleHandler<CtJavaDocTag, String> {
 		private CtJavaDocTag_JAVADOC_TAG_VALUE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.JAVADOC_TAG_VALUE, spoon.reflect.code.CtJavaDocTag.class, java.lang.String.class);
+			super(CtRole.JAVADOC_TAG_VALUE, CtJavaDocTag.class, String.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getParam())));
+			return ((U) ((Object) (castTarget(element).getParam())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setParam(castValue(value));
 		}
 	}
 
-	static class CtParameter_IS_VARARGS_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtParameter, java.lang.Boolean> {
+	static class CtParameter_IS_VARARGS_RoleHandler extends SingleHandler<CtParameter, Boolean> {
 		private CtParameter_IS_VARARGS_RoleHandler() {
-			super(spoon.reflect.path.CtRole.IS_VARARGS, spoon.reflect.declaration.CtParameter.class, java.lang.Boolean.class);
+			super(CtRole.IS_VARARGS, CtParameter.class, Boolean.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).isVarArgs())));
+			return ((U) ((Object) (castTarget(element).isVarArgs())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setVarArgs(castValue(value));
 		}
 	}
 
-	static class CtWildcardReference_IS_UPPER_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.reference.CtWildcardReference, java.lang.Boolean> {
+	static class CtWildcardReference_IS_UPPER_RoleHandler extends SingleHandler<CtWildcardReference, Boolean> {
 		private CtWildcardReference_IS_UPPER_RoleHandler() {
-			super(spoon.reflect.path.CtRole.IS_UPPER, spoon.reflect.reference.CtWildcardReference.class, java.lang.Boolean.class);
+			super(CtRole.IS_UPPER, CtWildcardReference.class, Boolean.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).isUpper())));
+			return ((U) ((Object) (castTarget(element).isUpper())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setUpper(castValue(value));
 		}
 	}
 
-	static class CtFieldReference_IS_STATIC_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.reference.CtFieldReference, java.lang.Boolean> {
+	static class CtFieldReference_IS_STATIC_RoleHandler extends SingleHandler<CtFieldReference, Boolean> {
 		private CtFieldReference_IS_STATIC_RoleHandler() {
-			super(spoon.reflect.path.CtRole.IS_STATIC, spoon.reflect.reference.CtFieldReference.class, java.lang.Boolean.class);
+			super(CtRole.IS_STATIC, CtFieldReference.class, Boolean.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).isStatic())));
+			return ((U) ((Object) (castTarget(element).isStatic())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setStatic(castValue(value));
 		}
 	}
 
-	static class CtExecutableReference_IS_STATIC_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.reference.CtExecutableReference, java.lang.Boolean> {
+	static class CtExecutableReference_IS_STATIC_RoleHandler extends SingleHandler<CtExecutableReference, Boolean> {
 		private CtExecutableReference_IS_STATIC_RoleHandler() {
-			super(spoon.reflect.path.CtRole.IS_STATIC, spoon.reflect.reference.CtExecutableReference.class, java.lang.Boolean.class);
+			super(CtRole.IS_STATIC, CtExecutableReference.class, Boolean.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).isStatic())));
+			return ((U) ((Object) (castTarget(element).isStatic())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setStatic(castValue(value));
 		}
 	}
 
-	static class CtShadowable_IS_SHADOW_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtShadowable, java.lang.Boolean> {
+	static class CtShadowable_IS_SHADOW_RoleHandler extends SingleHandler<CtShadowable, Boolean> {
 		private CtShadowable_IS_SHADOW_RoleHandler() {
-			super(spoon.reflect.path.CtRole.IS_SHADOW, spoon.reflect.declaration.CtShadowable.class, java.lang.Boolean.class);
+			super(CtRole.IS_SHADOW, CtShadowable.class, Boolean.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).isShadow())));
+			return ((U) ((Object) (castTarget(element).isShadow())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setShadow(castValue(value));
 		}
 	}
 
-	static class CtParameter_IS_INFERRED_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtParameter, java.lang.Boolean> {
+	static class CtParameter_IS_INFERRED_RoleHandler extends SingleHandler<CtParameter, Boolean> {
 		private CtParameter_IS_INFERRED_RoleHandler() {
-			super(spoon.reflect.path.CtRole.IS_INFERRED, spoon.reflect.declaration.CtParameter.class, java.lang.Boolean.class);
+			super(CtRole.IS_INFERRED, CtParameter.class, Boolean.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).isInferred())));
+			return ((U) ((Object) (castTarget(element).isInferred())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setInferred(castValue(value));
 		}
 	}
 
-	static class CtLocalVariable_IS_INFERRED_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtLocalVariable, java.lang.Boolean> {
+	static class CtLocalVariable_IS_INFERRED_RoleHandler extends SingleHandler<CtLocalVariable, Boolean> {
 		private CtLocalVariable_IS_INFERRED_RoleHandler() {
-			super(spoon.reflect.path.CtRole.IS_INFERRED, spoon.reflect.code.CtLocalVariable.class, java.lang.Boolean.class);
+			super(CtRole.IS_INFERRED, CtLocalVariable.class, Boolean.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).isInferred())));
+			return ((U) ((Object) (castTarget(element).isInferred())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setInferred(castValue(value));
 		}
 	}
 
-	static class CtElement_IS_IMPLICIT_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtElement, java.lang.Boolean> {
+	static class CtElement_IS_IMPLICIT_RoleHandler extends SingleHandler<CtElement, Boolean> {
 		private CtElement_IS_IMPLICIT_RoleHandler() {
-			super(spoon.reflect.path.CtRole.IS_IMPLICIT, spoon.reflect.declaration.CtElement.class, java.lang.Boolean.class);
+			super(CtRole.IS_IMPLICIT, CtElement.class, Boolean.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).isImplicit())));
+			return ((U) ((Object) (castTarget(element).isImplicit())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setImplicit(castValue(value));
 		}
 	}
 
-	static class CtFieldReference_IS_FINAL_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.reference.CtFieldReference, java.lang.Boolean> {
+	static class CtFieldReference_IS_FINAL_RoleHandler extends SingleHandler<CtFieldReference, Boolean> {
 		private CtFieldReference_IS_FINAL_RoleHandler() {
-			super(spoon.reflect.path.CtRole.IS_FINAL, spoon.reflect.reference.CtFieldReference.class, java.lang.Boolean.class);
+			super(CtRole.IS_FINAL, CtFieldReference.class, Boolean.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).isFinal())));
+			return ((U) ((Object) (castTarget(element).isFinal())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setFinal(castValue(value));
 		}
 	}
 
-	static class CtMethod_IS_DEFAULT_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtMethod, java.lang.Boolean> {
+	static class CtMethod_IS_DEFAULT_RoleHandler extends SingleHandler<CtMethod, Boolean> {
 		private CtMethod_IS_DEFAULT_RoleHandler() {
-			super(spoon.reflect.path.CtRole.IS_DEFAULT, spoon.reflect.declaration.CtMethod.class, java.lang.Boolean.class);
+			super(CtRole.IS_DEFAULT, CtMethod.class, Boolean.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).isDefaultMethod())));
+			return ((U) ((Object) (castTarget(element).isDefaultMethod())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setDefaultMethod(castValue(value));
 		}
 	}
 
-	static class CtTypeInformation_INTERFACE_RoleHandler extends spoon.reflect.meta.impl.SetHandler<spoon.reflect.declaration.CtTypeInformation, spoon.reflect.reference.CtTypeReference<?>> {
+	static class CtTypeInformation_INTERFACE_RoleHandler extends SetHandler<CtTypeInformation, CtTypeReference<?>> {
 		private CtTypeInformation_INTERFACE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.INTERFACE, spoon.reflect.declaration.CtTypeInformation.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.INTERFACE, CtTypeInformation.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getSuperInterfaces())));
+			return ((U) ((Object) (castTarget(element).getSuperInterfaces())));
 		}
 	}
 
-	static class CtType_INTERFACE_RoleHandler extends spoon.reflect.meta.impl.SetHandler<spoon.reflect.declaration.CtType, spoon.reflect.reference.CtTypeReference<? extends java.lang.Object>> {
+	static class CtType_INTERFACE_RoleHandler extends SetHandler<CtType, CtTypeReference<? extends Object>> {
 		private CtType_INTERFACE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.INTERFACE, spoon.reflect.declaration.CtType.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.INTERFACE, CtType.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getSuperInterfaces())));
+			return ((U) ((Object) (castTarget(element).getSuperInterfaces())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setSuperInterfaces(castValue(value));
 		}
 	}
 
-	static class CtImport_IMPORT_REFERENCE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtImport, spoon.reflect.reference.CtReference> {
+	static class CtImport_IMPORT_REFERENCE_RoleHandler extends SingleHandler<CtImport, CtReference> {
 		private CtImport_IMPORT_REFERENCE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.IMPORT_REFERENCE, spoon.reflect.declaration.CtImport.class, spoon.reflect.reference.CtReference.class);
+			super(CtRole.IMPORT_REFERENCE, CtImport.class, CtReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getReference())));
+			return ((U) ((Object) (castTarget(element).getReference())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setReference(castValue(value));
 		}
 	}
 
-	static class CtProvidedService_IMPLEMENTATION_TYPE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtProvidedService, spoon.reflect.reference.CtTypeReference> {
+	static class CtProvidedService_IMPLEMENTATION_TYPE_RoleHandler extends ListHandler<CtProvidedService, CtTypeReference> {
 		private CtProvidedService_IMPLEMENTATION_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.IMPLEMENTATION_TYPE, spoon.reflect.declaration.CtProvidedService.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.IMPLEMENTATION_TYPE, CtProvidedService.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getImplementationTypes())));
+			return ((U) ((Object) (castTarget(element).getImplementationTypes())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setImplementationTypes(castValue(value));
 		}
 	}
 
-	static class CtFor_FOR_UPDATE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.code.CtFor, spoon.reflect.code.CtStatement> {
+	static class CtFor_FOR_UPDATE_RoleHandler extends ListHandler<CtFor, CtStatement> {
 		private CtFor_FOR_UPDATE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.FOR_UPDATE, spoon.reflect.code.CtFor.class, spoon.reflect.code.CtStatement.class);
+			super(CtRole.FOR_UPDATE, CtFor.class, CtStatement.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getForUpdate())));
+			return ((U) ((Object) (castTarget(element).getForUpdate())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setForUpdate(castValue(value));
 		}
 	}
 
-	static class CtFor_FOR_INIT_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.code.CtFor, spoon.reflect.code.CtStatement> {
+	static class CtFor_FOR_INIT_RoleHandler extends ListHandler<CtFor, CtStatement> {
 		private CtFor_FOR_INIT_RoleHandler() {
-			super(spoon.reflect.path.CtRole.FOR_INIT, spoon.reflect.code.CtFor.class, spoon.reflect.code.CtStatement.class);
+			super(CtRole.FOR_INIT, CtFor.class, CtStatement.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getForInit())));
+			return ((U) ((Object) (castTarget(element).getForInit())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setForInit(castValue(value));
 		}
 	}
 
-	static class CtForEach_FOREACH_VARIABLE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtForEach, spoon.reflect.code.CtLocalVariable<? extends java.lang.Object>> {
+	static class CtForEach_FOREACH_VARIABLE_RoleHandler extends SingleHandler<CtForEach, CtLocalVariable<? extends Object>> {
 		private CtForEach_FOREACH_VARIABLE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.FOREACH_VARIABLE, spoon.reflect.code.CtForEach.class, spoon.reflect.code.CtLocalVariable.class);
+			super(CtRole.FOREACH_VARIABLE, CtForEach.class, CtLocalVariable.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getVariable())));
+			return ((U) ((Object) (castTarget(element).getVariable())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setVariable(castValue(value));
 		}
 	}
 
-	static class CtTry_FINALIZER_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtTry, spoon.reflect.code.CtBlock<? extends java.lang.Object>> {
+	static class CtTry_FINALIZER_RoleHandler extends SingleHandler<CtTry, CtBlock<? extends Object>> {
 		private CtTry_FINALIZER_RoleHandler() {
-			super(spoon.reflect.path.CtRole.FINALIZER, spoon.reflect.code.CtTry.class, spoon.reflect.code.CtBlock.class);
+			super(CtRole.FINALIZER, CtTry.class, CtBlock.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getFinalizer())));
+			return ((U) ((Object) (castTarget(element).getFinalizer())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setFinalizer(castValue(value));
 		}
 	}
 
-	static class CtType_FIELD_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtType, spoon.reflect.declaration.CtField<? extends java.lang.Object>> {
+	static class CtType_FIELD_RoleHandler extends ListHandler<CtType, CtField<? extends Object>> {
 		private CtType_FIELD_RoleHandler() {
-			super(spoon.reflect.path.CtRole.FIELD, spoon.reflect.declaration.CtType.class, spoon.reflect.declaration.CtField.class);
+			super(CtRole.FIELD, CtType.class, CtField.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getFields())));
+			return ((U) ((Object) (castTarget(element).getFields())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setFields(castValue(value));
 		}
 	}
 
-	static class CtYieldStatement_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtYieldStatement, spoon.reflect.code.CtExpression<? extends java.lang.Object>> {
+	static class CtYieldStatement_EXPRESSION_RoleHandler extends SingleHandler<CtYieldStatement, CtExpression<? extends Object>> {
 		private CtYieldStatement_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtYieldStatement.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtYieldStatement.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getExpression())));
+			return ((U) ((Object) (castTarget(element).getExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setExpression(castValue(value));
 		}
 	}
 
-	static class CtWhile_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtWhile, spoon.reflect.code.CtExpression<java.lang.Boolean>> {
+	static class CtWhile_EXPRESSION_RoleHandler extends SingleHandler<CtWhile, CtExpression<Boolean>> {
 		private CtWhile_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtWhile.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtWhile.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getLoopingExpression())));
+			return ((U) ((Object) (castTarget(element).getLoopingExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setLoopingExpression(castValue(value));
 		}
 	}
 
-	static class CtUnaryOperator_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtUnaryOperator, spoon.reflect.code.CtExpression<?>> {
+	static class CtUnaryOperator_EXPRESSION_RoleHandler extends SingleHandler<CtUnaryOperator, CtExpression<?>> {
 		private CtUnaryOperator_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtUnaryOperator.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtUnaryOperator.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getOperand())));
+			return ((U) ((Object) (castTarget(element).getOperand())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setOperand(castValue(value));
 		}
 	}
 
-	static class CtThrow_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtThrow, spoon.reflect.code.CtExpression<? extends java.lang.Throwable>> {
+	static class CtThrow_EXPRESSION_RoleHandler extends SingleHandler<CtThrow, CtExpression<? extends Throwable>> {
 		private CtThrow_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtThrow.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtThrow.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getThrownExpression())));
+			return ((U) ((Object) (castTarget(element).getThrownExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setThrownExpression(castValue(value));
 		}
 	}
 
-	static class CtSynchronized_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtSynchronized, spoon.reflect.code.CtExpression<? extends java.lang.Object>> {
+	static class CtSynchronized_EXPRESSION_RoleHandler extends SingleHandler<CtSynchronized, CtExpression<? extends Object>> {
 		private CtSynchronized_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtSynchronized.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtSynchronized.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getExpression())));
+			return ((U) ((Object) (castTarget(element).getExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setExpression(castValue(value));
 		}
 	}
 
-	static class CtReturn_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtReturn, spoon.reflect.code.CtExpression<?>> {
+	static class CtReturn_EXPRESSION_RoleHandler extends SingleHandler<CtReturn, CtExpression<?>> {
 		private CtReturn_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtReturn.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtReturn.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getReturnedExpression())));
+			return ((U) ((Object) (castTarget(element).getReturnedExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setReturnedExpression(castValue(value));
 		}
 	}
 
-	static class CtNewArray_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.code.CtNewArray, spoon.reflect.code.CtExpression<? extends java.lang.Object>> {
+	static class CtNewArray_EXPRESSION_RoleHandler extends ListHandler<CtNewArray, CtExpression<? extends Object>> {
 		private CtNewArray_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtNewArray.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtNewArray.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getElements())));
+			return ((U) ((Object) (castTarget(element).getElements())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setElements(castValue(value));
 		}
 	}
 
-	static class CtLambda_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtLambda, spoon.reflect.code.CtExpression<?>> {
+	static class CtLambda_EXPRESSION_RoleHandler extends SingleHandler<CtLambda, CtExpression<?>> {
 		private CtLambda_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtLambda.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtLambda.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getExpression())));
+			return ((U) ((Object) (castTarget(element).getExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setExpression(castValue(value));
 		}
 	}
 
-	static class CtForEach_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtForEach, spoon.reflect.code.CtExpression<? extends java.lang.Object>> {
+	static class CtForEach_EXPRESSION_RoleHandler extends SingleHandler<CtForEach, CtExpression<? extends Object>> {
 		private CtForEach_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtForEach.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtForEach.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getExpression())));
+			return ((U) ((Object) (castTarget(element).getExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setExpression(castValue(value));
 		}
 	}
 
-	static class CtFor_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtFor, spoon.reflect.code.CtExpression<java.lang.Boolean>> {
+	static class CtFor_EXPRESSION_RoleHandler extends SingleHandler<CtFor, CtExpression<Boolean>> {
 		private CtFor_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtFor.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtFor.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getExpression())));
+			return ((U) ((Object) (castTarget(element).getExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setExpression(castValue(value));
 		}
 	}
 
-	static class CtDo_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtDo, spoon.reflect.code.CtExpression<java.lang.Boolean>> {
+	static class CtDo_EXPRESSION_RoleHandler extends SingleHandler<CtDo, CtExpression<Boolean>> {
 		private CtDo_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtDo.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtDo.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getLoopingExpression())));
+			return ((U) ((Object) (castTarget(element).getLoopingExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setLoopingExpression(castValue(value));
 		}
 	}
 
-	static class CtCase_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.code.CtCase, spoon.reflect.code.CtExpression<?>> {
+	static class CtCase_EXPRESSION_RoleHandler extends ListHandler<CtCase, CtExpression<?>> {
 		private CtCase_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtCase.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtCase.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getCaseExpressions())));
+			return ((U) ((Object) (castTarget(element).getCaseExpressions())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setCaseExpressions(castValue(value));
 		}
 	}
 
-	static class CtAssert_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtAssert, spoon.reflect.code.CtExpression<?>> {
+	static class CtAssert_EXPRESSION_RoleHandler extends SingleHandler<CtAssert, CtExpression<?>> {
 		private CtAssert_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtAssert.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtAssert.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getExpression())));
+			return ((U) ((Object) (castTarget(element).getExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setExpression(castValue(value));
 		}
 	}
 
-	static class CtArrayAccess_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtArrayAccess, spoon.reflect.code.CtExpression<java.lang.Integer>> {
+	static class CtArrayAccess_EXPRESSION_RoleHandler extends SingleHandler<CtArrayAccess, CtExpression<Integer>> {
 		private CtArrayAccess_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtArrayAccess.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtArrayAccess.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getIndexExpression())));
+			return ((U) ((Object) (castTarget(element).getIndexExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setIndexExpression(castValue(value));
 		}
 	}
 
-	static class CtAbstractSwitch_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtAbstractSwitch, spoon.reflect.code.CtExpression<?>> {
+	static class CtAbstractSwitch_EXPRESSION_RoleHandler extends SingleHandler<CtAbstractSwitch, CtExpression<?>> {
 		private CtAbstractSwitch_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPRESSION, spoon.reflect.code.CtAbstractSwitch.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.EXPRESSION, CtAbstractSwitch.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getSelector())));
+			return ((U) ((Object) (castTarget(element).getSelector())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setSelector(castValue(value));
 		}
 	}
 
-	static class CtModule_EXPORTED_PACKAGE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtModule, spoon.reflect.declaration.CtPackageExport> {
+	static class CtModule_EXPORTED_PACKAGE_RoleHandler extends ListHandler<CtModule, CtPackageExport> {
 		private CtModule_EXPORTED_PACKAGE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXPORTED_PACKAGE, spoon.reflect.declaration.CtModule.class, spoon.reflect.declaration.CtPackageExport.class);
+			super(CtRole.EXPORTED_PACKAGE, CtModule.class, CtPackageExport.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getExportedPackages())));
+			return ((U) ((Object) (castTarget(element).getExportedPackages())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setExportedPackages(castValue(value));
 		}
 	}
 
-	static class CtExecutableReferenceExpression_EXECUTABLE_REF_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtExecutableReferenceExpression, spoon.reflect.reference.CtExecutableReference<?>> {
+	static class CtExecutableReferenceExpression_EXECUTABLE_REF_RoleHandler extends SingleHandler<CtExecutableReferenceExpression, CtExecutableReference<?>> {
 		private CtExecutableReferenceExpression_EXECUTABLE_REF_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXECUTABLE_REF, spoon.reflect.code.CtExecutableReferenceExpression.class, spoon.reflect.reference.CtExecutableReference.class);
+			super(CtRole.EXECUTABLE_REF, CtExecutableReferenceExpression.class, CtExecutableReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getExecutable())));
+			return ((U) ((Object) (castTarget(element).getExecutable())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setExecutable(castValue(value));
 		}
 	}
 
-	static class CtAbstractInvocation_EXECUTABLE_REF_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtAbstractInvocation, spoon.reflect.reference.CtExecutableReference<?>> {
+	static class CtAbstractInvocation_EXECUTABLE_REF_RoleHandler extends SingleHandler<CtAbstractInvocation, CtExecutableReference<?>> {
 		private CtAbstractInvocation_EXECUTABLE_REF_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EXECUTABLE_REF, spoon.reflect.code.CtAbstractInvocation.class, spoon.reflect.reference.CtExecutableReference.class);
+			super(CtRole.EXECUTABLE_REF, CtAbstractInvocation.class, CtExecutableReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getExecutable())));
+			return ((U) ((Object) (castTarget(element).getExecutable())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setExecutable(castValue(value));
 		}
 	}
 
-	static class CtModifiable_EMODIFIER_RoleHandler extends spoon.reflect.meta.impl.SetHandler<spoon.reflect.declaration.CtModifiable, spoon.support.reflect.CtExtendedModifier> {
+	static class CtModifiable_EMODIFIER_RoleHandler extends SetHandler<CtModifiable, CtExtendedModifier> {
 		private CtModifiable_EMODIFIER_RoleHandler() {
-			super(spoon.reflect.path.CtRole.EMODIFIER, spoon.reflect.declaration.CtModifiable.class, spoon.support.reflect.CtExtendedModifier.class);
+			super(CtRole.EMODIFIER, CtModifiable.class, CtExtendedModifier.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getExtendedModifiers())));
+			return ((U) ((Object) (castTarget(element).getExtendedModifiers())));
 		}
 	}
 
-	static class CtIf_ELSE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtIf, spoon.reflect.code.CtStatement> {
+	static class CtIf_ELSE_RoleHandler extends SingleHandler<CtIf, CtStatement> {
 		private CtIf_ELSE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.ELSE, spoon.reflect.code.CtIf.class, spoon.reflect.code.CtStatement.class);
+			super(CtRole.ELSE, CtIf.class, CtStatement.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getElseStatement())));
+			return ((U) ((Object) (castTarget(element).getElseStatement())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setElseStatement(castValue(value));
 		}
 	}
 
-	static class CtConditional_ELSE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtConditional, spoon.reflect.code.CtExpression<?>> {
+	static class CtConditional_ELSE_RoleHandler extends SingleHandler<CtConditional, CtExpression<?>> {
 		private CtConditional_ELSE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.ELSE, spoon.reflect.code.CtConditional.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.ELSE, CtConditional.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getElseExpression())));
+			return ((U) ((Object) (castTarget(element).getElseExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setElseExpression(castValue(value));
 		}
 	}
 
-	static class CtJavaDocTag_DOCUMENTATION_TYPE_REALNAME_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtJavaDocTag, java.lang.String> {
+	static class CtJavaDocTag_DOCUMENTATION_TYPE_REALNAME_RoleHandler extends SingleHandler<CtJavaDocTag, String> {
 		private CtJavaDocTag_DOCUMENTATION_TYPE_REALNAME_RoleHandler() {
-			super(spoon.reflect.path.CtRole.DOCUMENTATION_TYPE_REALNAME, spoon.reflect.code.CtJavaDocTag.class, java.lang.String.class);
+			super(CtRole.DOCUMENTATION_TYPE_REALNAME, CtJavaDocTag.class, String.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getRealName())));
+			return ((U) ((Object) (castTarget(element).getRealName())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setRealName(castValue(value));
 		}
 	}
 
-	static class CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtJavaDocTag, spoon.reflect.code.CtJavaDocTag.TagType> {
+	static class CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler extends SingleHandler<CtJavaDocTag, CtJavaDocTag.TagType> {
 		private CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.DOCUMENTATION_TYPE, spoon.reflect.code.CtJavaDocTag.class, spoon.reflect.code.CtJavaDocTag.TagType.class);
+			super(CtRole.DOCUMENTATION_TYPE, CtJavaDocTag.class, CtJavaDocTag.TagType.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getType())));
+			return ((U) ((Object) (castTarget(element).getType())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setType(castValue(value));
 		}
 	}
 
-	static class CtNewArray_DIMENSION_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.code.CtNewArray, spoon.reflect.code.CtExpression<java.lang.Integer>> {
+	static class CtNewArray_DIMENSION_RoleHandler extends ListHandler<CtNewArray, CtExpression<Integer>> {
 		private CtNewArray_DIMENSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.DIMENSION, spoon.reflect.code.CtNewArray.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.DIMENSION, CtNewArray.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getDimensionExpressions())));
+			return ((U) ((Object) (castTarget(element).getDimensionExpressions())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setDimensionExpressions(castValue(value));
 		}
 	}
 
-	static class CtVariable_DEFAULT_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtVariable, spoon.reflect.code.CtExpression<?>> {
+	static class CtVariable_DEFAULT_EXPRESSION_RoleHandler extends SingleHandler<CtVariable, CtExpression<?>> {
 		private CtVariable_DEFAULT_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.DEFAULT_EXPRESSION, spoon.reflect.declaration.CtVariable.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.DEFAULT_EXPRESSION, CtVariable.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getDefaultExpression())));
+			return ((U) ((Object) (castTarget(element).getDefaultExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setDefaultExpression(castValue(value));
 		}
 	}
 
-	static class CtAnnotationMethod_DEFAULT_EXPRESSION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtAnnotationMethod, spoon.reflect.code.CtExpression<?>> {
+	static class CtAnnotationMethod_DEFAULT_EXPRESSION_RoleHandler extends SingleHandler<CtAnnotationMethod, CtExpression<?>> {
 		private CtAnnotationMethod_DEFAULT_EXPRESSION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.DEFAULT_EXPRESSION, spoon.reflect.declaration.CtAnnotationMethod.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.DEFAULT_EXPRESSION, CtAnnotationMethod.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getDefaultExpression())));
+			return ((U) ((Object) (castTarget(element).getDefaultExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setDefaultExpression(castValue(value));
 		}
 	}
 
-	static class CtTypeReference_DECLARING_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.reference.CtTypeReference, spoon.reflect.reference.CtTypeReference<? extends java.lang.Object>> {
+	static class CtTypeReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtTypeReference, CtTypeReference<? extends Object>> {
 		private CtTypeReference_DECLARING_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.DECLARING_TYPE, spoon.reflect.reference.CtTypeReference.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.DECLARING_TYPE, CtTypeReference.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getDeclaringType())));
+			return ((U) ((Object) (castTarget(element).getDeclaringType())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setDeclaringType(castValue(value));
 		}
 	}
 
-	static class CtFieldReference_DECLARING_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.reference.CtFieldReference, spoon.reflect.reference.CtTypeReference<? extends java.lang.Object>> {
+	static class CtFieldReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtFieldReference, CtTypeReference<? extends Object>> {
 		private CtFieldReference_DECLARING_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.DECLARING_TYPE, spoon.reflect.reference.CtFieldReference.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.DECLARING_TYPE, CtFieldReference.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getDeclaringType())));
+			return ((U) ((Object) (castTarget(element).getDeclaringType())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setDeclaringType(castValue(value));
 		}
 	}
 
-	static class CtExecutableReference_DECLARING_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.reference.CtExecutableReference, spoon.reflect.reference.CtTypeReference<? extends java.lang.Object>> {
+	static class CtExecutableReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtExecutableReference, CtTypeReference<? extends Object>> {
 		private CtExecutableReference_DECLARING_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.DECLARING_TYPE, spoon.reflect.reference.CtExecutableReference.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.DECLARING_TYPE, CtExecutableReference.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getDeclaringType())));
+			return ((U) ((Object) (castTarget(element).getDeclaringType())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setDeclaringType(castValue(value));
 		}
 	}
 
-	static class CtCompilationUnit_DECLARED_TYPE_REF_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtCompilationUnit, spoon.reflect.reference.CtTypeReference<? extends java.lang.Object>> {
+	static class CtCompilationUnit_DECLARED_TYPE_REF_RoleHandler extends ListHandler<CtCompilationUnit, CtTypeReference<? extends Object>> {
 		private CtCompilationUnit_DECLARED_TYPE_REF_RoleHandler() {
-			super(spoon.reflect.path.CtRole.DECLARED_TYPE_REF, spoon.reflect.declaration.CtCompilationUnit.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.DECLARED_TYPE_REF, CtCompilationUnit.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getDeclaredTypeReferences())));
+			return ((U) ((Object) (castTarget(element).getDeclaredTypeReferences())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setDeclaredTypeReferences(castValue(value));
 		}
 	}
 
-	static class CtCompilationUnit_DECLARED_TYPE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtCompilationUnit, spoon.reflect.declaration.CtType<? extends java.lang.Object>> {
+	static class CtCompilationUnit_DECLARED_TYPE_RoleHandler extends ListHandler<CtCompilationUnit, CtType<? extends Object>> {
 		private CtCompilationUnit_DECLARED_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.DECLARED_TYPE, spoon.reflect.declaration.CtCompilationUnit.class, spoon.reflect.declaration.CtType.class);
+			super(CtRole.DECLARED_TYPE, CtCompilationUnit.class, CtType.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getDeclaredTypes())));
+			return ((U) ((Object) (castTarget(element).getDeclaredTypes())));
 		}
 	}
 
-	static class CtCompilationUnit_DECLARED_MODULE_REF_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtCompilationUnit, spoon.reflect.reference.CtModuleReference> {
+	static class CtCompilationUnit_DECLARED_MODULE_REF_RoleHandler extends SingleHandler<CtCompilationUnit, CtModuleReference> {
 		private CtCompilationUnit_DECLARED_MODULE_REF_RoleHandler() {
-			super(spoon.reflect.path.CtRole.DECLARED_MODULE_REF, spoon.reflect.declaration.CtCompilationUnit.class, spoon.reflect.reference.CtModuleReference.class);
+			super(CtRole.DECLARED_MODULE_REF, CtCompilationUnit.class, CtModuleReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getDeclaredModuleReference())));
+			return ((U) ((Object) (castTarget(element).getDeclaredModuleReference())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setDeclaredModuleReference(castValue(value));
 		}
 	}
 
-	static class CtCompilationUnit_DECLARED_MODULE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtCompilationUnit, spoon.reflect.declaration.CtModule> {
+	static class CtCompilationUnit_DECLARED_MODULE_RoleHandler extends SingleHandler<CtCompilationUnit, CtModule> {
 		private CtCompilationUnit_DECLARED_MODULE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.DECLARED_MODULE, spoon.reflect.declaration.CtCompilationUnit.class, spoon.reflect.declaration.CtModule.class);
+			super(CtRole.DECLARED_MODULE, CtCompilationUnit.class, CtModule.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getDeclaredModule())));
+			return ((U) ((Object) (castTarget(element).getDeclaredModule())));
 		}
 	}
 
-	static class CtCompilationUnit_DECLARED_IMPORT_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtCompilationUnit, spoon.reflect.declaration.CtImport> {
+	static class CtCompilationUnit_DECLARED_IMPORT_RoleHandler extends ListHandler<CtCompilationUnit, CtImport> {
 		private CtCompilationUnit_DECLARED_IMPORT_RoleHandler() {
-			super(spoon.reflect.path.CtRole.DECLARED_IMPORT, spoon.reflect.declaration.CtCompilationUnit.class, spoon.reflect.declaration.CtImport.class);
+			super(CtRole.DECLARED_IMPORT, CtCompilationUnit.class, CtImport.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getImports())));
+			return ((U) ((Object) (castTarget(element).getImports())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setImports(castValue(value));
 		}
 	}
 
-	static class CtPackage_CONTAINED_TYPE_RoleHandler extends spoon.reflect.meta.impl.SetHandler<spoon.reflect.declaration.CtPackage, spoon.reflect.declaration.CtType<? extends java.lang.Object>> {
+	static class CtPackage_CONTAINED_TYPE_RoleHandler extends SetHandler<CtPackage, CtType<? extends Object>> {
 		private CtPackage_CONTAINED_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.CONTAINED_TYPE, spoon.reflect.declaration.CtPackage.class, spoon.reflect.declaration.CtType.class);
+			super(CtRole.CONTAINED_TYPE, CtPackage.class, CtType.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getTypes())));
+			return ((U) ((Object) (castTarget(element).getTypes())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setTypes(castValue(value));
 		}
 	}
 
-	static class CtClass_CONSTRUCTOR_RoleHandler extends spoon.reflect.meta.impl.SetHandler<spoon.reflect.declaration.CtClass, spoon.reflect.declaration.CtConstructor<?>> {
+	static class CtClass_CONSTRUCTOR_RoleHandler extends SetHandler<CtClass, CtConstructor<?>> {
 		private CtClass_CONSTRUCTOR_RoleHandler() {
-			super(spoon.reflect.path.CtRole.CONSTRUCTOR, spoon.reflect.declaration.CtClass.class, spoon.reflect.declaration.CtConstructor.class);
+			super(CtRole.CONSTRUCTOR, CtClass.class, CtConstructor.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getConstructors())));
+			return ((U) ((Object) (castTarget(element).getConstructors())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setConstructors(castValue(value));
 		}
 	}
 
-	static class CtIf_CONDITION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtIf, spoon.reflect.code.CtExpression<java.lang.Boolean>> {
+	static class CtIf_CONDITION_RoleHandler extends SingleHandler<CtIf, CtExpression<Boolean>> {
 		private CtIf_CONDITION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.CONDITION, spoon.reflect.code.CtIf.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.CONDITION, CtIf.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getCondition())));
+			return ((U) ((Object) (castTarget(element).getCondition())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setCondition(castValue(value));
 		}
 	}
 
-	static class CtConditional_CONDITION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtConditional, spoon.reflect.code.CtExpression<java.lang.Boolean>> {
+	static class CtConditional_CONDITION_RoleHandler extends SingleHandler<CtConditional, CtExpression<Boolean>> {
 		private CtConditional_CONDITION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.CONDITION, spoon.reflect.code.CtConditional.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.CONDITION, CtConditional.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getCondition())));
+			return ((U) ((Object) (castTarget(element).getCondition())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setCondition(castValue(value));
 		}
 	}
 
-	static class CtAssert_CONDITION_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtAssert, spoon.reflect.code.CtExpression<java.lang.Boolean>> {
+	static class CtAssert_CONDITION_RoleHandler extends SingleHandler<CtAssert, CtExpression<Boolean>> {
 		private CtAssert_CONDITION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.CONDITION, spoon.reflect.code.CtAssert.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.CONDITION, CtAssert.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getAssertExpression())));
+			return ((U) ((Object) (castTarget(element).getAssertExpression())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setAssertExpression(castValue(value));
 		}
 	}
 
-	static class CtConstructor_COMPACT_CONSTRUCTOR_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtConstructor, java.lang.Boolean> {
+	static class CtConstructor_COMPACT_CONSTRUCTOR_RoleHandler extends SingleHandler<CtConstructor, Boolean> {
 		private CtConstructor_COMPACT_CONSTRUCTOR_RoleHandler() {
-			super(spoon.reflect.path.CtRole.COMPACT_CONSTRUCTOR, spoon.reflect.declaration.CtConstructor.class, java.lang.Boolean.class);
+			super(CtRole.COMPACT_CONSTRUCTOR, CtConstructor.class, Boolean.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).isCompactConstructor())));
+			return ((U) ((Object) (castTarget(element).isCompactConstructor())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setCompactConstructor(castValue(value));
 		}
 	}
 
-	static class CtComment_COMMENT_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtComment, spoon.reflect.code.CtComment.CommentType> {
+	static class CtComment_COMMENT_TYPE_RoleHandler extends SingleHandler<CtComment, CtComment.CommentType> {
 		private CtComment_COMMENT_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.COMMENT_TYPE, spoon.reflect.code.CtComment.class, spoon.reflect.code.CtComment.CommentType.class);
+			super(CtRole.COMMENT_TYPE, CtComment.class, CtComment.CommentType.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getCommentType())));
+			return ((U) ((Object) (castTarget(element).getCommentType())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setCommentType(castValue(value));
 		}
 	}
 
-	static class CtJavaDoc_COMMENT_TAG_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.code.CtJavaDoc, spoon.reflect.code.CtJavaDocTag> {
+	static class CtJavaDoc_COMMENT_TAG_RoleHandler extends ListHandler<CtJavaDoc, CtJavaDocTag> {
 		private CtJavaDoc_COMMENT_TAG_RoleHandler() {
-			super(spoon.reflect.path.CtRole.COMMENT_TAG, spoon.reflect.code.CtJavaDoc.class, spoon.reflect.code.CtJavaDocTag.class);
+			super(CtRole.COMMENT_TAG, CtJavaDoc.class, CtJavaDocTag.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getTags())));
+			return ((U) ((Object) (castTarget(element).getTags())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setTags(castValue(value));
 		}
 	}
 
-	static class CtJavaDocTag_COMMENT_CONTENT_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtJavaDocTag, java.lang.String> {
+	static class CtJavaDocTag_COMMENT_CONTENT_RoleHandler extends SingleHandler<CtJavaDocTag, String> {
 		private CtJavaDocTag_COMMENT_CONTENT_RoleHandler() {
-			super(spoon.reflect.path.CtRole.COMMENT_CONTENT, spoon.reflect.code.CtJavaDocTag.class, java.lang.String.class);
+			super(CtRole.COMMENT_CONTENT, CtJavaDocTag.class, String.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getContent())));
+			return ((U) ((Object) (castTarget(element).getContent())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setContent(castValue(value));
 		}
 	}
 
-	static class CtComment_COMMENT_CONTENT_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtComment, java.lang.String> {
+	static class CtComment_COMMENT_CONTENT_RoleHandler extends SingleHandler<CtComment, String> {
 		private CtComment_COMMENT_CONTENT_RoleHandler() {
-			super(spoon.reflect.path.CtRole.COMMENT_CONTENT, spoon.reflect.code.CtComment.class, java.lang.String.class);
+			super(CtRole.COMMENT_CONTENT, CtComment.class, String.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getContent())));
+			return ((U) ((Object) (castTarget(element).getContent())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setContent(castValue(value));
 		}
 	}
 
-	static class CtElement_COMMENT_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtElement, spoon.reflect.code.CtComment> {
+	static class CtElement_COMMENT_RoleHandler extends ListHandler<CtElement, CtComment> {
 		private CtElement_COMMENT_RoleHandler() {
-			super(spoon.reflect.path.CtRole.COMMENT, spoon.reflect.declaration.CtElement.class, spoon.reflect.code.CtComment.class);
+			super(CtRole.COMMENT, CtElement.class, CtComment.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getComments())));
+			return ((U) ((Object) (castTarget(element).getComments())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setComments(castValue(value));
 		}
 	}
 
-	static class CtTry_CATCH_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.code.CtTry, spoon.reflect.code.CtCatch> {
+	static class CtTry_CATCH_RoleHandler extends ListHandler<CtTry, CtCatch> {
 		private CtTry_CATCH_RoleHandler() {
-			super(spoon.reflect.path.CtRole.CATCH, spoon.reflect.code.CtTry.class, spoon.reflect.code.CtCatch.class);
+			super(CtRole.CATCH, CtTry.class, CtCatch.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getCatchers())));
+			return ((U) ((Object) (castTarget(element).getCatchers())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setCatchers(castValue(value));
 		}
 	}
 
-	static class CtExpression_CAST_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.code.CtExpression, spoon.reflect.reference.CtTypeReference<? extends java.lang.Object>> {
+	static class CtExpression_CAST_RoleHandler extends ListHandler<CtExpression, CtTypeReference<? extends Object>> {
 		private CtExpression_CAST_RoleHandler() {
-			super(spoon.reflect.path.CtRole.CAST, spoon.reflect.code.CtExpression.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.CAST, CtExpression.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getTypeCasts())));
+			return ((U) ((Object) (castTarget(element).getTypeCasts())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setTypeCasts(castValue(value));
 		}
 	}
 
-	static class CtCase_CASE_KIND_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtCase, spoon.reflect.code.CaseKind> {
+	static class CtCase_CASE_KIND_RoleHandler extends SingleHandler<CtCase, CaseKind> {
 		private CtCase_CASE_KIND_RoleHandler() {
-			super(spoon.reflect.path.CtRole.CASE_KIND, spoon.reflect.code.CtCase.class, spoon.reflect.code.CaseKind.class);
+			super(CtRole.CASE_KIND, CtCase.class, CaseKind.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getCaseKind())));
+			return ((U) ((Object) (castTarget(element).getCaseKind())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setCaseKind(castValue(value));
 		}
 	}
 
-	static class CtAbstractSwitch_CASE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.code.CtAbstractSwitch, spoon.reflect.code.CtCase<?>> {
+	static class CtAbstractSwitch_CASE_RoleHandler extends ListHandler<CtAbstractSwitch, CtCase<?>> {
 		private CtAbstractSwitch_CASE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.CASE, spoon.reflect.code.CtAbstractSwitch.class, spoon.reflect.code.CtCase.class);
+			super(CtRole.CASE, CtAbstractSwitch.class, CtCase.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getCases())));
+			return ((U) ((Object) (castTarget(element).getCases())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setCases(castValue(value));
 		}
 	}
 
-	static class CtWildcardReference_BOUNDING_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.reference.CtWildcardReference, spoon.reflect.reference.CtTypeReference<? extends java.lang.Object>> {
+	static class CtWildcardReference_BOUNDING_TYPE_RoleHandler extends SingleHandler<CtWildcardReference, CtTypeReference<? extends Object>> {
 		private CtWildcardReference_BOUNDING_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.BOUNDING_TYPE, spoon.reflect.reference.CtWildcardReference.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.BOUNDING_TYPE, CtWildcardReference.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getBoundingType())));
+			return ((U) ((Object) (castTarget(element).getBoundingType())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setBoundingType(castValue(value));
 		}
 	}
 
-	static class CtIntersectionTypeReference_BOUND_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.reference.CtIntersectionTypeReference, spoon.reflect.reference.CtTypeReference<? extends java.lang.Object>> {
+	static class CtIntersectionTypeReference_BOUND_RoleHandler extends ListHandler<CtIntersectionTypeReference, CtTypeReference<? extends Object>> {
 		private CtIntersectionTypeReference_BOUND_RoleHandler() {
-			super(spoon.reflect.path.CtRole.BOUND, spoon.reflect.reference.CtIntersectionTypeReference.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.BOUND, CtIntersectionTypeReference.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getBounds())));
+			return ((U) ((Object) (castTarget(element).getBounds())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setBounds(castValue(value));
 		}
 	}
 
-	static class CtSynchronized_BODY_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtSynchronized, spoon.reflect.code.CtBlock<? extends java.lang.Object>> {
+	static class CtSynchronized_BODY_RoleHandler extends SingleHandler<CtSynchronized, CtBlock<? extends Object>> {
 		private CtSynchronized_BODY_RoleHandler() {
-			super(spoon.reflect.path.CtRole.BODY, spoon.reflect.code.CtSynchronized.class, spoon.reflect.code.CtBlock.class);
+			super(CtRole.BODY, CtSynchronized.class, CtBlock.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getBlock())));
+			return ((U) ((Object) (castTarget(element).getBlock())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setBlock(castValue(value));
 		}
 	}
 
-	static class CtBodyHolder_BODY_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtBodyHolder, spoon.reflect.code.CtStatement> {
+	static class CtBodyHolder_BODY_RoleHandler extends SingleHandler<CtBodyHolder, CtStatement> {
 		private CtBodyHolder_BODY_RoleHandler() {
-			super(spoon.reflect.path.CtRole.BODY, spoon.reflect.code.CtBodyHolder.class, spoon.reflect.code.CtStatement.class);
+			super(CtRole.BODY, CtBodyHolder.class, CtStatement.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getBody())));
+			return ((U) ((Object) (castTarget(element).getBody())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setBody(castValue(value));
 		}
 	}
 
-	static class CtRHSReceiver_ASSIGNMENT_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtRHSReceiver, spoon.reflect.code.CtExpression<?>> {
+	static class CtRHSReceiver_ASSIGNMENT_RoleHandler extends SingleHandler<CtRHSReceiver, CtExpression<?>> {
 		private CtRHSReceiver_ASSIGNMENT_RoleHandler() {
-			super(spoon.reflect.path.CtRole.ASSIGNMENT, spoon.reflect.code.CtRHSReceiver.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.ASSIGNMENT, CtRHSReceiver.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getAssignment())));
+			return ((U) ((Object) (castTarget(element).getAssignment())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setAssignment(castValue(value));
 		}
 	}
 
-	static class CtAssignment_ASSIGNED_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtAssignment, spoon.reflect.code.CtExpression<?>> {
+	static class CtAssignment_ASSIGNED_RoleHandler extends SingleHandler<CtAssignment, CtExpression<?>> {
 		private CtAssignment_ASSIGNED_RoleHandler() {
-			super(spoon.reflect.path.CtRole.ASSIGNED, spoon.reflect.code.CtAssignment.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.ASSIGNED, CtAssignment.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getAssigned())));
+			return ((U) ((Object) (castTarget(element).getAssigned())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setAssigned(castValue(value));
 		}
 	}
 
-	static class CtExecutableReference_ARGUMENT_TYPE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.reference.CtExecutableReference, spoon.reflect.reference.CtTypeReference<? extends java.lang.Object>> {
+	static class CtExecutableReference_ARGUMENT_TYPE_RoleHandler extends ListHandler<CtExecutableReference, CtTypeReference<? extends Object>> {
 		private CtExecutableReference_ARGUMENT_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.ARGUMENT_TYPE, spoon.reflect.reference.CtExecutableReference.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.ARGUMENT_TYPE, CtExecutableReference.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getParameters())));
+			return ((U) ((Object) (castTarget(element).getParameters())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setParameters(castValue(value));
 		}
 	}
 
-	static class CtAbstractInvocation_ARGUMENT_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.code.CtAbstractInvocation, spoon.reflect.code.CtExpression<?>> {
+	static class CtAbstractInvocation_ARGUMENT_RoleHandler extends ListHandler<CtAbstractInvocation, CtExpression<?>> {
 		private CtAbstractInvocation_ARGUMENT_RoleHandler() {
-			super(spoon.reflect.path.CtRole.ARGUMENT, spoon.reflect.code.CtAbstractInvocation.class, spoon.reflect.code.CtExpression.class);
+			super(CtRole.ARGUMENT, CtAbstractInvocation.class, CtExpression.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getArguments())));
+			return ((U) ((Object) (castTarget(element).getArguments())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setArguments(castValue(value));
 		}
 	}
 
-	static class CtAnnotation_ANNOTATION_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.declaration.CtAnnotation, spoon.reflect.reference.CtTypeReference<? extends java.lang.annotation.Annotation>> {
+	static class CtAnnotation_ANNOTATION_TYPE_RoleHandler extends SingleHandler<CtAnnotation, CtTypeReference<? extends Annotation>> {
 		private CtAnnotation_ANNOTATION_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.ANNOTATION_TYPE, spoon.reflect.declaration.CtAnnotation.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.ANNOTATION_TYPE, CtAnnotation.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getAnnotationType())));
+			return ((U) ((Object) (castTarget(element).getAnnotationType())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setAnnotationType(castValue(value));
 		}
 	}
 
-	static class CtElement_ANNOTATION_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtElement, spoon.reflect.declaration.CtAnnotation<? extends java.lang.annotation.Annotation>> {
+	static class CtElement_ANNOTATION_RoleHandler extends ListHandler<CtElement, CtAnnotation<? extends Annotation>> {
 		private CtElement_ANNOTATION_RoleHandler() {
-			super(spoon.reflect.path.CtRole.ANNOTATION, spoon.reflect.declaration.CtElement.class, spoon.reflect.declaration.CtAnnotation.class);
+			super(CtRole.ANNOTATION, CtElement.class, CtAnnotation.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getAnnotations())));
+			return ((U) ((Object) (castTarget(element).getAnnotations())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setAnnotations(castValue(value));
 		}
 	}
 
-	static class CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler extends spoon.reflect.meta.impl.ListHandler<spoon.reflect.declaration.CtClass, spoon.reflect.declaration.CtAnonymousExecutable> {
+	static class CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler extends ListHandler<CtClass, CtAnonymousExecutable> {
 		private CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE, spoon.reflect.declaration.CtClass.class, spoon.reflect.declaration.CtAnonymousExecutable.class);
+			super(CtRole.ANNONYMOUS_EXECUTABLE, CtClass.class, CtAnonymousExecutable.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getAnonymousExecutables())));
+			return ((U) ((Object) (castTarget(element).getAnonymousExecutables())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setAnonymousExecutables(castValue(value));
 		}
 	}
 
-	static class CtTypeAccess_ACCESSED_TYPE_RoleHandler extends spoon.reflect.meta.impl.SingleHandler<spoon.reflect.code.CtTypeAccess, spoon.reflect.reference.CtTypeReference<?>> {
+	static class CtTypeAccess_ACCESSED_TYPE_RoleHandler extends SingleHandler<CtTypeAccess, CtTypeReference<?>> {
 		private CtTypeAccess_ACCESSED_TYPE_RoleHandler() {
-			super(spoon.reflect.path.CtRole.ACCESSED_TYPE, spoon.reflect.code.CtTypeAccess.class, spoon.reflect.reference.CtTypeReference.class);
+			super(CtRole.ACCESSED_TYPE, CtTypeAccess.class, CtTypeReference.class);
 		}
 
-		@java.lang.SuppressWarnings("unchecked")
-		@java.lang.Override
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((java.lang.Object) (castTarget(element).getAccessedType())));
+			return ((U) ((Object) (castTarget(element).getAccessedType())));
 		}
 
-		@java.lang.Override
+		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setAccessedType(castValue(value));
 		}

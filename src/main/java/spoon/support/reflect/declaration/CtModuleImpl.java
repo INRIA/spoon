@@ -11,15 +11,15 @@ import spoon.reflect.CtModelImpl;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
@@ -37,7 +37,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	public CtModuleImpl(Factory factory){
 		this.setFactory(factory);
 		this.moduleDirectives = CtElementImpl.emptyList();
-		this.rootPackage = new CtRootPackageImpl(this);
+		this.rootPackage = new CtPackageImpl.RootPackage(this);
 	}
 
 	@Override
@@ -435,16 +435,6 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		return (T) this;
 	}
 
-
-	@Override
-	public CtPackage getPackage(String qualifiedName) {
-		if (qualifiedName == null || qualifiedName.isEmpty()) {
-			return getRootPackage();
-		}
-
-		return getAllPackages().stream().map(CtPackage::getPackages).flatMap(Collection::stream).filter(entry -> entry.getQualifiedName().equals(qualifiedName)).findFirst().orElse(null);
-	}
-
 	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtModule(this);
@@ -461,35 +451,77 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	@DerivedProperty
-	public <T extends CtElement> T setParent(CtElement parent) {
-		return (T) this;
-	}
-
-	@Override
-	public List<CtPackage> getAllPackages() {
-		return getAllPackages(getRootPackage());
-	}
-
-	private List<CtPackage> getAllPackages(CtPackage source) {
-		List<CtPackage> results = new ArrayList<>();
-		results.add(source);
-		source.getPackages().forEach(entry -> {
-			results.add(entry);
-			entry.getPackages().stream().map(this::getAllPackages).forEach(results::addAll);
-		});
-
-		return results;
-	}
-
-	@Override
 	public CtModule getDeclaringModule() {
 		return this;
 	}
 
 	@Override
-	@DerivedProperty
-	public CtElement getParent() {
+	public List<CtPackage> getAllPackages() {
+		return getPackages(getRootPackage());
+	}
+
+	@Override
+	public CtElement getParent() throws ParentNotInitializedException {
 		return null;
+	}
+
+	@Override
+	@UnsettableProperty
+	public <E extends CtElement> E setParent(CtElement parent) {
+		return (E) this;
+	}
+
+	private List<CtPackage> getPackages(CtPackage ctPackage) {
+		List<CtPackage> packages = new ArrayList<>();
+		packages.add(ctPackage);
+		ctPackage.getPackages()
+				.stream()
+				.peek(packages::add)
+				.flatMap(this::getChildPackages)
+				.forEach(packages::addAll);
+		return packages;
+	}
+
+	private Stream<Set<CtPackage>> getChildPackages(CtPackage child) {
+		return child.getPackages()
+				.stream()
+				.map(CtPackage::getPackages);
+	}
+
+	@Override
+	public CtPackage getPackage(String qualifiedName) {
+		return factory.Package().get(qualifiedName, this);
+	}
+
+	public static class UnnamedModule extends CtModuleImpl {
+		public UnnamedModule(Factory factory) {
+			super(factory);
+			this.setSimpleName(CtModuleImpl.TOP_LEVEL_MODULE_NAME);
+		}
+
+		@Override
+		public boolean isUnnamedModule() {
+			return true;
+		}
+
+		@Override
+		public <T extends CtNamedElement> T setSimpleName(String name) {
+			return Objects.equals(name, CtModuleImpl.TOP_LEVEL_MODULE_NAME) ? super.setSimpleName(name) : (T) this;
+		}
+
+		@Override
+		public String toString() {
+			return this.getSimpleName();
+		}
+
+		@Override
+		public void accept(CtVisitor visitor) {
+			visitor.visitCtModule(this);
+		}
+
+		@Override
+		public CtModuleImpl clone() {
+			return (CtModuleImpl) super.clone();
+		}
 	}
 }

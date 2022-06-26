@@ -74,8 +74,9 @@ public class SetParentTest{
 			// contract: root package is the parent for those classes
 			assertTrue(receiver.getParent() instanceof CtPackage && ((CtPackage) receiver.getParent()).isUnnamedPackage());
 		} else if ("CtModule".equals(toTest.getSimpleName())) {
-			// contract: module parent is necessarily the unnamedmodule
-			assertTrue(receiver.getParent() instanceof CtModule && ((CtModule) receiver.getParent()).isUnnamedModule());
+			// Previously, the parent of a module always was the unnamed module
+			// This test has been removed because it's not technically correct according to the JLS
+			assertNull(receiver.getParent());
 		} else if ("CtCompilationUnit".equals(toTest.getSimpleName())) {
 			// contract: CtCompilationUnit parent is null
 			assertNull(receiver.getParent());
@@ -85,6 +86,7 @@ public class SetParentTest{
 				receiver.getParent().hashCode();
 				fail(receiver.getParent().getClass().getSimpleName());
 			} catch (ParentNotInitializedException normal) {
+
 			}
 		}
 

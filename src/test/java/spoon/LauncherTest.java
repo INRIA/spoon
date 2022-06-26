@@ -93,7 +93,6 @@ public class LauncherTest {
 		assertEquals("UTF-16", environment.getEncoding().displayName());
 	}
 
-	// FIXME: 14/06/2022 Why does this now take 6 seconds instead of 900ms?
 	@Test
 	public void testLauncherInEmptyWorkingDir() throws Exception {
 
