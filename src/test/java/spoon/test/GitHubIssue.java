@@ -71,8 +71,11 @@ public @interface GitHubIssue {
 			}
 		}
 		private boolean shouldFail(ExtensionContext context) {
-			return context.getTestMethod().map(method -> method.getAnnotation(GitHubIssue.class) != null
-					&& !method.getAnnotation(GitHubIssue.class).fixed()).orElse(false);
+			return context.getTestMethod()
+				.map(method -> method.getAnnotation(GitHubIssue.class))
+				.filter(Objects::nonNull)
+				.map(not(GithubIssue::fixed))
+				.orElse(false);
 		}
 	}
 }
