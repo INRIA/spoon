@@ -12,9 +12,13 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Objects;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -74,7 +78,7 @@ public @interface GitHubIssue {
 			return context.getTestMethod()
 				.map(method -> method.getAnnotation(GitHubIssue.class))
 				.filter(Objects::nonNull)
-				.map(not(GithubIssue::fixed))
+				.map(v -> !v.fixed())
 				.orElse(false);
 		}
 	}
