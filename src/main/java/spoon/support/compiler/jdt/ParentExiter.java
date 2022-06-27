@@ -520,12 +520,39 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
 		if (child instanceof CtConstructor) {
-			ctClass.addConstructor((CtConstructor<T>) child);
+			CtConstructor<T> constructor = (CtConstructor<T>) child;
+			ctClass.addConstructor(constructor);
+			fixJdtEnumConstructorSuperCall(ctClass, constructor);
 		}
 		if (child instanceof CtAnonymousExecutable) {
 			ctClass.addAnonymousExecutable((CtAnonymousExecutable) child);
 		}
 		super.visitCtClass(ctClass);
+	}
+
+	private <T> void fixJdtEnumConstructorSuperCall(CtClass<T> ctClass, CtConstructor<T> constructor) {
+		// For some reason JDT inserts a `super()` call in implicit enum constructors.
+		// Explicit super calls are forbidden as java.lang.Enum subclasses are permitted by the JLS to delegate
+		// to the Enum constructor in whatever way they like.
+		// The constructor is implicit so this isn't *technically* illegal, but it doesn't really make much sense
+		// as explicit constructors can never contain such a call. Additionally, the Enum class from the standard
+		// library has a "String, int" constructor, rendering the parameterless supercall semantically invalid.
+		// We just remove the call to make it a bit more consistent.
+		// See https://github.com/INRIA/spoon/issues/4758 for more details.
+		if (!child.isImplicit() || !ctClass.isEnum() || !constructor.getParameters().isEmpty()) {
+			return;
+		}
+		if (constructor.getBody().getStatements().isEmpty()) {
+			return;
+		}
+		if (!(constructor.getBody().getStatement(0) instanceof CtInvocation)) {
+			return;
+		}
+
+		CtInvocation<?> superCall = constructor.getBody().getStatement(0);
+		if (superCall.getExecutable().getSimpleName().equals("<init>")) {
+			constructor.getBody().removeStatement(superCall);
+		}
 	}
 
 	@Override
