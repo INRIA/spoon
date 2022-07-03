@@ -12,7 +12,12 @@ import java.util.Objects;
 import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.cu.position.NoSourcePosition;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtShadowable;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -121,7 +126,6 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		for (CtType<?> type : types) {
 			this.types.put(type.getSimpleName(), type);
 		}
-
 		return (T) this;
 	}
 
@@ -134,7 +138,6 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		if (type == null) {
 			return (T) this;
 		}
-
 		// type map will take care of setting the parent
 		types.put(simpleName, type);
 		return (T) this;

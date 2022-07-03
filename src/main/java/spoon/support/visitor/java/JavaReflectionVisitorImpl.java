@@ -22,7 +22,6 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.List;
-
 import spoon.SpoonException;
 import spoon.reflect.path.CtRole;
 import spoon.support.visitor.java.reflect.RtMethod;
@@ -470,6 +469,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		}
 
 		Class<?> classRaw = (Class<?>) rawType;
+
 		if (classRaw.getPackage() != null) {
 			visitPackage(classRaw.getPackage());
 		}
@@ -503,14 +503,13 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	public <T> void visitTypeReference(CtRole role, Class<T> clazz) {
 		if (clazz.getEnclosingClass() == null) {
 			visitModule(clazz.getModule());
-			if(clazz.getPackage() != null){
-                visitPackage(clazz.getPackage());
-            }
-
-			return;
 		}
-
-		visitTypeReference(CtRole.DECLARING_TYPE, clazz.getEnclosingClass());
+		if (clazz.getPackage() != null && clazz.getEnclosingClass() == null) {
+			visitPackage(clazz.getPackage());
+		}
+		if (clazz.getEnclosingClass() != null) {
+			visitTypeReference(CtRole.DECLARING_TYPE, clazz.getEnclosingClass());
+		}
 	}
 
 	private <T> List<RtMethod> getDeclaredMethods(Class<T> clazz) {

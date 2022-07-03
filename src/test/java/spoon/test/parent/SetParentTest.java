@@ -21,7 +21,11 @@ import org.junit.jupiter.api.TestFactory;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtTypePattern;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.test.SpoonTestHelpers;
@@ -75,7 +79,7 @@ public class SetParentTest{
 			assertTrue(receiver.getParent() instanceof CtPackage && ((CtPackage) receiver.getParent()).isUnnamedPackage());
 		} else if ("CtModule".equals(toTest.getSimpleName())) {
 			// Previously, the parent of a module always was the unnamed module
-			// This test has been removed because it's not technically correct according to the JLS
+			// This test has been revisited to better suit the definition of a module according to the JLS
 			assertNull(receiver.getParent());
 		} else if ("CtCompilationUnit".equals(toTest.getSimpleName())) {
 			// contract: CtCompilationUnit parent is null
@@ -86,7 +90,6 @@ public class SetParentTest{
 				receiver.getParent().hashCode();
 				fail(receiver.getParent().getClass().getSimpleName());
 			} catch (ParentNotInitializedException normal) {
-
 			}
 		}
 

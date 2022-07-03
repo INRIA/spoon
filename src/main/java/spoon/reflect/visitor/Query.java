@@ -99,7 +99,6 @@ public abstract class Query {
 	}
 
 	private static Collection<CtModule> getAllModules(Factory factory) {
-		return factory.getModel()
-				.getAllModules();
+		return factory.getModel().getAllModules();
 	}
 }

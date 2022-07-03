@@ -415,7 +415,6 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		if (providedService == null) {
 			return (T) this;
 		}
-
 		return this.removeModuleDirective(providedService);
 	}
 
@@ -429,7 +428,6 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		if (rootPackage != null) {
 			rootPackage.setParent(this);
 		}
-
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.SUB_PACKAGE, rootPackage, this.rootPackage);
 		this.rootPackage = rootPackage;
 		return (T) this;

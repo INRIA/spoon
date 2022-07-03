@@ -7,7 +7,11 @@
  */
 package spoon.reflect.factory;
 
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collection;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 import spoon.SpoonException;
@@ -157,11 +161,7 @@ public class PackageFactory extends SubFactory {
 	}
 
 	private List<Module> findModules(String qualifiedName) {
-		return ModuleLayer.boot()
-				.modules()
-				.stream()
-				.filter(module -> module.getPackages().contains(qualifiedName))
-				.collect(Collectors.toUnmodifiableList());
+		return ModuleLayer.boot().modules().stream().filter(module -> module.getPackages().contains(qualifiedName)).collect(Collectors.toUnmodifiableList());
 	}
 
 	/**

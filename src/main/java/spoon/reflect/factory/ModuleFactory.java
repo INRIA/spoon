@@ -8,12 +8,15 @@
 package spoon.reflect.factory;
 
 
-import spoon.reflect.declaration.*;
+import java.util.Collection;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.util.Collection;
 
 public class ModuleFactory extends SubFactory {
     public ModuleFactory(Factory factory) {

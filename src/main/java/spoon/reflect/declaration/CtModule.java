@@ -14,7 +14,14 @@ import spoon.support.DerivedProperty;
 
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.*;
+import static spoon.reflect.path.CtRole.EXPORTED_PACKAGE;
+import static spoon.reflect.path.CtRole.MODIFIER;
+import static spoon.reflect.path.CtRole.MODULE_DIRECTIVE;
+import static spoon.reflect.path.CtRole.OPENED_PACKAGE;
+import static spoon.reflect.path.CtRole.PROVIDED_SERVICE;
+import static spoon.reflect.path.CtRole.REQUIRED_MODULE;
+import static spoon.reflect.path.CtRole.SERVICE_TYPE;
+import static spoon.reflect.path.CtRole.SUB_PACKAGE;
 
 /**
  * Represents a Java module as defined in Java 9.

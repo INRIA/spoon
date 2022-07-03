@@ -7,20 +7,72 @@
  */
 package spoon.support.visitor.java;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.Set;
 import spoon.reflect.code.CtLiteral;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
+import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtInterface;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtUsedService;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.reference.*;
+import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.util.RtHelper;
-import spoon.support.visitor.java.internal.*;
+import spoon.support.visitor.java.internal.AnnotationRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.ExecutableRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.ModuleRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.PackageRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.RecordComponentRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.RuntimeBuilderContext;
+import spoon.support.visitor.java.internal.TypeReferenceRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.TypeRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.VariableRuntimeBuilderContext;
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
-import java.lang.annotation.Annotation;
 import java.lang.module.ModuleDescriptor;
-import java.lang.reflect.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 /**
  * Builds Spoon model from class file using the reflection api. The Spoon model
@@ -73,13 +125,11 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			}else {
 				visitClass(clazz);
 			}
-
 			exit();
 			final R type = ctPackage.getType(clazz.getSimpleName());
 			if (clazz.isPrimitive() && type.getParent() instanceof CtPackage) {
 				type.setParent(null); // primitive type isn't in a package.
 			}
-
 			return type;
 		}
 	}
@@ -222,11 +272,11 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 			@Override
 			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
-				if (role == CtRole.SUPER_TYPE) {
-					ctClass.setSuperclass(typeReference);
-					return;
+				switch (role) {
+					case SUPER_TYPE:
+						ctClass.setSuperclass(typeReference);
+						return;
 				}
-
 				super.addTypeReference(role, typeReference);
 			}
 		});
@@ -345,8 +395,10 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitMethod(RtMethod method, Annotation parent) {
 		final CtMethod<Object> ctMethod = factory.Core().createMethod();
 		ctMethod.setSimpleName(method.getName());
-		// java 8 static interface methods are marked as abstract but has body
-		if (!Modifier.isAbstract(method.getModifiers())) {
+		/**
+		 * java 8 static interface methods are marked as abstract but has body
+		 */
+		if (Modifier.isAbstract(method.getModifiers()) == false) {
 			ctMethod.setBody(factory.Core().createBlock());
 		}
 		setModifier(ctMethod, method.getModifiers(), method.getDeclaringClass());
