@@ -1464,12 +1464,12 @@ public class PositionTest {
 	@Test
 	@GitHubIssue(issueNumber = 4779, fixed = true)
 	public void testPositionOfAnnotatedEnumField() throws Exception {
-        final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/FooAnnotatedEnum.java"));
-	    CtType<FooAnnotatedEnum> type = buildClass(FooAnnotatedEnum.class);
-	    String classContent = getClassContent(type);
-	    
-	    CtField<?> field = type.getField("BAR");
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/FooAnnotatedEnum.java"));
+		CtType<FooAnnotatedEnum> type = buildClass(FooAnnotatedEnum.class);
+		String classContent = getClassContent(type);
 
-        assertEquals(10, field.getPosition().getLine());
+		CtField<?> field = type.getField("BAR");
+
+		assertEquals(10, field.getPosition().getLine());
 	}
 }
