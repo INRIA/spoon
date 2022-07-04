@@ -74,6 +74,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.CtExtendedModifier;
+import spoon.test.GitHubIssue;
 import spoon.test.comment.testclasses.BlockComment;
 import spoon.test.comment.testclasses.Comment1;
 import spoon.test.position.testclasses.AnnonymousClassNewIface;
@@ -84,6 +85,7 @@ import spoon.test.position.testclasses.CompilationUnitComments;
 import spoon.test.position.testclasses.Expressions;
 import spoon.test.position.testclasses.Foo;
 import spoon.test.position.testclasses.FooAbstractMethod;
+import spoon.test.position.testclasses.FooAnnotatedEnum;
 import spoon.test.position.testclasses.FooAnnotation;
 import spoon.test.position.testclasses.FooClazz;
 import spoon.test.position.testclasses.FooClazz2;
@@ -1457,5 +1459,17 @@ public class PositionTest {
 						p -> assertEquals(((CtParameter) p).getSimpleName(), contentAtPosition(classContent, ((CtParameter) p).getPosition()))
 				)
 		);
+	}
+	
+	@Test
+	@GitHubIssue(issueNumber = 4779, fixed = true)
+	public void testPositionOfAnnotatedEnumField() throws Exception {
+        final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/FooAnnotatedEnum.java"));
+	    CtType<FooAnnotatedEnum> type = buildClass(FooAnnotatedEnum.class);
+	    String classContent = getClassContent(type);
+	    
+	    CtField<?> field = type.getField("BAR");
+
+        assertEquals(10, field.getPosition().getLine());
 	}
 }
