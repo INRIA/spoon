@@ -21,6 +21,7 @@ import java.util.List;
  * This defines multiple utility methods for working with method handles. These methods are all calls to future jdk methods and maybe not available on jdk8.
  * All errors from these virtual calls are transformed to null or false results.
  */
+@SuppressWarnings({"JavaLangInvokeHandleSignature", "ReturnOfNull"})
 class MethodHandleUtils {
 	private MethodHandleUtils() {
 		// no instance
@@ -31,6 +32,8 @@ class MethodHandleUtils {
 	private static MethodHandle lookupRecordComponents = lookupRecordComponents();
 	private static MethodHandle lookupRecordComponentName = lookupRecordComponentName();
 	private static MethodHandle lookupRecordComponentType = lookupRecordComponentType();
+
+	private static MethodHandle lookupPermittedSubclasses = lookupPermittedSubclasses();
 
 	/**
 	 * Checks if the given class is a record.
@@ -113,6 +116,14 @@ class MethodHandleUtils {
 		}
 	}
 
+	public static Class<?>[] getPermittedSubclasses(Class<?> clazz) {
+		try {
+			return (Class<?>[]) lookupPermittedSubclasses.invoke(clazz);
+		} catch (Throwable e) {
+			return null;
+		}
+	}
+
 
 	private static MethodHandle lookupRecord() {
 		try {
@@ -140,6 +151,14 @@ class MethodHandleUtils {
 	private static MethodHandle lookupRecordComponentName() {
 		try {
 			return MethodHandles.lookup().findVirtual(recordComponent, "getName", MethodType.methodType(String.class));
+		} catch (Throwable e) {
+			return null;
+		}
+	}
+
+	private static MethodHandle lookupPermittedSubclasses() {
+		try {
+			return MethodHandles.lookup().findVirtual(Class.class, "getPermittedSubclasses", MethodType.methodType(Class[].class));
 		} catch (Throwable e) {
 			return null;
 		}

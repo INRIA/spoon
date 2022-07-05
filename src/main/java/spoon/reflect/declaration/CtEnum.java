@@ -10,9 +10,12 @@ package spoon.reflect.declaration;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static spoon.reflect.path.CtRole.VALUE;
 
@@ -80,4 +83,20 @@ public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 	@Override
 	@UnsettableProperty
 	<C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass);
+
+	@Override
+	@DerivedProperty
+	Set<CtTypeReference<?>> getPermittedTypes();
+
+	@Override
+	@UnsettableProperty
+	CtEnum<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes);
+
+	@Override
+	@UnsettableProperty
+	CtEnum<T> addPermittedType(CtTypeReference<?> type);
+
+	@Override
+	@UnsettableProperty
+	CtEnum<T> removePermittedType(CtTypeReference<?> type);
 }

@@ -223,6 +223,22 @@ public class EnumsTest {
 	}
 
 	@Test
+	void testEnumClassModifiersPublicEnumJava17() throws Exception {
+		// contract: enum modifiers are applied correctly (JLS 8.9)
+		// in Java 17, enums are implicitly sealed if an enum value declares an anonymous type
+		// and the permitted types are the anonymous types declared by the enum values
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/enums/testclasses/AnonEnum.java");
+		launcher.getEnvironment().setComplianceLevel(17);
+		launcher.buildModel();
+		CtType<?> publicEnum = launcher.getFactory().Type().get("spoon.test.enums.testclasses.AnonEnum");
+		assertThat(publicEnum.getExtendedModifiers(), contentEquals(
+				new CtExtendedModifier(ModifierKind.PUBLIC, false),
+				new CtExtendedModifier(ModifierKind.SEALED, true)
+		));
+	}
+
+	@Test
 	void testEnumValueModifiers() throws Exception {
 		// contract: anonymous enum classes are always final
 		CtEnum<?> publicEnum = build("spoon.test.enums.testclasses", "AnonEnum");
