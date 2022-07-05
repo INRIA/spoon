@@ -54,7 +54,7 @@ public class SniperAnnotatedEnumTest {
     assertThat("Output file for " + path + " should exist", OUTPUT_PATH.resolve(path).toFile().exists(),
         CoreMatchers.equalTo(true));
 
-    String content = new String(Files.readString(OUTPUT_PATH.resolve(path)));
+    String content = Files.readString(OUTPUT_PATH.resolve(path));
     assertThat(content.trim(), CoreMatchers.containsString("/* test */public enum"));
   }
 }
