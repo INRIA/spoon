@@ -17,7 +17,6 @@
 package spoon.test.initializers;
 
 import org.junit.jupiter.api.Test;
-import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtLiteral;
@@ -28,6 +27,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.imports.ImportTest;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -74,13 +74,8 @@ public class InitializerTest {
 		assertEquals("x = 3", ex.getBody().getStatements().get(0).toString());
 	}
 
-	@Test
-	public void testModelBuildingInitializerNoclasspath() {
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/initializer/Utf8HttpResponse.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setAutoImports(true);
-		CtModel model = launcher.buildModel();
+	@ModelTest(value = "./src/test/resources/noclasspath/initializer/Utf8HttpResponse.java", autoImport = true)
+	public void testModelBuildingInitializerNoclasspath(CtModel model) {
 		CtClass<?> ctClass = model.getElements(new NamedElementFilter<>(CtClass.class, "Utf8HttpResponse")).get(0);
 
 		CtAnonymousExecutable ex = ctClass.getElements(new TypeFilter<>(CtAnonymousExecutable.class)).get(0);
