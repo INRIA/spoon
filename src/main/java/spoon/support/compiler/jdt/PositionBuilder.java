@@ -421,15 +421,16 @@ public class PositionBuilder {
 			if (allocationExpression.enumConstant != null) {
 				FieldDeclaration fieldDeclaration = allocationExpression.enumConstant;
 
+				//1) skip the annotations
 				Annotation[] annotations = allocationExpression.enumConstant.annotations;
 				if (annotations != null && annotations.length > 0) {
 					Annotation lastAnnotation = annotations[annotations.length - 1];
 					sourceStart = findNextNonWhitespace(contents, sourceEnd, lastAnnotation.sourceEnd);
 				}
 
-				//1) skip comments
+				//2) skip comments
 				sourceStart = findNextNonWhitespace(contents, sourceEnd, sourceStart);
-				//2) move to beginning of enum construction
+				//3) move to beginning of enum construction
 				sourceStart += fieldDeclaration.name.length;
 			}
 		} else if (node instanceof CaseStatement) {
