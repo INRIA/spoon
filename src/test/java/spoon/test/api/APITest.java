@@ -448,6 +448,34 @@ public class APITest {
 	}
 
 	@Test
+	public void testParsingInlineQualifiedClassName() {
+		String code1 = "package io.example.pack1.pack2;\n" +
+				"    public class Example{\n" +
+				"      void add(io.example.other.Class1<io.example.other.Class2> value){\n" +
+				"      }\n" +
+				"    }\n";
+		CtClass<?> class1 = Launcher.parseClass(code1);
+		List<CtParameter<?>> add = class1.getMethodsByName("add").get(0).getParameters();
+		assertEquals(1, add.size());
+		assertEquals("value", add.get(0).getSimpleName());
+		assertEquals("io.example.other.Class1", add.get(0).getType().getQualifiedName());
+		assertEquals(1, add.get(0).getType().getActualTypeArguments().size());
+		assertEquals("io.example.other.Class2", add.get(0).getType().getActualTypeArguments().get(0).getQualifiedName());
+		String code2 = "package io.example.pack1.pack2;\n" +
+				"    public class Example{\n" +
+				"      void add(io.example.pack1.Class1<io.example.pack1.Class2> value){\n" +
+				"      }\n" +
+				"    }\n";
+		CtClass<?> class2 = Launcher.parseClass(code2);
+		List<CtParameter<?>> add2 = class2.getMethodsByName("add").get(0).getParameters();
+		assertEquals(1, add2.size());
+		assertEquals("value", add2.get(0).getSimpleName());
+		assertEquals("io.example.pack1.Class1", add2.get(0).getType().getQualifiedName());
+		assertEquals(1, add2.get(0).getType().getActualTypeArguments().size());
+		assertEquals("io.example.pack1.Class2", add2.get(0).getType().getActualTypeArguments().get(0).getQualifiedName());
+	}
+
+	@Test
 	public void testSourceClasspathDoesNotAcceptDotClass() {
 		// contract: setSourceClassPath does not accept .class files
 		final Launcher launcher = new Launcher();
