@@ -1771,30 +1771,30 @@ public class ImportTest {
 
 	@Test
 	void testDuplicatedImport() throws IOException {
-//		String code1 = "package io.example.pack1;\n" +
-//				"import io.example.pack2.Class1;" +
-//				"    public class Example{\n" +
-//				"      void add(Class1<io.example.pack3.Class1> value){\n" +
-//				"          io.example.pack4.Class1 class1 = null;\n" +
-//				"          io.example.pack.Class1 class2 = null;\n" +
-//				"      }\n" +
-//				"    }\n";
-//		CtClass<?> class1 = Launcher.parseClass(code1);
-//		List<String> imports = getTypeImportsFromSourceCode(class1.toStringWithImports());
-//		assertEquals(1, imports.stream().filter(im -> im.endsWith("Class1")).count());
-//
-//		String code2 = "package io.example.pack1;\n" +
-//				"    public class Example{\n" +
-//				"      void add(io.example.pack2.Class1<io.example.pack3.Class1> value){\n" +
-//				"          io.example.pack4.Class1 class1 = null;\n" +
-//				"          io.example.pack.Class1 class2 = null;\n" +
-//				"      }\n" +
-//				"    }\n";
-//		CtClass<?> class2 = Launcher.parseClass(code2);
-//		List<String> imports2 = getTypeImportsFromSourceCode(class2.toStringWithImports());
-//		assertEquals(1, imports2.stream().filter(im -> im.endsWith("Class1")).count());
+		String code1 = "package io.example.pack1;\n" +
+				"import io.example.pack2.Class1;" +
+				"    public class Example{\n" +
+				"      void add(Class1<io.example.pack3.Class1> value){\n" +
+				"          io.example.pack4.Class1 class1 = null;\n" +
+				"          io.example.pack.Class1 class2 = null;\n" +
+				"      }\n" +
+				"    }\n";
+		CtClass<?> class1 = Launcher.parseClass(code1);
+		List<String> imports = getTypeImportsFromSourceCode(class1.toStringWithImports());
+		assertEquals(1, imports.stream().filter(im -> im.endsWith("Class1")).count());
 
-		//duplicated import source file -- successful
+		String code2 = "package io.example.pack1;\n" +
+				"    public class Example{\n" +
+				"      void add(io.example.pack2.Class1<io.example.pack3.Class1> value){\n" +
+				"          io.example.pack4.Class1 class1 = null;\n" +
+				"          io.example.pack.Class1 class2 = null;\n" +
+				"      }\n" +
+				"    }\n";
+		CtClass<?> class2 = Launcher.parseClass(code2);
+		List<String> imports2 = getTypeImportsFromSourceCode(class2.toStringWithImports());
+		assertEquals(1, imports2.stream().filter(im -> im.endsWith("Class1")).count());
+
+		//duplicated import source file
 		final Launcher launcher = new Launcher();
 		Environment environment = launcher.getEnvironment();
 
