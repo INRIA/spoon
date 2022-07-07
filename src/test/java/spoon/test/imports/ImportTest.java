@@ -75,6 +75,7 @@ import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1769,29 +1770,29 @@ public class ImportTest {
 	}
 
 	@Test
-	void testDuplicatedImport() {
-		String code1 = "package io.example.pack1;\n" +
-				"import io.example.pack2.Class1;" +
-				"    public class Example{\n" +
-				"      void add(Class1<io.example.pack3.Class1> value){\n" +
-				"          io.example.pack4.Class1 class1 = null;\n" +
-				"          io.example.pack.Class1 class2 = null;\n" +
-				"      }\n" +
-				"    }\n";
-		CtClass<?> class1 = Launcher.parseClass(code1);
-		List<String> imports = getTypeImportsFromSourceCode(class1.toStringWithImports());
-		assertEquals(1, imports.stream().filter(im -> im.endsWith("Class1")).count());
-
-		String code2 = "package io.example.pack1;\n" +
-				"    public class Example{\n" +
-				"      void add(io.example.pack2.Class1<io.example.pack3.Class1> value){\n" +
-				"          io.example.pack4.Class1 class1 = null;\n" +
-				"          io.example.pack.Class1 class2 = null;\n" +
-				"      }\n" +
-				"    }\n";
-		CtClass<?> class2 = Launcher.parseClass(code2);
-		List<String> imports2 = getTypeImportsFromSourceCode(class2.toStringWithImports());
-		assertEquals(1, imports2.stream().filter(im -> im.endsWith("Class1")).count());
+	void testDuplicatedImport() throws IOException {
+//		String code1 = "package io.example.pack1;\n" +
+//				"import io.example.pack2.Class1;" +
+//				"    public class Example{\n" +
+//				"      void add(Class1<io.example.pack3.Class1> value){\n" +
+//				"          io.example.pack4.Class1 class1 = null;\n" +
+//				"          io.example.pack.Class1 class2 = null;\n" +
+//				"      }\n" +
+//				"    }\n";
+//		CtClass<?> class1 = Launcher.parseClass(code1);
+//		List<String> imports = getTypeImportsFromSourceCode(class1.toStringWithImports());
+//		assertEquals(1, imports.stream().filter(im -> im.endsWith("Class1")).count());
+//
+//		String code2 = "package io.example.pack1;\n" +
+//				"    public class Example{\n" +
+//				"      void add(io.example.pack2.Class1<io.example.pack3.Class1> value){\n" +
+//				"          io.example.pack4.Class1 class1 = null;\n" +
+//				"          io.example.pack.Class1 class2 = null;\n" +
+//				"      }\n" +
+//				"    }\n";
+//		CtClass<?> class2 = Launcher.parseClass(code2);
+//		List<String> imports2 = getTypeImportsFromSourceCode(class2.toStringWithImports());
+//		assertEquals(1, imports2.stream().filter(im -> im.endsWith("Class1")).count());
 
 		//duplicated import source file -- successful
 		final Launcher launcher = new Launcher();
@@ -1799,12 +1800,22 @@ public class ImportTest {
 
 		environment.setNoClasspath(true);
 		environment.setAutoImports(true);
-		launcher.addInputResource("src/test/java/spoon/test/imports/testclasses/DuplicatedImport.java");
+		Path basePath = Paths.get("src/test/java/");
+		Path filePath = Paths.get("spoon/test/imports/testclasses/DuplicatedImport.java");
+		launcher.addInputResource(basePath.resolve(filePath).toString());
+		Path output = Paths.get("./target/spoon/super_imports/src");
+		launcher.setSourceOutputDirectory(output.toFile());
 		launcher.run();
 
 		CtType<DuplicatedImport> class3 = launcher.getFactory().Type().get(DuplicatedImport.class);
 
 		assertEquals(1, getTypeImportsFromSourceCode(class3.toStringWithImports()).stream()
+				.filter(ctImport -> ctImport.endsWith("A"))
+				.count());
+
+		String duplicatedImport = Files.readString(output.resolve(filePath));
+
+		assertEquals(1, getTypeImportsFromSourceCode(duplicatedImport).stream()
 				.filter(ctImport -> ctImport.endsWith("A"))
 				.count());
 	}
