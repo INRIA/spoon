@@ -33,15 +33,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtImport;
-import spoon.reflect.declaration.CtImportKind;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtExecutableReference;
@@ -63,14 +55,9 @@ import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
-import spoon.test.imports.testclasses.A;
-import spoon.test.imports.testclasses.ClientClass;
-import spoon.test.imports.testclasses.Pozole;
-import spoon.test.imports.testclasses.Reflection;
-import spoon.test.imports.testclasses.SubClass;
-import spoon.test.imports.testclasses.Tacos;
-import spoon.test.imports.testclasses.ToBeModified;
+import spoon.test.imports.testclasses.*;
 import spoon.test.imports.testclasses.badimportissue3320.source.TestSource;
+import spoon.test.imports.testclasses.duplicated.DuplicatedImport;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
@@ -1771,6 +1758,51 @@ public class ImportTest {
 
 		assertEquals(1, compilationUnit.getImports().stream()
 				.filter(ctImport -> ctImport.prettyprint().equals("import spoon.test.imports.testclasses.badimportissue3320.source.other.SomeObjectDto;"))
+				.count());
+	}
+	@Test
+	void testDuplicatedImport() {
+		String code1 = "package io.example.pack1;\n" +
+				"import io.example.pack2.Class1;" +
+				"    public class Example{\n" +
+				"      void add(Class1<io.example.pack3.Class1> value){\n" +
+				"          io.example.pack4.Class1 class1 = null;\n" +
+				"          io.example.pack.Class1 class2 = null;\n" +
+				"      }\n" +
+				"    }\n";
+		CtClass<?> class1 = Launcher.parseClass(code1);
+		List<String> imports = getTypeImportsFromSourceCode(class1.toStringWithImports());
+		System.out.println(class1.toStringWithImports());
+		assertEquals(1, imports.stream().filter(im -> im.endsWith("Class1")).count());
+
+		String code2 = "package io.example.pack1;\n" +
+				"    public class Example{\n" +
+				"      void add(io.example.pack2.Class1<io.example.pack3.Class1> value){\n" +
+				"          io.example.pack4.Class1 class1 = null;\n" +
+				"          io.example.pack.Class1 class2 = null;\n" +
+				"      }\n" +
+				"    }\n";
+		CtClass<?> class2 = Launcher.parseClass(code2);
+		List<String> imports2 = getTypeImportsFromSourceCode(class2.toStringWithImports());
+		assertEquals(1, imports2.stream().filter(im -> im.endsWith("Class1")).count());
+
+		//duplicated import source file
+		final Launcher launcher = new Launcher();
+		Environment environment = launcher.getEnvironment();
+
+		environment.setNoClasspath(true);
+		environment.setAutoImports(true);
+		launcher.addInputResource("src/test/java/spoon/test/imports/testclasses/duplicated/DuplicatedImport.java");
+		launcher.run();
+
+		CtType<DuplicatedImport> class3 = launcher.getFactory().Type().get(DuplicatedImport.class);
+		CtCompilationUnit compilationUnit = launcher.getFactory().CompilationUnit().getOrCreate(class3);
+
+		assertEquals(1, compilationUnit.getImports().stream()
+				.filter(ctImport -> "A".equals(ctImport.getReference().getSimpleName()))
+				.count());
+		assertEquals(1, getTypeImportsFromSourceCode(class3.toStringWithImports()).stream()
+				.filter(ctImport -> ctImport.endsWith("A"))
 				.count());
 	}
 }
