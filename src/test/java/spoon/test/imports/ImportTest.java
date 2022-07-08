@@ -1781,7 +1781,6 @@ public class ImportTest {
 				"      }\n" +
 				"    }\n";
 		CtClass<?> class1 = Launcher.parseClass(code1);
-		System.out.println(class1.toStringWithImports());
 		assertEquals("io.example.pack2.Class1", class1.getField("class1").getType().getQualifiedName());
 		assertEquals("io.example.pack3.Class1", class1.getField("class1").getType().getActualTypeArguments().get(0).getQualifiedName());
 		assertEquals("io.example.pack4.Class1", class1.getField("class2").getType().getQualifiedName());
