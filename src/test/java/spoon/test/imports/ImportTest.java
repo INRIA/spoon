@@ -1771,28 +1771,27 @@ public class ImportTest {
 
 	@Test
 	void testDuplicatedImport() throws IOException {
-		String code1 = "package io.example.pack1;\n" +
-				"import io.example.pack2.Class1;" +
+		String code1 = "package io.example.pack2;\n" +
+				"    import io.example.pack2.Class1;\n" +
 				"    public class Example{\n" +
-				"      void add(Class1<io.example.pack3.Class1> value){\n" +
-				"          io.example.pack4.Class1 class1 = null;\n" +
-				"          io.example.pack.Class1 class2 = null;\n" +
+				"    Class1<io.example.pack3.Class1> class1;\n" +
+				"    io.example.pack4.Class1 class2;\n" +
+				"      io.example.pack5.Class1 add(io.example.pack6.Class1<io.example.pack7.Class1> value){\n" +
+				"          io.example.pack8.Class1 class1 = null;\n" +
 				"      }\n" +
 				"    }\n";
 		CtClass<?> class1 = Launcher.parseClass(code1);
+		System.out.println(class1.toStringWithImports());
+		assertEquals("io.example.pack2.Class1", class1.getField("class1").getType().getQualifiedName());
+		assertEquals("io.example.pack3.Class1", class1.getField("class1").getType().getActualTypeArguments().get(0).getQualifiedName());
+		assertEquals("io.example.pack4.Class1", class1.getField("class2").getType().getQualifiedName());
+		CtMethod<?> addMethod = class1.getMethodsByName("add").get(0);
+		assertEquals("io.example.pack5.Class1", addMethod.getType().getQualifiedName());
+		assertEquals("io.example.pack6.Class1", addMethod.getParameters().get(0).getType().getQualifiedName());
+		assertEquals("io.example.pack7.Class1", addMethod.getParameters().get(0).getType().getActualTypeArguments().get(0).getQualifiedName());
+		assertEquals("io.example.pack8.Class1", ((CtLocalVariable<?>)addMethod.getBody().getStatement(0)).getType().getQualifiedName());
 		List<String> imports = getTypeImportsFromSourceCode(class1.toStringWithImports());
 		assertEquals(1, imports.stream().filter(im -> im.endsWith("Class1")).count());
-
-		String code2 = "package io.example.pack1;\n" +
-				"    public class Example{\n" +
-				"      void add(io.example.pack2.Class1<io.example.pack3.Class1> value){\n" +
-				"          io.example.pack4.Class1 class1 = null;\n" +
-				"          io.example.pack.Class1 class2 = null;\n" +
-				"      }\n" +
-				"    }\n";
-		CtClass<?> class2 = Launcher.parseClass(code2);
-		List<String> imports2 = getTypeImportsFromSourceCode(class2.toStringWithImports());
-		assertEquals(1, imports2.stream().filter(im -> im.endsWith("Class1")).count());
 
 		//duplicated import source file
 		final Launcher launcher = new Launcher();
@@ -1812,11 +1811,21 @@ public class ImportTest {
 		assertEquals(1, getTypeImportsFromSourceCode(class3.toStringWithImports()).stream()
 				.filter(ctImport -> ctImport.endsWith("A"))
 				.count());
+		CtMethod<?> duplicatedImportMethod = class3.getMethodsByName("duplicatedImport").get(0);
+		assertEquals(spoon.test.imports.testclasses.memberaccess.A.class.getName(), duplicatedImportMethod.getType().getQualifiedName());
+		assertEquals(spoon.test.imports.testclasses.A.class.getName(), duplicatedImportMethod.getParameters().get(0).getType().getQualifiedName());
+		assertEquals(spoon.test.imports.testclasses.multiplecu.A.class.getName(), ((CtLocalVariable<?>)duplicatedImportMethod.getBody().getStatement(0)).getType().getQualifiedName());
 
 		String duplicatedImport = Files.readString(output.resolve(filePath));
 
 		assertEquals(1, getTypeImportsFromSourceCode(duplicatedImport).stream()
 				.filter(ctImport -> ctImport.endsWith("A"))
 				.count());
+
+		CtClass<?> class4 = Launcher.parseClass(duplicatedImport);
+		CtMethod<?> importMethod2 = class4.getMethodsByName("duplicatedImport").get(0);
+		assertEquals(spoon.test.imports.testclasses.memberaccess.A.class.getName(), importMethod2.getType().getQualifiedName());
+		assertEquals(spoon.test.imports.testclasses.A.class.getName(), importMethod2.getParameters().get(0).getType().getQualifiedName());
+		assertEquals(spoon.test.imports.testclasses.multiplecu.A.class.getName(), ((CtLocalVariable<?>)importMethod2.getBody().getStatement(0)).getType().getQualifiedName());
 	}
 }
