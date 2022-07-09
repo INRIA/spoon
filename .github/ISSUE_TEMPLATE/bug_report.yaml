@@ -29,7 +29,7 @@ body:
     attributes:
       label: Source code for your Spoon processing
       description: Provide your processing code that uses Spoon and causes the bug to appear. This will be automatically formatted, so no need for backticks.
-      placeholder: System.out.println("Hello, world!");
+      placeholder: Launcher launcher = new Launcher();
       render: Java
     validations:
       required: false
