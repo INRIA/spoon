@@ -19,7 +19,7 @@ body:
     id: java-input
     attributes:
       label: Source code you are trying to analyze/transform
-      description: Provide a minimal example of source code you are trying to analyze/transform that causes the bug to appear.
+      description: Provide a minimal example of source code you are trying to analyze/transform that causes the bug to appear. This will be automatically formatted, so no need for backticks.
       placeholder: System.out.println("Hello, world!");
       render: Java
     validations:
