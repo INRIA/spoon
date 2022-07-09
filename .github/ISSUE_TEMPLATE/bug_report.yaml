@@ -36,7 +36,7 @@ body:
   - type: textarea
     id: output
     attributes:
-      label: Output
+      label: Actual output
       description: The output that spoon provides, or a stacktrace if it crashes. This will be automatically formatted, so no need for backticks.
       placeholder: System.out.println("Hello, world!");
       render: Java
