@@ -56,7 +56,7 @@ body:
     attributes:
       label: Spoon Version
       description: What version of Spoon are you using? Please note that we only actively support the latest major release. If you are using an older major version, your issue may be closed as non-actionable.
-      placeholder: 10.1.0
+      placeholder: X.Y.Z
     validations:
       required: true
   - type: textarea
