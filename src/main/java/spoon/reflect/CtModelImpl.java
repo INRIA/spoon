@@ -23,7 +23,9 @@ import spoon.support.QueueProcessingManager;
 import spoon.support.reflect.declaration.CtModuleImpl;
 import spoon.support.util.internal.ElementNameMap;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class CtModelImpl implements CtModel {
@@ -126,7 +128,7 @@ public class CtModelImpl implements CtModel {
 		modules.updateKey(oldName, newModule.getSimpleName());
 	}
 
-	private static class Modules extends ElementNameMap<CtModule>{
+	private static class Modules extends ElementNameMap<CtModule> {
 		@Override
 		protected CtElement getOwner() {
 			return null;

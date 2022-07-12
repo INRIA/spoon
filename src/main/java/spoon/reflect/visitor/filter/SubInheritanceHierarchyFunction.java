@@ -66,7 +66,7 @@ public class SubInheritanceHierarchyFunction implements CtConsumableFunction<CtT
 	@Override
 	public void apply(CtTypeInformation input, final CtConsumer<Object> outputConsumer) {
 		Factory factory = ((CtElement) input).getFactory();
-		for(CtModule ctModule : factory.getModel().getAllModules()) {
+		for (CtModule ctModule : factory.getModel().getAllModules()) {
 			final SubInheritanceHierarchyResolver fnc = new SubInheritanceHierarchyResolver(ctModule.getRootPackage())
 					.failOnClassNotFound(failOnClassNotFound)
 					.includingInterfaces(includingInterfaces);
@@ -81,7 +81,7 @@ public class SubInheritanceHierarchyFunction implements CtConsumableFunction<CtT
 			fnc.forEachSubTypeInPackage((CtType<?> typeInfo) -> {
 				outputConsumer.accept(typeInfo);
 				// Cannot terminate, because its support was removed.
-                // I think there are cases where it might be useful.
+				// I think there are cases where it might be useful.
 				// fnc.terminate();
 				query.isTerminated();
 			});

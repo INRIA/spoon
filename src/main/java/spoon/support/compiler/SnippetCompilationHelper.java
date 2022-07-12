@@ -99,7 +99,7 @@ public class SnippetCompilationHelper {
 		CtType<?> newClass = f.Type().get(initialClass.getQualifiedName());
 
 		// we find the snippets that are now ASTs
-		for(CtModule ctModule : f.getModel().getAllModules()) {
+		for (CtModule ctModule : f.getModel().getAllModules()) {
 			for (CtPath p : elements2before.keySet()) {
 				elements2after.put(p, p.evaluateOn(ctModule.getRootPackage()).iterator().next());
 			}

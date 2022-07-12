@@ -116,7 +116,7 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 		CtType<?> declaringType = targetMethod.getDeclaringType();
 		lambdaFilter.addImplementingInterface(declaringType);
 
-		for(CtModule ctModule : declaringType.getFactory().getModel().getAllModules()) {
+		for (CtModule ctModule : declaringType.getFactory().getModel().getAllModules()) {
 			//search for all declarations and implementations of this method in sub and super classes and interfaces of all related hierarchies.
 			class Context {
 				boolean haveToSearchForSubtypes;

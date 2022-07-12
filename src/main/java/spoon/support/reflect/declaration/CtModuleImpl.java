@@ -9,7 +9,17 @@ package spoon.support.reflect.declaration;
 
 import spoon.reflect.CtModelImpl;
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleDirective;
+import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtShadowable;
+import spoon.reflect.declaration.CtUsedService;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
@@ -18,7 +28,11 @@ import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
@@ -34,7 +48,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	@MetamodelPropertyField(role = CtRole.SUB_PACKAGE)
 	private CtPackage rootPackage;
 
-	public CtModuleImpl(Factory factory){
+	public CtModuleImpl(Factory factory) {
 		this.setFactory(factory);
 		this.moduleDirectives = CtElementImpl.emptyList();
 		this.rootPackage = new CtPackageImpl.RootPackage(this);
@@ -51,7 +65,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		super.setSimpleName(simpleName);
 
 		CtModelImpl ctModel = (CtModelImpl) factory.getModel();
-		if(ctModel != null) {
+		if (ctModel != null) {
 			ctModel.updateModuleName(this, oldName);
 		}
 

@@ -110,19 +110,19 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		} else {
 			CtPackage ctPackage = clazz.getPackage() != null ? factory.Package().getOrCreate(clazz.getPackage().getName())
 					: factory.Package().getRootPackage();
-			if(contexts.isEmpty()){
+			if (contexts.isEmpty()) {
 				contexts.add(new PackageRuntimeBuilderContext(ctPackage));
 			}
 
 			if (clazz.isAnnotation()) {
 				visitAnnotationClass((Class<Annotation>) clazz);
-			}else if (clazz.isInterface()) {
+			} else if (clazz.isInterface()) {
 				visitInterface(clazz);
-			}else if (clazz.isEnum()) {
+			} else if (clazz.isEnum()) {
 				visitEnum(clazz);
-			}else if (MethodHandleUtils.isRecord(clazz)) {
+			} else if (MethodHandleUtils.isRecord(clazz)) {
 				visitRecord(clazz);
-			}else {
+			} else {
 				visitClass(clazz);
 			}
 			exit();
@@ -143,7 +143,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 		CtModule fresh = know != null ? know : factory.Module().getOrCreate(module.getName());
 		ModuleDescriptor descriptor = module.getDescriptor();
-		if(descriptor != null){
+		if (descriptor != null) {
 			createModuleData(fresh, descriptor);
 		}
 
@@ -183,11 +183,11 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	private CtModuleRequirement createRequires(ModuleDescriptor.Requires instruction) {
 		CtModuleReference requiredModule = factory.Module().createReference(instruction.name());
 		Set<CtModuleRequirement.RequiresModifier> modifiers = new HashSet<>();
-		if(instruction.modifiers().contains(ModuleDescriptor.Requires.Modifier.STATIC)){
+		if (instruction.modifiers().contains(ModuleDescriptor.Requires.Modifier.STATIC)) {
 			modifiers.add(CtModuleRequirement.RequiresModifier.STATIC);
 		}
 
-		if(instruction.modifiers().contains(ModuleDescriptor.Requires.Modifier.TRANSITIVE)){
+		if (instruction.modifiers().contains(ModuleDescriptor.Requires.Modifier.TRANSITIVE)) {
 			modifiers.add(CtModuleRequirement.RequiresModifier.TRANSITIVE);
 		}
 

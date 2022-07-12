@@ -9,6 +9,7 @@ package spoon.reflect.factory;
 
 
 import java.util.Collection;
+
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackageExport;
@@ -19,30 +20,30 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 
 public class ModuleFactory extends SubFactory {
-    public ModuleFactory(Factory factory) {
-        super(factory);
-    }
+	public ModuleFactory(Factory factory) {
+		super(factory);
+	}
 
-    public CtModule getUnnamedModule() {
-        return factory.getModel().getUnnamedModule();
-    }
+	public CtModule getUnnamedModule() {
+		return factory.getModel().getUnnamedModule();
+	}
 
-    public Collection<CtModule> getAllModules() {
-        return factory.getModel().getAllModules();
-    }
+	public Collection<CtModule> getAllModules() {
+		return factory.getModel().getAllModules();
+	}
 
-    public CtModule getModule(String moduleName) {
+	public CtModule getModule(String moduleName) {
 		if (moduleName == null || moduleName.isEmpty()) {
 			return getUnnamedModule();
 		}
 
-        return factory.getModel().getModule(moduleName);
-    }
+		return factory.getModel().getModule(moduleName);
+	}
 
-    public CtModule getOrCreate(String moduleName) {
-        if (moduleName == null || moduleName.isEmpty()) {
-            return getUnnamedModule();
-        }
+	public CtModule getOrCreate(String moduleName) {
+		if (moduleName == null || moduleName.isEmpty()) {
+			return getUnnamedModule();
+		}
 
 		CtModule known = getModule(moduleName);
 		if (known != null) {
@@ -52,11 +53,11 @@ public class ModuleFactory extends SubFactory {
 		CtModule fresh = factory.Core().createModule().setSimpleName(moduleName);
 		factory.getModel().addModule(fresh);
 		return fresh;
-    }
+	}
 
-    public CtModuleReference createReference(CtModule module) {
-        return createReference(module.getSimpleName());
-    }
+	public CtModuleReference createReference(CtModule module) {
+		return createReference(module.getSimpleName());
+	}
 
 	public CtModuleReference createReference(String module) {
 		return factory.Core().createModuleReference().setSimpleName(module);

@@ -69,7 +69,7 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 			return null;
 		}
 		CtElement owner = getOwner();
-		if(owner != null) {
+		if (owner != null) {
 			linkToParent(owner, e);
 			getModelChangeListener().onMapAdd(owner, getRole(), map, key, e);
 		}
@@ -87,7 +87,7 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 			return null;
 		}
 
-		if(getOwner() != null) {
+		if (getOwner() != null) {
 			getModelChangeListener().onMapDelete(
 					getOwner(),
 					getRole(),
@@ -108,7 +108,7 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 		// Only an approximation as the concurrent map is only weakly consistent
 		Map<String, T> old = new LinkedHashMap<>(map);
 		map.clear();
-		if(getOwner() != null){
+		if (getOwner() != null) {
 			getModelChangeListener().onMapDeleteAll(
 					getOwner(),
 					getRole(),

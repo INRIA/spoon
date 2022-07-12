@@ -7,8 +7,6 @@
  */
 package spoon;
 
-
-import spoon.reflect.CtModelImpl;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;

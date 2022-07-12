@@ -124,7 +124,7 @@ public class PackageFactory extends SubFactory {
 	private CtModule findModuleByPackage(String qualifiedName) {
 		String owner = getOwner(qualifiedName);
 		CtModule known = packageModuleCache.get(owner);
-		if(known != null){
+		if (known != null) {
 			return known;
 		}
 
@@ -135,11 +135,11 @@ public class PackageFactory extends SubFactory {
 
 	private CtModule findCtModule(String qualifiedName) {
 		List<Module> modules = findModules(qualifiedName);
-		if(modules.isEmpty()){
+		if (modules.isEmpty()) {
 			return factory.getModel().getUnnamedModule();
 		}
 
-		if(modules.size() != 1){
+		if (modules.size() != 1) {
 			throw new SpoonException(
 					"Ambiguous package name detected. If you believe the code you analyzed is correct, please"
 							+ " file an issue and reference https://github.com/INRIA/spoon/issues/4051. "
@@ -151,9 +151,9 @@ public class PackageFactory extends SubFactory {
 		return factory.Module().getOrCreate(modules.get(0).getName());
 	}
 
-	private String getOwner(String qualifiedName){
+	private String getOwner(String qualifiedName) {
 		int index = qualifiedName.indexOf(".");
-		if(index == -1){
+		if (index == -1) {
 			return qualifiedName;
 		}
 

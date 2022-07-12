@@ -22,20 +22,21 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.List;
+
 import spoon.SpoonException;
 import spoon.reflect.path.CtRole;
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
 class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
-    private static final Class<?> recordClass = getRecordClass();
+	private static final Class<?> recordClass = getRecordClass();
 
-    @Override
-    public void visitModule(Module module) {
-        for (Annotation annotation : module.getAnnotations()) {
-            visitAnnotation(annotation);
-        }
-    }
+	@Override
+	public void visitModule(Module module) {
+		for (Annotation annotation : module.getAnnotations()) {
+			visitAnnotation(annotation);
+		}
+	}
 
 	@Override
 	public void visitPackage(Package aPackage) {
@@ -46,7 +47,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T> void visitClass(Class<T> clazz) {
-        visitModule(clazz.getModule());
+		visitModule(clazz.getModule());
 		if (clazz.getPackage() != null) {
 			visitPackage(clazz.getPackage());
 		}
@@ -132,7 +133,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T> void visitInterface(Class<T> clazz) {
 		assert clazz.isInterface();
-        visitModule(clazz.getModule());
+		visitModule(clazz.getModule());
 		if (clazz.getPackage() != null) {
 			visitPackage(clazz.getPackage());
 		}
@@ -190,7 +191,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T> void visitEnum(Class<T> clazz) {
 		assert clazz.isEnum();
-        visitModule(clazz.getModule());
+		visitModule(clazz.getModule());
 		if (clazz.getPackage() != null) {
 			visitPackage(clazz.getPackage());
 		}
@@ -264,7 +265,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T extends Annotation> void visitAnnotationClass(Class<T> clazz) {
 		assert clazz.isAnnotation();
-        visitModule(clazz.getModule());
+		visitModule(clazz.getModule());
 		if (clazz.getPackage() != null) {
 			visitPackage(clazz.getPackage());
 		}
@@ -533,7 +534,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		}
 		try {
 			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
-					visitTypeParameter(generic);
+				visitTypeParameter(generic);
 			}
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath

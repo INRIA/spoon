@@ -182,7 +182,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			factory.getEnvironment().debugMessage("Loaded processor " + processorName + ".");
 		}
 
-		for(CtModule ctModule : factory.getModel().getAllModules()){
+		for (CtModule ctModule : factory.getModel().getAllModules()) {
 			processing.process(ctModule.getRootPackage());
 		}
 	}
@@ -196,7 +196,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			factory.getEnvironment().debugMessage("Loaded processor " + processorName + ".");
 		}
 
-		for(CtModule ctModule : factory.getModel().getAllModules()){
+		for (CtModule ctModule : factory.getModel().getAllModules()) {
 			processing.process(ctModule.getRootPackage());
 		}
 	}
