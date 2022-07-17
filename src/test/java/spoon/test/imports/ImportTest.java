@@ -26,12 +26,7 @@ import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.CtModel;
-import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtThisAccess;
-import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.*;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -44,11 +39,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
-import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtPackageReference;
-import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
-import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.*;
 import spoon.reflect.visitor.CtImportVisitor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
@@ -63,7 +54,15 @@ import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
-import spoon.test.imports.testclasses.*;
+import spoon.test.GitHubIssue;
+import spoon.test.imports.testclasses.A;
+import spoon.test.imports.testclasses.ClientClass;
+import spoon.test.imports.testclasses.DuplicatedImport;
+import spoon.test.imports.testclasses.Pozole;
+import spoon.test.imports.testclasses.Reflection;
+import spoon.test.imports.testclasses.SubClass;
+import spoon.test.imports.testclasses.Tacos;
+import spoon.test.imports.testclasses.ToBeModified;
 import spoon.test.imports.testclasses.badimportissue3320.source.TestSource;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
@@ -1769,15 +1768,17 @@ public class ImportTest {
 				.count());
 	}
 
-	@Test
+	@GitHubIssue(issueNumber = 4786, fixed=false)
 	void testDuplicatedImport() throws IOException {
 		String code1 = "package io.example.pack2;\n" +
 				"    import io.example.pack2.Class1;\n" +
+				"    import static io.example.Constants.TOKEN;\n" +
 				"    public class Example{\n" +
 				"    Class1<io.example.pack3.Class1> class1;\n" +
 				"    io.example.pack4.Class1 class2;\n" +
-				"      io.example.pack5.Class1 add(io.example.pack6.Class1<io.example.pack7.Class1> value){\n" +
-				"          io.example.pack8.Class1 class1 = null;\n" +
+				"      io.example.pack5.Class1 add(io.example.pack6.Class1<io.example.pack7.Class1> value, io.example.pack8.Class1<io.example.pack9.Class1>... value2){\n" +
+				"          io.example.pack10.Class1 class1 = null;\n" +
+				"          String token = TOKEN;\n" +
 				"      }\n" +
 				"    }\n";
 		CtClass<?> class1 = Launcher.parseClass(code1);
@@ -1788,7 +1789,14 @@ public class ImportTest {
 		assertEquals("io.example.pack5.Class1", addMethod.getType().getQualifiedName());
 		assertEquals("io.example.pack6.Class1", addMethod.getParameters().get(0).getType().getQualifiedName());
 		assertEquals("io.example.pack7.Class1", addMethod.getParameters().get(0).getType().getActualTypeArguments().get(0).getQualifiedName());
-		assertEquals("io.example.pack8.Class1", ((CtLocalVariable<?>)addMethod.getBody().getStatement(0)).getType().getQualifiedName());
+		assertInstanceOf(CtArrayTypeReference.class, addMethod.getParameters().get(1).getType());
+		CtArrayTypeReference<?> param1 = (CtArrayTypeReference<?>)addMethod.getParameters().get(1).getType();
+		assertEquals("io.example.pack8.Class1", param1.getComponentType().getQualifiedName());
+		assertEquals("io.example.pack9.Class1", param1.getComponentType().getActualTypeArguments().get(0).getQualifiedName());
+		assertEquals("io.example.pack10.Class1", ((CtLocalVariable<?>)addMethod.getBody().getStatement(0)).getType().getQualifiedName());
+		CtExpression<?> tokenAssignment = ((CtLocalVariable<?>) addMethod.getBody().getStatement(1)).getAssignment();
+		assertInstanceOf(CtFieldRead.class, tokenAssignment);
+		assertEquals("io.example.Constants", (((CtFieldRead<?>)tokenAssignment).getVariable()).getDeclaringType().getQualifiedName());
 		List<String> imports = getTypeImportsFromSourceCode(class1.toStringWithImports());
 		assertEquals(1, imports.stream().filter(im -> im.endsWith("Class1")).count());
 
