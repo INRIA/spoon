@@ -55,6 +55,7 @@ import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
@@ -76,6 +77,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
@@ -727,6 +729,26 @@ public class JDTTreeBuilderHelper {
 			for (TypeReference ref : typeDeclaration.superInterfaces) {
 				final CtTypeReference superInterface = jdtTreeBuilder.references.buildTypeReference(ref, null);
 				type.addSuperInterface(superInterface);
+			}
+		}
+		Consumer<CtTypeReference<?>> addPermittedType;
+		if (type instanceof CtSealable) {
+			addPermittedType = ((CtSealable) type)::addPermittedType;
+		} else {
+			addPermittedType = ref -> {
+				throw new SpoonException("Tried to add permitted type to " + type);
+			};
+		}
+		if (typeDeclaration.permittedTypes != null) {
+			for (TypeReference permittedType : typeDeclaration.permittedTypes) {
+				CtTypeReference<?> reference = jdtTreeBuilder.references.buildTypeReference(permittedType, typeDeclaration.scope);
+				addPermittedType.accept(reference);
+			}
+		} else if (typeDeclaration.binding != null && typeDeclaration.binding.permittedTypes != null) {
+			for (ReferenceBinding permittedType : typeDeclaration.binding.permittedTypes) {
+				CtTypeReference<?> reference = jdtTreeBuilder.references.getTypeReference(permittedType);
+				reference.setImplicit(true);
+				addPermittedType.accept(reference);
 			}
 		}
 

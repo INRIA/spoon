@@ -651,6 +651,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeExtendsClause(ctClass);
 			elementPrinterHelper.writeImplementsClause(ctClass);
 		}
+		elementPrinterHelper.printPermits(ctClass);
 		printer.writeSpace().writeSeparator("{").incTab();
 		elementPrinterHelper.writeElementList(ctClass.getTypeMembers());
 		getPrinterHelper().adjustEndPosition(ctClass);
@@ -1340,6 +1341,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				"extends", false, null, false, true, ",", true, false, null,
 				ref -> scan(ref));
 		}
+		elementPrinterHelper.printPermits(intrface);
 		context.pushCurrentThis(intrface);
 		printer.writeSpace().writeSeparator("{").incTab();
 		// Content

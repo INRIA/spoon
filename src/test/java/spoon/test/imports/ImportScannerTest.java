@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtType;
@@ -33,6 +34,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.test.imports.testclasses.ToBeModified;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -54,36 +56,30 @@ import static spoon.testing.utils.ModelUtils.build;
 
 public class ImportScannerTest {
 
-	@Test
-	public void testImportOnSpoon() throws IOException {
+	@ModelTest("./src/main/java/spoon/")
+	public void testImportOnSpoon(Launcher launcher, Factory factory, CtModel model) throws IOException {
 		File targetDir = new File("./target/import-test");
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/main/java/spoon/");
-		spoon.getEnvironment().setAutoImports(true);
-		spoon.getEnvironment().setCommentEnabled(true);
-		spoon.getEnvironment().setSourceOutputDirectory(targetDir);
-		spoon.getEnvironment().setLevel("warn");
-		spoon.buildModel();
+		launcher.getEnvironment().setSourceOutputDirectory(targetDir);
 
 		// contract: ImportScannerImpl does not throw an exception on a large and complex model (OK, it's a smoke test)
 		// Update: I found a nasty NPE bug :-), smoke tests can be useful
-		new ImportScannerImpl().scan(spoon.getFactory().Package().getRootPackage());
+		new ImportScannerImpl().scan(factory.Package().getRootPackage());
 
 
-		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
+		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(launcher.getEnvironment());
 
 		Map<CtType, List<String>> missingImports = new HashMap<>();
 		Map<CtType, List<String>> unusedImports = new HashMap<>();
 
 		JavaOutputProcessor outputProcessor;
 
-		for (CtType<?> ctType : spoon.getModel().getAllTypes()) {
+		for (CtType<?> ctType : model.getAllTypes()) {
 			if (!ctType.isTopLevel()) {
 				continue;
 			}
 
 			outputProcessor = new JavaOutputProcessor(prettyPrinter);
-			outputProcessor.setFactory(spoon.getFactory());
+			outputProcessor.setFactory(factory);
 			outputProcessor.init();
 
 			Set<String> computedTypeImports = new HashSet<>();
@@ -246,17 +242,12 @@ public class ImportScannerTest {
 		assertEquals(2, imports.size());
 	}
 
-	@Test
-	public void testComputeImportsInClassWithSameName() {
+	@ModelTest("src/test/resources/spoon/test/imports/testclasses2/")
+	public void testComputeImportsInClassWithSameName(Factory factory) {
 		String packageName = "spoon.test.imports.testclasses2";
 		String className = "ImportSameName";
 		String qualifiedName = packageName + "." + className;
-
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("src/test/resources/spoon/test/imports/testclasses2/");
-		spoon.buildModel();
-		Factory aFactory = spoon.getFactory();
-		CtType<?> theClass = aFactory.Type().get(qualifiedName);
+		CtType<?> theClass = factory.Type().get(qualifiedName);
 
 		ImportScanner importContext = new ImportScannerImpl();
 		importContext.computeImports(theClass);

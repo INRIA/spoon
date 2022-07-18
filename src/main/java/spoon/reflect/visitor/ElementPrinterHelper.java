@@ -21,8 +21,11 @@ import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -32,19 +35,16 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.declaration.CtImport;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtPackageReference;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
-import spoon.reflect.visitor.printer.CommentOffset;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.PrintingContext.Writable;
+import spoon.reflect.visitor.printer.CommentOffset;
+import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import spoon.support.reflect.CtExtendedModifier;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -546,5 +546,23 @@ public class ElementPrinterHelper {
 				elementPrinter.accept(item);
 			}
 		}
+	}
+
+	/**
+	 * Prints the {@code permits} keyword followed by the permitted
+	 * types of a {@link CtSealable}.
+	 * <p>
+	 * If the given sealed type does not have any
+	 * explicit permitted types, nothing is printed.
+	 *
+	 * @param sealable the sealed type to print the permitted types for.
+	 */
+	protected void printPermits(CtSealable sealable) {
+		if (sealable.getPermittedTypes().isEmpty() || sealable.getPermittedTypes().stream().allMatch(CtElement::isImplicit)) {
+			return;
+		}
+		printer.writeln().incTab().writeKeyword("permits").writeSpace();
+		printList(sealable.getPermittedTypes(), null, false, null, false, false, ",", true, false, null, prettyPrinter::scan);
+		printer.decTab();
 	}
 }

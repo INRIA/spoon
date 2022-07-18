@@ -17,7 +17,10 @@
 package spoon.support.visitor.java;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -91,6 +94,7 @@ import spoon.reflect.visitor.Root;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.code.CtAssignmentImpl;
 import spoon.support.reflect.code.CtConditionalImpl;
 import spoon.support.reflect.declaration.CtEnumValueImpl;
@@ -771,6 +775,40 @@ public class JavaReflectionTreeBuilderTest {
 		CtPackage ctPackage = type.getPackage();
 		assertEquals(1, ctPackage.getAnnotations().size());
 		assertEquals(ctPackage.getAnnotations().get(0).getAnnotationType().getQualifiedName(), "java.lang.Deprecated");
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_17)
+	void testShadowSealedTypes() throws ClassNotFoundException {
+		// contract: sealed/non-sealed types are in the shadow model
+		Factory factory = createFactory();
+		// load a few ConstantDesc types
+		Class<?> constantDesc = Class.forName("java.lang.constant.ConstantDesc"); // since Java 12, sealed since Java 17
+		Class<?> dynamicConstantDesc = Class.forName("java.lang.constant.DynamicConstantDesc"); // since Java 12
+		Class<?> enumDesc = Class.forName("java.lang.Enum$EnumDesc"); // since Java 12
+		CtInterface<?> ctConstantDesc = (CtInterface<?>) factory.Type().get(constantDesc);
+		CtType<?> ctDynamicConstantDesc = factory.Type().get(dynamicConstantDesc);
+		CtType<?> ctEnumDesc = factory.Type().get(enumDesc);
+		CtType<?> ctString = factory.Type().get(String.class);
+
+		// make sure they are loaded correctly
+		assertNotNull(ctConstantDesc);
+		assertNotNull(ctDynamicConstantDesc);
+		assertNotNull(ctEnumDesc);
+		assertNotNull(ctString);
+
+		// ConstDesc is sealed
+		assertThat(ctConstantDesc.getExtendedModifiers(), hasItem(CtExtendedModifier.explicit(ModifierKind.SEALED)));
+		// DynamicConstDesc and String are permitted types
+		assertThat(ctConstantDesc.getPermittedTypes(), hasItems(ctDynamicConstantDesc.getReference(), ctString.getReference()));
+		// EnumDesc extends DynamicConstantDesc, so it should not be added to the permitted types of ConstantDesc
+		assertThat(ctConstantDesc.getPermittedTypes(), not(hasItem(ctEnumDesc.getReference())));
+		// DynamicConstDesc is non-sealed
+		assertThat(ctDynamicConstantDesc.getExtendedModifiers(), hasItem(CtExtendedModifier.explicit(ModifierKind.NON_SEALED)));
+		// EnumDesc extends DynamicConstDesc which is non-sealed, so it is not non-sealed itself
+		assertThat(ctEnumDesc.getModifiers(), not(hasItem(ModifierKind.NON_SEALED)));
+		// String is final and not sealed, so neither sealed nor non-sealed should be applied
+		assertThat(ctString.getModifiers(), not(hasItems(ModifierKind.SEALED, ModifierKind.NON_SEALED)));
 	}
 
 	@Test

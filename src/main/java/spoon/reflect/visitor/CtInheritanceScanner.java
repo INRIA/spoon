@@ -103,6 +103,7 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
@@ -368,6 +369,13 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public void scanCtPattern(CtPattern pattern) {
 	}
 
+	/**
+	 * Scans a sealable type
+	 * @param sealable the sealable type to scan
+	 */
+	public void scanCtSealable(CtSealable sealable) {
+	}
+
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
 		visitCtVariableRead(fieldRead);
@@ -520,6 +528,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtClass(CtClass<T> e) {
 		scanCtType(e);
+		scanCtSealable(e);
 		scanCtStatement(e);
 		scanCtTypeInformation(e);
 		scanCtFormalTypeDeclarer(e);
@@ -655,6 +664,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtInterface(CtInterface<T> e) {
 		scanCtType(e);
+		scanCtSealable(e);
 		scanCtStatement(e);
 		scanCtTypeInformation(e);
 		scanCtFormalTypeDeclarer(e);

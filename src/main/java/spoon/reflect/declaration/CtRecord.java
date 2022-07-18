@@ -7,6 +7,7 @@
  */
 package spoon.reflect.declaration;
 
+import java.util.Collection;
 import java.util.Set;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
@@ -40,4 +41,19 @@ public interface CtRecord extends CtClass<Object> {
 	@Override
 	@UnsettableProperty
 	<C extends CtType<Object>> C setSuperclass(CtTypeReference<?> superClass);
+
+	@Override
+	Set<CtTypeReference<?>> getPermittedTypes();
+
+	@Override
+	@UnsettableProperty
+	CtRecord setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes);
+
+	@Override
+	@UnsettableProperty
+	CtRecord addPermittedType(CtTypeReference<?> type);
+
+	@Override
+	@UnsettableProperty
+	CtRecord removePermittedType(CtTypeReference<?> type);
 }

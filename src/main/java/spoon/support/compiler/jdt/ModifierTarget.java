@@ -68,6 +68,8 @@ enum ModifierTarget {
 			ModifierKind.PRIVATE,
 			ModifierKind.ABSTRACT,
 			ModifierKind.STATIC,
+			ModifierKind.SEALED,
+			ModifierKind.NON_SEALED,
 			ModifierKind.FINAL,
 			ModifierKind.STRICTFP
 	),
@@ -81,6 +83,8 @@ enum ModifierTarget {
 			ModifierKind.PRIVATE,
 			ModifierKind.ABSTRACT,
 			ModifierKind.STATIC,
+			ModifierKind.SEALED,
+			ModifierKind.NON_SEALED,
 			ModifierKind.STRICTFP
 	),
 	/**

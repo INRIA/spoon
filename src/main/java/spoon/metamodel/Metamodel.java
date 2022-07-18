@@ -152,6 +152,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.declaration.CtNamedElement.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtPackage.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtParameter.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtSealable.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtShadowable.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtType.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtTypeInformation.class));

@@ -56,6 +56,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.visitor.CtVisitable;
@@ -232,7 +233,7 @@ class SpoonCodeInstrumentTest {
 	@Test
 	void getDirectSpoonInterfacesOfClass() {
 		final List<Class<?>> inter = spoonCodeInstrument.getDirectSpoonInterfaces(CtClass.class).collect(Collectors.toList());
-		assertThat(inter).containsExactlyInAnyOrder(CtType.class, CtStatement.class);
+		assertThat(inter).containsExactlyInAnyOrder(CtType.class, CtStatement.class, CtSealable.class);
 	}
 
 	@Test

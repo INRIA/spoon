@@ -812,7 +812,7 @@ public class TestSniperPrinter {
 		testSniper("ArithmeticExpression", noOpModifyFieldAssignment, assertPrintsRoundBracketsCorrectly);
 	}
 
-	@GitHubIssue(issueNumber = 4218, fixed = false)
+	@GitHubIssue(issueNumber = 4218, fixed = true)
 	void testSniperDoesNotPrintTheDeletedAnnotation() {
 		Consumer<CtType<?>> deleteAnnotation = type -> {
 			type.getAnnotations().forEach(CtAnnotation::delete);
@@ -1079,15 +1079,37 @@ public class TestSniperPrinter {
 	public void testToStringWithSniperOnElementScan() throws Exception {
 		testToStringWithSniperPrinter("src/test/java/spoon/test/prettyprinter/testclasses/ElementScan.java");
 	}
-
-	/**
-	 * Files to be tested with testNoChangeDiff
-	 */
-	private static Stream<File> noChangeDiffTestFiles() {
-		Path path = Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest");
-		return FileUtils.listFiles(path.toFile(), null, false).stream();
+	@GitHubIssue(issueNumber = 3811, fixed = true)
+	void noChangeDiffBrackets() throws IOException {
+			testNoChangeDiffFailing(
+					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/Brackets").toFile());
+	}
+	@GitHubIssue(issueNumber = 3811, fixed = true)
+	void noChangeDiffConditionalComment() throws IOException {
+			testNoChangeDiffFailing(
+					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/ConditionalComment").toFile());
 	}
 
+	@GitHubIssue(issueNumber = 3811, fixed = true)
+	void noChangeDiffEnumComment() throws IOException {
+			testNoChangeDiffFailing(
+					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/EnumComment").toFile());
+	}
+	@GitHubIssue(issueNumber = 3811, fixed = true)
+	void noChangeDiffEnumTest() throws IOException {
+			testNoChangeDiffFailing(
+					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/EnumTest").toFile());
+	}
+	@GitHubIssue(issueNumber = 3811, fixed = true)
+	void noChangeDiffExceptionTest() throws IOException {
+			testNoChangeDiffFailing(
+					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/ExceptionTest").toFile());
+	}
+	@GitHubIssue(issueNumber = 3811, fixed = true)
+	void noChangeDiffMethodComment() throws IOException {
+			testNoChangeDiffFailing(
+					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/MethodComment").toFile());
+	}
 	/**
 	 * Test various syntax by doing an change to every element that should not
 	 * result in any change in source. This forces the sniper printer to recreate
@@ -1095,10 +1117,7 @@ public class TestSniperPrinter {
 	 *
 	 * Reference: #3811
 	 */
-	@ParameterizedTest
-	@MethodSource("noChangeDiffTestFiles")
-	@GitHubIssue(issueNumber = 3811, fixed = false)
-	public void testNoChangeDiff(File file) throws IOException {
+	private void testNoChangeDiffFailing(File file) throws IOException {
 		String fileName = file.getName();
 		Path outputPath = Paths.get("target/test-output");
 		File outputFile = outputPath.resolve("spoon/test/prettyprinter/testclasses/difftest")
