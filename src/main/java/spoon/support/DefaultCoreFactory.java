@@ -1075,7 +1075,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	public CtModule createModule() {
 		CtModule module = new CtModuleImpl();
 		module.setFactory(getMainFactory());
-		this.getMainFactory().Module().getUnnamedModule().addModule(module);
+		module.setParent(this.getMainFactory().Module().getUnnamedModule());
 		return module;
 	}
 
@@ -1132,7 +1132,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	public CtRecord createRecord() {
 		CtRecord recordType = new CtRecordImpl();
 		Set<CtExtendedModifier> modifier = new HashSet<>(recordType.getExtendedModifiers());
-		modifier.add(new CtExtendedModifier(ModifierKind.FINAL, true));
+		modifier.add(CtExtendedModifier.implicit(ModifierKind.FINAL));
 		recordType.setExtendedModifiers(modifier);
 		recordType.setFactory(getMainFactory());
 		return recordType;

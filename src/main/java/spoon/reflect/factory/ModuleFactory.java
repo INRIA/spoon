@@ -128,6 +128,7 @@ public class ModuleFactory extends SubFactory {
 			ctModule = factory.Core().createModule().setSimpleName(moduleName);
 			ctModule.setRootPackage(new CtModelImpl.CtRootPackage());
 			ctModule.setParent(getUnnamedModule());
+			getUnnamedModule().addModule(ctModule);
 		}
 
 		return ctModule;

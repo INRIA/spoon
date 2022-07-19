@@ -38,6 +38,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import spoon.testing.utils.ModelTest;
 
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -167,8 +168,8 @@ public class InterfaceTest {
 		assertThat(interfaceType.getFields().size(), is(1));
 		assertThat(interfaceType.getMethods().size(), is(1));
 		MatcherAssert.assertThat(interfaceType.getExtendedModifiers(), contentEquals(
-				new CtExtendedModifier(ModifierKind.STATIC, true),
-				new CtExtendedModifier(ModifierKind.ABSTRACT, true)
+				CtExtendedModifier.implicit(ModifierKind.STATIC),
+				CtExtendedModifier.implicit(ModifierKind.ABSTRACT)
 		));
 	}
 
@@ -178,20 +179,15 @@ public class InterfaceTest {
 		// see https://docs.oracle.com/javase/specs/jls/se17/html/jls-9.html#jls-9.1.1
 		CtType<?> emptyInterface = build("spoon.test.interfaces.testclasses", "EmptyInterface");
 		assertThat(emptyInterface.getExtendedModifiers(), contentEquals(
-				new CtExtendedModifier(ModifierKind.ABSTRACT, true),
-				new CtExtendedModifier(ModifierKind.PUBLIC, false)
+				CtExtendedModifier.implicit(ModifierKind.ABSTRACT),
+				CtExtendedModifier.explicit(ModifierKind.PUBLIC)
 		));
 	}
 
-	@Test
-	public void testNestedTypesInInterfaceArePublic() {
+	@ModelTest("src/test/resources/nestedInInterface")
+	public void testNestedTypesInInterfaceArePublic(CtModel model) {
 		// contract: nested types in interfaces are implicitly public
 		// (https://docs.oracle.com/javase/specs/jls/se16/html/jls-9.html#jls-9.5)
-
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/nestedInInterface");
-		CtModel model = launcher.buildModel();
-
 		Collection<CtType<?>> types = model.getAllTypes()
 				.stream()
 				.flatMap(it -> it.getNestedTypes().stream())
@@ -211,15 +207,10 @@ public class InterfaceTest {
 		}
 	}
 
-	@Test
-	public void testNestedTypesInInterfaceAreStatic() {
+	@ModelTest("src/test/resources/nestedInInterface")
+	public void testNestedTypesInInterfaceAreStatic(CtModel model) {
 		// contract: nested types in interfaces are implicitly static
 		// (https://docs.oracle.com/javase/specs/jls/se16/html/jls-9.html#jls-9.5)
-
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/nestedInInterface");
-		CtModel model = launcher.buildModel();
-
 		Collection<CtType<?>> types = model.getAllTypes()
 				.stream()
 				.flatMap(it -> it.getNestedTypes().stream())

@@ -36,7 +36,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -303,7 +303,7 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 	@Override
 	public CtClass<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
 		Collection<CtTypeReference<?>> types = permittedTypes != null ? permittedTypes : CtElementImpl.emptySet();
-		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, CtRole.PERMITTED_TYPE, this.permittedTypes, new HashSet<>(this.permittedTypes));
+		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, CtRole.PERMITTED_TYPE, this.permittedTypes, new LinkedHashSet<>(this.permittedTypes));
 		this.permittedTypes.clear();
 		for (CtTypeReference<?> type : types) {
 			addPermittedType(type);
@@ -317,7 +317,7 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 			return this;
 		}
 		if (this.permittedTypes == CtElementImpl.<CtTypeReference<?>>emptySet()) {
-			this.permittedTypes = new HashSet<>();
+			this.permittedTypes = new LinkedHashSet<>();
 		}
 		type.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, CtRole.PERMITTED_TYPE, this.permittedTypes, type);

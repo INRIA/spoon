@@ -368,7 +368,7 @@ public class ElementSourceFragment implements SourceFragment {
 			return CMP.OTHER_IS_PARENT;
 		}
 		//the fragments overlap - it is not allowed
-		throw new SpoonException("Cannot compare this: [" + getStart() + ", " + getEnd() + "] with other: [\"" + other.getStart() + "\", \"" + other.getEnd() + "\"]");
+		throw new SpoonException("Cannot compare this: [" + getStart() + ", " + getEnd() + "] with other: [" + other.getStart() + ", " + other.getEnd() + "]");
 	}
 
 	/**

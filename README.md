@@ -36,7 +36,9 @@ If you need professional support on Spoon (development, training, extension), yo
 
 ## Getting started in 2 seconds
 
-> **Java version:** Spoon version 10 and up requires Java 11 or later. Spoon 9.1.0 is the final Spoon release compatible with Java 8.
+> **Java version:** Spoon version 10 and up requires Java 11 or later. Spoon 9.1.0 is the final Spoon release compatible
+> with Java 8, and we do not plan to backport any bug fixes or features to Spoon 9. Note that Spoon can of course still
+> consume source code for older versions of Java, but it needs JDK 11+ to run.
 
 Get latest stable version with Maven, see <https://search.maven.org/artifact/fr.inria.gforge.spoon/spoon-core>
 
