@@ -445,10 +445,11 @@ public class ParentExiter extends CtInheritanceScanner {
 			} else if (jdtTreeBuilder.getContextBuilder().stack.peek().node instanceof StringLiteralConcatenation) {
 				CtBinaryOperator<?> op = operator.getFactory().Core().createBinaryOperator();
 				op.setKind(BinaryOperatorKind.PLUS);
-				op.setLeftHandOperand(operator.getRightHandOperand());
-				op.setRightHandOperand((CtExpression<?>) child);
+				op.setLeftHandOperand(operator.getLeftHandOperand());
+				op.setRightHandOperand(operator.getRightHandOperand());
 				op.setType((CtTypeReference) operator.getFactory().Type().STRING.clone());
-				operator.setRightHandOperand(op);
+				operator.setLeftHandOperand(op);
+				operator.setRightHandOperand(((CtExpression<?>) child));
 				int[] lineSeparatorPositions = jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions();
 				SourcePosition leftPosition = op.getLeftHandOperand().getPosition();
 				SourcePosition rightPosition = op.getRightHandOperand().getPosition();
