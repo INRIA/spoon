@@ -57,7 +57,8 @@ public class DefaultJavaPrettyPrinterTest {
     @ValueSource(strings = {
             "int sum = 1 + 2 + 3",
             "java.lang.String s = \"Sum: \" + (1 + 2)",
-            "java.lang.String s = \"Sum: \" + 1 + 2"
+            "java.lang.String s = \"Sum: \" + 1 + 2",
+            "java.lang.System.out.println(\"1\" + \"2\" + \"3\" + \"4\")"
     })
     public void testParenOptimizationCorrectlyPrintsParenthesesForStatements(String rawStatement) {
         // contract: When input expressions as part of statements are minimally parenthesized,
