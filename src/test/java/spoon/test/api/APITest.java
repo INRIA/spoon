@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,8 +41,14 @@ import spoon.SpoonAPI;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
@@ -63,15 +70,18 @@ import spoon.support.JavaOutputProcessor;
 import spoon.support.OutputDestinationHandler;
 import spoon.support.UnsettableProperty;
 import spoon.support.compiler.SnippetCompilationError;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.template.Local;
 import spoon.template.TemplateMatcher;
 import spoon.template.TemplateParameter;
 import spoon.test.api.processors.AwesomeProcessor;
 import spoon.test.api.testclasses.Bar;
+import spoon.test.api.testclasses.constants.ImportConstants;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -473,6 +483,87 @@ public class APITest {
 		assertEquals("io.example.pack1.Class1", add2.get(0).getType().getQualifiedName());
 		assertEquals(1, add2.get(0).getType().getActualTypeArguments().size());
 		assertEquals("io.example.pack1.Class2", add2.get(0).getType().getActualTypeArguments().get(0).getQualifiedName());
+	}
+
+	@Test
+	public void testParsingConstants() {
+
+		// Successful case
+		final Launcher launcher = new Launcher();
+		Environment environment = launcher.getEnvironment();
+
+		environment.setNoClasspath(true);
+		environment.setAutoImports(true);
+		environment.setComplianceLevel(11);
+		Path basePath = Paths.get("src/test/java/");
+		Path filePath = Paths.get("spoon/test/api/testclasses/constants/ImportConstants.java");
+		launcher.addInputResource(basePath.resolve(filePath).toString());
+		launcher.run();
+
+		CtType<ImportConstants> ctClass = launcher.getFactory().Type().get(ImportConstants.class);
+		CtMethod<?> concatConstants = ctClass.getMethodsByName("concatConstants").get(0);
+		CtStatement middle = concatConstants.getBody().getStatement(0);
+		assertInstanceOf(CtLocalVariable.class, middle);
+		assertEquals("java.lang.String", ((CtLocalVariable<?>) middle).getType().getQualifiedName());
+		CtFieldRead<?> defaultExpression2 = (CtFieldRead<?>) ((CtLocalVariable<?>) middle).getDefaultExpression();
+		assertEquals("spoon.test.api.testclasses.constants.Constants", ((CtTypeAccess<?>) defaultExpression2.getTarget()).getAccessedType().getQualifiedName());
+
+		assertInstanceOf(CtReturn.class, concatConstants.getBody().getStatement(1));
+		CtExpression<?> returnedExpression = ((CtReturn<?>) concatConstants.getBody().getStatement(1)).getReturnedExpression();
+		assertInstanceOf(CtInvocation.class, returnedExpression);
+		CtFieldRead<?> first = (CtFieldRead<?>) ((CtInvocation<?>) returnedExpression).getArguments().get(0);
+		assertInstanceOf(CtTypeAccess.class, first.getTarget());
+		assertEquals("spoon.test.api.testclasses.constants.Constants", ((CtTypeAccess<?>) first.getTarget()).getAccessedType().getQualifiedName());
+		CtFieldRead<?> last = (CtFieldRead<?>) ((CtInvocation<?>) returnedExpression).getArguments().get(2);
+		assertInstanceOf(CtTypeAccess.class, last.getTarget());
+		assertEquals("spoon.test.api.testclasses.constants.Constants", ((CtTypeAccess<?>) last.getTarget()).getAccessedType().getQualifiedName());
+
+		// Failed case with the same check
+		String code1 = "package io.example.pack2;\n" +
+				"    import io.example.Constants;\n" +
+				"    import static io.example.Constants.LAST;\n" +
+				"package io.example.pack;\n" +
+				"\n" +
+				"import io.example.Constants;\n" +
+				"import static io.example.Constants.LAST;\n" +
+				"\n" +
+				"public class ImportConstants {\n" +
+				"\n" +
+				"    public String concatConstants(){\n" +
+				"        String middle = Constants.MIDDLE;\n" +
+				"        return concat(Constants.FIRST, middle, LAST);\n" +
+				"    }\n" +
+				"\n" +
+				"    public String concat(String prefix, String middle, String suffix){\n" +
+				"        return prefix + middle + suffix;\n" +
+				"    }\n" +
+				"}";
+
+		Launcher launcher1 = new Launcher();
+		launcher1.addInputResource(new VirtualFile(code1));
+		launcher1.getEnvironment().setNoClasspath(true);
+		launcher1.getEnvironment().setAutoImports(true);
+		launcher1.getEnvironment().setComplianceLevel(11);
+		Collection<CtType<?>> allTypes = launcher1.buildModel().getAllTypes();
+		CtClass<?> class1 = (CtClass<?>) allTypes.stream().findFirst().get();
+		CtMethod<?> concatConstants1 = class1.getMethodsByName("concatConstants").get(0);
+		CtStatement middle1 = concatConstants1.getBody().getStatement(0);
+		assertInstanceOf(CtLocalVariable.class, middle1);
+		assertEquals("java.lang.String", ((CtLocalVariable<?>) middle1).getType().getQualifiedName());
+		CtFieldRead<?> defaultExpression1 = (CtFieldRead<?>) ((CtLocalVariable<?>) middle1).getDefaultExpression();
+		assertEquals("io.example.Constants", ((CtTypeAccess<?>)defaultExpression1.getTarget()).getAccessedType().getQualifiedName());
+
+		assertInstanceOf(CtReturn.class, concatConstants1.getBody().getStatement(1));
+		CtExpression<?> returnedExpression1 = ((CtReturn<?>) concatConstants1.getBody().getStatement(1)).getReturnedExpression();
+		assertInstanceOf(CtInvocation.class, returnedExpression1);
+		assertInstanceOf(CtFieldRead.class, ((CtInvocation<?>) returnedExpression1).getArguments().get(0));
+		CtFieldRead<?> first1 = (CtFieldRead<?>) ((CtInvocation<?>) returnedExpression1).getArguments().get(0);
+		assertInstanceOf(CtTypeAccess.class, first1.getTarget());
+		assertEquals("io.example.Constants", ((CtTypeAccess<?>)first1.getTarget()).getAccessedType().getQualifiedName());
+		assertInstanceOf(CtFieldRead.class, ((CtInvocation<?>) returnedExpression1).getArguments().get(2));
+		CtFieldRead<?> last1 = (CtFieldRead<?>) ((CtInvocation<?>) returnedExpression1).getArguments().get(2);
+		assertInstanceOf(CtTypeAccess.class, last1.getTarget());
+		assertEquals("io.example.Constants", ((CtTypeAccess<?>)last1.getTarget()).getAccessedType().getQualifiedName());
 	}
 
 	@Test
