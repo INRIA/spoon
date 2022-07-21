@@ -43,7 +43,6 @@ import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.internal.ElementNameMap;
 import spoon.support.util.ModelList;
 
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
