@@ -327,6 +327,7 @@ public abstract class CtElementImpl implements CtElement {
 	}
 
 	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <E extends CtElement> List<E> getElements(Filter<E> filter) {
 		return filterChildren(filter).list();
 	}
@@ -348,25 +349,21 @@ public abstract class CtElementImpl implements CtElement {
 
 	@Override
 	public CtElement getParent() throws ParentNotInitializedException {
-		if (parent != null) {
-			return parent;
+		if (parent == null) {
+			String exceptionMsg;
+			if (this instanceof CtReference) {
+				exceptionMsg = "parent not initialized for " + ((CtReference) this).getSimpleName() + "(" + this.getClass() + ")";
+			} else {
+				SourcePosition pos = getPosition();
+				if (this instanceof CtNamedElement) {
+					exceptionMsg = ("parent not initialized for " + ((CtNamedElement) this).getSimpleName() + "(" + this.getClass() + ")" + (pos != null ? " " + pos : " (?)"));
+				} else {
+					exceptionMsg = ("parent not initialized for " + this.getClass() + (pos != null ? " " + pos : " (?)"));
+				}
+			}
+			throw new ParentNotInitializedException(exceptionMsg);
 		}
-
-		throw new ParentNotInitializedException(createParentExceptionMessage());
-	}
-
-	private String createParentExceptionMessage() {
-		if (this instanceof CtReference) {
-			return String.format("parent not initialized for %s(%s)", ((CtReference) this).getSimpleName(), getClass());
-		}
-
-		SourcePosition pos = getPosition();
-		String posMessage = pos != null ? pos.toString() : "(?)";
-		if (this instanceof CtNamedElement) {
-			return String.format("parent not initialized for %s(%s)%s", ((CtNamedElement) this).getSimpleName(), this.getClass(), posMessage);
-		}
-
-		return String.format("parent not initialized for %s%s", this.getClass(), posMessage);
+		return parent;
 	}
 
 	@Override
@@ -414,7 +411,7 @@ public abstract class CtElementImpl implements CtElement {
 	@Override
 	public boolean hasParent(CtElement candidate) {
 		try {
-			return !(this instanceof CtModule && ((CtModule) this).isUnnamedModule()) && (getParent() == candidate || (getParent() != null  && getParent().hasParent(candidate)));
+			return this != getFactory().getModel().getUnnamedModule() && (getParent() == candidate || getParent().hasParent(candidate));
 		} catch (ParentNotInitializedException e) {
 			return false;
 		}

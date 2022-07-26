@@ -465,9 +465,9 @@ public class CommentTest {
 
 
 		CtLocalVariable ctLocalVariableString = m1.getBody().getStatement(12);
-		assertEquals(createFakeComment(f, "comment multi line string"), (((CtBinaryOperator) ctLocalVariableString.getDefaultExpression()).getLeftHandOperand()).getComments().get(0));
-		assertEquals("(\"\" + \"\")// comment multi line string" + newLine
-				+ " + \"\"", ctLocalVariableString.getDefaultExpression().toString());
+		assertEquals(createFakeComment(f, "comment multi line string"), ((CtBinaryOperator) ((CtBinaryOperator) ctLocalVariableString.getDefaultExpression()).getRightHandOperand()).getLeftHandOperand().getComments().get(0));
+		assertEquals("\"\" + (\"\"// comment multi line string" + newLine
+				+ " + \"\")", ctLocalVariableString.getDefaultExpression().toString());
 
 		ctLocalVariable1 = m1.getBody().getStatement(13);
 		assertEquals("boolean c = (i == 1) ? // comment before then boolean CtConditional" + newLine
