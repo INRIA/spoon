@@ -878,10 +878,11 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		tryAddEdge(lastNode, branch);
 		tryAddEdge(branch, convergenceNode);
 		lastNode = branch;
-		whileLoop.getBody().accept(this);
+		if (whileLoop.getBody() != null) {
+			whileLoop.getBody().accept(this);
+		}
 		tryAddEdge(lastNode, branch, true, false);
 		lastNode = convergenceNode;
-
 		breakingBad.pop();
 		continueBad.pop();
 	}
