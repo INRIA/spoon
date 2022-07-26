@@ -269,7 +269,6 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			public void addConstructor(CtConstructor<?> ctConstructor) {
 				ctClass.addConstructor(ctConstructor);
 			}
-
 			@Override
 			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
 				switch (role) {
