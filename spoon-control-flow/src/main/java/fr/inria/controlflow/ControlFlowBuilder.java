@@ -883,6 +883,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		}
 		tryAddEdge(lastNode, branch, true, false);
 		lastNode = convergenceNode;
+
 		breakingBad.pop();
 		continueBad.pop();
 	}
