@@ -583,6 +583,7 @@ public class SpoonPom implements SpoonResource {
 	 * @param sourceType the source type (App, test, or all)
 	 * @param LOGGER Logger used for maven output
 	 * @param forceRefresh if true forces the invocation of maven to regenerate classpath
+	 * @return the complete classpath of the requested source types
 	 */
 	public String[] buildClassPath(String mvnHome, MavenLauncher.SOURCE_TYPE sourceType, Logger LOGGER, boolean forceRefresh) {
 		return this.buildClassPath(mvnHome, sourceType, LOGGER, forceRefresh, MavenOptions.empty());
@@ -688,22 +689,36 @@ public class SpoonPom implements SpoonResource {
 		return pomFile;
 	}
 
+	/**
+	 * Additional options for maven invocations.
+	 */
 	@Internal
 	public static class MavenOptions {
 		private final Map<String, String> environmentVariables;
 
-		public MavenOptions() {
+		private MavenOptions() {
 			this.environmentVariables = new HashMap<>();
 		}
 
+		/**
+		 * Adds a maven environment variable.
+		 * @param key the name of the variable
+		 * @param value its value
+		 */
 		public void addEnvironmentVariable(String key, String value) {
 			this.environmentVariables.put(key, value);
 		}
 
+		/**
+		 * @return all set environment variables
+		 */
 		public Map<String, String> getEnvironmentVariables() {
 			return environmentVariables;
 		}
 
+		/**
+		 * @return a new empty options instance
+		 */
 		public static MavenOptions empty() {
 			return new MavenOptions();
 		}
