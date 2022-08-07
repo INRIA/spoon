@@ -249,6 +249,10 @@ public class MavenLauncherTest {
 			.stream(launcher.getEnvironment().getSourceClasspath())
 			.anyMatch(it -> it.matches(".*fr.inria.gforge.spoon.spoon-core.10.1.0.spoon-core-10.1.0.jar"));
 
-		assertTrue(containsSpoonDependency, "Spoon dependency not found. Was the environment variable set?");
+		assertTrue(
+			containsSpoonDependency,
+			"Spoon dependency not found. Was the environment variable set? Classpath: "
+				+ Arrays.toString(launcher.getEnvironment().getSourceClasspath())
+		);
 	}
 }
