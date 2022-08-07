@@ -19,14 +19,18 @@ package spoon;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import spoon.compiler.SpoonResource;
@@ -44,9 +48,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MavenLauncherTest {
 
+	@AfterEach
+	void tearDown() throws IOException {
+		// Clean up old classpath files to ensure tests actually re-run properly
+		try (Stream<Path> paths = Files.walk(Path.of("src/test/resources/maven-launcher"))) {
+			List<Path> filesToDelete = paths
+				.filter(it -> it.getFileName().toString().equals("spoon.classpath.tmp"))
+				.collect(Collectors.toList());
+
+			for (Path path : filesToDelete) {
+				Files.deleteIfExists(path);
+			}
+		}
+	}
+
 	// fixme: the test consumes too much memory for now
 	// we should reduce its footprint
-	
+
 	@Test
 	@Disabled
 	public void testTypeResolution() {
@@ -218,5 +236,19 @@ public class MavenLauncherTest {
 		File mavenHome = new File(pathToMavenHome);
 		assertTrue(mavenHome.exists());
 		assertTrue(mavenHome.isDirectory());
+	}
+
+	@Test
+	void mavenLauncherPassesEnvironmentVariables() {
+		// 10.1.0
+		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/with-environment-variables", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		launcher.addEnvironmentVariable("spoonVersion", "10.1.0");
+		launcher.rebuildClasspath();
+
+		boolean containsSpoonDependency = Arrays
+			.stream(launcher.getEnvironment().getSourceClasspath())
+			.anyMatch(it -> it.contains("fr/inria/gforge/spoon/spoon-core/10.1.0/spoon-core-10.1.0.jar"));
+
+		assertTrue(containsSpoonDependency, "Spoon dependency not found. Was the environment variable set?");
 	}
 }
