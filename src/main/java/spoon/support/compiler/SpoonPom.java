@@ -28,6 +28,7 @@ import spoon.compiler.Environment;
 import spoon.compiler.SpoonFolder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.support.Internal;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,8 +41,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -447,7 +450,13 @@ public class SpoonPom implements SpoonResource {
 		return sb.toString();
 	}
 
-	private void generateClassPathFile(File mvnHome, MavenLauncher.SOURCE_TYPE sourceType, Logger LOGGER, boolean forceRefresh) {
+	private void generateClassPathFile(
+		File mvnHome,
+		MavenLauncher.SOURCE_TYPE sourceType,
+		Logger LOGGER,
+		boolean forceRefresh,
+		Map<String, String> environmentVariables
+	) {
 		// Check if classpath file already exist and is recent enough (1h)
 		File classpathFile = new File(directory, getSpoonClasspathTmpFileName(sourceType));
 		Date date = new Date();
@@ -466,6 +475,10 @@ public class SpoonPom implements SpoonResource {
 			properties.setProperty("mdep.outputFile", getSpoonClasspathTmpFileName(sourceType));
 			request.setProperties(properties);
 			request.setReactorFailureBehavior(InvocationRequest.ReactorFailureBehavior.FailNever);
+
+			for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
+				request.addShellEnvironment(entry.getKey(), entry.getValue());
+			}
 
 			if (LOGGER != null) {
 				request.getOutputHandler(s -> LOGGER.debug(s));
@@ -572,10 +585,30 @@ public class SpoonPom implements SpoonResource {
 	 * @param forceRefresh if true forces the invocation of maven to regenerate classpath
 	 */
 	public String[] buildClassPath(String mvnHome, MavenLauncher.SOURCE_TYPE sourceType, Logger LOGGER, boolean forceRefresh) {
+		return this.buildClassPath(mvnHome, sourceType, LOGGER, forceRefresh, MavenOptions.empty());
+	}
+
+	/**
+	 * Call maven invoker to generate the classpath. Either M2_HOME must be
+	 * initialized, or the command mvn must be in PATH.
+	 *
+	 * @param mvnHome the path to the m2repository
+	 * @param sourceType the source type (App, test, or all)
+	 * @param LOGGER Logger used for maven output
+	 * @param forceRefresh if true forces the invocation of maven to regenerate classpath
+	 * @param mavenOptions additional options to pass to maven
+	 */
+	public String[] buildClassPath(
+		String mvnHome,
+		MavenLauncher.SOURCE_TYPE sourceType,
+		Logger LOGGER,
+		boolean forceRefresh,
+		MavenOptions mavenOptions
+	) {
 		if (mvnHome == null) {
 			mvnHome = guessMavenHome();
 		}
-		generateClassPathFile(new File(mvnHome), sourceType, LOGGER, forceRefresh);
+		generateClassPathFile(new File(mvnHome), sourceType, LOGGER, forceRefresh, mavenOptions.getEnvironmentVariables());
 
 		List<File> classPathPrints;
 		String[] classpath;
@@ -653,5 +686,26 @@ public class SpoonPom implements SpoonResource {
 	@Override
 	public File toFile() {
 		return pomFile;
+	}
+
+	@Internal
+	public static class MavenOptions {
+		private final Map<String, String> environmentVariables;
+
+		public MavenOptions() {
+			this.environmentVariables = new HashMap<>();
+		}
+
+		public void addEnvironmentVariable(String key, String value) {
+			this.environmentVariables.put(key, value);
+		}
+
+		public Map<String, String> getEnvironmentVariables() {
+			return environmentVariables;
+		}
+
+		public static MavenOptions empty() {
+			return new MavenOptions();
+		}
 	}
 }
