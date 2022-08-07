@@ -104,7 +104,7 @@ public class PackageFactory extends SubFactory {
 	 */
 	public CtPackage create(CtPackage parent, String simpleName) {
 		if (parent == null) {
-			return getOrCreate(simpleName, factory.getModel().getUnnamedModule());
+			return getOrCreate(simpleName);
 		} else {
 			return getOrCreate(parent + CtPackage.PACKAGE_SEPARATOR + simpleName, parent.getDeclaringModule());
 		}

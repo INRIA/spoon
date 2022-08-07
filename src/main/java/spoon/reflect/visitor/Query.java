@@ -8,7 +8,6 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtModule;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.chain.CtFunction;
@@ -43,7 +42,7 @@ public abstract class Query {
 	 */
 	public static <E extends CtElement> List<E> getElements(Factory factory,
 															Filter<E> filter) {
-		return getAllModules(factory).stream().map(ctModule -> getElements(ctModule.getRootPackage(), filter)).flatMap(Collection::stream).collect(Collectors.toUnmodifiableList());
+		return factory.getModel().getAllModules().stream().map(ctModule -> getElements(ctModule.getRootPackage(), filter)).flatMap(Collection::stream).collect(Collectors.toUnmodifiableList());
 	}
 
 	/**
@@ -95,10 +94,6 @@ public abstract class Query {
 	 */
 	public static <R extends CtReference> List<R> getReferences(
 			Factory factory, Filter<R> filter) {
-		return getAllModules(factory).stream().map(ctModule -> getReferences(ctModule.getRootPackage(), filter)).flatMap(Collection::stream).collect(Collectors.toUnmodifiableList());
-	}
-
-	private static Collection<CtModule> getAllModules(Factory factory) {
-		return factory.getModel().getAllModules();
+		return factory.getModel().getAllModules().stream().map(ctModule -> getReferences(ctModule.getRootPackage(), filter)).flatMap(Collection::stream).collect(Collectors.toUnmodifiableList());
 	}
 }

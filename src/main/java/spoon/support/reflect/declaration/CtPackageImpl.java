@@ -93,11 +93,11 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public String getQualifiedName() {
-		if (!isParentInitialized() || parent instanceof RootPackage || parent instanceof CtModule) {
+		if (getDeclaringPackage() == null || getDeclaringPackage().isUnnamedPackage()) {
 			return getSimpleName();
+		} else {
+			return getDeclaringPackage().getQualifiedName() + CtPackage.PACKAGE_SEPARATOR_CHAR + getSimpleName();
 		}
-
-		return ((CtPackage) parent).getQualifiedName() + CtPackage.PACKAGE_SEPARATOR_CHAR + getSimpleName();
 	}
 
 	@Override
@@ -134,22 +134,14 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return getFactory().Package().createReference(this);
 	}
 
-	public <T extends CtPackage> T addType(String simpleName, CtType<?> type) {
-		if (type == null) {
-			return (T) this;
-		}
-		// type map will take care of setting the parent
-		types.put(simpleName, type);
-		return (T) this;
-	}
-
 	@Override
 	public <T extends CtPackage> T addType(CtType<?> type) {
 		if (type == null) {
 			return (T) this;
 		}
-
-		return addType(type.getSimpleName(), type);
+		// type map will take care of setting the parent
+		types.put(type.getSimpleName(), type);
+		return (T) this;
 	}
 
 	@Override
@@ -197,11 +189,11 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return getPackages().isEmpty() && getTypes().isEmpty();
 	}
 
-	protected void updateTypeName(CtType<?> newType, String oldName) {
+	void updateTypeName(CtType<?> newType, String oldName) {
 		types.updateKey(oldName, newType.getSimpleName());
 	}
 
-	protected void updatePackageName(CtPackage newPackage, String oldName) {
+	void updatePackageName(CtPackage newPackage, String oldName) {
 		packs.updateKey(oldName, newPackage.getSimpleName());
 	}
 
@@ -219,16 +211,11 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 		@Override
 		public CtPackage put(String simpleName, CtPackage pack) {
-			if (pack == null) {
+			if (pack == null || pack == CtPackageImpl.this) {
 				return null;
 			}
 
-			if (CtPackageImpl.this.getQualifiedName().equals(pack.getQualifiedName())) {
-				addAllTypes(pack, CtPackageImpl.this);
-				addAllPackages(pack, CtPackageImpl.this);
-				return null;
-			}
-
+			// it already exists
 			CtPackage ctPackage = get(simpleName);
 			if (ctPackage != null) {
 				addAllTypes(pack, ctPackage);

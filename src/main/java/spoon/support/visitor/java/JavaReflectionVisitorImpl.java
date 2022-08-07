@@ -536,7 +536,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		}
 		try {
 			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
-				visitTypeParameter(generic);
+					visitTypeParameter(generic);
 			}
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath

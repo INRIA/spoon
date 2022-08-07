@@ -13,23 +13,15 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
 
-import java.util.Collection;
-import java.util.stream.Stream;
-
 /**
  * Gets all overridden method from the method given.
  */
 public class OverriddenMethodQuery implements CtConsumableFunction<CtMethod<?>> {
 	@Override
 	public void apply(CtMethod<?> input, CtConsumer<Object> outputConsumer) {
-		filterChildren(input).forEach(ctQuery -> ctQuery.forEach(outputConsumer));
-	}
-
-	private Stream<CtQuery> filterChildren(CtMethod<?> input) {
-		return getModules(input).stream().map(ctModule -> ctModule.getRootPackage().filterChildren(new OverriddenMethodFilter(input)));
-	}
-
-	private Collection<CtModule> getModules(CtMethod<?> input) {
-		return input.getFactory().getModel().getAllModules();
+		for(CtModule module : input.getFactory().getModel().getAllModules()) {
+			CtQuery query = module.getRootPackage().filterChildren(new OverriddenMethodFilter(input));
+			query.forEach(outputConsumer);
+		}
 	}
 }

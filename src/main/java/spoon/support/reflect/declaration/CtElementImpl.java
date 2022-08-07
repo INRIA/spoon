@@ -411,7 +411,7 @@ public abstract class CtElementImpl implements CtElement {
 	@Override
 	public boolean hasParent(CtElement candidate) {
 		try {
-			return this != getFactory().getModel().getUnnamedModule() && (getParent() == candidate || getParent().hasParent(candidate));
+			return !(this instanceof CtModule) && (getParent() == candidate || getParent().hasParent(candidate));
 		} catch (ParentNotInitializedException e) {
 			return false;
 		}
