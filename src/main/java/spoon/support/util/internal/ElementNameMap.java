@@ -17,7 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
@@ -53,7 +53,7 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 	// to be serializable as well (Rule 1948).
 	// It doesn't seem smart enough to realize it is final and only assigned to a Serializable Map
 	// in the constructor.
-	private final ConcurrentSkipListMap<String, InsertOrderWrapper<T>> map;
+	private final ConcurrentHashMap<String, InsertOrderWrapper<T>> map;
 
 	private final AtomicInteger insertionNumber;
 
@@ -74,7 +74,7 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 
 
 	protected ElementNameMap() {
-		this.map = new ConcurrentSkipListMap<>();
+		this.map = new ConcurrentHashMap<>();
 		this.insertionNumber = new AtomicInteger();
 	}
 
