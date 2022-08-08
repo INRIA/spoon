@@ -1,0 +1,9 @@
+import spoon.compiler.Environment;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+
+class RoundBracketPrinter extends DefaultJavaPrettyPrinter {
+public RoundBracketPrinter(Environment env) {
+super(env);
+this.setMinimizeRoundBrackets(true);
+}
+}
