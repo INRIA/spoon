@@ -19,7 +19,7 @@ import spoon.reflect.visitor.chain.CtQuery;
 public class OverriddenMethodQuery implements CtConsumableFunction<CtMethod<?>> {
 	@Override
 	public void apply(CtMethod<?> input, CtConsumer<Object> outputConsumer) {
-		for(CtModule module : input.getFactory().getModel().getAllModules()) {
+		for (CtModule module : input.getFactory().getModel().getAllModules()) {
 			CtQuery query = module.getRootPackage().filterChildren(new OverriddenMethodFilter(input));
 			query.forEach(outputConsumer);
 		}
