@@ -1,0 +1,60 @@
+import java.sql.*;
+import java.utils.*;
+public class bracketSampleFile {
+ public void method1() {
+String Query = "select * FROM employees where rownum < 10 order by name";
+String q1 = "SELECT";
+
+      StringBuffer sbf = new StringBuffer();
+      sbf.append("SELECT")
+      sbf.append("nextval('sequence_name') * dual");
+
+
+      // Open a connection
+      try(Connection conn = DriverManager.getConnection(DB_URL1, USER, PASS);
+         Statement stmt = conn.createStatement();  
+         // ResultSet rs = stmt.executeQuery("SELECT; employee.employee_id,employee.employee_name,department. department_name FROM employee INNER JOIN department ON employee.employee _id = department.employee _id;");) { 
+         // ResultSet rs = stmt.executeQuery(Query);){
+         ResultSet rs = stmt.executeQuery(sbf.toString());){
+         // ResultSet rs = stmt.executeQuery(QUERY1 + "*" + QUERY3+QUERY4;)){
+         // ResultSet rs = stmt.executeQuery(QUERY1 + QUERY2+ QUERY3+QUERY4;)){
+         // ResultSet rs = stmt.executeQuery("SELECT; SYSDATE FROM DUAL")){
+         // ResultSet rs = stmt.executeQuery(q1 + sbf.toString());){ 
+
+
+      } catch (SQLException e) {
+         e.printStackTrace();
+      } 
+   }  
+
+
+public void method2() {
+String Query = "select * FROM employees where rownum < 10 order by name";
+String q1 = "SELECT";
+
+      StringBuffer sbf = new StringBuffer();
+      sbf.append("SELECT")
+      sbf.append("* FROM");
+      sbf.append("EMP;");
+
+
+      // Open a connection
+      try(Connection conn = DriverManager.getConnection(DB_URL1, USER, PASS);
+         Statement stmt = conn.createStatement();  
+         // ResultSet rs = stmt.executeQuery("SELECT; employee.employee_id,employee.employee_name,department. department_name FROM employee INNER JOIN department ON employee.employee _id = department.employee _id;");) { 
+         // ResultSet rs = stmt.executeQuery(Query);){
+         ResultSet rs = stmt.executeQuery(sbf.toString());){
+         // ResultSet rs = stmt.executeQuery(QUERY1 + "*" + QUERY3+QUERY4;)){
+         // ResultSet rs = stmt.executeQuery(QUERY1 + QUERY2+ QUERY3+QUERY4;)){
+         // ResultSet rs = stmt.executeQuery("SELECT; SYSDATE FROM DUAL")){
+         // ResultSet rs = stmt.executeQuery(QUERY1 + QUERY2 + Query3+"EMP");) {   
+         // ResultSet rs = stmt.executeQuery(QUERY1 + QUERY2 + Query3+"EMP");) {    
+         // ResultSet rs = stmt.executeQuery(q1 + sb.toString());){
+      } catch (SQLException e) {
+         e.printStackTrace();
+      } 
+   }  
+
+}
+
+
