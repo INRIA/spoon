@@ -1,0 +1,100 @@
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import spoon.Launcher;
+import spoon.compiler.Environment;
+import spoon.reflect.CtModel;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.TypeFilter;
+
+public class test {
+
+	public static void main(String args[]) throws IOException {
+
+
+		getJavaFileVariableContents();
+
+	}
+
+	
+
+	public static void getJavaFileVariableContents() {
+
+		String dirPath = "C:\\Users\\sampleFile.java";
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(dirPath);
+		Environment e = launcher.getEnvironment();
+		RoundBracketPrinter printer = new RoundBracketPrinter(launcher.getEnvironment());
+		e.setPrettyPrinterCreator(() -> printer);
+		CtModel model = launcher.buildModel();
+		MultiValuedMap<String, List<String>> variableDetails = new ArrayListValuedHashMap<String, List<String>>();
+			
+			try {
+				for (CtField<?> ctField : model.getElements(new TypeFilter<>(CtField.class))) {
+					String variableValue = "";
+					String variablePath = ctField.getPath().toString();
+					String variableName = ctField.getSimpleName();
+					if (ctField.getAssignment() != null) {
+						variableValue = ctField.getAssignment().toString();
+					}
+					String variableLineNumber = String.valueOf(ctField.getPosition().getLine());
+
+					List<String> variableDetailsList = new ArrayList<String>();
+
+					variableDetailsList.add(variableValue);
+					variableDetailsList.add(variablePath);
+					variableDetailsList.add(variableLineNumber);
+					variableDetails.put(variableName, variableDetailsList);
+
+				}
+				for (CtLocalVariable<?> variable : model.getElements(new TypeFilter<>(CtLocalVariable.class))) {
+					String variableValue = "";
+					String variablePath = variable.getPath().toString();
+					String variableName = variable.getSimpleName();
+					if (variable.getAssignment() != null) {
+						variableValue = variable.getAssignment().toString();
+					}
+					String variableLineNumber = String.valueOf(variable.getPosition().getLine());
+
+					List<String> variableDetailsList = new ArrayList<String>();
+
+					variableDetailsList.add(variableValue); // 0
+					variableDetailsList.add(variablePath); // 1
+					variableDetailsList.add(variableLineNumber); // 2
+					variableDetails.put(variableName, variableDetailsList);
+
+				}
+				
+				System.out.print(variableDetails);
+			} 
+			
+			
+			catch (Exception e1) {
+				System.out.println(e1);
+			}
+
+		}
+
+
+
+}
+
