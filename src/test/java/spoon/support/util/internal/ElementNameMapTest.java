@@ -7,7 +7,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,7 @@ class ElementNameMapTest {
         Factory factory = new Launcher().getFactory();
         List<Map.Entry<String, CtLiteral<String>>> entries = Stream.of("c", "a", "b")
                 .map(factory::createLiteral)
-                .map(literal -> new AbstractMap.SimpleEntry<>(literal.getValue(), literal))
+                .map(literal -> Map.entry(literal.getValue(), literal))
                 .collect(Collectors.toList());
 
         var map = new SimpleElementNameMap(factory.createClass());
