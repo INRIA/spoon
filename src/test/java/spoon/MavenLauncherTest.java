@@ -247,7 +247,7 @@ public class MavenLauncherTest {
 
 		boolean containsSpoonDependency = Arrays
 			.stream(launcher.getEnvironment().getSourceClasspath())
-			.anyMatch(it -> it.matches(".*fr.inria.gforge.spoon.spoon-core.10.1.0.spoon-core-10.1.0.jar"));
+			.anyMatch(it -> it.matches(".*fr.inria.gforge.spoon.spoon-core.10.1.0.spoon-core-10.1.0.jar.*"));
 
 		assertTrue(
 			containsSpoonDependency,
