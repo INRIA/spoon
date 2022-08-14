@@ -20,11 +20,16 @@ Launcher launcher = new Launcher();
 // path can be a folder or a file
 // addInputResource can be called several times
 launcher.addInputResource("<path_to_source>"); 
+// the compliance level should be set to the java version targeted by the input resources, e.g. Java 17
+launcher.getEnvironment().setComplianceLevel(17);
 
 launcher.buildModel();
 
 CtModel model = launcher.getModel();
 ```
+
+The current default value for the compliance level is 8.
+It might cause unexpected issues to have a compliance level lower than the Java version of the input resources. 
 
 ### Pretty-printing modes
 
