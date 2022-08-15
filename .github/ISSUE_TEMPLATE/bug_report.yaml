@@ -85,6 +85,7 @@ body:
     id: maven_installed
     attributes:
       label: Do you have maven installed?
+       description: "Is maven installed in your environment and you can invoke maven commands?"
       options:
         - "yes"
         - "no"
