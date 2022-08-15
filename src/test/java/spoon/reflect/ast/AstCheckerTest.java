@@ -72,7 +72,7 @@ public class AstCheckerTest {
 		List<CtComment> comments = model.getElements(new TypeFilter<>(CtComment.class));
 
 		// assert
-		assertThat(comments.size(), equalTo(3));
+		assertThat(comments.size(), equalTo(4));
 	}
 
 	@Test

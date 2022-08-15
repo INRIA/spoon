@@ -3,6 +3,7 @@ public class CommentsOnCaseExpression {
         String stageStr;
         boolean fullStatus;
         switch (stage) {
+            // Inline comments are also a part now
             case (1/*org.apache.coyote.Constants.STAGE_PARSE*/):
                 stageStr = "P";
                 fullStatus = false;
