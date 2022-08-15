@@ -44,6 +44,7 @@ import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.internal.ElementNameMap;
 import spoon.support.util.ModelList;
+import spoon.testing.utils.ModelTest;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -59,15 +60,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AstCheckerTest {
 
-	@Test
-	void ctLiteralsInCtCaseExpressionShouldHaveCommentsAttached() {
+	@ModelTest("src/test/resources/comment/CommentsOnCaseExpression.java")
+	void ctLiteralsInCtCaseExpressionShouldHaveCommentsAttached(CtModel model) {
 		// contract: literal nodes should have comments attached to them.
-		// arrange
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/comment/CommentsOnCaseExpression.java");
-		launcher.getEnvironment().setCommentEnabled(true);
-		CtModel model = launcher.buildModel();
-
 		// act
 		List<CtComment> comments = model.getElements(new TypeFilter<>(CtComment.class));
 
