@@ -157,7 +157,7 @@ jobs:
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@ab695492d98902c49b33382782175107ec63ca28 # tag=v2022.2.1
         with:
-          args: --linter, ${{ env.QODANA_LINTER }}, project-dir, "${{ github.workspace }}/pull_request",source-directory, ./src/main/java,results-dir "${{ github.workspace }}/result",changes,true,fail-threshold,0
+          args: --linter, ${{ env.QODANA_LINTER }}, project-dir, "${{ github.workspace }}/pull_request",source-directory, ./src/main/java,results-dir, "${{ github.workspace }}/result",changes,true,fail-threshold,0
           use-annotations: false
           use-caches: false # we disable cache for consistent results
       - uses: github/codeql-action/upload-sarif@3f62b754e23e0dd60f91b744033e1dc1654c0ec6 # tag=v2
