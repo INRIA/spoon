@@ -81,11 +81,12 @@ body:
       label: What operating system are you using?
     validations:
       required: true
-  - type: checkboxes
+  - type: dropdown
     id: maven_installed
     attributes:
       label: Do you have maven installed?
       options:
         - label: "yes"
         - label: "no"
-          required: true  
+  validations:
+    required: true
