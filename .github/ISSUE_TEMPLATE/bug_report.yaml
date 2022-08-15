@@ -86,6 +86,6 @@ body:
     attributes:
       label: Do you have maven installed?
       options:
-        - label: yes
-        - label: no
+        - label: "yes"
+        - label: "no"
           required: true  
