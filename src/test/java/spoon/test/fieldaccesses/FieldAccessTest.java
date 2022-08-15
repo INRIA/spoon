@@ -36,6 +36,7 @@ import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtClass;
@@ -415,7 +416,7 @@ public class FieldAccessTest {
 			@Override
 			public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
 				visited++;
-				assertEquals("a", ((CtVariableWrite) fieldWrite.getTarget()).getVariable().getSimpleName());
+				assertEquals("a", ((CtVariableRead<?>) fieldWrite.getTarget()).getVariable().getSimpleName());
 				assertEquals("l", fieldWrite.getVariable().getSimpleName());
 			}
 		}
