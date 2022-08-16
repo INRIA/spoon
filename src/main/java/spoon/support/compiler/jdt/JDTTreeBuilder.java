@@ -8,6 +8,8 @@
 package spoon.support.compiler.jdt;
 
 import java.util.Set;
+
+import org.eclipse.jdt.internal.compiler.lookup.ParameterizedGenericMethodBinding;
 import org.slf4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
@@ -1423,6 +1425,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 			if (messageSend.expectedType() != null) {
 				inv.getExecutable().setType(references.getTypeReference(messageSend.expectedType()));
+			}
+		}
+		// No explicit type arguments given for call, but JDT inferred them (e.g. in a List.of("foo") call)
+		if (messageSend.binding instanceof ParameterizedGenericMethodBinding && messageSend.typeArguments == null) {
+			ParameterizedGenericMethodBinding binding = (ParameterizedGenericMethodBinding) messageSend.binding;
+			for (TypeBinding argument : binding.typeArguments) {
+				CtTypeReference<Object> reference = getReferencesBuilder().getTypeReference(argument);
+				reference.setImplicit(true);
+				inv.addActualTypeArgument(reference);
 			}
 		}
 		context.enter(inv, messageSend);

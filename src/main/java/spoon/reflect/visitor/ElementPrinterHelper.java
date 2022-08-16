@@ -241,22 +241,32 @@ public class ElementPrinterHelper {
 	/**
 	 * Writes actual type arguments in a {@link CtActualTypeContainer} element.
 	 *
-	 * @param ctGenericElementReference
-	 * 		Reference with actual type arguments.
+	 * @param ctGenericElementReference Reference with actual type arguments.
+	 * @param handleImplicit Whether to print type arguments if they are all implicit
 	 */
-	public void writeActualTypeArguments(CtActualTypeContainer ctGenericElementReference) {
-		final Collection<CtTypeReference<?>> arguments = ctGenericElementReference.getActualTypeArguments();
-		if (arguments != null && !arguments.isEmpty()) {
-			printList(arguments.stream().filter(a -> !a.isImplicit())::iterator,
-				null, false, "<", false, false, ",", true, false, ">",
-				argument -> {
-					if (prettyPrinter.getContext().forceWildcardGenerics()) {
-						printer.writeSeparator("?");
-					} else {
-						prettyPrinter.scan(argument);
-					}
-				});
+	public void writeActualTypeArguments(
+		CtActualTypeContainer ctGenericElementReference,
+		PrintTypeArguments handleImplicit
+	) {
+		Collection<CtTypeReference<?>> arguments = ctGenericElementReference.getActualTypeArguments();
+		if (arguments == null || arguments.isEmpty()) {
+			return;
 		}
+
+		boolean allImplicit = arguments.stream().allMatch(CtElement::isImplicit);
+		if (allImplicit && handleImplicit == PrintTypeArguments.OMIT_IF_IMPLICIT) {
+			return;
+		}
+
+		printList(arguments.stream().filter(a -> !a.isImplicit())::iterator,
+			null, false, "<", false, false, ",", true, false, ">",
+			argument -> {
+				if (prettyPrinter.getContext().forceWildcardGenerics()) {
+					printer.writeSeparator("?");
+				} else {
+					prettyPrinter.scan(argument);
+				}
+			});
 	}
 
 	private boolean isJavaLangClasses(String importType) {
@@ -564,5 +574,10 @@ public class ElementPrinterHelper {
 		printer.writeln().incTab().writeKeyword("permits").writeSpace();
 		printList(sealable.getPermittedTypes(), null, false, null, false, false, ",", true, false, null, prettyPrinter::scan);
 		printer.decTab();
+	}
+
+	public enum PrintTypeArguments {
+		OMIT_IF_IMPLICIT,
+		INCLUDE_IF_IMPLICIT
 	}
 }
