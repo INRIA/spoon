@@ -190,7 +190,7 @@
                 </execution>
                 <execution>
           <id>report</id>
-          <phase>check</phase>
+          <phase>test/phase>
           <goals>
             <goal>report</goal>
           </goals>
