@@ -339,7 +339,7 @@ public class ElementSourceFragment implements SourceFragment {
 		OTHER_IS_BEFORE,
 		OTHER_IS_AFTER,
 		OTHER_IS_CHILD,
-		OTHER_IS_PARENT;
+		OTHER_IS_PARENT
 	}
 
 	/**
