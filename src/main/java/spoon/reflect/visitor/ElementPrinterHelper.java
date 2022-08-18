@@ -240,6 +240,20 @@ public class ElementPrinterHelper {
 
 	/**
 	 * Writes actual type arguments in a {@link CtActualTypeContainer} element.
+	 * Passes {@link PrintTypeArguments#ONLY_PRINT_EXPLICIT_TYPES}.
+	 *
+	 * @param ctGenericElementReference Reference with actual type arguments.
+	 * @see #writeActualTypeArguments(CtActualTypeContainer, PrintTypeArguments)
+	 * @deprecated use {@link #writeActualTypeArguments(CtActualTypeContainer, PrintTypeArguments)}. This method is
+	 * only kept for backwards compatibility.
+	 */
+	@Deprecated
+	public void writeActualTypeArguments(CtActualTypeContainer ctGenericElementReference) {
+		writeActualTypeArguments(ctGenericElementReference, PrintTypeArguments.ONLY_PRINT_EXPLICIT_TYPES);
+	}
+
+	/**
+	 * Writes actual type arguments in a {@link CtActualTypeContainer} element.
 	 *
 	 * @param ctGenericElementReference Reference with actual type arguments.
 	 * @param handleImplicit Whether to print type arguments if they are all implicit
@@ -254,7 +268,7 @@ public class ElementPrinterHelper {
 		}
 
 		boolean allImplicit = arguments.stream().allMatch(CtElement::isImplicit);
-		if (allImplicit && handleImplicit == PrintTypeArguments.OMIT_IF_IMPLICIT) {
+		if (allImplicit && handleImplicit == PrintTypeArguments.ONLY_PRINT_EXPLICIT_TYPES) {
 			return;
 		}
 
@@ -576,8 +590,22 @@ public class ElementPrinterHelper {
 		printer.decTab();
 	}
 
+	/**
+	 * Whether to print generic types for references. This affects e.g. explicit type arguments for constructor
+	 * or method calls.
+	 *
+	 * A diamond operator is only valid in some places. This enum controls whether they can and should be printed at
+	 * a given location.
+	 */
 	public enum PrintTypeArguments {
-		OMIT_IF_IMPLICIT,
-		INCLUDE_IF_IMPLICIT
+		/**
+		 * Only print explicit type argument. Implicit (i.e. inferred types) are not printed. Consequently, this will
+		 * also not print a diamond operator.
+		 */
+		ONLY_PRINT_EXPLICIT_TYPES,
+		/**
+		 * Print explicit type arguments, but also print a diamond operator if implicit type arguments were used.
+		 */
+		ALSO_PRINT_DIAMOND_OPERATOR
 	}
 }
