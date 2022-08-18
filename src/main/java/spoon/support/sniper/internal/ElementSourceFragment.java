@@ -43,7 +43,6 @@ import java.util.StringTokenizer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-
 /**
  * Represents a part of source code of an {@link CtElement}
  * It is connected into a tree of {@link ElementSourceFragment}s.
