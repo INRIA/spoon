@@ -40,13 +40,19 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
+import spoon.support.util.internal.lexer.JavaLexer;
+import spoon.support.util.internal.lexer.ModifierTrie;
+import spoon.support.util.internal.lexer.Token;
+import spoon.support.util.internal.lexer.TokenType;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -582,6 +588,8 @@ public class PositionBuilder {
 		}
 
 		//move end after the last char
+		ModifierTrie modifierTrie = new ModifierTrie();
+		modifierTrie.collectModifiers(contents, start, end, jdtTreeBuilder, cu);
 		end++;
 		while (start < end && explicitModifiersByName.size() > 0) {
 			int o1 = findNextNonWhitespace(contents, end - 1, start);

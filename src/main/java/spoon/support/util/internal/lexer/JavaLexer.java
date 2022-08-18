@@ -22,6 +22,10 @@ public class JavaLexer {
 		this.nextPos = this.start;
 	}
 
+	/**
+	 *
+	 * @return {@code null} if no more tokens can be lexed in the range of this lexer.
+	 */
 	public Token lex() {
 		if (!skipCommentsAndWhitespaces()) {
 			return null;
@@ -281,7 +285,7 @@ public class JavaLexer {
 						while (true) {
 							Token lex = javaLexer.lex();
 							if (lex == null) {
-								if ("}".equals(store)) {
+								if ("}".equals(store)) { // that doesn't make sense
 									System.out.println("suspicious end: " + store);
 								}
 								return;
