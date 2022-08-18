@@ -7,7 +7,6 @@
  */
 package spoon.support.sniper.internal;
 
-
 import spoon.SpoonException;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtLiteral;
@@ -42,6 +41,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
 
 /**
  * Represents a part of source code of an {@link CtElement}
@@ -339,7 +339,7 @@ public class ElementSourceFragment implements SourceFragment {
 		OTHER_IS_BEFORE,
 		OTHER_IS_AFTER,
 		OTHER_IS_CHILD,
-		OTHER_IS_PARENT
+		OTHER_IS_PARENT;
 	}
 
 	/**
@@ -666,7 +666,7 @@ public class ElementSourceFragment implements SourceFragment {
 			throw new SpoonException("Inconsistent start/end. Start=" + start + " is greater then End=" + end);
 		}
 		String sourceCode = getOriginalSourceCode();
-		if (sourceCode.length() == 0) {
+		if (sourceCode.isEmpty()) {
 			return;
 		}
 		StringBuilder buff = new StringBuilder();
