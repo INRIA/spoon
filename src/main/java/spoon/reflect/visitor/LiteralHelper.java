@@ -12,8 +12,6 @@ import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.LiteralBase;
 import spoon.reflect.cu.SourcePosition;
 
-
-
 /**
  * Computes source code representation of the literal
  */
