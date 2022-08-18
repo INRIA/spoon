@@ -7,6 +7,7 @@
  */
 package spoon.support;
 
+
 import org.slf4j.Logger;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -51,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Supplier;
-
 
 
 /**
