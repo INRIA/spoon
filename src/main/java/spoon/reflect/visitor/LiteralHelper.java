@@ -12,6 +12,8 @@ import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.LiteralBase;
 import spoon.reflect.cu.SourcePosition;
 
+
+
 /**
  * Computes source code representation of the literal
  */
@@ -61,10 +63,7 @@ abstract class LiteralHelper {
 	 * @return source code representation of the literal
 	 */
 	public static String getTextBlockToken(CtTextBlock literal) {
-		String token = "\"\"\"\n"
-				+ literal.getValue().replace("\\", "\\\\")
-				+ "\"\"\"";
-		return token;
+		return "\"\"\"\n" + literal.getValue().replace("\\", "\\\\") + "\"\"\"";
 	}
 
 	/**
