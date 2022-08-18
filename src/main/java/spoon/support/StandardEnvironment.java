@@ -7,7 +7,6 @@
  */
 package spoon.support;
 
-
 import org.slf4j.Logger;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -52,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Supplier;
+
 
 
 /**
@@ -692,8 +692,7 @@ private transient  ClassLoader inputClassloader;
 
 
 			if (PRETTY_PRINTING_MODE.DEBUG.equals(prettyPrintingMode)) {
-				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
-				return printer;
+				return new DefaultJavaPrettyPrinter(this);
 			}
 
 			if (PRETTY_PRINTING_MODE.FULLYQUALIFIED.equals(prettyPrintingMode)) {
