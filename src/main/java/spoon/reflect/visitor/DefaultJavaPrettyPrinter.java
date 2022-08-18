@@ -1607,9 +1607,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 			printer.writeKeyword("new").writeSpace();
 
-			if (!ctConstructorCall.getActualTypeArguments().isEmpty()) {
-				elementPrinterHelper.writeActualTypeArguments(ctConstructorCall, ALSO_PRINT_DIAMOND_OPERATOR);
-			}
+			elementPrinterHelper.writeActualTypeArguments(ctConstructorCall, ALSO_PRINT_DIAMOND_OPERATOR);
 
 			scan(ctConstructorCall.getType());
 		}
