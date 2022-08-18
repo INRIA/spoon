@@ -7,6 +7,7 @@
  */
 package spoon.support.sniper.internal;
 
+
 import spoon.SpoonException;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtLiteral;
