@@ -23,6 +23,10 @@ public final class Token {
 		return this.end;
 	}
 
+	public int length() {
+		return end - start;
+	}
+
 	public String valueForContent(char[] content) {
 		return new String(content, this.start, this.end - this.start);
 	}
