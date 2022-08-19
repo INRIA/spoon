@@ -12,7 +12,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>${env.spoonVersion}</version>
+            <version>${env.SPOON_VERSION}</version>
         </dependency>
     </dependencies>
 </project>

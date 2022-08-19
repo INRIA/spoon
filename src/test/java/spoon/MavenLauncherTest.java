@@ -280,7 +280,7 @@ public class MavenLauncherTest {
 			copyResourceToFolder(tempDir, "./src/test/resources/maven-launcher/with-environment-variables"),
 			MavenLauncher.SOURCE_TYPE.ALL_SOURCE
 		);
-		launcher.addEnvironmentVariable("spoonVersion", "10.1.0");
+		launcher.addEnvironmentVariable("SPOON_VERSION", "10.1.0");
 		launcher.rebuildClasspath();
 
 		boolean containsSpoonDependency = Arrays
