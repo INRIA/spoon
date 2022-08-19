@@ -11,6 +11,7 @@ import static spoon.support.util.internal.ModelCollectionUtils.linkToParent;
 
 import java.io.Serializable;
 import java.util.AbstractMap;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -82,6 +83,11 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 
 	protected abstract CtRole getRole();
 
+	@Override
+	public Collection<T> values() {
+		return map.values();
+	}
+
 	/**
 	 * {@inheritDoc }
 	 *
@@ -128,6 +134,11 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 		);
 
 		return removed;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return map.isEmpty();
 	}
 
 	@Override
