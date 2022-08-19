@@ -11,7 +11,6 @@ import static spoon.support.util.internal.ModelCollectionUtils.linkToParent;
 
 import java.io.Serializable;
 import java.util.AbstractMap;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
