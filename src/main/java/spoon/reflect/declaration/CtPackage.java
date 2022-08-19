@@ -163,7 +163,8 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	boolean isEmpty();
 
 	/**
-	 * @return true if the package contains no types.
+	 * @return true if the package contains any types.
+	 * @see #getTypes()
 	 */
-	boolean hasNoTypes();
+	boolean hasTypes();
 }

@@ -182,7 +182,7 @@ public class PackageFactory extends SubFactory {
 				continue;
 			}
 			lastNonNullPackage = aPackage;
-			if (!aPackage.hasNoTypes()) {
+			if (aPackage.hasTypes()) {
 				packageWithTypes = aPackage;
 				foundPackageCount++;
 			}
