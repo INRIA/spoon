@@ -692,8 +692,7 @@ private transient  ClassLoader inputClassloader;
 
 
 			if (PRETTY_PRINTING_MODE.DEBUG.equals(prettyPrintingMode)) {
-				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
-				return printer;
+				return new DefaultJavaPrettyPrinter(this);
 			}
 
 			if (PRETTY_PRINTING_MODE.FULLYQUALIFIED.equals(prettyPrintingMode)) {
