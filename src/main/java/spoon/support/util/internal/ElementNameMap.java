@@ -83,11 +83,6 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 
 	protected abstract CtRole getRole();
 
-	@Override
-	public Collection<T> values() {
-		return map.values();
-	}
-
 	/**
 	 * {@inheritDoc }
 	 *
