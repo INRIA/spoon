@@ -159,6 +159,15 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 		return map.containsKey(key);
 	}
 
+	@Override
+	public T get(Object key) {
+		InsertOrderWrapper<T> wrapper = map.get(key);
+		if (wrapper == null) {
+			return null;
+		}
+		return wrapper.value;
+	}
+
 	/**
 	 * Updates the mapping for a single key from {@code oldKey} to {@code newKey} if present.
 	 *
