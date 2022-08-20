@@ -62,11 +62,12 @@ import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
  */
 public class PositionBuilder {
 
-	private static final ModifierExtractor EXTRACTOR = new ModifierExtractor();
+	private final ModifierExtractor extractor;
 	private final JDTTreeBuilder jdtTreeBuilder;
 
 	public PositionBuilder(JDTTreeBuilder jdtTreeBuilder) {
 		this.jdtTreeBuilder = jdtTreeBuilder;
+		this.extractor = new ModifierExtractor();
 	}
 
 	SourcePosition buildPosition(int sourceStart, int sourceEnd) {
@@ -584,7 +585,7 @@ public class PositionBuilder {
 
 		//move end after the last char
 		end++;
-		EXTRACTOR.collectModifiers(contents, start, end, explicitModifiersByKind,
+		extractor.collectModifiers(contents, start, end, explicitModifiersByKind,
 				(modStart, modEnd) -> cf.createSourcePosition(cu, modStart, modEnd, cu.getLineSeparatorPositions())
 		);
 		if (!explicitModifiersByKind.isEmpty()) {
