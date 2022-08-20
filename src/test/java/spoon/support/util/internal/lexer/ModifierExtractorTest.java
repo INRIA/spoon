@@ -10,6 +10,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.support.reflect.CtExtendedModifier;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,6 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anEmptyMap;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 
 class ModifierExtractorTest {
@@ -113,6 +116,13 @@ class ModifierExtractorTest {
 		}
 	}
 
+	static void addDelimiters(StringBuilder builder, Random random) {
+		int count = random.nextInt(2) + 1; // [1, 3)
+		for (int i = 0; i < count; i++) {
+			builder.append(DELIMITER.get(random.nextInt(DELIMITER.size())));
+		}
+	}
+
 	@ParameterizedTest
 	@ValueSource(strings = {
 			"/**/public",
@@ -137,11 +147,34 @@ class ModifierExtractorTest {
 		assertThat(allModifiers.keySet(), hasItem(ModifierKind.FINAL)); // final shouldn't be removed
 	}
 
-	static void addDelimiters(StringBuilder builder, Random random) {
-		int count = random.nextInt(2) + 1; // [1, 3)
-		for (int i = 0; i < count; i++) {
-			builder.append(DELIMITER.get(random.nextInt(DELIMITER.size())));
-		}
+	@ParameterizedTest
+	@ValueSource(strings = {
+			"try",
+			"synchronize", // not synchronized
+			"class",
+			"int",
+			"apublic",
+			"publica",
+			"non",
+	})
+	void testNonModifiers(String input) {
+		// arrange
+		ModifierExtractor extractor = new ModifierExtractor();
+		char[] chars = input.toCharArray();
+		Map<ModifierKind, CtExtendedModifier> allModifiers = Arrays.stream(ModifierKind.values())
+				.collect(Collectors.toMap(Function.identity(), CtExtendedModifier::explicit));
+		List<SimpleSourcePosition> foundStartPositions = new ArrayList<>();
+		BiFunction<Integer, Integer, SourcePosition> createAndAdd = (start, end) -> {
+			SimpleSourcePosition position = new SimpleSourcePosition(start, end);
+			foundStartPositions.add(position);
+			return position;
+		};
+
+		// act
+		extractor.collectModifiers(chars, 0, input.length(), allModifiers, createAndAdd);
+
+		// assert
+		assertThat(foundStartPositions, is(empty()));
 	}
 
 	static class SimpleSourcePosition implements SourcePosition {
