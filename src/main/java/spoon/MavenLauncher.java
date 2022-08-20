@@ -177,8 +177,8 @@ public class MavenLauncher extends Launcher {
 	 * @param value its value
 	 * @see #rebuildClasspath() #rebuildClasspath() for changes to take effect
 	 */
-	public void addEnvironmentVariable(String key, String value) {
-		mavenOptions.addEnvironmentVariable(key, value);
+	public void setEnvironmentVariable(String key, String value) {
+		mavenOptions.setEnvironmentVariable(key, value);
 	}
 
 	private void init(String mavenProject, String[] classpath, Pattern profileFilter) {

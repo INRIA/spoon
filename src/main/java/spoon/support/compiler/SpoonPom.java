@@ -705,7 +705,7 @@ public class SpoonPom implements SpoonResource {
 		 * @param key the name of the variable
 		 * @param value its value
 		 */
-		public void addEnvironmentVariable(String key, String value) {
+		public void setEnvironmentVariable(String key, String value) {
 			this.environmentVariables.put(key, value);
 		}
 
