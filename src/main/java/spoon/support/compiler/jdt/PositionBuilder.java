@@ -584,7 +584,9 @@ public class PositionBuilder {
 
 		//move end after the last char
 		end++;
-		EXTRACTOR.collectModifiers(contents, start, end, jdtTreeBuilder, explicitModifiersByKind, cu);
+		EXTRACTOR.collectModifiers(contents, start, end, explicitModifiersByKind,
+				(modStart, modEnd) -> cf.createSourcePosition(cu, modStart, modEnd, cu.getLineSeparatorPositions())
+		);
 		if (!explicitModifiersByKind.isEmpty()) {
 			throw new SpoonException("Position of CtExtendedModifiers: " + explicitModifiersByKind.keySet() + " not found in " + String.valueOf(contents, start, end - start));
 		}

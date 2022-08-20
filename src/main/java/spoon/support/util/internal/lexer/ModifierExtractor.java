@@ -1,15 +1,14 @@
 package spoon.support.util.internal.lexer;
 
-import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.factory.CoreFactory;
-import spoon.support.compiler.jdt.JDTTreeBuilder;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.util.internal.trie.WordTrie;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -23,12 +22,10 @@ public class ModifierExtractor {
 			char[] content,
 			int start,
 			int end,
-			JDTTreeBuilder jdtTreeBuilder,
 			Map<ModifierKind, CtExtendedModifier> modifiers,
-			CompilationUnit cu) {
+			BiFunction<Integer, Integer, SourcePosition> createSourcePosition
+	) {
 		JavaLexer lexer = new JavaLexer(content, start, end);
-		CoreFactory cf = jdtTreeBuilder.getFactory().Core();
-		int[] positions = jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions();
 		while (!modifiers.isEmpty()) {
 			Token lex = lexer.lex();
 			if (lex == null) {
@@ -39,7 +36,7 @@ public class ModifierExtractor {
 			if (match.isPresent()) {
 				CtExtendedModifier modifier = modifiers.remove(match.get());
 				if (modifier != null) {
-					modifier.setPosition(cf.createSourcePosition(cu, lex.start(), lex.end() - 1, positions));
+					modifier.setPosition(createSourcePosition.apply(lex.start(), lex.end() - 1));
 				}
 			}
 		}

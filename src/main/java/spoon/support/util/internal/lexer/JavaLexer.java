@@ -77,6 +77,9 @@ public class JavaLexer {
 				return lexCharacterLiteral(pos);
 			case '"':
 				return lexStringLiteral(pos);
+			case '~':
+			case '?':
+				return new Token(TokenType.OPERATOR, pos, this.nextPos);
 			default:
 				skip(-1); // reset to previous
 				return lexLiteralOrKeywordOrIdentifier();
@@ -116,6 +119,7 @@ public class JavaLexer {
 		do {
 			int index = indexOf(first, pos);
 			if (index < 0) {
+				// TODO what if not present?
 				return;
 			}
 			if (Arrays.equals(this.content, index, index + chars.length, chars, 0, chars.length)) {
@@ -134,6 +138,7 @@ public class JavaLexer {
 			while (hasMore() && Character.isJavaIdentifierPart(peek())) {
 				next();
 			}
+			// TODO avoid allocation
 			String identifier = new String(this.content, pos, this.nextPos - pos);
 			if (SourceVersion.isKeyword(identifier)) {
 				return new Token(TokenType.KEYWORD, pos, this.nextPos);
@@ -310,10 +315,10 @@ public class JavaLexer {
 			retry = false;
 			skipWhitespaces();
 			if (hasMore(2) && peek() == '/') {
-				if (peek() == '/') {
+				if (peek(1) == '/') {
 					skipUntilLineBreak();
 					retry = true;
-				} else if (peek() == '*') {
+				} else if (peek(1) == '*') {
 					skipUntil("*/");
 					retry = true;
 				}
