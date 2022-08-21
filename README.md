@@ -10,7 +10,7 @@ Spoon is an open-source library to analyze, rewrite, transform, transpile Java s
 
 ## Documentation
 
-The latest official documentation is available at <http://spoon.gforge.inria.fr/> and a regularly updated PDF version is as <https://projects.ow2.org/download/spoon/WebHome/spoon-user-manual.pdf>.
+The latest official documentation is available at <http://spoon.gforge.inria.fr/>.
 
 ### Academic usage
 
