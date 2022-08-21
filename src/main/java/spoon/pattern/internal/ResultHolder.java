@@ -21,7 +21,7 @@ import spoon.SpoonException;
 public abstract class ResultHolder<T> {
 	private final Class<T> requiredClass;
 
-	public ResultHolder(Class<T> requiredClass) {
+	protected ResultHolder(Class<T> requiredClass) {
 		this.requiredClass = requiredClass;
 	}
 
@@ -62,7 +62,7 @@ public abstract class ResultHolder<T> {
 
 		private T result;
 
-		public Single(Class<T> requiredClass) {
+		protected Single(Class<T> requiredClass) {
 			super(requiredClass);
 		}
 
@@ -103,7 +103,7 @@ public abstract class ResultHolder<T> {
 
 		List<T> result = new ArrayList<>();
 
-		public Multiple(Class<T> requiredClass) {
+		protected Multiple(Class<T> requiredClass) {
 			super(requiredClass);
 		}
 
