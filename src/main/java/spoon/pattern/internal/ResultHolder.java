@@ -62,7 +62,7 @@ public abstract class ResultHolder<T> {
 
 		private T result;
 
-		protected Single(Class<T> requiredClass) {
+		public Single(Class<T> requiredClass) {
 			super(requiredClass);
 		}
 
@@ -103,7 +103,7 @@ public abstract class ResultHolder<T> {
 
 		List<T> result = new ArrayList<>();
 
-		protected Multiple(Class<T> requiredClass) {
+		public Multiple(Class<T> requiredClass) {
 			super(requiredClass);
 		}
 
