@@ -1,6 +1,5 @@
 package spoon.support.compiler;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
@@ -15,8 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ZipFileTest {
 
@@ -30,8 +30,8 @@ class ZipFileTest {
 		CtType<?> type = launcher.getFactory().Type().get("a.Test");
 		CtMethod<?> method = type.getMethod("foo");
 		assertNotNull(method.getOriginalSourceFragment().getSourceCode());
-		assertTrue(method.getOriginalSourceFragment().getSourceCode().contains("/**"));
-		assertTrue(method.getOriginalSourceFragment().getSourceCode().contains("foo()"));
+		assertThat(method.getOriginalSourceFragment().getSourceCode(), containsString("/**"));
+		assertThat(method.getOriginalSourceFragment().getSourceCode(), containsString("foo()"));
 	}
 
 	private Path createZip(Path tempDir) throws IOException {
