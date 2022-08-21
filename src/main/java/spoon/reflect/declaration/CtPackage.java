@@ -175,4 +175,14 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * @see #getTypes()
 	 */
 	boolean hasTypes();
+
+	/**
+	 * Returns true if this package contains any sub-packages.
+	 * This method is expected to provide constant-time performance
+	 * and should be preferred over {@link #getPackages()}{@code .isEmpty()}.
+	 *
+	 * @return true if the package contains any sub-packages
+	 * @see #getPackages()
+	 */
+	boolean hasPackages();
 }
