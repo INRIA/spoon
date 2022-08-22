@@ -36,6 +36,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -467,7 +468,7 @@ public class GenericsTest {
 		assertEquals("this.<java.lang.String>makeTacos(null)", invocation1.toString());
 
 		final CtInvocation invocation2 = m.getBody().getStatement(1).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
-		assertEquals(0, invocation2.getExecutable().getActualTypeArguments().size());
+		assertEquals(1, invocation2.getExecutable().getActualTypeArguments().size());
 		assertEquals("this.makeTacos(null)", invocation2.toString());
 
 		canBeBuilt("./target/spooned/spoon/test/generics/testclasses/", 8);
@@ -513,7 +514,7 @@ public class GenericsTest {
 		assertEquals("spoon.test.generics.testclasses.Tacos.<V, C>makeTacos()", invocation1.toString());
 
 		final CtInvocation<?> invocation2 = m.getBody().getStatement(1).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
-		assertEquals(0, invocation2.getExecutable().getActualTypeArguments().size());
+		assertEquals(2, invocation2.getExecutable().getActualTypeArguments().size());
 		assertEquals("spoon.test.generics.testclasses.Tacos.makeTacos()", invocation2.toString());
 	}
 
@@ -1563,7 +1564,7 @@ public class GenericsTest {
 		assertNull(m1.getType().getTypeParameterDeclaration());
 	}
 
-	@org.junit.jupiter.api.Test
+	@Test
 	void testGenericMethodReference() {
 		// contract: method references keep their generic parameters
 		CtClass<?> parsed = Launcher.parseClass("class X {\n" +
@@ -1574,5 +1575,20 @@ public class GenericsTest {
 		CtExecutableReferenceExpression<?, ?> expression = (CtExecutableReferenceExpression<?, ?>) field.getDefaultExpression();
 		assertThat(expression.getExecutable().getActualTypeArguments().size(), equalTo(1));
 		assertThat(expression.getExecutable().getActualTypeArguments().get(0).toString(), equalTo("java.lang.Integer"));
+	}
+
+	@Test
+	void testInferredTypesReturnedInInvocation() {
+		// contract: Inferred generic types for invocations are returned by getActualTypeArguments
+		CtClass<?> ctClass = Launcher.parseClass("class Foo {\n" +
+			"  <T> T reflect(T t) { return t; }\n" +
+			"  String user() { return reflect(\"hey\"); }\n" +
+			"}");
+		CtMethod<?> user = ctClass.getMethodsByName("user").get(0);
+		CtReturn<?> ret = user.getBody().getStatement(0);
+		CtInvocation<?> invocation = (CtInvocation<?>) ret.getReturnedExpression();
+
+		assertEquals(1, invocation.getActualTypeArguments().size());
+		assertEquals("java.lang.String", invocation.getActualTypeArguments().get(0).getQualifiedName());
 	}
 }
