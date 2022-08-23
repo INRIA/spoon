@@ -132,7 +132,7 @@ public class PrinterTest {
 
 		assertTrue(!result.contains("import static spoon.test.prettyprinter.testclasses.sub.Constants.READY"), "The result should not contain import static: ");
 		assertTrue(result.contains("import spoon.test.prettyprinter.testclasses.sub.Constants"), "The result should contain import type: ");
-		assertTrue(result.contains("import static org.junit.Assert.assertTrue;"), "The result should contain import static assertTrue: ");
+		assertTrue(result.contains("import static org.junit.jupiter.api.Assertions.assertTrue;"), "The result should contain import static assertTrue: ");
 		assertTrue(result.contains("assertTrue(\"blabla\".equals(\"toto\"));"), "The result should contain assertTrue(...): ");
 		assertTrue(result.contains("System.out.println(Constants.READY);"), "The result should use System.out.println(Constants.READY): " + result);
 	}

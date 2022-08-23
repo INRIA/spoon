@@ -263,7 +263,7 @@ public class DefaultPrettyPrinterTest {
 			+ "}";
 
 		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
-		assertEquals("We use FQN for E1", expected, computed);
+		assertEquals(expected, computed, "We use FQN for E1");
 
 		expected =
 			"public void setFieldUsingLocallyDefinedEnum() {" + nl
@@ -279,7 +279,7 @@ public class DefaultPrettyPrinterTest {
 			+ "}";
 
 		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).toString();
-		assertEquals("The static field of an external type with the same identifier as the compilation unit is printed with FQN", expected, computed);
+		assertEquals(expected, computed, "The static field of an external type with the same identifier as the compilation unit is printed with FQN");
 
 		expected =
 			"public void referToTwoInnerClassesWithTheSameName() {" + nl
@@ -290,7 +290,7 @@ public class DefaultPrettyPrinterTest {
 		//Ensure the ClassA of Class0 takes precedence over an import statement for ClassA in Class1, and its identifier can be the short version.
 
 		computed = aClass.getMethodsByName("referToTwoInnerClassesWithTheSameName").get(0).prettyprint();
-		assertEquals("where inner types have the same identifier only one may be shortened and the other should be fully qualified", expected, computed);
+		assertEquals(expected, computed, "where inner types have the same identifier only one may be shortened and the other should be fully qualified");
 
 		expected =
 			"public enum ENUM {" + nl + nl
@@ -318,7 +318,7 @@ public class DefaultPrettyPrinterTest {
 			"public java.util.List<?> aMethod() {" + nl
 			+ "    return new java.util.ArrayList<>();" + nl
 			+ "}";
-		assertEquals("the toString method of CtElementImpl should not shorten type names as it has no context or import statements", expected, computed);
+		assertEquals(expected, computed, "the toString method of CtElementImpl should not shorten type names as it has no context or import statements");
 	}
 
 	@Test
