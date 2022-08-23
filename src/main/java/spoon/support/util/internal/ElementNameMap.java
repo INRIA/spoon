@@ -131,6 +131,11 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 	}
 
 	@Override
+	public boolean isEmpty() {
+		return map.isEmpty();
+	}
+
+	@Override
 	public void clear() {
 		if (map.isEmpty()) {
 			return;
