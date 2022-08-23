@@ -1095,7 +1095,7 @@ public class ImportTest {
 		String output = prettyPrinter.getResult();
 
 		assertThat("The file should contain a static import ", output, containsString("import static spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite;"));
-		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.addTest(suite());"));
+		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.add(suite());"));
 
 		canBeBuilt(outputDir, 7);
 	}
@@ -1124,7 +1124,7 @@ public class ImportTest {
 		String output = prettyPrinter.getResult();
 
 		assertThat("The file should not contain a static import ", output, not(containsString("import static")));
-		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.addTest(spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite());"));
+		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.add(spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite());"));
 
 		canBeBuilt(outputDir, 3);
 	}
@@ -1153,7 +1153,7 @@ public class ImportTest {
 		String output = prettyPrinter.getResult();
 
 		assertThat("The file should not contain a static import ", output, not(containsString("import static spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite;")));
-		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.addTest(spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite());"));
+		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.add(spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite());"));
 
 		canBeBuilt(outputDir, 3);
 	}
