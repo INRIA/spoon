@@ -29,7 +29,7 @@ public class ZipFile implements SpoonFile {
 	private final byte[] content;
 
 	/**
-	 * Creates a new zip file. Should never be called manually.#
+	 * Creates a new zip file. Should never be called manually.
 	 *
 	 * @param parent the parent folder
 	 * @param name the name of the file
