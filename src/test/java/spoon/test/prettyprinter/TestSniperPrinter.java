@@ -45,6 +45,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
@@ -835,6 +836,25 @@ public class TestSniperPrinter {
 				assertThat(result, containsString("private static final java.lang.Integer x;"));
 
 		testSniper("sniperPrinter.SpaceAfterFinal", modifyField, assertContainsSpaceAfterFinal);
+	}
+
+	@Test
+	void typeAdaptionBodyResetDoesNotBreakSniper() {
+		// contract: Resetting the body in the type adaption does not impact the sniper printer.
+		testSniper(
+			"sniperPrinter.Overriding",
+			type -> {
+				CtType<?> top = type.getNestedType("Super");
+				CtType<?> bottom = type.getNestedType("Sub");
+
+				CtMethod<?> topFoo = top.getMethodsByName("foo").get(0);
+				CtMethod<?> bottomFoo = bottom.getMethodsByName("foo").get(0);
+
+				assertTrue(new TypeAdaptor(bottom).isOverriding(bottomFoo, topFoo));
+			},
+			// Did not reformat body
+			(type, result) -> assertThat(result, containsString("System. out. println(1+2\n"))
+		);
 	}
 
 	@Nested
