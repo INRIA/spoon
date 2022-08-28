@@ -68,7 +68,7 @@ def write_checkstyle_config(path: Path) -> None:
     <module name="Checker">
         <module name="TreeWalker">
             <module name="JavadocMethod">
-                <property name="scope" value="public"/>
+                <property name="accessModifiers" value="public"/>
             </module>
             <module name="MissingJavadocMethod">
                 <property name="scope" value="public"/>
