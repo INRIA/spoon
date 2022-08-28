@@ -33,9 +33,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class VariableTest {
 

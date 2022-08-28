@@ -2,7 +2,7 @@ package spoon.test.prettyprinter.testclasses;
 
 import spoon.test.prettyprinter.testclasses.sub.Constants;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static java.lang.System.out;
 
