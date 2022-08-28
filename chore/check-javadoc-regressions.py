@@ -58,6 +58,21 @@ def hl(text: str) -> str:
     return colored(text, _COLOR_HIGHLIGHT)
 
 
+def print_checkstyle_not_parseable_error():
+    """
+    If the user has a maven problem that prevents checkstyle from running they'd likely
+    appreciate *some* output. If we can't extract a violation count the checkstyle plugin
+    probably didn't run successfully. Let's warn them.
+    """
+    print()
+    print(warn("Checkstyle output doesn't contain a violation count. Maybe your setup has an error?"))
+    if len(sys.argv) > 1:
+        print(
+            f" {hl('Suggestion')}: Run this script without arguments and inspect the unfiltered "
+            "checkstyle output"
+        )
+
+
 def write_checkstyle_config(path: Path) -> None:
     """
     Saves the Javadoc checkstyle config in the given path.
@@ -197,9 +212,11 @@ def handle_compare_with_branch_output(target_branch: str, reference_output: str,
 
     if reference_violation_count is None:
         print(warn("The Checkstyle run for the reference branch did not yield any result."))
+        print_checkstyle_not_parseable_error()
         exit(1)
     if other_violation_count is None:
         print(warn("The Checkstyle run for your branch did not yield any result."))
+        print_checkstyle_not_parseable_error()
         exit(1)
 
     print_current_status(target_branch, reference_violation_count, other_violation_count)
@@ -244,17 +261,8 @@ def command_filtered_checkstyle_errors(regex_str: str) -> None:
             if regex.search(line):
                 print(line)
 
-        # If the user has a maven problem that prevents checkstyle from running they'd likely
-        # appreciate *some* output. If we can't extract a violation count the checkstyle plugin
-        # probably didn't successfully. Let's warn them.
         if extract_violation_count(checkstyle_output) is None:
-            print()
-            print(warn("Checkstyle output doesn't contain a violation count. Maybe your setup has an error?"))
-            if len(sys.argv) > 1:
-                print(
-                    f" {hl('Suggestion')}: Run this script without arguments and inspect the unfiltered "
-                    "checkstyle output"
-                )
+            print_checkstyle_not_parseable_error()
 
 
 def fix_colors_windows_cmd():
