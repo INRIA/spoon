@@ -5,10 +5,10 @@
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
-package spoon.javadoc.external.parsing;
+package spoon.javadoc.api.parsing;
 
-import spoon.javadoc.external.elements.snippets.JavadocSnippetMarkupRegion;
-import spoon.javadoc.external.elements.snippets.JavadocSnippetRegionType;
+import spoon.javadoc.api.elements.snippets.JavadocSnippetMarkupRegion;
+import spoon.javadoc.api.elements.snippets.JavadocSnippetRegionType;
 import spoon.support.Internal;
 
 import java.util.ArrayDeque;

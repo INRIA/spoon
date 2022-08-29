@@ -5,12 +5,12 @@
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
-package spoon.javadoc.external.elements.snippets;
+package spoon.javadoc.api.elements.snippets;
 
-import spoon.javadoc.external.StandardJavadocTagType;
-import spoon.javadoc.external.elements.JavadocInlineTag;
-import spoon.javadoc.external.elements.JavadocText;
-import spoon.javadoc.external.elements.JavadocVisitor;
+import spoon.javadoc.api.StandardJavadocTagType;
+import spoon.javadoc.api.elements.JavadocInlineTag;
+import spoon.javadoc.api.elements.JavadocText;
+import spoon.javadoc.api.elements.JavadocVisitor;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.Map;
  * An {@code @snippet} inline tag.
  * <p>
  * This class also contains the attributes of the tag and the body as its first element.
- * The body can be parsed using the {@link spoon.javadoc.external.parsing.SnippetFileParser}.
+ * The body can be parsed using the {@link spoon.javadoc.api.parsing.SnippetFileParser}.
  */
 public class JavadocSnippetTag extends JavadocInlineTag {
 

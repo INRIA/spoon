@@ -5,15 +5,15 @@
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
-package spoon.javadoc.external;
+package spoon.javadoc.api;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
-import static spoon.javadoc.external.JavadocTagCategory.BLOCK;
-import static spoon.javadoc.external.JavadocTagCategory.INLINE;
+import static spoon.javadoc.api.JavadocTagCategory.BLOCK;
+import static spoon.javadoc.api.JavadocTagCategory.INLINE;
 
 /**
  * Contains all standard javadoc tag types.

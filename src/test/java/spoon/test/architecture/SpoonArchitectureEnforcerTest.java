@@ -378,9 +378,6 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.javadoc");
 		officialPackages.add("spoon.javadoc.internal");
 		officialPackages.add("spoon.javadoc.external");
-		officialPackages.add("spoon.javadoc.external.parsing");
-		officialPackages.add("spoon.javadoc.external.elements");
-		officialPackages.add("spoon.javadoc.external.elements.snippets");
 		officialPackages.add("spoon.support.modelobs.action");
 		officialPackages.add("spoon.support.modelobs.context");
 		officialPackages.add("spoon.support.modelobs");

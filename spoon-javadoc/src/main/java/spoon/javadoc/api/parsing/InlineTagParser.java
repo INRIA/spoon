@@ -5,15 +5,15 @@
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
-package spoon.javadoc.external.parsing;
+package spoon.javadoc.api.parsing;
 
-import spoon.javadoc.external.JavadocTagType;
-import spoon.javadoc.external.StandardJavadocTagType;
-import spoon.javadoc.external.elements.JavadocElement;
-import spoon.javadoc.external.elements.JavadocInlineTag;
-import spoon.javadoc.external.elements.JavadocReference;
-import spoon.javadoc.external.elements.JavadocText;
-import spoon.javadoc.external.elements.snippets.JavadocSnippetTag;
+import spoon.javadoc.api.JavadocTagType;
+import spoon.javadoc.api.StandardJavadocTagType;
+import spoon.javadoc.api.elements.JavadocElement;
+import spoon.javadoc.api.elements.JavadocInlineTag;
+import spoon.javadoc.api.elements.JavadocReference;
+import spoon.javadoc.api.elements.JavadocText;
+import spoon.javadoc.api.elements.snippets.JavadocSnippetTag;
 
 import java.util.ArrayList;
 import java.util.HashMap;
