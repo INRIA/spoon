@@ -223,16 +223,17 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		});
 
 		// now removing the intermediate methods for which there exists a definition upper in the hierarchy
-		List<CtMethod<?>> finalMeths = new ArrayList<>(s);
-		for (CtMethod m1 : s) {
-			boolean m1IsIntermediate = false;
-			for (CtMethod m2 : s) {
-				if (context.isOverriding(m1, m2)) {
-					m1IsIntermediate = true;
+		List<CtMethod<?>> finalMeths = new ArrayList<>();
+		for (CtMethod<?> method : s) {
+			boolean methodIsTop = true;
+			for (CtMethod<?> probablyTop : s) {
+				if (method != probablyTop && context.isOverriding(method, probablyTop)) {
+					methodIsTop = false;
+					break;
 				}
 			}
-			if (!m1IsIntermediate) {
-				finalMeths.add(m1);
+			if (methodIsTop) {
+				finalMeths.add(method);
 			}
 		}
 		return finalMeths;
