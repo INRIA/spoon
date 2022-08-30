@@ -33,6 +33,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=WarpspeedSCP_spoon \
+        run: mvn -B test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=WarpspeedSCP_spoon &&\
              curl https://deepsource.io/cli | sh && \
              ./bin/deepsource report --analyzer test-coverage --key java --value-file ./target/site/jacoco/jacoco.xml
