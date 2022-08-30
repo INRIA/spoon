@@ -231,7 +231,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	/**
 	 * Returns {@code true} if the {@code method} parameter is a top definition,
-	 * i.e. no other candidate is overridden by it.
+	 * i.e. no other candidate overrides it.
 	 */
 	private boolean isTopDefinition(CtMethod<?> method, Collection<CtMethod<?>> allCandidates, TypeAdaptor context) {
 		return allCandidates.stream()
