@@ -10,6 +10,8 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - name: install stuff
+        run: sudo apt install curl
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
