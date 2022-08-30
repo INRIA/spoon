@@ -10,6 +10,8 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - name: install stuff
+        run: sudo apt install curl
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
@@ -33,6 +35,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=WarpspeedSCP_spoon \
-             curl https://deepsource.io/cli | sh && \
-             ./bin/deepsource report --analyzer test-coverage --key java --value-file ./target/site/jacoco/jacoco.xml
+        run: mvn -B test jacoco:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=WarpspeedSCP_spoon
+      - name: Report test results to DeepSource
+        uses: deepsourcelabs/test-coverage-action@master
+        with:
+          key: java
+          coverage-file: ./target/site/jacoco/jacoco.xml
+          dsn: ${{ secrets.DEEPSOURCE_DSN }}
