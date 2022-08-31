@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtMethod}.
@@ -223,19 +224,18 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		});
 
 		// now removing the intermediate methods for which there exists a definition upper in the hierarchy
-		List<CtMethod<?>> finalMeths = new ArrayList<>(s);
-		for (CtMethod m1 : s) {
-			boolean m1IsIntermediate = false;
-			for (CtMethod m2 : s) {
-				if (context.isOverriding(m1, m2)) {
-					m1IsIntermediate = true;
-				}
-			}
-			if (!m1IsIntermediate) {
-				finalMeths.add(m1);
-			}
-		}
-		return finalMeths;
+		return s.stream()
+				.filter(ctMethod ->  isTopDefinition(ctMethod, s, context))
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Returns {@code true} if the {@code method} parameter is a top definition,
+	 * i.e. no other candidate overrides it.
+	 */
+	private boolean isTopDefinition(CtMethod<?> method, Collection<CtMethod<?>> allCandidates, TypeAdaptor context) {
+		return allCandidates.stream()
+				.noneMatch(candidate -> candidate != method && context.isOverriding(method, candidate));
 	}
 
 	@Override
