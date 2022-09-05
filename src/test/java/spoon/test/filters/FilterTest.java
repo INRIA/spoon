@@ -459,9 +459,8 @@ public class FilterTest {
 		List<CtMethod<?>> methods;
 
 		methods = orderByName(aTostada.getMethodsByName("make").get(0).getTopDefinitions());
-		assertEquals(2, methods.size());
-		assertEquals("AbstractTostada", methods.get(0).getDeclaringType().getSimpleName());
-		assertEquals("ITostada", methods.get(1).getDeclaringType().getSimpleName());
+		assertEquals(1, methods.size());
+		assertEquals("ITostada", methods.get(0).getDeclaringType().getSimpleName());
 
 		methods = orderByName(aTostada.getMethodsByName("prepare").get(0).getTopDefinitions());
 		assertEquals(1, methods.size());
