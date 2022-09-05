@@ -29,8 +29,8 @@ Current integrators:
     - Email: wittlinger.martin@gmail.com
 - Hannes Greule [@SirYwell](https://github.com/SirYwell)
     - Email: hannesgreule@outlook.de
-- ?? [@I-Al-Istannen](https://github.com/I-Al-Istannen)
-    - Email: ??
+- [@I-Al-Istannen](https://github.com/I-Al-Istannen)
+    - Email: me@ialistannen.de
 
 Guidelines for pull requests
 ----------------------------
