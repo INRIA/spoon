@@ -269,7 +269,7 @@ public class CompilationTest {
 		launcher.addInputResource("./src/test/resources/simple-module");
 		launcher.buildModel();
 		
-		assertTrue(launcher.getModel().getAllModules().iterator().next().getSimpleName().equals("spoonmod"));
+		assertTrue(launcher.getModel().getAllModules().stream().anyMatch(module -> module.getSimpleName().equals("spoonmod")));
 	}
 
 	@Test
