@@ -39,9 +39,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.support.reflect.code.CtCatchImpl;
 import spoon.testing.utils.LineSeperatorExtension;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StatementCommentTest {
 	String EOL = "\n";

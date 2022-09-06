@@ -48,7 +48,7 @@ jobs:
         run: echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
         shell: bash
       - name: Use Maven dependency cache
-        uses: actions/cache@f4278025ab0f432ce369118909e46deec636f50c # tag=v3.0.6
+        uses: actions/cache@fd5de65bc895cf536527842281bea11763fefd77 # tag=v3.0.8
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
@@ -85,7 +85,7 @@ jobs:
         run: echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
         shell: bash
       - name: Use Maven dependency cache
-        uses: actions/cache@f4278025ab0f432ce369118909e46deec636f50c # tag=v3.0.6
+        uses: actions/cache@fd5de65bc895cf536527842281bea11763fefd77 # tag=v3.0.8
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
@@ -124,7 +124,7 @@ jobs:
         run: echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
         shell: bash
       - name: Use Maven dependency cache
-        uses: actions/cache@f4278025ab0f432ce369118909e46deec636f50c # tag=v3.0.6
+        uses: actions/cache@fd5de65bc895cf536527842281bea11763fefd77 # tag=v3.0.8
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
@@ -155,7 +155,7 @@ jobs:
       - name: git reset
         run: cd pull_request && git fetch && git reset --soft origin/master
       - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@102d021fe8a24d8af48a38a35f96b8ba100baa20 # tag=v2022.1.1
+        uses: JetBrains/qodana-action@ab695492d98902c49b33382782175107ec63ca28 # tag=v2022.2.1
         with:
           linter: ${{ env.QODANA_LINTER }}
           project-dir: "${{ github.workspace }}/pull_request"
@@ -165,7 +165,7 @@ jobs:
           fail-threshold: 0
           use-annotations: false
           use-caches: false # we disable cache for consistent results
-      - uses: github/codeql-action/upload-sarif@3f62b754e23e0dd60f91b744033e1dc1654c0ec6 # tag=v2
+      - uses: github/codeql-action/upload-sarif@b398f525a5587552e573b247ac661067fafa920b # tag=v2
         if: always()
         with:
           sarif_file: "${{ github.workspace }}/result/qodana.sarif.json"

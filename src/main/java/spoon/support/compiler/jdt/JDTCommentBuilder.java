@@ -22,6 +22,7 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -432,6 +433,11 @@ public class JDTCommentBuilder {
 				} catch (ParentNotInitializedException ex) {
 					e.addComment(comment);
 				}
+			}
+
+			@Override
+			public <T> void visitCtLiteral(CtLiteral<T> e) {
+				e.addComment(comment);
 			}
 
 			@Override

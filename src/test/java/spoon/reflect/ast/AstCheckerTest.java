@@ -22,13 +22,16 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.support.modelobs.FineModelChangeListener;
+import spoon.reflect.CtModel;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtThrow;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -41,6 +44,7 @@ import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.internal.ElementNameMap;
 import spoon.support.util.ModelList;
+import spoon.testing.utils.ModelTest;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,9 +54,44 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AstCheckerTest {
+
+	@ModelTest("src/test/resources/comment/CommentsOnCaseExpression.java")
+	void ctLiteralsInCtCaseExpressionShouldHaveCommentsAttached(CtModel model) {
+		// contract: literal nodes should have comments attached to them.
+		// act
+		List<CtComment> comments = model.getElements(new TypeFilter<>(CtComment.class));
+
+		// assert
+		assertThat(comments.size(), equalTo(4));
+	}
+
+	@Test
+	void leftOperandShouldBeGivenPriorityForStoringTheNestedOperator_stringLiteralConcatenation() {
+		// contract: string concatenation should be left associative.
+		// arrange
+		Launcher launcher = new Launcher();
+		Factory factory = launcher.getFactory();
+		CtClass<?> classContainingStringLiteral = Launcher.parseClass("class A { private String x = \"a\" + \"b\" + \"c\" }");
+
+		// act
+		CtBinaryOperator<?> binaryOperator = classContainingStringLiteral
+				.filterChildren(element -> element instanceof CtBinaryOperator)
+				.first();
+
+		// assert
+		CtExpression<?> firstOperand = ((CtBinaryOperator<?>)binaryOperator.getLeftHandOperand()).getLeftHandOperand();
+		CtExpression<?> secondOperand = ((CtBinaryOperator<?>)binaryOperator.getLeftHandOperand()).getRightHandOperand();
+		CtExpression<?> thirdOperand = binaryOperator.getRightHandOperand();
+
+		assertThat(firstOperand, equalTo(factory.createLiteral("a")));
+		assertThat(secondOperand, equalTo(factory.createLiteral("b")));
+		assertThat(thirdOperand, equalTo(factory.createLiteral("c")));
+	}
 
 	@Test
 	public void testExecutableReference() {
