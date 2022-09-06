@@ -21,7 +21,7 @@
         <commons-collections.version>3.2.2</commons-collections.version>
         <cryptacular.version>1.1.0</cryptacular.version>
         <xalan.version>2.7.2</xalan.version>
-        <java-support.version>7.3.0</java-support.version>
+        <java-support.version>7.5.2</java-support.version>
     </properties>
 
     <dependencies>
