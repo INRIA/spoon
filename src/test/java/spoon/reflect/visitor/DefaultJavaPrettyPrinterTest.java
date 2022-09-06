@@ -1,6 +1,7 @@
 package spoon.reflect.visitor;
 
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,15 +14,24 @@ import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
+import spoon.test.GitHubIssue;
 import spoon.test.SpoonTestHelpers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -245,6 +255,58 @@ public class DefaultJavaPrettyPrinterTest {
                 Arguments.of(factory.Type().get("SealedClassWithNestedSubclasses"), List.of()), // implicit
                 Arguments.of(factory.Type().get("SealedInterfaceWithNestedSubclasses"), List.of()) // implicit
             );
+        }
+    }
+
+    @Nested
+    class SquareBracketsForArrayInitialization_ArrayIsBuiltUsingFactoryMethods {
+        @GitHubIssue(issueNumber = 4887, fixed = false)
+        @Test
+        void bracketsShouldBeAttachedToTypeByDefault() {
+            // contract: the square brackets should be attached to type by default when array is built using factory methods
+            // arrange
+            Launcher launcher = new Launcher();
+            Factory factory = launcher.getFactory();
+
+            CtArrayTypeReference<Integer> arrayTypeReference = factory.createArrayTypeReference();
+            arrayTypeReference.setComponentType(factory.Type().INTEGER_PRIMITIVE);
+            CtNewArray<Integer> newArray = factory.createNewArray();
+            newArray.setValueByRole(CtRole.TYPE, arrayTypeReference);
+            List<CtLiteral<Integer>> elements = new ArrayList<>(List.of(factory.createLiteral(3)));
+            newArray.setValueByRole(CtRole.EXPRESSION, elements);
+            CtLocalVariable<Integer> localVariable = factory.createLocalVariable(arrayTypeReference, "intArray", newArray);
+
+            // act
+            String actualStringRepresentation = localVariable.toString();
+
+            // assert
+            assertThat(actualStringRepresentation, equalTo("int[] intArray = new int[]{ 3 }"));
+        }
+
+        @Test
+        void bracketsShouldBeAttachedToIdentifierIfSpecified() {
+            // contract: the square brackets should be attached to identifier if specified explicitly
+            // arrange
+            Launcher launcher = new Launcher();
+            Factory factory = launcher.getFactory();
+
+            CtArrayTypeReference<CtElement> arrayTypeReference = factory.createArrayTypeReference();
+            CtTypeReference<CtElement> arrayType = factory.Type().createReference(CtElement.class);
+            arrayTypeReference.setComponentType(arrayType);
+            CtNewArray<CtElement> newArray = factory.createNewArray();
+            newArray.setValueByRole(CtRole.TYPE, arrayTypeReference);
+            List<CtElement> elements = new ArrayList<>(List.of(factory.createLiteral(1.0f)));
+            newArray.setValueByRole(CtRole.EXPRESSION, elements);
+            CtLocalVariable<CtElement> localVariable = factory.createLocalVariable(arrayTypeReference, "spoonElements", newArray);
+
+
+            // act
+            ((CtArrayTypeReferenceImpl<?>) arrayTypeReference).setDeclarationKind(CtArrayTypeReferenceImpl.DeclarationKind.IDENTIFIER);
+            String actualStringRepresentation = localVariable.toString();
+
+            // assert
+            assertThat(actualStringRepresentation,
+                    equalTo("spoon.reflect.declaration.CtElement spoonElements[] = new spoon.reflect.declaration.CtElement[]{ 1.0F }"));
         }
     }
 }
