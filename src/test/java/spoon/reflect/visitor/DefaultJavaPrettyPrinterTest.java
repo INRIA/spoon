@@ -260,7 +260,7 @@ public class DefaultJavaPrettyPrinterTest {
 
     @Nested
     class SquareBracketsForArrayInitialization_ArrayIsBuiltUsingFactoryMethods {
-        @GitHubIssue(issueNumber = 4887, fixed = false)
+        @GitHubIssue(issueNumber = 4887, fixed = true)
         @Test
         void bracketsShouldBeAttachedToTypeByDefault() {
             // contract: the square brackets should be attached to type by default when array is built using factory methods
