@@ -67,7 +67,7 @@
 		<spring.security.version>4.2.2.RELEASE</spring.security.version>
 		<shiro.version>1.3.2</shiro.version>
 		<mockito.version>2.7.19</mockito.version>
-		<slf4j.version>1.7.25</slf4j.version>
+		<slf4j.version>1.7.36</slf4j.version>
         <unboundid.version>3.2.1</unboundid.version>
         <h2.version>1.4.194</h2.version>
 		<java.version>1.8</java.version>
