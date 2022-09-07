@@ -147,7 +147,7 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 		// Only an approximation as the concurrent map is only weakly consistent
 		var old = toInsertionOrderedMap();
 		map.clear();
-		if(getOwner() != null){
+		if (getOwner() != null) {
 			var current = toInsertionOrderedMap();
 			getModelChangeListener().onMapDeleteAll(
 					getOwner(),
