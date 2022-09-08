@@ -19,11 +19,17 @@
     <url>http://spoon.gforge.inria.fr/</url>
     <inceptionYear>2007</inceptionYear>
 
+    <modules>
+        <module>../spoon-javadoc</module>
+        <module>..</module>
+    </modules>
+
     <properties>
         <maven.compiler.release>11</maven.compiler.release>
         <runtime.log>target/velocity.log</runtime.log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.outputTimestamp>1</project.build.outputTimestamp>
+        <spoon-version>10.3.0-SNAPSHOT</spoon-version>
     </properties>
 
     <dependencies>
