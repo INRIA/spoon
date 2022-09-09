@@ -19,6 +19,7 @@ package spoon.test;
 import org.apache.commons.io.FileUtils;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
+import org.kohsuke.MetaInfServices;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -29,6 +30,7 @@ import java.nio.file.Path;
  * An execution listener maintaining a temporary directory tests can use. This is intended as an alternative to
  * Junit's {@link org.junit.jupiter.api.io.TempDir} but handles file locking a bit more leniently.
  */
+@MetaInfServices(TestExecutionListener.class)
 public class TemporaryDirectoryExecutionListener implements TestExecutionListener {
 
 	public static final Path TEMPDIR = Path.of("spooned");
