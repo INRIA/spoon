@@ -9,6 +9,7 @@ package spoon.support.adaption;
 
 import spoon.SpoonException;
 import spoon.processing.FactoryAccessor;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -403,8 +404,12 @@ public class TypeAdaptor {
 			return false;
 		}
 
+		// We don't need to clone the body here, so leave it out
+		CtBlock<?> superBody = superMethod.getBody();
+		superMethod.setBody(null);
 		CtMethod<?> adapted = new TypeAdaptor(subMethod.getDeclaringType())
 			.adaptMethod(superMethod);
+		superMethod.setBody(superBody);
 
 		for (int i = 0; i < subMethod.getParameters().size(); i++) {
 			CtParameter<?> subParam = subMethod.getParameters().get(i);
