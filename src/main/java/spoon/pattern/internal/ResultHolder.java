@@ -21,7 +21,7 @@ import spoon.SpoonException;
 public abstract class ResultHolder<T> {
 	private final Class<T> requiredClass;
 
-	public ResultHolder(Class<T> requiredClass) {
+	protected ResultHolder(Class<T> requiredClass) {
 		this.requiredClass = requiredClass;
 	}
 
