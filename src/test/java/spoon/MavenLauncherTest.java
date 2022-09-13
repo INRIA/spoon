@@ -30,7 +30,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import spoon.compiler.SpoonResource;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtTypeReference;
@@ -43,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.test.TemporaryDirectoryExecutionListener.TEMPDIR;
 
 public class MavenLauncherTest {
 
@@ -70,8 +70,8 @@ public class MavenLauncherTest {
 	}
 
 	@Test
-	public void spoonMavenLauncherTest(@TempDir Path tempDir) throws IOException {
-		String targetPathString = copyResourceToFolder(tempDir, ".");
+	public void spoonMavenLauncherTest() throws IOException {
+		String targetPathString = copyResourceToFolder(TEMPDIR, ".");
 		Path targetPath = Path.of(targetPathString);
 
 		// without the tests
@@ -140,9 +140,9 @@ public class MavenLauncherTest {
 	}
 
 	@Test
-	public void multiModulesProjectTest(@TempDir Path tempDir) throws IOException {
+	public void multiModulesProjectTest() throws IOException {
 		MavenLauncher launcher = new MavenLauncher(
-			copyResourceToFolder(tempDir, "./src/test/resources/maven-launcher/pac4j"),
+			copyResourceToFolder(TEMPDIR, "./src/test/resources/maven-launcher/pac4j"),
 			MavenLauncher.SOURCE_TYPE.ALL_SOURCE
 		);
 		assertEquals(8, launcher.getEnvironment().getComplianceLevel());
@@ -151,32 +151,32 @@ public class MavenLauncherTest {
 	}
 
 	@Test
-	public void mavenLauncherOnANotExistingFileTest(@TempDir Path tempDir) {
+	public void mavenLauncherOnANotExistingFileTest() {
 		assertThrows(
 			SpoonException.class,
 			() -> new MavenLauncher(
-				tempDir.resolve("pom.xml").toAbsolutePath().toString(),
+				TEMPDIR.resolve("pom.xml").toAbsolutePath().toString(),
 				MavenLauncher.SOURCE_TYPE.APP_SOURCE
 			)
 		);
 	}
 
 	@Test
-	public void mavenLauncherOnDirectoryWithoutPomTest(@TempDir Path tempDir) {
+	public void mavenLauncherOnDirectoryWithoutPomTest() {
 		assertThrows(
 			SpoonException.class,
 			() -> new MavenLauncher(
-				tempDir.toAbsolutePath().toString(),
+				TEMPDIR.toAbsolutePath().toString(),
 				MavenLauncher.SOURCE_TYPE.APP_SOURCE
 			)
 		);
 	}
 
 	@Test
-	public void testSystemDependency(@TempDir Path tempDir) throws IOException {
+	public void testSystemDependency() throws IOException {
 		//contract: scope dependencies are added to classpath
 		MavenLauncher launcher = new MavenLauncher(
-			copyResourceToFolder(tempDir, "./src/test/resources/maven-launcher/system-dependency"),
+			copyResourceToFolder(TEMPDIR, "./src/test/resources/maven-launcher/system-dependency"),
 			MavenLauncher.SOURCE_TYPE.ALL_SOURCE
 		);
 		assertEquals(1, launcher.getEnvironment().getSourceClasspath().length);
@@ -184,8 +184,8 @@ public class MavenLauncherTest {
 	}
 
 	@Test
-	public void testForceRefresh(@TempDir Path tempDir) throws IOException {
-		String targetPath = copyResourceToFolder(tempDir, "./src/test/resources/maven-launcher/system-dependency");
+	public void testForceRefresh() throws IOException {
+		String targetPath = copyResourceToFolder(TEMPDIR, "./src/test/resources/maven-launcher/system-dependency");
 
 		// ensure classpath file exists so first constructor invocation won't build classpath
 		Files.writeString(Path.of(targetPath).resolve("spoon.classpath.tmp"), "");
@@ -207,8 +207,8 @@ public class MavenLauncherTest {
 	}
 
 	@Test
-	public void testRebuildClasspath(@TempDir Path tempDir) throws IOException {
-		String targetPath = copyResourceToFolder(tempDir, "./src/test/resources/maven-launcher/system-dependency");
+	public void testRebuildClasspath() throws IOException {
+		String targetPath = copyResourceToFolder(TEMPDIR, "./src/test/resources/maven-launcher/system-dependency");
 
 		// ensure classpath file exists so first constructor invocation won't build classpath
 		Files.writeString(Path.of(targetPath).resolve("spoon.classpath.tmp"), "");
@@ -226,28 +226,28 @@ public class MavenLauncherTest {
 	}
 
 	@Test
-	public void mavenLauncherTestWithVerySimpleProject(@TempDir Path tempDir) throws IOException {
+	public void mavenLauncherTestWithVerySimpleProject() throws IOException {
 		MavenLauncher launcher = new MavenLauncher(
-			copyResourceToFolder(tempDir, "./src/test/resources/maven-launcher/very-simple"),
+			copyResourceToFolder(TEMPDIR, "./src/test/resources/maven-launcher/very-simple"),
 			MavenLauncher.SOURCE_TYPE.ALL_SOURCE
 		);
 		assertEquals(1, launcher.getModelBuilder().getInputSources().size());
 	}
 
 	@Test
-	public void testPomSourceDirectory(@TempDir Path tempDir) throws IOException {
+	public void testPomSourceDirectory() throws IOException {
 		MavenLauncher launcher = new MavenLauncher(
-			copyResourceToFolder(tempDir, "./src/test/resources/maven-launcher/source-directory"),
+			copyResourceToFolder(TEMPDIR, "./src/test/resources/maven-launcher/source-directory"),
 			MavenLauncher.SOURCE_TYPE.ALL_SOURCE
 		);
 		assertEquals(2, launcher.getModelBuilder().getInputSources().size());
 	}
 
 	@Test
-	public void mavenLauncherTestMultiModulesAndVariables(@TempDir Path tempDir) throws IOException {
+	public void mavenLauncherTestMultiModulesAndVariables() throws IOException {
 		// contract: variables coming from parent should be resolved
 		MavenLauncher launcher = new MavenLauncher(
-			copyResourceToFolder(tempDir, "./src/test/resources/maven-launcher/pac4j/pac4j-config"),
+			copyResourceToFolder(TEMPDIR, "./src/test/resources/maven-launcher/pac4j/pac4j-config"),
 			MavenLauncher.SOURCE_TYPE.ALL_SOURCE
 		);
 		List<String> classpath = Arrays.asList(launcher.getEnvironment().getSourceClasspath());
@@ -275,9 +275,9 @@ public class MavenLauncherTest {
 	}
 
 	@Test
-	void mavenLauncherPassesEnvironmentVariables(@TempDir Path tempDir) throws IOException {
+	void mavenLauncherPassesEnvironmentVariables() throws IOException {
 		MavenLauncher launcher = new MavenLauncher(
-			copyResourceToFolder(tempDir, "./src/test/resources/maven-launcher/with-environment-variables"),
+			copyResourceToFolder(TEMPDIR, "./src/test/resources/maven-launcher/with-environment-variables"),
 			MavenLauncher.SOURCE_TYPE.ALL_SOURCE
 		);
 		launcher.setEnvironmentVariable("SPOON_VERSION", "10.1.0");
