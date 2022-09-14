@@ -45,7 +45,7 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 		}
 		if (!result.getActualTypeArguments().isEmpty()) {
 			//we have to adapt actual type arguments recursive too
-			if (isCopy == false) {
+			if (!isCopy) {
 				CtElement parent = result.isParentInitialized() ? result.getParent() : null;
 				result = result.clone();
 				if (parent != null) {
