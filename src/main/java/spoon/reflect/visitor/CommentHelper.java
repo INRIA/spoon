@@ -91,7 +91,7 @@ public class CommentHelper {
 		});
 		if (comment instanceof CtJavaDoc) {
 			Collection<CtJavaDocTag> javaDocTags = ((CtJavaDoc) comment).getTags();
-			if (javaDocTags != null && javaDocTags.isEmpty() == false) {
+			if (javaDocTags != null && !javaDocTags.isEmpty()) {
 				printer.write(transfo.apply("")).writeln();
 				for (CtJavaDocTag docTag : javaDocTags) {
 					printJavaDocTag(printer, docTag, transfo);

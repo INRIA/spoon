@@ -73,7 +73,7 @@ public class SubInheritanceHierarchyResolver {
 	 */
 	public SubInheritanceHierarchyResolver addSuperType(CtTypeInformation superType) {
 		targetSuperTypes.add(superType.getQualifiedName());
-		if (hasSuperInterface == false) {
+		if (!hasSuperInterface) {
 			hasSuperInterface = superType.isInterface();
 		}
 		return this;
@@ -164,7 +164,7 @@ public class SubInheritanceHierarchyResolver {
 						//but continue visiting of siblings (do not terminate query)
 						return ScanningMode.SKIP_ALL;
 					}
-					if (allVisitedTypeNames.add(qName) == false) {
+					if (!allVisitedTypeNames.add(qName)) {
 						/*
 						 * this type was already visited, by another way. So it is not sub type of `targetSuperTypes`.
 						 * Stop visiting it's inheritance hierarchy.
@@ -182,7 +182,7 @@ public class SubInheritanceHierarchyResolver {
 				@Override
 				public void exit(CtElement element) {
 					CtTypeInformation type = (CtTypeInformation) element;
-					if (currentSubTypes.isEmpty() == false) {
+					if (!currentSubTypes.isEmpty()) {
 						//remove current type, which is not a sub type of targetSuperTypes from the currentSubTypes
 						CtTypeInformation stackType = currentSubTypes.pop();
 						if (stackType != type) {

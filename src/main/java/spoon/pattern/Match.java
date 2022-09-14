@@ -41,7 +41,7 @@ public class Match {
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getMatchingElements(Class<T> clazz) {
 		for (Object object : matchingElements) {
-			if (object != null && clazz.isInstance(object) == false) {
+			if (object != null && !clazz.isInstance(object)) {
 				throw new SpoonException("Match contains a " + object.getClass() + " which cannot be cast to " + clazz);
 			}
 		}
@@ -77,7 +77,7 @@ public class Match {
 			throw new SpoonException("There is more then one match");
 		}
 		Object object = matchingElements.get(0);
-		if (object != null && clazz.isInstance(object) == false) {
+		if (object != null && !clazz.isInstance(object)) {
 			throw new SpoonException("Match contains a " + object.getClass() + " which cannot be cast to " + clazz);
 		}
 		return clazz.cast(object);

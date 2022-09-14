@@ -217,7 +217,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			try {
 				type = typeRef.getTypeDeclaration();
 			} catch (SpoonClassNotFoundException e) {
-				if (typeRef.getFactory().getEnvironment().getNoClasspath() == false) {
+				if (!typeRef.getFactory().getEnvironment().getNoClasspath()) {
 					throw e;
 				}
 				type = null;
@@ -225,7 +225,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 		}
 		//if the type is unknown, than we expect it is interface, otherwise we would visit java.lang.Object too, even for interfaces
 		isClass = type instanceof CtClass;
-		if (isClass == false && includingInterfaces == false) {
+		if (!isClass && !includingInterfaces) {
 			//the input is interface, but this scanner should visit only interfaces. Finish
 			return;
 		}
@@ -241,7 +241,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			}
 		}
 		if (mode == ScanningMode.NORMAL) {
-			if (isClass == false) {
+			if (!isClass) {
 				visitSuperInterfaces(typeRef, outputConsumer);
 				if (interfacesExtendObject) {
 					//last visit Object.class, because interface inherits all public type members of Object.class
@@ -312,7 +312,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			return;
 		}
 		sendResult(classRef, outputConsumer);
-		if (mode == ScanningMode.NORMAL && query.isTerminated() == false) {
+		if (mode == ScanningMode.NORMAL && !query.isTerminated()) {
 			runNext.accept(classRef);
 		}
 		exit(classRef, isClass);

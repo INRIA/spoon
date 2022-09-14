@@ -184,7 +184,7 @@ public class PositionBuilder {
 				//offset of the bracket before catch
 				int lastBracket = getEndOfLastTryBlock(tryStatement, 0);
 				int catchStart = findNextNonWhitespace(contents, endOfTry, lastBracket + 1);
-				if (CATCH.equals(new String(contents, catchStart, CATCH.length())) == false) {
+				if (!CATCH.equals(new String(contents, catchStart, CATCH.length()))) {
 					return handlePositionProblem("Unexpected beginning of catch statement on offset: " + catchStart);
 				}
 				int bracketStart = findNextNonWhitespace(contents, endOfTry, catchStart + CATCH.length());
@@ -686,7 +686,7 @@ public class PositionBuilder {
 		maxOff = Math.min(maxOff, content.length - 1);
 		while (off >= 0 && off <= maxOff) {
 			char c = content[off];
-			if (Character.isWhitespace(c) == false) {
+			if (!Character.isWhitespace(c)) {
 				//non whitespace found
 				int endOfCommentOff = commentIsWhiteSpace ? getEndOfComment(content, maxOff, off) : -1;
 				if (endOfCommentOff == -1) {
@@ -740,7 +740,7 @@ public class PositionBuilder {
 			int startOfCommentOff = getStartOfComment(content, minOff, off);
 			if (startOfCommentOff >= 0) {
 				off = startOfCommentOff;
-			} else if (Character.isWhitespace(c) == false) {
+			} else if (!Character.isWhitespace(c)) {
 				//non whitespace found.
 				return off;
 			}

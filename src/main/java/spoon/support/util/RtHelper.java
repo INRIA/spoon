@@ -182,7 +182,7 @@ public abstract class RtHelper {
 	public static Method getMethod(Class<?> clazz, String methodName, int numParams) {
 		Method[] methods = clazz.getMethods();
 		for (Method method : methods) {
-			if (method.isSynthetic() == false && method.getName().equals(methodName)) {
+			if (!method.isSynthetic() && method.getName().equals(methodName)) {
 				Class<?>[] params = method.getParameterTypes();
 				if (params.length == numParams) {
 					return method;
