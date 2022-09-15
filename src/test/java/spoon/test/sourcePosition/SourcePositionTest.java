@@ -41,6 +41,7 @@ import spoon.support.reflect.cu.position.DeclarationSourcePositionImpl;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
 import spoon.support.reflect.declaration.CtClassImpl;
 import spoon.test.sourcePosition.testclasses.Brambora;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -119,13 +120,12 @@ public class SourcePositionTest {
 				"body = |8;9|89|", bhsp.getSourceDetails());
 	}
 
-	@Test
-	public void testSourcePositionWhenCommentInAnnotation() {
+	@ModelTest({
+		"./src/test/resources/spoon/test/sourcePosition/ClassWithAnnotation.java",
+		"./src/test/resources/spoon/test/sourcePosition/TestAnnotation.java",
+	})
+	public void testSourcePositionWhenCommentInAnnotation(CtModel model) {
 		// contract: comment characters as element values in annotations should not break position assignment to modifiers
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/spoon/test/sourcePosition/ClassWithAnnotation.java");
-		launcher.addInputResource("./src/test/resources/spoon/test/sourcePosition/TestAnnotation.java");
-		CtModel model = launcher.buildModel();
 		List<CtClassImpl> list = model.getElements(new TypeFilter<>(CtClassImpl.class));
 		assertEquals(4,list.get(0).getPosition().getLine());
 	}
