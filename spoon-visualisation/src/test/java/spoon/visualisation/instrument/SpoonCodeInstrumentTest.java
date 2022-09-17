@@ -311,7 +311,8 @@ class SpoonCodeInstrumentTest {
 					new Pair<>("isImplicit(): boolean", "false"),
 					new Pair<>("getReferencedTypes(): Set<CtTypeReference<?>>", "[]"),
 					new Pair<>("getParent(): CtElement", "null"),
-					new Pair<>("getComments(): List<CtComment>", "[]")))
+					new Pair<>("getComments(): List<CtComment>", "[]"),
+					new Pair<>("getDeclaringModule(): CtModule", "null")))
 		);
 	}
 

@@ -7,8 +7,6 @@
  */
 package spoon;
 
-
-import spoon.reflect.CtModelImpl;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
@@ -597,7 +595,7 @@ public class ContractVerifier {
 		// checking method JavaIdentifiers.isLegalJavaPackageIdentifier
 		_rootPackage.getElements(new TypeFilter<>(CtPackage.class)).parallelStream().forEach(element -> {
 			// the default package is excluded (called "unnamed package")
-			if (element instanceof CtModelImpl.CtRootPackage) {
+			if (element.isUnnamedPackage()) {
 				return;
 			}
 

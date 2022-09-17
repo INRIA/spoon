@@ -17,6 +17,7 @@ import spoon.SpoonException;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
@@ -114,61 +115,66 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 		targetMethods.add(targetMethod);
 		CtType<?> declaringType = targetMethod.getDeclaringType();
 		lambdaFilter.addImplementingInterface(declaringType);
-		//search for all declarations and implementations of this method in sub and super classes and interfaces of all related hierarchies.
-		class Context {
-			boolean haveToSearchForSubtypes;
-		}
-		final Context context = new Context();
-		//at the beginning we know that we have to always search for sub types too.
-		context.haveToSearchForSubtypes = true;
-		//Sub inheritance hierarchy function, which remembers visited sub types and does not returns/visits them again
-		final SubInheritanceHierarchyResolver subHierarchyFnc = new SubInheritanceHierarchyResolver(declaringType.getFactory().getModel().getRootPackage());
-		//add hierarchy of `targetMethod` as to be checked for sub types of declaring type
-		subHierarchyFnc.addSuperType(declaringType);
-		//unique names of all types whose super inheritance hierarchy was searched for rootType
-		Set<String> typesCheckedForRootType = new HashSet<>();
-		//list of sub types whose inheritance hierarchy has to be checked
-		final List<CtType<?>> toBeCheckedSubTypes = new ArrayList<>();
-		//add hierarchy of `targetMethod` as to be checked for super types of declaring type
-		toBeCheckedSubTypes.add(declaringType);
-		while (!toBeCheckedSubTypes.isEmpty()) {
-			for (CtType<?> subType : toBeCheckedSubTypes) {
-				TypeAdaptor typeAdaptor = new TypeAdaptor(subType);
-				//search for first target method from the same type inheritance hierarchy
-				targetMethod = getTargetMethodOfHierarchy(targetMethods, typeAdaptor);
-				//search for all methods with same signature in inheritance hierarchy of `subType`
-				forEachOverridenMethod(typeAdaptor, targetMethod, typesCheckedForRootType, new CtConsumer<CtMethod<?>>() {
-					@Override
-					public void accept(CtMethod<?> overriddenMethod) {
-						targetMethods.add(overriddenMethod);
-						outputConsumer.accept(overriddenMethod);
-						CtType<?> type = overriddenMethod.getDeclaringType();
-						lambdaFilter.addImplementingInterface(type);
-						subHierarchyFnc.addSuperType(type);
-						//mark that new super type was added, so we have to search for sub types again
-						context.haveToSearchForSubtypes = true;
+
+		for (CtModule ctModule : declaringType.getFactory().getModel().getAllModules()) {
+			//search for all declarations and implementations of this method in sub and super classes and interfaces of all related hierarchies.
+			class Context {
+				boolean haveToSearchForSubtypes;
+			}
+			final Context context = new Context();
+			//at the beginning we know that we have to always search for sub types too.
+			context.haveToSearchForSubtypes = true;
+
+
+			//Sub inheritance hierarchy function, which remembers visited sub types and does not returns/visits them again
+			final SubInheritanceHierarchyResolver subHierarchyFnc = new SubInheritanceHierarchyResolver(ctModule.getRootPackage());
+			//add hierarchy of `targetMethod` as to be checked for sub types of declaring type
+			subHierarchyFnc.addSuperType(declaringType);
+			//unique names of all types whose super inheritance hierarchy was searched for rootType
+			Set<String> typesCheckedForRootType = new HashSet<>();
+			//list of sub types whose inheritance hierarchy has to be checked
+			final List<CtType<?>> toBeCheckedSubTypes = new ArrayList<>();
+			//add hierarchy of `targetMethod` as to be checked for super types of declaring type
+			toBeCheckedSubTypes.add(declaringType);
+			while (!toBeCheckedSubTypes.isEmpty()) {
+				for (CtType<?> subType : toBeCheckedSubTypes) {
+					TypeAdaptor typeAdaptor = new TypeAdaptor(subType);
+					//search for first target method from the same type inheritance hierarchy
+					targetMethod = getTargetMethodOfHierarchy(targetMethods, typeAdaptor);
+					//search for all methods with same signature in inheritance hierarchy of `subType`
+					forEachOverridenMethod(typeAdaptor, targetMethod, typesCheckedForRootType, new CtConsumer<CtMethod<?>>() {
+						@Override
+						public void accept(CtMethod<?> overriddenMethod) {
+							targetMethods.add(overriddenMethod);
+							outputConsumer.accept(overriddenMethod);
+							CtType<?> type = overriddenMethod.getDeclaringType();
+							lambdaFilter.addImplementingInterface(type);
+							subHierarchyFnc.addSuperType(type);
+							//mark that new super type was added, so we have to search for sub types again
+							context.haveToSearchForSubtypes = true;
+						}
+					});
+					if (query.isTerminated()) {
+						return;
 					}
-				});
-				if (query.isTerminated()) {
-					return;
+				}
+				toBeCheckedSubTypes.clear();
+				if (context.haveToSearchForSubtypes) {
+					context.haveToSearchForSubtypes = false;
+					//there are some new super types, whose sub inheritance hierarchy has to be checked
+					//search their inheritance hierarchy for sub types
+					subHierarchyFnc.forEachSubTypeInPackage(new CtConsumer<CtType<?>>() {
+						@Override
+						public void accept(CtType<?> type) {
+							toBeCheckedSubTypes.add(type);
+						}
+					});
 				}
 			}
-			toBeCheckedSubTypes.clear();
-			if (context.haveToSearchForSubtypes) {
-				context.haveToSearchForSubtypes = false;
-				//there are some new super types, whose sub inheritance hierarchy has to be checked
-				//search their inheritance hierarchy for sub types
-				subHierarchyFnc.forEachSubTypeInPackage(new CtConsumer<CtType<?>>() {
-					@Override
-					public void accept(CtType<?> type) {
-						toBeCheckedSubTypes.add(type);
-					}
-				});
+			if (includingLambdas) {
+				//search for all lambdas implementing any of the found interfaces
+				lambdaQuery.forEach(outputConsumer);
 			}
-		}
-		if (includingLambdas) {
-			//search for all lambdas implementing any of the found interfaces
-			lambdaQuery.forEach(outputConsumer);
 		}
 	}
 

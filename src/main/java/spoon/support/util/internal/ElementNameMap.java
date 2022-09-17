@@ -96,8 +96,10 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 			return null;
 		}
 		CtElement owner = getOwner();
-		linkToParent(owner, e);
-		getModelChangeListener().onMapAdd(owner, getRole(), map, key, e);
+		if (owner != null) {
+			linkToParent(owner, e);
+			getModelChangeListener().onMapAdd(owner, getRole(), map, key, e);
+		}
 
 		// We make sure that then last added type is kept (and previous types overwritten) as client
 		// code expects that
@@ -119,13 +121,15 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 			return null;
 		}
 
-		getModelChangeListener().onMapDelete(
-				getOwner(),
-				getRole(),
-				map,
-				(String) key,
-				removed
-		);
+		if (getOwner() != null) {
+			getModelChangeListener().onMapDelete(
+					getOwner(),
+					getRole(),
+					map,
+					(String) key,
+					removed
+			);
+		}
 
 		return removed;
 	}
@@ -143,13 +147,15 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 		// Only an approximation as the concurrent map is only weakly consistent
 		var old = toInsertionOrderedMap();
 		map.clear();
-		var current = toInsertionOrderedMap();
-		getModelChangeListener().onMapDeleteAll(
-				getOwner(),
-				getRole(),
-				current,
-				old
-		);
+		if (getOwner() != null) {
+			var current = toInsertionOrderedMap();
+			getModelChangeListener().onMapDeleteAll(
+					getOwner(),
+					getRole(),
+					current,
+					old
+			);
+		}
 	}
 
 	private LinkedHashMap<String, T> toInsertionOrderedMap() {
@@ -198,7 +204,7 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 	}
 
 	private FineModelChangeListener getModelChangeListener() {
-		return getOwner().getFactory().getEnvironment().getModelChangeListener();
+		return Objects.requireNonNull(getOwner(), "Cannot access model change listener without an owner").getFactory().getEnvironment().getModelChangeListener();
 	}
 
 	@Override

@@ -1015,6 +1015,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtNamedElement(module);
 		scanCtVisitable(module);
 		scanCtElement(module);
+		scanCtShadowable(module);
 	}
 
 	@Override

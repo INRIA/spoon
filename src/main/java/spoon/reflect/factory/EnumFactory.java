@@ -59,7 +59,7 @@ public class EnumFactory extends TypeFactory {
 	@SuppressWarnings("unchecked")
 	public CtEnum<?> get(String qualifiedName) {
 		try {
-			return (CtEnum<?>) super.get(qualifiedName);
+			return (CtEnum) super.get(qualifiedName);
 		} catch (Exception e) {
 			return null;
 		}

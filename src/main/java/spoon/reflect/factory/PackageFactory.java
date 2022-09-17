@@ -7,11 +7,13 @@
  */
 package spoon.reflect.factory;
 
-
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
+
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
@@ -19,12 +21,13 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtPackageReference;
 
-
 /**
  * The {@link CtPackage} sub-factory.
  */
 public class PackageFactory extends SubFactory {
 	private static final long serialVersionUID = 1L;
+
+	private final Map<String, CtModule> packageModuleCache;
 
 	/**
 	 * Creates a new package sub-factory.
@@ -34,6 +37,7 @@ public class PackageFactory extends SubFactory {
 	 */
 	public PackageFactory(Factory factory) {
 		super(factory);
+		this.packageModuleCache = new HashMap<>();
 	}
 
 	/**
@@ -102,7 +106,7 @@ public class PackageFactory extends SubFactory {
 		if (parent == null) {
 			return getOrCreate(simpleName);
 		} else {
-			return getOrCreate(parent.toString() + CtPackage.PACKAGE_SEPARATOR + simpleName);
+			return getOrCreate(parent + CtPackage.PACKAGE_SEPARATOR + simpleName, parent.getDeclaringModule());
 		}
 	}
 
@@ -114,7 +118,50 @@ public class PackageFactory extends SubFactory {
 	 *
 	 */
 	public CtPackage getOrCreate(String qualifiedName) {
-		return this.getOrCreate(qualifiedName, factory.getModel().getUnnamedModule());
+		return this.getOrCreate(qualifiedName, findModuleByPackage(qualifiedName));
+	}
+
+	private CtModule findModuleByPackage(String qualifiedName) {
+		String owner = getOwner(qualifiedName);
+		CtModule known = packageModuleCache.get(owner);
+		if (known != null) {
+			return known;
+		}
+
+		CtModule ctModule = findCtModule(qualifiedName);
+		packageModuleCache.put(owner, ctModule);
+		return ctModule;
+	}
+
+	private CtModule findCtModule(String qualifiedName) {
+		List<Module> modules = findModules(qualifiedName);
+		if (modules.isEmpty()) {
+			return factory.getModel().getUnnamedModule();
+		}
+
+		if (modules.size() != 1) {
+			throw new SpoonException(
+					"Ambiguous package name detected. If you believe the code you analyzed is correct, please"
+							+ " file an issue and reference https://github.com/INRIA/spoon/issues/4051. "
+							+ "Error details: Found " + modules.size() + " modules that contain "
+							+ "'" + qualifiedName + "'"
+			);
+		}
+
+		return factory.Module().getOrCreate(modules.get(0).getName());
+	}
+
+	private String getOwner(String qualifiedName) {
+		int index = qualifiedName.indexOf(".");
+		if (index == -1) {
+			return qualifiedName;
+		}
+
+		return qualifiedName.substring(0, index);
+	}
+
+	private List<Module> findModules(String qualifiedName) {
+		return ModuleLayer.boot().modules().stream().filter(module -> module.getPackages().contains(qualifiedName)).collect(Collectors.toUnmodifiableList());
 	}
 
 	/**
@@ -177,7 +224,7 @@ public class PackageFactory extends SubFactory {
 		CtPackage packageWithTypes = null;
 		CtPackage lastNonNullPackage = null;
 		for (CtModule module : factory.getModel().getAllModules()) {
-			CtPackage aPackage = getPackageFromModule(qualifiedName, module);
+			CtPackage aPackage = get(qualifiedName, module);
 			if (aPackage == null) {
 				continue;
 			}
@@ -207,7 +254,7 @@ public class PackageFactory extends SubFactory {
 	 * @param ctModule A module in which to search for the package.
 	 * @return The package if found in this module, otherwise null.
 	 */
-	private static CtPackage getPackageFromModule(String qualifiedName, CtModule ctModule) {
+	public CtPackage get(String qualifiedName, CtModule ctModule) {
 		int index = 0;
 		int nextIndex;
 		CtPackage current = ctModule.getRootPackage();
@@ -242,15 +289,5 @@ public class PackageFactory extends SubFactory {
 	public CtPackage getRootPackage() {
 		return factory.getModel().getRootPackage();
 	}
-
-	private List<CtPackage> getSubPackageList(CtPackage pack) {
-		List<CtPackage> packs = new ArrayList<>();
-		packs.add(pack);
-		for (CtPackage p : pack.getPackages()) {
-			packs.addAll(getSubPackageList(p));
-		}
-		return packs;
-	}
-
 }
 

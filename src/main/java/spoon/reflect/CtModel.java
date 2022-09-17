@@ -40,6 +40,21 @@ public interface CtModel extends Serializable, CtQueryable {
 	CtModule getUnnamedModule();
 
 	/**
+	 * searches for a module
+	 */
+	CtModule getModule(String name);
+
+	/**
+	 * adds a module to the model.
+	 */
+	<T extends CtModel> T addModule(CtModule module);
+
+	/**
+	 * removes a module to the model.
+	 */
+	<T extends CtModel> T removeModule(CtModule module);
+
+	/**
 	 * returns all modules of the model
 	 */
 	Collection<CtModule> getAllModules();

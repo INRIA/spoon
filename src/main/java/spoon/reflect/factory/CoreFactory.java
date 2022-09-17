@@ -374,6 +374,11 @@ public interface CoreFactory {
 	CtPackage createPackage();
 
 	/**
+	 * Creates a package.
+	 */
+	CtPackage createPackage(CtModule parent);
+
+	/**
 	 * Creates a package reference.
 	 */
 	CtPackageReference createPackageReference();

@@ -37,6 +37,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
@@ -1072,8 +1073,8 @@ public class TestSniperPrinter {
 
 
 		ops.stream()
-				.filter(el -> !(el instanceof spoon.reflect.CtModelImpl.CtRootPackage)
-				&& !(el instanceof spoon.reflect.factory.ModuleFactory.CtUnnamedModule)
+				.filter(el -> !(el instanceof CtPackage && ((CtPackage) el).isUnnamedPackage())
+				&& !(el instanceof CtModule && ((CtModule) el).isUnnamedModule())
 				).forEach(el -> {
 			try {
 				sp.reset();

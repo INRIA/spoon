@@ -36,12 +36,6 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	String TOP_LEVEL_PACKAGE_NAME = "unnamed package";
 
 	/**
-	 * Gets the declaring module.
-	 */
-	@DerivedProperty
-	CtModule getDeclaringModule();
-
-	/**
 	 * Gets the declaring package of the current one. Returns null if the package is not yet in another one.
 	 */
 	@DerivedProperty

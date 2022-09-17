@@ -43,7 +43,7 @@ import static spoon.reflect.path.CtRole.SUB_PACKAGE;
  * grants access at compile time to types in only those packages which are explicitly exported,
  * but grants access at run time to types in all its packages, as if all packages had been exported.
  */
-public interface CtModule extends CtNamedElement {
+public interface CtModule extends CtNamedElement, CtShadowable {
 
 	/**
 	 * The name for the top level module.
@@ -173,4 +173,10 @@ public interface CtModule extends CtNamedElement {
 
 	@Override
 	CtModule clone();
+
+	@DerivedProperty
+	CtPackage getPackage(String qualifiedName);
+
+	@DerivedProperty
+	List<CtPackage> getAllPackages();
 }

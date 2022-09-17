@@ -35,24 +35,32 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.util.RtHelper;
 import spoon.support.visitor.java.internal.AnnotationRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.ExecutableRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.ModuleRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.PackageRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.RecordComponentRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.RuntimeBuilderContext;
@@ -61,6 +69,11 @@ import spoon.support.visitor.java.internal.TypeRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.VariableRuntimeBuilderContext;
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
+
+import java.lang.module.ModuleDescriptor;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 /**
  * Builds Spoon model from class file using the reflection api. The Spoon model
  * contains only the declaration part (type, field, method, etc.). Everything
@@ -71,11 +84,14 @@ import spoon.support.visitor.java.reflect.RtParameter;
  * element comes from the reflection api, use {@link spoon.reflect.declaration.CtShadowable#isShadow()}.
  */
 public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
-	private Deque<RuntimeBuilderContext> contexts = new ArrayDeque<>();
-	private Factory factory;
+	private static final Set<String> attributedModules = new HashSet<>();
+
+	private final Deque<RuntimeBuilderContext> contexts;
+	private final Factory factory;
 
 	public JavaReflectionTreeBuilder(Factory factory) {
 		this.factory = factory;
+		this.contexts = new ArrayDeque<>();
 	}
 
 	private void enter(RuntimeBuilderContext context) {
@@ -88,38 +104,25 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	/** transforms a java.lang.Class into a CtType (ie a shadow type in Spoon's parlance) */
 	public <T, R extends CtType<T>> R scan(Class<T> clazz) {
-		CtPackage ctPackage;
-		CtType<?> ctEnclosingClass;
 		if (clazz.getEnclosingClass() != null && !clazz.isAnonymousClass()) {
-			ctEnclosingClass = factory.Type().get(clazz.getEnclosingClass());
+			CtType<?> ctEnclosingClass = factory.Type().get(clazz.getEnclosingClass());
 			return ctEnclosingClass.getNestedType(clazz.getSimpleName());
 		} else {
-			if (clazz.getPackage() == null) {
-				ctPackage = factory.Package().getRootPackage();
-			} else {
-				ctPackage = factory.Package().getOrCreate(clazz.getPackage().getName());
-			}
+			CtPackage ctPackage = clazz.getPackage() != null ? factory.Package().getOrCreate(clazz.getPackage().getName())
+					: factory.Package().getRootPackage();
 			if (contexts.isEmpty()) {
-				enter(new PackageRuntimeBuilderContext(ctPackage));
+				contexts.add(new PackageRuntimeBuilderContext(ctPackage));
 			}
-			boolean visited = false;
+
 			if (clazz.isAnnotation()) {
-				visited = true;
 				visitAnnotationClass((Class<Annotation>) clazz);
-			}
-			if (clazz.isInterface() && !visited) {
-				visited = true;
+			} else if (clazz.isInterface()) {
 				visitInterface(clazz);
-			}
-			if (clazz.isEnum() && !visited) {
-				visited = true;
+			} else if (clazz.isEnum()) {
 				visitEnum(clazz);
-			}
-			if (MethodHandleUtils.isRecord(clazz) && !visited) {
-				visited = true;
+			} else if (MethodHandleUtils.isRecord(clazz)) {
 				visitRecord(clazz);
-			}
-			if (!visited) {
+			} else {
 				visitClass(clazz);
 			}
 			exit();
@@ -129,6 +132,95 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			}
 			return type;
 		}
+	}
+
+	@Override
+	public void visitModule(Module module) {
+		CtModule know = factory.Module().getModule(module.getName());
+		if (know != null && isAttributed(know)) {
+			return;
+		}
+
+		CtModule fresh = know != null ? know : factory.Module().getOrCreate(module.getName());
+		ModuleDescriptor descriptor = module.getDescriptor();
+		if (descriptor != null) {
+			createModuleData(fresh, descriptor);
+		}
+
+		setAttributed(fresh);
+		enter(new ModuleRuntimeBuilderContext(fresh));
+		super.visitModule(module);
+		exit();
+	}
+
+	private boolean isAttributed(CtModule know) {
+		return attributedModules.contains(know.getSimpleName());
+	}
+
+	private static void setAttributed(CtModule fresh) {
+		attributedModules.add(fresh.getSimpleName());
+	}
+
+	private void createModuleData(CtModule fresh, ModuleDescriptor descriptor) {
+		fresh.setIsOpenModule(descriptor.isOpen());
+
+		List<CtModuleRequirement> requires = descriptor.requires().stream().map(this::createRequires).collect(Collectors.toUnmodifiableList());
+		fresh.setRequiredModules(requires);
+
+		List<CtPackageExport> exports = descriptor.exports().stream().map(instruction -> createExport(instruction.source(), instruction.targets(), false)).collect(Collectors.toUnmodifiableList());
+		fresh.setExportedPackages(exports);
+
+		List<CtPackageExport> opens = descriptor.opens().stream().map(instruction -> createExport(instruction.source(), instruction.targets(), true)).collect(Collectors.toUnmodifiableList());
+		fresh.setOpenedPackages(opens);
+
+		List<CtProvidedService> provides = descriptor.provides().stream().map(this::createProvides).collect(Collectors.toUnmodifiableList());
+		fresh.setProvidedServices(provides);
+
+		List<CtUsedService> uses = descriptor.uses().stream().map(this::createUses).collect(Collectors.toUnmodifiableList());
+		fresh.setUsedServices(uses);
+	}
+
+	private CtModuleRequirement createRequires(ModuleDescriptor.Requires instruction) {
+		CtModuleReference requiredModule = factory.Module().createReference(instruction.name());
+		Set<CtModuleRequirement.RequiresModifier> modifiers = new HashSet<>();
+		if (instruction.modifiers().contains(ModuleDescriptor.Requires.Modifier.STATIC)) {
+			modifiers.add(CtModuleRequirement.RequiresModifier.STATIC);
+		}
+
+		if (instruction.modifiers().contains(ModuleDescriptor.Requires.Modifier.TRANSITIVE)) {
+			modifiers.add(CtModuleRequirement.RequiresModifier.TRANSITIVE);
+		}
+
+		CtModuleRequirement requires = factory.Core().createModuleRequirement();
+		requires.setModuleReference(requiredModule);
+		requires.setRequiresModifiers(modifiers);
+		return requires;
+	}
+
+	private CtUsedService createUses(String used) {
+		CtTypeReference usedType = factory.Type().createReference(used);
+		CtUsedService usedService = factory.Core().createUsedService();
+		usedService.setServiceType(usedType);
+		return usedService;
+	}
+
+	private CtProvidedService createProvides(ModuleDescriptor.Provides instruction) {
+		CtTypeReference serviceType = factory.Type().createReference(instruction.service());
+		List<CtTypeReference> serviceImplementations = instruction.providers().stream().map(factory.Type()::createReference).collect(Collectors.toUnmodifiableList());
+		CtProvidedService export = factory.Core().createProvidedService();
+		export.setServiceType(serviceType);
+		export.setImplementationTypes(serviceImplementations);
+		return export;
+	}
+
+	private CtPackageExport createExport(String instruction, Set<String> instructions, boolean openedPackage) {
+		CtPackageReference exported = factory.Package().createReference(instruction);
+		List<CtModuleReference> targets = instructions.stream().map(factory.Module()::createReference).collect(Collectors.toUnmodifiableList());
+		CtPackageExport export = factory.Core().createPackageExport();
+		export.setOpenedPackage(openedPackage);
+		export.setPackageReference(exported);
+		export.setTargetExport(targets);
+		return export;
 	}
 
 	@Override

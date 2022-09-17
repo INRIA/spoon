@@ -10,6 +10,8 @@ package spoon.reflect.visitor.filter;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
@@ -63,28 +65,27 @@ public class SubInheritanceHierarchyFunction implements CtConsumableFunction<CtT
 
 	@Override
 	public void apply(CtTypeInformation input, final CtConsumer<Object> outputConsumer) {
-		final SubInheritanceHierarchyResolver fnc = new SubInheritanceHierarchyResolver(((CtElement) input).getFactory().getModel().getRootPackage())
-			.failOnClassNotFound(failOnClassNotFound)
-			.includingInterfaces(includingInterfaces);
-		if (includingSelf) {
-			if (input instanceof CtTypeReference) {
-				outputConsumer.accept(((CtTypeReference<?>) input).getTypeDeclaration());
-			} else {
-				outputConsumer.accept(((CtType<?>) input));
-			}
-		}
-		fnc.addSuperType(input);
-		fnc.forEachSubTypeInPackage(new CtConsumer<CtType>() {
-			@Override
-			public void accept(CtType typeInfo) {
-				outputConsumer.accept(typeInfo);
-				if (query.isTerminated()) {
-					//Cannot terminate, because its support was removed.
-					//I think there are cases where it might be useful.
-//					fnc.terminate();
+		Factory factory = ((CtElement) input).getFactory();
+		for (CtModule ctModule : factory.getModel().getAllModules()) {
+			final SubInheritanceHierarchyResolver fnc = new SubInheritanceHierarchyResolver(ctModule.getRootPackage())
+					.failOnClassNotFound(failOnClassNotFound)
+					.includingInterfaces(includingInterfaces);
+			if (includingSelf) {
+				if (input instanceof CtTypeReference) {
+					outputConsumer.accept(((CtTypeReference<?>) input).getTypeDeclaration());
+				} else {
+					outputConsumer.accept(input);
 				}
 			}
-		});
+			fnc.addSuperType(input);
+			fnc.forEachSubTypeInPackage((CtType<?> typeInfo) -> {
+				outputConsumer.accept(typeInfo);
+				// Cannot terminate, because its support was removed.
+				// I think there are cases where it might be useful.
+				// fnc.terminate();
+				query.isTerminated();
+			});
+		}
 	}
 
 	@Override

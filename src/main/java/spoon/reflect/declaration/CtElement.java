@@ -412,6 +412,12 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	String toStringDebug();
 
 	/**
+	 * Gets the declaring module.
+	 */
+	@DerivedProperty
+	CtModule getDeclaringModule();
+
+	/**
 	 * @return the source code of this element with the pretty-printing rules of Spoon
 	 * Warning: this is not side-effect free, this triggers some {@link spoon.reflect.visitor.ImportAnalyzer} which would change the model: add/remove imports, change the value `implicit` of some model elements, etc.
 	 */

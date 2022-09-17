@@ -8,9 +8,10 @@
 package spoon.reflect.visitor.filter;
 
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
+import spoon.reflect.visitor.chain.CtQuery;
 
 /**
  * Gets all overridden method from the method given.
@@ -18,7 +19,9 @@ import spoon.reflect.visitor.chain.CtConsumer;
 public class OverriddenMethodQuery implements CtConsumableFunction<CtMethod<?>> {
 	@Override
 	public void apply(CtMethod<?> input, CtConsumer<Object> outputConsumer) {
-		CtPackage searchScope = input.getFactory().Package().getRootPackage();
-		searchScope.filterChildren(new OverriddenMethodFilter(input)).forEach(outputConsumer);
+		for (CtModule module : input.getFactory().getModel().getAllModules()) {
+			CtQuery query = module.getRootPackage().filterChildren(new OverriddenMethodFilter(input));
+			query.forEach(outputConsumer);
+		}
 	}
 }

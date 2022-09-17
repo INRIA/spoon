@@ -28,7 +28,14 @@ import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
 class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
-	private static Class<?> recordClass = getRecordClass();
+	private static final Class<?> recordClass = getRecordClass();
+
+	@Override
+	public void visitModule(Module module) {
+		for (Annotation annotation : module.getAnnotations()) {
+			visitAnnotation(annotation);
+		}
+	}
 
 	@Override
 	public void visitPackage(Package aPackage) {
@@ -39,6 +46,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T> void visitClass(Class<T> clazz) {
+		visitModule(clazz.getModule());
 		if (clazz.getPackage() != null) {
 			visitPackage(clazz.getPackage());
 		}
@@ -125,6 +133,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T> void visitInterface(Class<T> clazz) {
 		assert clazz.isInterface();
+		visitModule(clazz.getModule());
 		if (clazz.getPackage() != null) {
 			visitPackage(clazz.getPackage());
 		}
@@ -183,6 +192,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T> void visitEnum(Class<T> clazz) {
 		assert clazz.isEnum();
+		visitModule(clazz.getModule());
 		if (clazz.getPackage() != null) {
 			visitPackage(clazz.getPackage());
 		}
@@ -257,6 +267,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T extends Annotation> void visitAnnotationClass(Class<T> clazz) {
 		assert clazz.isAnnotation();
+		visitModule(clazz.getModule());
 		if (clazz.getPackage() != null) {
 			visitPackage(clazz.getPackage());
 		}
@@ -493,6 +504,9 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T> void visitTypeReference(CtRole role, Class<T> clazz) {
+		if (clazz.getEnclosingClass() == null) {
+			visitModule(clazz.getModule());
+		}
 		if (clazz.getPackage() != null && clazz.getEnclosingClass() == null) {
 			visitPackage(clazz.getPackage());
 		}

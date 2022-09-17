@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -60,6 +61,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -125,7 +127,7 @@ public abstract class CtElementImpl implements CtElement {
 		}
 		boolean ret = EqualsVisitor.equals(this, (CtElement) o);
 		// neat online testing of core Java contract
-		if (ret && !factory.getEnvironment().checksAreSkipped() && this.hashCode() != o.hashCode()) {
+		if (ret && !getFactory().getEnvironment().checksAreSkipped() && this.hashCode() != o.hashCode()) {
 			throw new IllegalStateException("violation of equal/hashcode contract between \n" + this.toString() + "\nand\n" + o.toString() + "\n");
 		}
 		return ret;
@@ -251,7 +253,7 @@ public abstract class CtElementImpl implements CtElement {
 				return (E) this;
 			}
 		}
-		this.addComment(factory.Code().createComment(docComment, CtComment.CommentType.JAVADOC));
+		this.addComment(getFactory().Code().createComment(docComment, CtComment.CommentType.JAVADOC));
 		return (E) this;
 	}
 
@@ -332,17 +334,17 @@ public abstract class CtElementImpl implements CtElement {
 
 	@Override
 	public <I> CtQuery map(CtConsumableFunction<I> queryStep) {
-		return factory.Query().createQuery(this).map(queryStep);
+		return getFactory().Query().createQuery(this).map(queryStep);
 	}
 
 	@Override
 	public <I, R> CtQuery map(CtFunction<I, R> function) {
-		return factory.Query().createQuery(this).map(function);
+		return getFactory().Query().createQuery(this).map(function);
 	}
 
 	@Override
 	public <P extends CtElement> CtQuery filterChildren(Filter<P> predicate) {
-		return factory.Query().createQuery(this).filterChildren(predicate);
+		return getFactory().Query().createQuery(this).filterChildren(predicate);
 	}
 
 	@Override
@@ -409,7 +411,7 @@ public abstract class CtElementImpl implements CtElement {
 	@Override
 	public boolean hasParent(CtElement candidate) {
 		try {
-			return this != getFactory().getModel().getUnnamedModule() && (getParent() == candidate || getParent().hasParent(candidate));
+			return !(this instanceof CtModule) && (getParent() == candidate || getParent().hasParent(candidate));
 		} catch (ParentNotInitializedException e) {
 			return false;
 		}
@@ -632,5 +634,10 @@ public abstract class CtElementImpl implements CtElement {
 
 		this.accept(scanner);
 		return directChildren;
+	}
+
+	@Override
+	public CtModule getDeclaringModule() {
+		return Objects.requireNonNullElse(getParent(CtModule.class), getFactory().getModel().getUnnamedModule());
 	}
 }

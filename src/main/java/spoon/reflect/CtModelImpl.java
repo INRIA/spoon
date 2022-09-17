@@ -10,29 +10,37 @@ package spoon.reflect;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.ModuleFactory;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.QueueProcessingManager;
-import spoon.support.reflect.declaration.CtPackageImpl;
+import spoon.support.reflect.declaration.CtModuleImpl;
+import spoon.support.util.internal.ElementNameMap;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CtModelImpl implements CtModel {
 
 	private static final long serialVersionUID = 1L;
 
-	private boolean buildModelFinished = false;
+	private final CtModule unnamedModule;
+	private final Modules modules;
+	private boolean buildModelFinished;
+
+	public CtModelImpl(Factory factory) {
+		this.unnamedModule = new CtModuleImpl.UnnamedModule(factory);
+		this.modules = new Modules();
+		addModule(unnamedModule);
+	}
 
 	@Override
 	public <R extends CtElement> CtQuery filterChildren(Filter<R> filter) {
@@ -49,57 +57,9 @@ public class CtModelImpl implements CtModel {
 		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).map(queryStep);
 	}
 
-	public static class CtRootPackage extends CtPackageImpl {
-		{
-			this.setSimpleName(CtPackage.TOP_LEVEL_PACKAGE_NAME);
-		}
-
-		@Override
-		public <T extends CtNamedElement> T setSimpleName(String name) {
-			if (name == null) {
-				return (T) this;
-			}
-
-			if (name.equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
-				return super.setSimpleName(name);
-			}
-
-			return (T) this;
-		}
-
-		@Override
-		public String getQualifiedName() {
-			return "";
-		}
-
-		@Override
-		public String toString() {
-			return TOP_LEVEL_PACKAGE_NAME;
-		}
-	}
-
-	private final CtModule unnamedModule;
-
-	public CtModelImpl(Factory f) {
-		this.unnamedModule = new ModuleFactory.CtUnnamedModule();
-		this.unnamedModule.setFactory(f);
-		this.unnamedModule.setRootPackage(new CtModelImpl.CtRootPackage());
-		getRootPackage().setFactory(f);
-	}
-
-	@Override
-	public CtPackage getRootPackage() {
-		return getUnnamedModule().getRootPackage();
-	}
-
-
 	@Override
 	public Collection<CtType<?>> getAllTypes() {
-		final List<CtType<?>> result = new ArrayList<>();
-		getAllPackages().forEach(ctPackage -> {
-			result.addAll(ctPackage.getTypes());
-		});
-		return result;
+		return getAllPackages().stream().map(CtPackage::getTypes).flatMap(Collection::stream).collect(Collectors.toList());
 	}
 
 
@@ -109,15 +69,24 @@ public class CtModelImpl implements CtModel {
 	}
 
 	@Override
+	public CtPackage getRootPackage() {
+		return getUnnamedModule().getRootPackage();
+	}
+
+	@Override
 	public CtModule getUnnamedModule() {
 		return this.unnamedModule;
 	}
 
 	@Override
-	public Collection<CtModule> getAllModules() {
-		return ((ModuleFactory.CtUnnamedModule) this.unnamedModule).getAllModules();
+	public CtModule getModule(String name) {
+		return modules.get(name);
 	}
 
+	@Override
+	public Collection<CtModule> getAllModules() {
+		return Collections.unmodifiableCollection(modules.values());
+	}
 
 	@Override
 	public void processWith(Processor<?> processor) {
@@ -138,9 +107,36 @@ public class CtModelImpl implements CtModel {
 	}
 
 	@Override
+	public <T extends CtModel> T addModule(CtModule module) {
+		modules.put(module.getSimpleName(), module);
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtModel> T removeModule(CtModule module) {
+		modules.remove(module.getSimpleName());
+		return (T) this;
+	}
+
+	@Override
 	public <T extends CtModel> T setBuildModelIsFinished(boolean buildModelFinished) {
 		this.buildModelFinished = buildModelFinished;
 		return (T) this;
 	}
 
+	public void updateModuleName(CtModule newModule, String oldName) {
+		modules.updateKey(oldName, newModule.getSimpleName());
+	}
+
+	private static class Modules extends ElementNameMap<CtModule> {
+		@Override
+		protected CtElement getOwner() {
+			return null;
+		}
+
+		@Override
+		protected CtRole getRole() {
+			return CtRole.DECLARED_MODULE;
+		}
+	}
 }

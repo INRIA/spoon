@@ -570,9 +570,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 
 	@Override
 	public CtPackage createPackage() {
-		CtPackage e = new CtPackageImpl();
-		e.setFactory(getMainFactory());
-		e.setParent(getMainFactory().Package().getRootPackage());
+		return createPackage(getMainFactory().getModel().getUnnamedModule());
+	}
+
+	@Override
+	public CtPackage createPackage(CtModule parent) {
+		CtPackage e = new CtPackageImpl(parent);
+		e.setParent(parent.getRootPackage());
 		return e;
 	}
 
@@ -1122,10 +1126,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 
 	@Override
 	public CtModule createModule() {
-		CtModule module = new CtModuleImpl();
-		module.setFactory(getMainFactory());
-		module.setParent(this.getMainFactory().Module().getUnnamedModule());
-		return module;
+		return new CtModuleImpl(getMainFactory());
 	}
 
 	@Override
