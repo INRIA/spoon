@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
 Generate the contributor list for the readme of Spoon at https://github.com/INRIA/spoon/
 """
@@ -46,9 +46,26 @@ def clean(raw_contributors):
     if i == 'Spoon Bot': continue
     if i == 'renovate[bot]': continue
   
+    # uniqify
+    cleaned = list(set(cleaned))
     cleaned.append(name)
   return cleaned
 def format_to_md(contributors):
-  return '\n'.join(["* "+x for x in contributors])
+  return '\n'.join(sorted(["* "+x for x in contributors]))
 
-print(format_to_md(clean(get_raw_contributors())))
+def early_contributors():
+    """ they are not in the Git history"""
+    return ['Olivier Barais',
+        'David Bernard',
+        'Benoit Cornu',
+        'Favio DeMarco',
+        'Didier Donsez',
+        'Christophe Dufour',
+        'Sebastian Lamelas Marcote',
+        'Matias Martinez',
+        'Carlos Noguera',
+        'Renaud Pawlak',
+        'Nicolas Pessemier']
+
+
+print(format_to_md(clean(get_raw_contributors()+early_contributors())))
