@@ -6,8 +6,7 @@ Generate the contributor list for the readme of Spoon at https://github.com/INRI
 import subprocess
 
 def get_raw_contributors():
-  # git log --pretty="%an" | sort -u
-  result = subprocess.run(['sh', '-c', 'git log --pretty="%an" | sort -u'], stdout=subprocess.PIPE)
+  result = subprocess.run(['sh', '-c', 'git log --pretty="%an"'], stdout=subprocess.PIPE)
   return result.stdout.decode('utf-8').split("\n")
 
 
@@ -51,7 +50,7 @@ def clean(raw_contributors):
     cleaned.append(name)
   return cleaned
 def format_to_md(contributors):
-  return '\n'.join(sorted(["* "+x for x in contributors]))
+  return '\n'.join(sorted(["* "+x for x in contributors], key=str.casefold))
 
 def early_contributors():
     """ they are not in the Git history"""
