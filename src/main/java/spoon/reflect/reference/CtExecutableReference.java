@@ -143,7 +143,7 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	 * Sets the type of the variable.
 	 */
 	@PropertySetter(role = CtRole.TYPE)
-	<C extends CtExecutableReference<T>> C setType(CtTypeReference<T> type);
+	<C extends CtExecutableReference<T>> C setType(CtTypeReference type);
 
 	/**
 	 * Tells if the referenced executable is final.

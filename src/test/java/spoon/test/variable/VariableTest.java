@@ -22,12 +22,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import spoon.Launcher;
+import spoon.processing.AbstractProcessor;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 
+import javax.swing.plaf.IconUIResource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -36,6 +43,64 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class VariableTest {
+
+    @Test
+    public void test() {
+        // contract: one can use setType without having a very hard generics type checking error
+
+        // to get this done, we use the refactoring below
+        CtClass c = Launcher.parseClass("class C{ void f() {Object i=null; }}");
+        List<CtLocalVariable> localVariables = c.getElements(new TypeFilter<>(CtLocalVariable.class));
+        System.out.println(localVariables);
+
+        // before: "CtLocalVariable<?> lv" could not typecheck, with a hard generics error
+        // now it works; we can use both "CtLocalVariable<?> lv" and "CtLocalVariable lv"
+        // it's source level backward compatible for Spoon itself
+        CtLocalVariable<?> lv = localVariables.get(0);
+        lv.setType(c.getFactory().Type().createReference(Object.class));
+
+        CtLocalVariable lv2 = localVariables.get(0);
+        lv2.setType(c.getFactory().Type().createReference(Object.class));
+
+    }
+
+    @Test
+    public void refactor() {
+        // rectoring all setType(CtTypeParameter<T>) -> setType(CtTypeParameter)
+        // this is the refactoring done for this pull-request
+        Launcher l = new Launcher();
+        l.addInputResource("src/main/java");
+        l.setSourceOutputDirectory("src/main/java");
+        l.getEnvironment().setPrettyPrinterCreator(() -> {
+                    return new SniperJavaPrettyPrinter(l.getEnvironment());
+                }
+        );
+        l.addProcessor(new AbstractProcessor<CtMethod<?>>() {
+            @Override
+            public boolean isToBeProcessed(CtMethod<?> candidate) {
+                if (!candidate.getSimpleName().equals("setType")) return false;
+                if (candidate.getParameters().size()!=1) return false;
+                final CtParameter<?> ctParameter = candidate.getParameters().get(0);
+                //System.out.println(ctParameter.getType().getSimpleName());
+                System.out.println(ctParameter.toString());
+                System.out.println(ctParameter.getType().getActualTypeArguments().size());
+                if (!ctParameter.getType().getSimpleName().equals("CtTypeReference")) return false;
+                if (ctParameter.getType().getActualTypeArguments().size()!=1) return false;
+                System.out.println(ctParameter.getType().toString());
+                return true;
+            }
+
+            @Override
+            public void process(CtMethod<?> element) {
+                System.out.println(element.getSignature());
+                final CtParameter<?> ctParameter = element.getParameters().get(0);
+                ctParameter.getType().removeActualTypeArgument(ctParameter.getType().getActualTypeArguments().get(0));
+            }
+        });
+        l.run();
+
+    }
+
 
 
     @Test
