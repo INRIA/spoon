@@ -746,7 +746,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return declType;
 		}
 		CtTypeReference<?> contextTypeRef = contextType.getReference();
-		if (contextTypeRef != null && contextTypeRef.canAccess(declType) == false) {
+		if (contextTypeRef != null && !contextTypeRef.canAccess(declType)) {
 			//search for visible declaring type
 			CtTypeReference<?> visibleDeclType = null;
 			CtTypeReference<?> type = contextTypeRef;
@@ -780,7 +780,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (targetDeclType != null && sourceDeclType != null && targetDeclType.isSubtypeOf(sourceDeclType)) {
 			applyActualTypeArguments(targetDeclType, sourceDeclType);
 		}
-		if (targetTypeRef.isSubtypeOf(sourceTypeRef) == false) {
+		if (!targetTypeRef.isSubtypeOf(sourceTypeRef)) {
 			throw new SpoonException("Invalid arguments. targetTypeRef " + targetTypeRef.getQualifiedName() + " must be a sub type of sourceTypeRef " + sourceTypeRef.getQualifiedName());
 		}
 		List<CtTypeReference<?>> newTypeArgs = new ArrayList<>();

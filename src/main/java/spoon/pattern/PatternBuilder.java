@@ -197,7 +197,7 @@ public class PatternBuilder {
 			throw new SpoonException("Removing of Node is not supported");
 		}
 		handleConflict(conflictMode, oldNode, newNode, tobeUsedNode -> {
-			if (patternNodes.replaceNode(oldNode, tobeUsedNode) == false) {
+			if (!patternNodes.replaceNode(oldNode, tobeUsedNode)) {
 				if (conflictMode == ConflictResolutionMode.KEEP_OLD_NODE) {
 					//The parent of oldNode was already replaced. OK - Keep that parent old node
 					return;
@@ -233,7 +233,7 @@ public class PatternBuilder {
 	private void handleConflict(ConflictResolutionMode conflictMode, RootNode oldNode, RootNode newNode, Consumer<RootNode> applyNewNode) {
 		if (oldNode != newNode) {
 			if (conflictMode == ConflictResolutionMode.APPEND) {
-				if (oldNode instanceof ListOfNodes == false) {
+				if (!(oldNode instanceof ListOfNodes)) {
 					oldNode = new ListOfNodes(new ArrayList<>(Arrays.asList(oldNode)));
 				}
 				if (newNode instanceof ListOfNodes) {
@@ -357,7 +357,7 @@ public class PatternBuilder {
 			pb.queryModel().filterChildren(new TypeFilter<>(CtVariableReference.class))
 				.forEach((CtVariableReference<?> varRef) -> {
 					CtVariable<?> var = varRef.getDeclaration();
-					if (var == null || isInModel(var) == false) {
+					if (var == null || !isInModel(var)) {
 						//the varRef has declaration out of the scope of the template. It must be a template parameter.
 						ParameterInfo parameter = pb.parameter(varRef.getSimpleName()).getCurrentParameter();
 						pb.addSubstitutionRequest(parameter, varRef);

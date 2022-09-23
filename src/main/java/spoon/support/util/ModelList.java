@@ -54,7 +54,7 @@ public abstract class ModelList<T extends CtElement> extends AbstractList<T> imp
 	public void set(Collection<T> elements) {
 		//TODO the best would be to detect added/removed statements and to fire modifications only for them
 		this.clear();
-		if (elements != null && elements.isEmpty() == false) {
+		if (elements != null && !elements.isEmpty()) {
 			this.addAll(elements);
 		}
 	}

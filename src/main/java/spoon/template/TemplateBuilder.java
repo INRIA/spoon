@@ -65,7 +65,7 @@ class TemplateBuilder {
 	public static TemplateBuilder createTemplateBuilder(CtElement templateRoot, CtClass<?> templateType, Template<?> template) {
 		Factory f = templateRoot.getFactory();
 
-		if (template != null && templateType.getQualifiedName().equals(template.getClass().getName()) == false) {
+		if (template != null && !templateType.getQualifiedName().equals(template.getClass().getName())) {
 			throw new SpoonException("Unexpected template instance " + template.getClass().getName() + ". Expects " + templateType.getQualifiedName());
 		}
 

@@ -741,7 +741,7 @@ public class ElementSourceFragment implements SourceFragment {
 				o++;
 				while (o < len) {
 					c = buff[o];
-					if (Character.isJavaIdentifierPart(c) == false) {
+					if (!Character.isJavaIdentifierPart(c)) {
 						break;
 					}
 					o++;

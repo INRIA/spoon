@@ -156,7 +156,7 @@ public class JDTCommentBuilder {
 		int smallDistance = Integer.MAX_VALUE;
 
 		for (CtElement element : elements) {
-			if (element.getPosition().isValidPosition() == false) {
+			if (!element.getPosition().isValidPosition()) {
 				continue;
 			}
 			if (element.isImplicit()) {
@@ -546,7 +546,7 @@ public class JDTCommentBuilder {
 					return;
 				}
 				CtElement body = getBody(element);
-				if (body != null && body.getPosition().isValidPosition() == false) {
+				if (body != null && !body.getPosition().isValidPosition()) {
 					body = null;
 				}
 

@@ -184,7 +184,7 @@ public class CtRenameLocalVariableRefactoring extends AbstractRenameRefactoring<
 				}
 				if (element instanceof CtVariable<?>) {
 					CtVariable<?> variable = (CtVariable<?>) element;
-					if (newName.equals(variable.getSimpleName()) == false) {
+					if (!newName.equals(variable.getSimpleName())) {
 						//the variable with different name. Ignore it
 						return false;
 					}

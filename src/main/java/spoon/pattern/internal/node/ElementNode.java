@@ -319,7 +319,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	}
 
 	protected ImmutableMap matchesRole(ImmutableMap parameters, CtElement target, MetamodelProperty mmField, RootNode attrNode) {
-		if (isMatchingRole(mmField.getRole(), elementType.getMetamodelInterface().getActualClass()) == false) {
+		if (!isMatchingRole(mmField.getRole(), elementType.getMetamodelInterface().getActualClass())) {
 			return parameters;
 		}
 		TobeMatched tobeMatched;
