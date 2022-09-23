@@ -17,8 +17,11 @@
 package spoon.test.method;
 
 import org.hamcrest.CoreMatchers;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.method.testclasses.Hierarchy;
 import spoon.test.method.testclasses.Tacos;
 import spoon.reflect.reference.CtTypeReference;
@@ -43,6 +46,7 @@ import java.util.HashSet;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -244,5 +248,32 @@ public class MethodTest {
 		// top-level definitions don't have top-level definitions
 		assertThat(m0.getTopDefinitions().size(), equalTo(0));
 		assertThat(m1.getTopDefinitions().size(), equalTo(0));
+	}
+
+	@ModelTest("src/test/java/spoon/test/method/testclasses/SignaturePolymorphicMethods.java")
+	void testSignaturePolymorphicMethodInvocations(Factory factory) {
+		CtType<?> type = factory.Type().get("spoon.test.method.testclasses.SignaturePolymorphicMethods");
+		for (CtMethod<?> method : type.getMethods()) {
+			CtTypeReference<?> returnType = method.getType();
+			CtInvocation<?> invocation = method.getBody().getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+			System.out.println(invocation.getExecutable().getExecutableDeclaration());
+			assertThat(invocation, instanceOf(CtInvocation.class));
+			assertThat(invocation.getType(), equalTo(returnType));
+			List<CtTypeReference<?>> parameters = invocation.getExecutable().getParameters();
+			List<CtExpression<?>> arguments = invocation.getArguments();
+			assertThat(parameters.size(), equalTo(arguments.size()));
+			for (int i = 0; i < arguments.size(); i++) {
+				CtTypeReference<?> parameter = parameters.get(i);
+				CtExpression<?> argument = arguments.get(i);
+				assertThat(parameter, equalTo(typeAfterCasting(argument)));
+			}
+		}
+	}
+
+	private CtTypeReference<?> typeAfterCasting(CtExpression<?> expression) {
+		if (expression.getTypeCasts().isEmpty()) {
+			return expression.getType();
+		}
+		return expression.getTypeCasts().get(0);
 	}
 }
