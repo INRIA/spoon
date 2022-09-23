@@ -1,15 +1,25 @@
 package spoon.support.util.internal.lexer;
 
-import javax.lang.model.SourceVersion;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.support.util.internal.trie.WordTrie;
+
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.IntSummaryStatistics;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class JavaLexer {
 	private static final char CHAR_ESCAPE_CHAR_CHAR = '\\';
+	private static final WordTrie<ModifierKind> MODIFIER_TRIE = WordTrie.ofWords(
+			Arrays.stream(ModifierKind.values())
+					.collect(Collectors.toMap(ModifierKind::toString, Function.identity()))
+	);
 	private final char[] content;
 	private final int start;
 	private final int end;
@@ -23,7 +33,6 @@ public class JavaLexer {
 	}
 
 	/**
-	 *
 	 * @return {@code null} if no more tokens can be lexed in the range of this lexer.
 	 */
 	public Token lex() {
@@ -112,7 +121,7 @@ public class JavaLexer {
 		}
 	}
 
-	private void skipUntil(String s) {
+	private boolean skipUntil(String s) {
 		char[] chars = s.toCharArray();
 		char first = chars[0];
 		int pos = this.nextPos;
@@ -120,11 +129,11 @@ public class JavaLexer {
 			int index = indexOf(first, pos);
 			if (index < 0) {
 				// TODO what if not present?
-				return;
+				return false;
 			}
 			if (Arrays.equals(this.content, index, index + chars.length, chars, 0, chars.length)) {
 				this.nextPos = index + chars.length;
-				return;
+				return true;
 			} else {
 				pos = index + 1;
 			}
@@ -138,60 +147,112 @@ public class JavaLexer {
 			while (hasMore() && Character.isJavaIdentifierPart(peek())) {
 				next();
 			}
-			// TODO avoid allocation
-			String identifier = new String(this.content, pos, this.nextPos - pos);
-			if (SourceVersion.isKeyword(identifier)) {
+			Optional<ModifierKind> match = MODIFIER_TRIE.findMatch(this.content, pos, this.nextPos);
+			if (match.isPresent()) {
 				return new Token(TokenType.KEYWORD, pos, this.nextPos);
 			}
 			return new Token(TokenType.IDENTIFIER, pos, this.nextPos);
 		} else if (Character.isDigit(next)) {
-			if (next == 0) {
-				if (hasMore()) {
-					switch (peek()) {
-						case 'X':
-						case 'x':
-						case 'B':
-						case 'b':
-							next();
-					}
-					readIntegerLiteral();
-				}
-			}
+			readNumericLiteral(next);
 			return new Token(TokenType.LITERAL, pos, this.nextPos);
 		}
 		return null;
 	}
-	// TODO deal with literals properly
-	double d = 0x1.fffffeP+127f;
 
-	private void readIntegerLiteral() {
+	private void readNumericLiteral(char first) {
+		if (!hasMore()) {
+			return;
+		}
+		// check if hexadecimal notation
+		if (first == '0') {
+			if (peek() == 'x' || peek() == 'X') {
+				next();
+				readHexadecimalsAndUnderscore();
+				if (hasMore() && peek() == '.') {
+					next();
+					readHexadecimalFloatingPointLiteral();
+				} else {
+					readHexadecimalsAndUnderscore();
+				}
+			} else if (peek() == 'b' || peek() == 'B') {
+				next();
+				readDigitsOrUnderscore();
+			} else {
+				next();
+				readDigitsOrUnderscore();
+			}
+		} else {
+			readDigitsOrUnderscore();
+			if (hasMore() && peek() == '.') {
+				next();
+				readDigitsOrUnderscore();
+			}
+		}
+		if (hasMore()) {
+			char peek = peek();
+			switch (peek) {
+				case 'd':
+				case 'D':
+				case 'f':
+				case 'F':
+				case 'l':
+				case 'L':
+					next();
+			}
+		}
+	}
+
+	private void readDigitsOrUnderscore() {
 		while (hasMore()) {
 			char peek = peek();
 			if ('0' <= peek && peek <= '9' || peek == '_') {
 				next();
 			} else {
-				switch (peek) {
-					case 'l':
-					case 'L':
-						next();
-						return; // end of literal
-				}
+				return;
 			}
 		}
 	}
 
-	// TODO deal with escape sequences, e.g. "\""
+	// the part after the .
+	private void readHexadecimalFloatingPointLiteral() {
+		readHexadecimalsAndUnderscore();
+		if (hasMore() && peek() == 'p' || peek() == 'P') {
+			next();
+			if (hasMore() && peek() == '+') {
+				next();
+				readDigitsOrUnderscore();
+			}
+		}
+	}
+
+	private void readHexadecimalsAndUnderscore() {
+		while (hasMore()) {
+			char peek = peek();
+			if ('0' <= peek && peek <= '9'
+					|| 'A' <= peek && peek <= 'F'
+					|| 'a' <= peek && peek <= 'f'
+					|| peek == '_') {
+				next();
+			} else {
+				return;
+			}
+		}
+	}
+
 	private Token lexStringLiteral(int pos) {
 		if (hasMore(2) && peek() == '"' && peek(1) == '"') {
 			skip(2);
 			return lexTextBlockLiteral(pos);
 		}
+		// TODO use indexOf and check if escaped
 		while (hasMore()) {
 			char peek = peek();
 			if (peek == CHAR_ESCAPE_CHAR_CHAR) {
-
-			}
-			if (next() == '"') {
+				next();
+				if (hasMore()) {
+					next(); // assuming the string is correct, we're skipping every escapable char, including "
+				}
+			} else if (next() == '"') {
 				return new Token(TokenType.LITERAL, pos, this.nextPos);
 			}
 		}
@@ -200,11 +261,18 @@ public class JavaLexer {
 
 	private Token lexTextBlockLiteral(int pos) {
 		while (hasMore(2)) {
-			if (peek() == '"' && peek(1) == '"' && peek(2) == '"') {
-				skip(2);
+			char peek = peek();
+			if (peek == CHAR_ESCAPE_CHAR_CHAR) {
+				next();
+				if (hasMore()) {
+					next();// assuming the string is correct, we're skipping every escapable char, including "
+				}
+			} else if (peek() == '"' && peek(1) == '"' && peek(2) == '"') {
+				skip(3);
 				return new Token(TokenType.LITERAL, pos, this.nextPos);
+			} else {
+				next();
 			}
-			next();
 		}
 		return null;
 	}
@@ -268,37 +336,59 @@ public class JavaLexer {
 		return this.nextPos + i < this.end;
 	}
 
-	static volatile String store;
+	static volatile Token store;
+	static volatile char[] lastContent;
+
 	public static void main(String[] args) throws IOException {
 		Path all = Path.of("src/main/java");
-		Path other = Path.of("src/main/java/spoon/support/util/internal/lexer");
-		try (Stream<Path> stream = Files.walk(other)) {
-			stream
+		Path guava = Path.of("C:\\Users\\Hannes\\Desktop\\deleteme\\guava");
+		Path jdk = Path.of("C:\\Users\\Hannes\\Desktop\\deleteme\\jdk");
+		Path other = Path.of("src/");
+		class C {
+			private final Path file;
+			private final char[] content;
+
+			C(Path file, char[] content) {
+				this.file = file;
+				this.content = content;
+			}
+		}
+		try (Stream<Path> stream = Files.walk(jdk)) {
+			IntSummaryStatistics statistics = stream
 					.filter(Files::isRegularFile)
 					.filter(path -> path.getFileName().toString().endsWith(".java"))
 					.map(path -> {
 						try {
-							return Files.readString(path);
+							return new C(path, Files.readString(path).toCharArray());
 						} catch (IOException e) {
-							throw new UncheckedIOException(e);
+							System.out.println("Couldn't read " + path);
+							return null;
 						}
 					})
-					.map(String::toCharArray)
-					.forEach(chars -> {
+					.filter(Objects::nonNull)
+					.mapToInt(c -> {
+						char[] chars = c.content;
+						int count = 0;
 						JavaLexer javaLexer = new JavaLexer(chars, 0, chars.length);
-						System.out.println();
+						// System.out.println("Processing file " + c.file + " of length " + chars.length);
 						while (true) {
 							Token lex = javaLexer.lex();
 							if (lex == null) {
-								if ("}".equals(store)) { // that doesn't make sense
-									System.out.println("suspicious end: " + store);
+								if (lastContent == c.content) {
+									String value = store.valueForContent(c.content);
+									if (!"}".equals(value) && (!";".equals(value) && !c.file.getFileName().toString().equals("package-info.java"))) {
+										System.out.println("suspicious end: " + store.formatted(c.content) + " (file: " + c.file + ")");
+									}
 								}
-								return;
+								return count;
 							}
-							store = lex.formatted(chars);
-							System.out.println(store);
+							count++;
+							store = lex;
+							lastContent = c.content;
+							// System.out.println(store);
 						}
-					});
+					}).summaryStatistics();
+			System.out.println("stats: " + statistics);
 		}
 	}
 
@@ -319,7 +409,10 @@ public class JavaLexer {
 					skipUntilLineBreak();
 					retry = true;
 				} else if (peek(1) == '*') {
-					skipUntil("*/");
+					if (!skipUntil("*/")) {
+						this.nextPos = this.end; //
+						return false;
+					}
 					retry = true;
 				}
 			}

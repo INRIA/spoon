@@ -1,6 +1,7 @@
 package spoon.support.util.internal.lexer;
 
 public final class Token {
+	private static final int COLUMN_WIDTH = 8;
 	private final TokenType type;
 	private final int start; // inclusive
 	private final int end; // exclusive
@@ -34,9 +35,15 @@ public final class Token {
 	public String formatted(char[] content) {
 		String type = " ".repeat(10 - this.type.name().length()) + this.type.name();
 		String s = String.valueOf(this.start);
-		String start = " ".repeat(5 - s.length()) + s;
+		String start = padFailsafe(COLUMN_WIDTH, s);
 		String e = String.valueOf(this.end);
-		String end = " ".repeat(5 - e.length()) + e;
+		String end = padFailsafe(COLUMN_WIDTH, e);
 		return "Token[type: " + type + ", start: " + start + ", end: " + end + ", content: " + valueForContent(content);
+	}
+
+
+	private static String padFailsafe(int width, String content) {
+		int count = width - content.length();
+		return " ".repeat(Math.max(0, count)) + content;
 	}
 }
