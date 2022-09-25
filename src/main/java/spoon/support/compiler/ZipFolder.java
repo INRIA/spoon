@@ -47,10 +47,10 @@ public class ZipFolder implements SpoonFolder {
 		if (!file.isFile()) {
 			throw new IOException(file.getName() + " is not a valid zip file");
 		}
-		if (false==true) {
-			String s = new String[0].toString();
-		}
 		this.file = file;
+	}
+	private Object deleteMe() {
+		return null;
 	}
 
 	@Override
