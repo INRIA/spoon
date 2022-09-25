@@ -22,6 +22,7 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -155,7 +156,7 @@ public class JDTCommentBuilder {
 		int smallDistance = Integer.MAX_VALUE;
 
 		for (CtElement element : elements) {
-			if (element.getPosition().isValidPosition() == false) {
+			if (!element.getPosition().isValidPosition()) {
 				continue;
 			}
 			if (element.isImplicit()) {
@@ -435,6 +436,11 @@ public class JDTCommentBuilder {
 			}
 
 			@Override
+			public <T> void visitCtLiteral(CtLiteral<T> e) {
+				e.addComment(comment);
+			}
+
+			@Override
 			public void scanCtStatement(CtStatement s) {
 				if (!(s instanceof CtStatementList || s instanceof CtSwitch || s instanceof CtVariable)) {
 					s.addComment(comment);
@@ -540,7 +546,7 @@ public class JDTCommentBuilder {
 					return;
 				}
 				CtElement body = getBody(element);
-				if (body != null && body.getPosition().isValidPosition() == false) {
+				if (body != null && !body.getPosition().isValidPosition()) {
 					body = null;
 				}
 

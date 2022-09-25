@@ -132,6 +132,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static spoon.reflect.visitor.ElementPrinterHelper.PrintTypeArguments.ALSO_PRINT_DIAMOND_OPERATOR;
+import static spoon.reflect.visitor.ElementPrinterHelper.PrintTypeArguments.ONLY_PRINT_EXPLICIT_TYPES;
+
 /**
  * A visitor for generating Java code from the program compile-time model.
  */
@@ -437,7 +440,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.printList(annotation.getValues().entrySet(),
 				null, false, "(", false, false, ",", true, false, ")",
 				e -> {
-					if ((annotation.getValues().size() == 1 && "value".equals(e.getKey())) == false) {
+					if (!(annotation.getValues().size() == 1 && "value".equals(e.getKey()))) {
 						//it is not a default value attribute. We must print a attribute name too.
 						printer.writeIdentifier(e.getKey()).writeSpace().writeOperator("=").writeSpace();
 					}
@@ -663,7 +666,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
 		elementPrinterHelper.writeAnnotations(typeParameter);
 		printer.writeIdentifier(typeParameter.getSimpleName());
-		if (typeParameter.getSuperclass() != null && typeParameter.getSuperclass().isImplicit() == false) {
+		if (typeParameter.getSuperclass() != null && !typeParameter.getSuperclass().isImplicit()) {
 			printer.writeSpace().writeKeyword("extends").writeSpace();
 			scan(typeParameter.getSuperclass());
 		}
@@ -1356,7 +1359,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtExpression(invocation);
 		if (invocation.getExecutable().isConstructor()) {
 			// It's a constructor (super or this)
-			elementPrinterHelper.writeActualTypeArguments(invocation.getExecutable());
+			elementPrinterHelper.writeActualTypeArguments(invocation.getExecutable(), ONLY_PRINT_EXPLICIT_TYPES);
 			CtType<?> parentType = invocation.getParent(CtType.class);
 			if (parentType == null || parentType.getQualifiedName() != null && parentType.getQualifiedName().equals(invocation.getExecutable().getDeclaringType().getQualifiedName())) {
 				printer.writeKeyword("this");
@@ -1381,7 +1384,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				}
 			}
 
-			elementPrinterHelper.writeActualTypeArguments(invocation);
+			elementPrinterHelper.writeActualTypeArguments(invocation, ONLY_PRINT_EXPLICIT_TYPES);
 			if (env.isPreserveLineNumbers()) {
 				getPrinterHelper().adjustStartPosition(invocation);
 			}
@@ -1604,9 +1607,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 			printer.writeKeyword("new").writeSpace();
 
-			if (!ctConstructorCall.getActualTypeArguments().isEmpty()) {
-				elementPrinterHelper.writeActualTypeArguments(ctConstructorCall);
-			}
+			elementPrinterHelper.writeActualTypeArguments(ctConstructorCall, ALSO_PRINT_DIAMOND_OPERATOR);
 
 			scan(ctConstructorCall.getType());
 		}
@@ -1990,7 +1991,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		if (withGenerics && !context.ignoreGenerics()) {
 			try (Writable _context = context.modify().ignoreEnclosingClass(false)) {
-				elementPrinterHelper.writeActualTypeArguments(ref);
+				elementPrinterHelper.writeActualTypeArguments(ref, ALSO_PRINT_DIAMOND_OPERATOR);
 			}
 		}
 	}

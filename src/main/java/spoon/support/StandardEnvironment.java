@@ -150,7 +150,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public void setAutoImports(boolean autoImports) {
-		if (autoImports == true) {
+		if (autoImports) {
 			prettyPrintingMode = PRETTY_PRINTING_MODE.AUTOIMPORT;
 		} else {
 			prettyPrintingMode = PRETTY_PRINTING_MODE.FULLYQUALIFIED;
@@ -692,8 +692,7 @@ private transient  ClassLoader inputClassloader;
 
 
 			if (PRETTY_PRINTING_MODE.DEBUG.equals(prettyPrintingMode)) {
-				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
-				return printer;
+				return new DefaultJavaPrettyPrinter(this);
 			}
 
 			if (PRETTY_PRINTING_MODE.FULLYQUALIFIED.equals(prettyPrintingMode)) {

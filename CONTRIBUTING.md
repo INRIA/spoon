@@ -27,6 +27,10 @@ Current integrators:
     - GPG fingerprint: [074F73B36D8DD649B132BAC18035014A2B7BFA92](https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x074F73B36D8DD649B132BAC18035014A2B7BFA92)
 - Martin Wittlinger [@MartinWitt](https://github.com/MartinWitt)
     - Email: wittlinger.martin@gmail.com
+- Hannes Greule [@SirYwell](https://github.com/SirYwell)
+    - Email: hannesgreule@outlook.de
+- [@I-Al-Istannen](https://github.com/I-Al-Istannen)
+    - Email: me@ialistannen.de
 
 Guidelines for pull requests
 ----------------------------

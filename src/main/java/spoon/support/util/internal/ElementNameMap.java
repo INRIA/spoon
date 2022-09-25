@@ -131,6 +131,11 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 	}
 
 	@Override
+	public boolean isEmpty() {
+		return map.isEmpty();
+	}
+
+	@Override
 	public void clear() {
 		if (map.isEmpty()) {
 			return;
@@ -157,6 +162,15 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 	@Override
 	public boolean containsKey(Object key) {
 		return map.containsKey(key);
+	}
+
+	@Override
+	public T get(Object key) {
+		InsertOrderWrapper<T> wrapper = map.get(key);
+		if (wrapper == null) {
+			return null;
+		}
+		return wrapper.value;
 	}
 
 	/**

@@ -242,7 +242,17 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public boolean isEmpty() {
-		return getPackages().isEmpty() && getTypes().isEmpty();
+		return !hasPackages() && !hasTypes();
+	}
+
+	@Override
+	public boolean hasTypes() {
+		return !types.isEmpty();
+	}
+
+	@Override
+	public boolean hasPackages() {
+		return !packs.isEmpty();
 	}
 
 	void updateTypeName(CtType<?> newType, String oldName) {

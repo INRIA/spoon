@@ -54,6 +54,7 @@ import spoon.test.targeted.testclasses.InternalSuperCall;
 import spoon.test.targeted.testclasses.Pozole;
 import spoon.test.targeted.testclasses.SuperClass;
 import spoon.test.targeted.testclasses.Tapas;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -484,14 +485,10 @@ public class TargetedExpressionTest {
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedFoo).target(expectedThisAccess).result("this.bar"), elements.get(0));
 	}
 
-	@Test
-	public void testUnqualifiedStaticMethodCallNoclasspath() {
+	@ModelTest("./src/test/resources/noclasspath/UnqualifiedStaticMethodCall.java")
+	public void testUnqualifiedStaticMethodCallNoclasspath(CtModel model) {
 		// contract: If a static method of some other type is accessed without qualification, any qualification attached
 		// to it must be implicit. See #3370 for details
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/UnqualifiedStaticMethodCall.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		CtModel model = launcher.buildModel();
 		List<CtTypeAccess<?>> typeAccesses = model.getElements(e -> e.getAccessedType().getSimpleName().equals("SomeClass"));
 
 		assertEquals(1, typeAccesses.size(), "There should only be one reference to SomeClass, check the resource!");

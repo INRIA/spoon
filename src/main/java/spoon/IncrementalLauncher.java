@@ -223,7 +223,7 @@ public class IncrementalLauncher extends Launcher {
 
 			Collection<CtPackage> oldPackages = oldFactory.Package().getAll();
 			for (CtPackage pkg : oldPackages) {
-				if (pkg.getTypes().isEmpty() && pkg.getPackages().isEmpty() && !pkg.isUnnamedPackage()) {
+				if (pkg.isEmpty() && !pkg.isUnnamedPackage()) {
 					pkg.delete();
 				}
 			}

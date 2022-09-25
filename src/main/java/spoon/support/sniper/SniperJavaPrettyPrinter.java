@@ -374,7 +374,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	 */
 	private SourceFragmentPrinter detectCurrentContext(PrinterEvent event) {
 		SourceFragmentPrinter sfc;
-		while ((sfc = sourceFragmentContextStack.peek()) != null && sfc.knowsHowToPrint(event) == false) {
+		while ((sfc = sourceFragmentContextStack.peek()) != null && !sfc.knowsHowToPrint(event)) {
 			//this context handles only subset of roles, which just finished
 			//leave it and return back to parent context
 			sfc = popSourceFragmentContext();

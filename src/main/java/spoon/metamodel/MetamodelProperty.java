@@ -405,7 +405,7 @@ public class MetamodelProperty {
 		}
 		CtTypeReference<?> itemValueType;
 		if (valueContainerType == ContainerKind.MAP) {
-			if (String.class.getName().equals(valueType.getActualTypeArguments().get(0).getQualifiedName()) == false) {
+			if (!String.class.getName().equals(valueType.getActualTypeArguments().get(0).getQualifiedName())) {
 				throw new SpoonException("Unexpected container of type: " + valueType.toString());
 			}
 			itemValueType = valueType.getActualTypeArguments().get(1);
@@ -551,7 +551,7 @@ public class MetamodelProperty {
 			CtTypeReference<?> expectedValueType = this.getTypeOfField().getTypeErasure();
 			for (int i = 1; i < potentialRootSuperFields.size(); i++) {
 				MetamodelProperty superField = potentialRootSuperFields.get(i);
-				if (superField.getTypeOfField().getTypeErasure().equals(expectedValueType) == false) {
+				if (!superField.getTypeOfField().getTypeErasure().equals(expectedValueType)) {
 					break;
 				}
 				if (needsSetter && superField.getMethod(MMMethodKind.SET) == null) {

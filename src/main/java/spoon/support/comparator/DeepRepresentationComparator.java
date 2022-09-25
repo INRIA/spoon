@@ -20,15 +20,15 @@ public class DeepRepresentationComparator implements Comparator<CtElement>, Seri
 
 	@Override
 	public int compare(CtElement o1, CtElement o2) {
-		if (o1.getPosition().isValidPosition() == false) {
+		if (!o1.getPosition().isValidPosition()) {
 			return 1;
 		}
-		if (o2.getPosition().isValidPosition() == false) {
+		if (!o2.getPosition().isValidPosition()) {
 			return -1;
 		}
 		String current = getDeepRepresentation(o1);
 		String other = getDeepRepresentation(o2);
-		if (current.length() <= 0 || other.length() <= 0) {
+		if (current.isEmpty() || other.isEmpty()) {
 			throw new ClassCastException("Unable to compare elements");
 		}
 		return current.compareTo(other);

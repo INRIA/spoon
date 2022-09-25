@@ -22,8 +22,10 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.support.modelobs.FineModelChangeListener;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtIf;
@@ -42,6 +44,7 @@ import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.internal.ElementNameMap;
 import spoon.support.util.ModelList;
+import spoon.testing.utils.ModelTest;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,6 +59,16 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AstCheckerTest {
+
+	@ModelTest("src/test/resources/comment/CommentsOnCaseExpression.java")
+	void ctLiteralsInCtCaseExpressionShouldHaveCommentsAttached(CtModel model) {
+		// contract: literal nodes should have comments attached to them.
+		// act
+		List<CtComment> comments = model.getElements(new TypeFilter<>(CtComment.class));
+
+		// assert
+		assertThat(comments.size(), equalTo(4));
+	}
 
 	@Test
 	void leftOperandShouldBeGivenPriorityForStoringTheNestedOperator_stringLiteralConcatenation() {

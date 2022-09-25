@@ -253,7 +253,7 @@ public class PrinterHelper {
 		SourcePosition sp = e.getPosition();
 		if ((sp.isValidPosition())
 				&& (sp.getCompilationUnit() == unitExpected)
-				&& (sp instanceof PartialSourcePositionImpl) == false) {
+				&& !(sp instanceof PartialSourcePositionImpl)) {
 			// only map elements coming from the source CU
 			putLineNumberMapping(e.getPosition().getLine());
 		} else {
