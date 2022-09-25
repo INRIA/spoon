@@ -144,32 +144,16 @@ jobs:
       QODANA_LINTER: jetbrains/qodana-jvm-community@sha256:c388ddd7b852296f71b1a786d3b30f458a993eb252d5cd4963422007e5b824db
     name: code-quality qodana
     steps:
-      - name: Checkout
-        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
+      - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
         with:
-          path: pull_request
+          fetch-depth: 0
       - uses: actions/setup-java@d854b6da19cdadd9a010605529e522c2393ebd38 # tag=v3.5.0
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}
-      - name: git reset
-        run: cd pull_request && git fetch && git reset --soft origin/master
-      - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@ab695492d98902c49b33382782175107ec63ca28 # tag=v2022.2.1
-        with:
-          args: >-
-              --linter,
-              ${{ env.QODANA_LINTER }},
-              project-dir,
-              ${{ github.workspace }}/pull_request,
-              changes,
-              true,
-              fail-threshold,
-              0
-          use-annotations: false
-          use-caches: false # we disable cache for consistent results
-      - uses: github/codeql-action/upload-sarif@b398f525a5587552e573b247ac661067fafa920b # tag=v2
-        if: always()
+      - name: 'Qodana Scan'
+        uses: JetBrains/qodana-action@v2022.2.1
+      - uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
   reproducible-builds:
