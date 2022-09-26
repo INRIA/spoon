@@ -49,7 +49,6 @@ public class VariableTest {
         // to get this done, we use the refactoring below
         CtClass c = Launcher.parseClass("class C{ void f() {Object i=null; }}");
         List<CtLocalVariable> localVariables = c.getElements(new TypeFilter<>(CtLocalVariable.class));
-        System.out.println(localVariables);
 
         // before: "CtLocalVariable<?> lv" could not typecheck, with a hard generics error
         // now it works; we can use both "CtLocalVariable<?> lv" and "CtLocalVariable lv"
