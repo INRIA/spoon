@@ -133,6 +133,12 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 				return null;
 			}
 			return elements.get(0);
+		} else if (method == null) {
+			// deal with signature polymorphic methods here
+			String qualifiedName = typeDecl.getQualifiedName();
+			if (qualifiedName.equals("java.lang.invoke.MethodHandle") || qualifiedName.equals("java.lang.invoke.VarHandle")) {
+				return typeDecl.getMethod(getSimpleName(), getFactory().createArrayReference(getFactory().Type().objectType()));
+			}
 		}
 		return method;
 	}
