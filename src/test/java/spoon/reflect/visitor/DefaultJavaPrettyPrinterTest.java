@@ -30,6 +30,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.test.GitHubIssue;
 import spoon.test.SpoonTestHelpers;
+import spoon.testing.utils.ModelTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -307,5 +308,15 @@ public class DefaultJavaPrettyPrinterTest {
             assertThat(actualStringRepresentation,
                     equalTo("spoon.reflect.declaration.CtElement spoonElements[] = new spoon.reflect.declaration.CtElement[]{ 1.0F }"));
         }
+    }
+
+    @ModelTest(value = "src/test/resources/patternmatching/InstanceofGenerics.java", complianceLevel = 16)
+    void testKeepGenericType(Factory factory) {
+        // contract: generic type parameters can appear in instanceof expressions if they are only carried over
+        CtType<?> x = factory.Type().get("InstanceofGenerics");
+        String printed = x.toString();
+        assertThat(printed, containsString("Set<T>"));
+        assertThat(printed, containsString("List<T> list"));
+        assertThat(printed, containsRegexMatch("Collection<.*String>"));
     }
 }
