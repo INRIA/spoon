@@ -114,7 +114,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-
+	@SuppressWarnings("deprecation")
 	public Class<T> getActualClass() {
 			return getPrimitiveType(this).orElseGet(this::findClass);
 	}
@@ -311,6 +311,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
 		if (actualTypeArguments == null || actualTypeArguments.isEmpty()) {
 			this.actualTypeArguments = CtElementImpl.emptyList();
@@ -328,6 +329,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <C extends CtTypeReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
 		if (declaringType != null) {
 			declaringType.setParent(this);
@@ -338,6 +340,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <C extends CtTypeReference<T>> C setPackage(CtPackageReference pack) {
 		if (pack != null) {
 			pack.setParent(this);
@@ -348,6 +351,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public CtIntersectionTypeReference<T> asCtIntersectionTypeReference() {
 		return (CtIntersectionTypeReference<T>) this;
 	}
@@ -539,6 +543,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <C extends CtActualTypeContainer> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArgument == null) {
 			return (C) this;
@@ -838,6 +843,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <E extends CtShadowable> E setShadow(boolean isShadow) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
@@ -845,6 +851,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public CtTypeReference<T> clone() {
 		return (CtTypeReference<T>) super.clone();
 	}
@@ -856,15 +863,15 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 		// case 1: this is an actual type argument of a type reference eg List<E>
 		if (parent instanceof CtTypeReference) {
-			CtType t = ((CtTypeReference) parent).getTypeDeclaration();
-			return findTypeParamDeclarationByPosition(t, ((CtTypeReference) parent).getActualTypeArguments().indexOf(this));
+			CtType<?> t = ((CtTypeReference<?>) parent).getTypeDeclaration();
+			return findTypeParamDeclarationByPosition(t, ((CtTypeReference<?>) parent).getActualTypeArguments().indexOf(this));
 		}
 
 		// case 2: this is an actual type argument of a method/constructor reference
 		if (parent instanceof CtExecutableReference) {
 			CtExecutable<?> exec = ((CtExecutableReference<?>) parent).getExecutableDeclaration();
 			if (exec instanceof CtMethod || exec instanceof CtConstructor) {
-				int idx = ((CtExecutableReference) parent).getActualTypeArguments().indexOf(this);
+				int idx = ((CtExecutableReference<?>) parent).getActualTypeArguments().indexOf(this);
 				return idx >= 0 ? findTypeParamDeclarationByPosition((CtFormalTypeDeclarer) exec, idx) : null;
 			}
 		}
@@ -888,7 +895,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (getDeclaration() instanceof CtTypeParameter) {
 			return true;
 		}
-		for (CtTypeReference ref : getActualTypeArguments()) {
+		for (CtTypeReference<?> ref : getActualTypeArguments()) {
 			if (ref.isGenerics()) {
 				return true;
 			}
