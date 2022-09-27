@@ -318,5 +318,8 @@ public class DefaultJavaPrettyPrinterTest {
         assertThat(printed, containsString("Set<T>"));
         assertThat(printed, containsString("List<T> list"));
         assertThat(printed, containsRegexMatch("Collection<.*String>"));
+        assertThat(printed, containsRegexMatch("List<.*List<T>>"));
+        assertThat(printed, containsRegexMatch("List<.*List<\\? extends T>>"));
+        assertThat(printed, containsRegexMatch("List<.*List<\\? super T>>"));
     }
 }

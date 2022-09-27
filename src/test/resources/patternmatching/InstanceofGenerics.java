@@ -14,9 +14,21 @@ class InstanceofGenerics {
 		return iterable.iterator().next();
 	}
 
-	boolean alwaysTrue(StringCollection collection) {
+	interface StringCollection extends Collection<String> {}
+
+	boolean alwaysTrue0(StringCollection collection) {
 		return collection instanceof Collection<String>;
 	}
 
-	interface StringCollection extends Collection<String> {}
+	<T> boolean alwaysTrue1(Iterable<List<T>> iterable) {
+		return iterable instanceof List<List<T>>;
+	}
+
+	<T> boolean alwaysTrue2(Iterable<List<? extends T>> iterable) {
+		return iterable instanceof List<List<? extends T>>;
+	}
+
+	<T> boolean alwaysTrue3(Iterable<List<? super T>> iterable) {
+		return iterable instanceof List<List<? super T>>;
+	}
 }
