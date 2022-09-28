@@ -165,7 +165,7 @@ jobs:
           fail-threshold: 0
           use-annotations: false
           use-caches: false # we disable cache for consistent results
-      - uses: github/codeql-action/upload-sarif@b398f525a5587552e573b247ac661067fafa920b # tag=v2
+      - uses: github/codeql-action/upload-sarif@86f3159a697a097a813ad9bfa0002412d97690a4 # tag=v2
         if: always()
         with:
           sarif_file: "${{ github.workspace }}/result/qodana.sarif.json"
