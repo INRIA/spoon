@@ -120,7 +120,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public <C extends CtTypedElement> C setType(CtTypeReference type) {
 		setMultiTypes(type == null ? emptyList() : Collections.singletonList(type));
 		return (C) this;
 	}
