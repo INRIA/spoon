@@ -34,6 +34,7 @@ import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.adaption.TypeAdaptor;
 import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.support.util.internal.Unchecked;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
@@ -311,11 +312,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
 		if (actualTypeArguments == null || actualTypeArguments.isEmpty()) {
 			this.actualTypeArguments = CtElementImpl.emptyList();
-			return (C) this;
+			return Unchecked.castToReturnType(this);
 		}
 		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.actualTypeArguments = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -325,35 +325,32 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
 			addActualTypeArgument(actualTypeArgument);
 		}
-		return (C) this;
+		return Unchecked.castToReturnType(this);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public <C extends CtTypeReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
 		if (declaringType != null) {
 			declaringType.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DECLARING_TYPE, declaringType, this.declaringType);
 		this.declaringType = declaringType;
-		return (C) this;
+		return Unchecked.castToReturnType(this);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public <C extends CtTypeReference<T>> C setPackage(CtPackageReference pack) {
 		if (pack != null) {
 			pack.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, PACKAGE_REF, pack, this.pack);
 		this.pack = pack;
-		return (C) this;
+		return Unchecked.castToReturnType(this);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public CtIntersectionTypeReference<T> asCtIntersectionTypeReference() {
-		return (CtIntersectionTypeReference<T>) this;
+		return Unchecked.castToReturnType(this);
 	}
 
 	@Override
@@ -543,10 +540,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public <C extends CtActualTypeContainer> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArgument == null) {
-			return (C) this;
+			return Unchecked.castToReturnType(this);
 		}
 		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			actualTypeArguments = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -554,7 +550,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		actualTypeArgument.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE_ARGUMENT, this.actualTypeArguments, actualTypeArgument);
 		actualTypeArguments.add(actualTypeArgument);
-		return (C) this;
+		return Unchecked.castToReturnType(this);
 	}
 
 	@Override
@@ -843,17 +839,15 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public <E extends CtShadowable> E setShadow(boolean isShadow) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
-		return (E) this;
+		return Unchecked.castToReturnType(this);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public CtTypeReference<T> clone() {
-		return (CtTypeReference<T>) super.clone();
+		return Unchecked.castToReturnType(super.clone());
 	}
 
 	@Override
