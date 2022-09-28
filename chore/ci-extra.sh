@@ -16,7 +16,7 @@ mvn -version
 # verify includes checkstyle, , outputing the errors in the log of CI
 # javadoc check is included in goal "site"
 # it's better to have the doclint here because the pom.xml config of javadoc is a nightmare
-mvn verify license:check site install -DskipTests  -DadditionalJOption=-Xdoclint:syntax,-missing
+mvn verify license:check site install -DskipTests  -DadditionalJOption=-Xdoclint:syntax,-missing -Dscan
 
 # checkstyle in src/tests
 mvn -q  checkstyle:checkstyle -Pcheckstyle-test

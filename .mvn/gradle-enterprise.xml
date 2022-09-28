@@ -1,6 +1,6 @@
 <gradleEnterprise>
   <buildScan>
-    <publish>ALWAYS</publish>
+    <publish>ON_DEMAND</publish>
     <termsOfService>
       <url>https://gradle.com/terms-of-service</url>
       <accept>true</accept>
