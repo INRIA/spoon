@@ -6,6 +6,9 @@ package spoon.support.util.internal;
  */
 public class Unchecked {
 
+    private Unchecked() {
+    }
+
     /**
      * Make an unchecked cast of the provided object to the type of the expression it is used in.
      *
