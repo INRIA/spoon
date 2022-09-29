@@ -6,20 +6,20 @@ package spoon.support.util.internal;
  */
 public class Unchecked {
 
-    private Unchecked() {
-    }
+	private Unchecked() {
+	}
 
-    /**
-     * Make an unchecked cast of the provided object to the type of the expression it is used in.
-     *
-     * This should primarily be used to coerce <code>this</code> to the expected return type in methods that are
-     * (unsafely) generic * in the return type.
-     *
-     * THIS IS VERY BAD, use only where legacy requires it to avoid having to litter classes with
-     * <code>SuppressWarnings("unchecked")</code>
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T castToReturnType(Object object) {
-        return (T) object;
-    }
+	/**
+	 * Make an unchecked cast of the provided object to the type of the expression it is used in.
+	 *
+	 * This should primarily be used to coerce <code>this</code> to the expected return type in methods that are
+	 * (unsafely) generic * in the return type.
+	 *
+	 * THIS IS VERY BAD, use only where legacy requires it to avoid having to litter classes with
+	 * <code>SuppressWarnings("unchecked")</code>
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T castToReturnType(Object object) {
+		return (T) object;
+	}
 }
