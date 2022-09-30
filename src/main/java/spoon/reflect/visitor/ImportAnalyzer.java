@@ -24,6 +24,7 @@ import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.support.Experimental;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -76,14 +77,14 @@ abstract class ImportAnalyzer<U> extends AbstractProcessor<CtElement> {
 	}
 
 	//The set of roles whose values are always kept implicit
-	protected static Set<CtRole> IGNORED_ROLES_WHEN_IMPLICIT = new HashSet<>(Arrays.asList(
+	protected static Set<CtRole> IGNORED_ROLES_WHEN_IMPLICIT = EnumSet.of(
 			//e.g. List<String> s = new ArrayList</*keep me implicit*/>();
 			CtRole.TYPE_ARGUMENT,
 			//e.g. List<?/* extends Object*/>
 			CtRole.BOUNDING_TYPE,
 			//e.g. (/*implicit type of parameter*/ p) -> {}
 			CtRole.TYPE
-	));
+	);
 
 	/**
 	 * {@link CtScannerListener} implementation which stops scanning of children on elements,
