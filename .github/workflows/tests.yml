@@ -27,7 +27,11 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         exclude:
           - os: windows-latest
-            java: 17,19,20-ea
+            java: 17
+          - os: windows-latest
+            java: 19
+          - os: windows-latest
+            java: 20-ea
 
 
 
