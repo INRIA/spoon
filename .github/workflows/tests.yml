@@ -23,11 +23,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        java: [11, 17]
+        java: [11, 17, 19, 20-ea]
         os: [ubuntu-latest, windows-latest]
         exclude:
           - os: windows-latest
             java: 17
+          - os: windows-latest
+            java: 19
+          - os: windows-latest
+            java: 20-ea
+
 
 
     env:
