@@ -16,7 +16,7 @@ import static spoon.test.SpoonTestHelpers.containsRegexMatch;
  */
 @DisplayName("cover rules for type annotations in places mentioned in JLS 4.11")
 class TypeUseAnnotationTest {
-	private static final String BASE_PATH = "src/test/java/spoon/test/annotation/testclasses/typeannotations/";
+	private static final String BASE_PATH = "src/test/resources/typeannotations/";
 	private static final String TYPE_USE_A_PATH = BASE_PATH + "TypeUseA.java";
 	private static final String TYPE_USE_B_PATH = BASE_PATH + "TypeUseB.java";
 
@@ -31,7 +31,7 @@ class TypeUseAnnotationTest {
 			@ModelTest({TYPE_USE_A_PATH, TYPE_USE_B_PATH, BASE_PATH + "p01/"})
 			void testTypeAnnotationOnExtendsOrImplements(Factory factory) {
 				// contract: type annotations on extends and implements declarations of classes are part of the model
-				CtType<?> type = factory.Type().get("spoon.test.annotation.testclasses.typeannotations.p01.ExtendsAndImplements");
+				CtType<?> type = factory.Type().get("typeannotations.p01.ExtendsAndImplements");
 
 				// first, check the annotation of the extends type
 				assertThat(type.getSuperclass().getAnnotations().size(), equalTo(1));
@@ -49,7 +49,7 @@ class TypeUseAnnotationTest {
 			@ModelTest({TYPE_USE_A_PATH, BASE_PATH + "p02/"})
 			void testTypeAnnotationsOnInterfaceExtends(Factory factory) {
 				// contract: type annotations on extends declarations of interfaces are part of the model
-				CtType<?> type = factory.Type().get("spoon.test.annotation.testclasses.typeannotations.p02.InterfaceExtends");
+				CtType<?> type = factory.Type().get("typeannotations.p02.InterfaceExtends");
 
 				CtTypeReference<?> superInterface = type.getSuperInterfaces().iterator().next();
 				assertThat(superInterface.getAnnotations().size(), equalTo(1));
@@ -66,10 +66,10 @@ class TypeUseAnnotationTest {
 	}
 
 	private CtTypeReference<?> typeUseARef(Factory factory) {
-		return factory.Type().get("spoon.test.annotation.testclasses.typeannotations.TypeUseA").getReference();
+		return factory.Type().get("typeannotations.TypeUseA").getReference();
 	}
 
 	private CtTypeReference<?> typeUseBRef(Factory factory) {
-		return factory.Type().get("spoon.test.annotation.testclasses.typeannotations.TypeUseB").getReference();
+		return factory.Type().get("typeannotations.TypeUseB").getReference();
 	}
 }
