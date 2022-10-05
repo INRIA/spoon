@@ -50,13 +50,11 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	/**
 	 * Gets the Java runtime class of the referenced type.
 	 *
-	 * This is a low-level feature, it should never been used.
-	 * For CtTypeReference, use {@link #getTypeDeclaration()} instead,
+	 * This is a low-level feature, it should never been used, use {@link #getTypeDeclaration()} instead
 	 * in order to only stay in the Spoon world and manipulate CtType instead of java.lang.Class.
 	 *
 	 * @return the Java class or throws a {@link SpoonClassNotFoundException} if the class is not found.
 	 * @throws SpoonClassNotFoundException if the class is not in the classpath
-	 * @deprecated (Since Spoon 7.0.0) use {@link #getTypeDeclaration()} instead
 	 */
 	Class<T> getActualClass();
 

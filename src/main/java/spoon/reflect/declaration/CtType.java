@@ -59,11 +59,10 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 
 	/**
 	 *
-	 * NEVER USE THIS.
+	 * This is a low-level feature, it should never been used by non advanced users.
 	 *
 	 * See {@link CtTypeReference#getActualClass()}.
 	 *
-	 * @deprecated (since Spoon 7.0.0) this will be removed from the public API
 	 */
 	@DerivedProperty
 	Class<T> getActualClass();
