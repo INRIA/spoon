@@ -61,7 +61,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *
 	 * This is a low-level feature, it should never been used by non advanced users.
 	 *
-	 * See {@link CtTypeReference#getActualClass()}.
+	 * See full documentation at {@link CtTypeReference#getActualClass()}.
 	 *
 	 */
 	@DerivedProperty
