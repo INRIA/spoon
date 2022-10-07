@@ -100,3 +100,5 @@ OR
 OR
 
 3) the integrator team welcomes the contribution, but cannot commit to maintaining it.
+
+Submodules are not published to Maven central, and so need to be built from source.
