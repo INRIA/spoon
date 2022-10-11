@@ -30,7 +30,6 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -170,7 +169,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitClass(Class<T> clazz) {
 		final CtClass ctClass = factory.Core().createClass();
 		ctClass.setSimpleName(clazz.getSimpleName());
-		setModifier(ctClass, clazz.getModifiers(), clazz.getDeclaringClass());
+		setModifier(ctClass, clazz.getModifiers() & Modifier.classModifiers());
 
 		enter(new TypeRuntimeBuilderContext(clazz, ctClass) {
 			@Override
@@ -197,7 +196,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitInterface(Class<T> clazz) {
 		final CtInterface<Object> ctInterface = factory.Core().createInterface();
 		ctInterface.setSimpleName(clazz.getSimpleName());
-		setModifier(ctInterface, clazz.getModifiers(), clazz.getDeclaringClass());
+		setModifier(ctInterface, clazz.getModifiers() & Modifier.classModifiers());
 
 		enter(new TypeRuntimeBuilderContext(clazz, ctInterface));
 		super.visitInterface(clazz);
@@ -210,7 +209,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitEnum(Class<T> clazz) {
 		final CtEnum ctEnum = factory.Core().createEnum();
 		ctEnum.setSimpleName(clazz.getSimpleName());
-		setModifier(ctEnum, clazz.getModifiers(), clazz.getDeclaringClass());
+		setModifier(ctEnum, clazz.getModifiers() & Modifier.classModifiers());
 
 		enter(new TypeRuntimeBuilderContext(clazz, ctEnum) {
 			@Override
@@ -233,7 +232,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T extends Annotation> void visitAnnotationClass(Class<T> clazz) {
 		final CtAnnotationType<?> ctAnnotationType = factory.Core().createAnnotationType();
 		ctAnnotationType.setSimpleName(clazz.getSimpleName());
-		setModifier(ctAnnotationType, clazz.getModifiers(), clazz.getDeclaringClass());
+		setModifier(ctAnnotationType, clazz.getModifiers() & Modifier.classModifiers());
 
 		enter(new TypeRuntimeBuilderContext(clazz, ctAnnotationType) {
 			@Override
@@ -289,7 +288,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitConstructor(Constructor<T> constructor) {
 		final CtConstructor<Object> ctConstructor = factory.Core().createConstructor();
 		ctConstructor.setBody(factory.Core().createBlock());
-		setModifier(ctConstructor, constructor.getModifiers(), constructor.getDeclaringClass());
+		setModifier(ctConstructor, constructor.getModifiers() & Modifier.constructorModifiers());
 
 		enter(new ExecutableRuntimeBuilderContext(constructor, ctConstructor));
 		super.visitConstructor(constructor);
@@ -308,7 +307,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		if (!Modifier.isAbstract(method.getModifiers())) {
 			ctMethod.setBody(factory.Core().createBlock());
 		}
-		setModifier(ctMethod, method.getModifiers(), method.getDeclaringClass());
+		setModifier(ctMethod, method.getModifiers() & Modifier.methodModifiers());
 		ctMethod.setDefaultMethod(method.isDefault());
 
 		enter(new ExecutableRuntimeBuilderContext(method.getMethod(), ctMethod));
@@ -322,7 +321,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitField(Field field) {
 		final CtField<Object> ctField = factory.Core().createField();
 		ctField.setSimpleName(field.getName());
-		setModifier(ctField, field.getModifiers(), field.getDeclaringClass());
+		setModifier(ctField, field.getModifiers() & Modifier.fieldModifiers());
 
 		// we set the value of the shadow field if it is a public and static primitive value
 		try {
@@ -348,7 +347,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitEnumValue(Field field) {
 		final CtEnumValue<Object> ctEnumValue = factory.Core().createEnumValue();
 		ctEnumValue.setSimpleName(field.getName());
-		setModifier(ctEnumValue, field.getModifiers(), field.getDeclaringClass());
+		setModifier(ctEnumValue, field.getModifiers() & Modifier.fieldModifiers());
 
 		enter(new VariableRuntimeBuilderContext(ctEnumValue));
 		super.visitEnumValue(field);
@@ -528,7 +527,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 
-	private void setModifier(CtModifiable ctModifiable, int modifiers, Class<?> declaringClass) {
+	private void setModifier(CtModifiable ctModifiable, int modifiers) {
 		if (Modifier.isAbstract(modifiers)) {
 			ctModifiable.addModifier(ModifierKind.ABSTRACT);
 		}
@@ -557,14 +556,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			ctModifiable.addModifier(ModifierKind.SYNCHRONIZED);
 		}
 		if (Modifier.isTransient(modifiers)) {
-			if (ctModifiable instanceof CtField) {
-				ctModifiable.addModifier(ModifierKind.TRANSIENT);
-			} else if (ctModifiable instanceof CtExecutable) {
-				//it happens when executable has a vararg parameter. But that is not handled by modifiers in Spoon model
-//				ctModifiable.addModifier(ModifierKind.VARARG);
-			} else {
-				throw new UnsupportedOperationException();
-			}
+			ctModifiable.addModifier(ModifierKind.TRANSIENT);
 		}
 		if (Modifier.isVolatile(modifiers)) {
 			ctModifiable.addModifier(ModifierKind.VOLATILE);
@@ -577,7 +569,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitRecord(Class<T> clazz) {
 		CtRecord ctRecord = factory.Core().createRecord();
 		ctRecord.setSimpleName(clazz.getSimpleName());
-		setModifier(ctRecord, clazz.getModifiers(), clazz.getDeclaringClass());
+		setModifier(ctRecord, clazz.getModifiers() & Modifier.classModifiers());
 
 		enter(new TypeRuntimeBuilderContext(clazz, ctRecord) {
 			@Override
