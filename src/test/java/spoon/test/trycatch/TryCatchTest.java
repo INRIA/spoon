@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
@@ -36,7 +37,6 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
-import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
@@ -56,11 +56,13 @@ import spoon.testing.utils.LineSeperatorExtension;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -441,5 +443,61 @@ public class TryCatchTest {
 		// contract: removeResource of nothing is graceful and accepts it
 		tryStmt.removeResource(ctResource);
 
+	}
+
+	@Nested
+	class AddCatcherAt {
+		@Test
+		void addsCatcherAtTheSpecifiedPosition() {
+			// contract: the catcher should be added at the specified position
+			// arrange
+			Factory factory = createFactory();
+
+			CtTry tryStatement = factory.createTry();
+
+			CtCatch first = factory.createCatch();
+			first.setParameter(factory
+					.createCatchVariable()
+					.setType(factory.Type().createReference(IOException.class)));
+
+			CtCatch second = factory.createCatch();
+			second.setParameter(factory
+					.createCatchVariable()
+					.setMultiTypes(List.of(
+							factory.Type().createReference(ExceptionInInitializerError.class),
+							factory.Type().createReference(NoSuchFieldException.class))));
+
+			CtCatch third = factory.createCatch();
+			third.setParameter(factory
+					.createCatchVariable()
+					.setType(factory.Type().createReference(NoSuchMethodException.class)));
+
+			// act
+			tryStatement.addCatcherAt(0, third);
+			tryStatement.addCatcherAt(0, first);
+			tryStatement.addCatcherAt(1, second);
+
+			// assert
+			assertThat(tryStatement.getCatchers(), contains(first, second, third));
+		}
+
+		@Test
+		void throwsOutOfBoundsException_whenPositionIsOutOfBounds() {
+			// contract: `addCatcherAt` should throw an out-of-bounds exception when the specified position is out of
+			// bounds of the catcher collection
+
+			// arrange
+			Factory factory = createFactory();
+
+			CtTry tryStatement = factory.createTry();
+			CtCatch catcherAtWrongPosition = factory.createCatch();
+			catcherAtWrongPosition.setParameter(factory
+					.createCatchVariable()
+					.setType(factory.Type().createReference(Exception.class)));
+
+			// act & assert
+			assertThrows(IndexOutOfBoundsException.class,
+					() -> tryStatement.addCatcherAt(2, catcherAtWrongPosition));
+		}
 	}
 }
