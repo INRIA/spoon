@@ -66,8 +66,8 @@ jobs:
           git config --global user.name "${{ env.GIT_USER }}"
           git config --global user.email "${{ env.GIT_EMAIL }}"
           git clone $REMOTE_REPO_URL
-          mkdir -p sbom-files/spoon
-          cp build.provenance sbom-files/spoon/$(date +%s)-${{ github.sha }}.provenance
+          mkdir -p sbom-files/spoon/slsa
+          cp build.provenance sbom-files/spoon/slsa/$(date +%s)-${{ github.sha }}.provenance
           cd sbom-files
           git add .
           git commit -m "Spoon: ${{ github.sha }}"
