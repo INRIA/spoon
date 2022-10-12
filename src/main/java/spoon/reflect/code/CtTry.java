@@ -48,6 +48,12 @@ public interface CtTry extends CtStatement, TemplateParameter<Void>, CtBodyHolde
 	<T extends CtTry> T addCatcher(CtCatch catcher);
 
 	/**
+	 * Adds a catch block at the specified position in the <code>try</code> statement.
+	 */
+	@PropertySetter(role = CATCH)
+	<T extends CtTry> T addCatcherAt(int index, CtCatch catcher);
+
+	/**
 	 * Removes a catch block.
 	 */
 	@PropertySetter(role = CATCH)
