@@ -50,7 +50,7 @@ jobs:
         uses: slsa-framework/github-actions-demo@9474e92bbf825d5b4b46810fc9367dfc73429a2a # tag=v0.1
         with:
           artifact_path: .
-          output_path: build.provenance
+          output_path: provenance.json
       - name: Add deployment SSH private key to agent
         run: |
           ssh-agent -a ${{ env.SSH_AUTH_SOCK }} > /dev/null
@@ -67,7 +67,7 @@ jobs:
           git config --global user.email "${{ env.GIT_EMAIL }}"
           git clone $REMOTE_REPO_URL
           mkdir -p sbom-files/spoon/slsa
-          cp build.provenance sbom-files/spoon/slsa/$(date +%s)-${{ github.sha }}.provenance
+          cp provenance.json sbom-files/spoon/slsa/$(date +%s)-${{ github.sha }}.sbom.json
           cd sbom-files
           git add .
           git commit -m "Spoon: ${{ github.sha }}"
