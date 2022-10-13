@@ -16,6 +16,7 @@ env:
 jobs:
   sbom:
     runs-on: ubuntu-latest
+    environment: SBOM-store
     env:
       MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
