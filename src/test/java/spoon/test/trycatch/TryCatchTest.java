@@ -498,7 +498,7 @@ public class TryCatchTest {
 
 			// act & assert
 			assertThrows(IndexOutOfBoundsException.class,
-					() -> tryStatement.addCatcherAt(2, catcherAtWrongPosition));
+					() -> tryStatement.addCatcherAt(1, catcherAtWrongPosition));
 		}
 	}
 }
