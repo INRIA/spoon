@@ -473,9 +473,10 @@ public class TryCatchTest {
 					.setType(factory.Type().createReference(NoSuchMethodException.class)));
 
 			// act
-			tryStatement.addCatcherAt(0, third);
-			tryStatement.addCatcherAt(0, first);
-			tryStatement.addCatcherAt(1, second);
+			tryStatement
+				.addCatcherAt(0, third)
+				.addCatcherAt(0, first)
+				.addCatcherAt(1, second);
 
 			// assert
 			assertThat(tryStatement.getCatchers(), contains(first, second, third));
