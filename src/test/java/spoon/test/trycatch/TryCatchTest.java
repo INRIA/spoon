@@ -455,22 +455,9 @@ public class TryCatchTest {
 
 			CtTry tryStatement = factory.createTry();
 
-			CtCatch first = factory.createCatch();
-			first.setParameter(factory
-					.createCatchVariable()
-					.setType(factory.Type().createReference(IOException.class)));
-
-			CtCatch second = factory.createCatch();
-			second.setParameter(factory
-					.createCatchVariable()
-					.setMultiTypes(List.of(
-							factory.Type().createReference(ExceptionInInitializerError.class),
-							factory.Type().createReference(NoSuchFieldException.class))));
-
-			CtCatch third = factory.createCatch();
-			third.setParameter(factory
-					.createCatchVariable()
-					.setType(factory.Type().createReference(NoSuchMethodException.class)));
+			CtCatch first = createCatch(factory, IOException.class);
+			CtCatch second = createCatch(factory, ExceptionInInitializerError.class);
+			CtCatch third = createCatch(factory, NoSuchMethodException.class);
 
 			// act
 			tryStatement
@@ -491,14 +478,18 @@ public class TryCatchTest {
 			Factory factory = createFactory();
 
 			CtTry tryStatement = factory.createTry();
-			CtCatch catcherAtWrongPosition = factory.createCatch();
-			catcherAtWrongPosition.setParameter(factory
-					.createCatchVariable()
-					.setType(factory.Type().createReference(Exception.class)));
+			CtCatch catcherAtWrongPosition = createCatch(factory, Exception.class);
 
 			// act & assert
 			assertThrows(IndexOutOfBoundsException.class,
 					() -> tryStatement.addCatcherAt(1, catcherAtWrongPosition));
+		}
+
+		private <T extends Throwable> CtCatch createCatch(Factory factory, Class<T> typeToCatch) {
+			CtTypeReference<T> typeReference = factory.Type().createReference(typeToCatch);
+			return factory.createCatch().setParameter(
+					factory.createCatchVariable().setType(typeReference)
+			);
 		}
 	}
 }
