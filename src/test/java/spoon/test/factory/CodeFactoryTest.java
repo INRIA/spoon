@@ -26,14 +26,14 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-
+import spoon.test.GitHubIssue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class CodeFactoryTest {
-	int i;
 
 	@Test
 	public void testThisAccess() {
@@ -57,5 +57,13 @@ public class CodeFactoryTest {
 		//Variable assignment's assignee is a CtVariableWrite that point toward the right variable.
 		assertTrue(va.getAssigned() instanceof CtVariableWrite);
 		assertEquals(f.getReference(), ((CtVariableWrite) va.getAssigned()).getVariable());
+	}
+	
+	@GitHubIssue(issueNumber= 4956, fixed = true)
+	void createCtCatcVariablehWithoutModifiers() {
+		// contract: CtCatchVariable without modifiers is created. This a test for the regression of #4940
+		Factory factory = createFactory();
+		CtTypeReference<Exception> exceptionType = factory.Type().createReference(Exception.class);
+		assertDoesNotThrow(() -> factory.Code().createCatchVariable(exceptionType, "e"));
 	}
 }
