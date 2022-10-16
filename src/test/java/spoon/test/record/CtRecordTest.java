@@ -1,17 +1,22 @@
 package spoon.test.record;
 
 import static java.lang.System.lineSeparator;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -200,6 +205,15 @@ public class CtRecordTest {
 		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
 		CtRecord record = head(records);
 		assertEquals("public record GenericRecord<T>(T a, T b) {}", record.toString());
+	}
+
+	@Test
+	void testBuildRecordModelWithStaticInitializer() {
+		// contract: a record can have static initializers
+		String code = "src/test/resources/records/WithStaticInitializer.java";
+		CtModel model = assertDoesNotThrow(() -> createModelFromPath(code));
+		List<CtAnonymousExecutable> execs = model.getElements(new TypeFilter<>(CtAnonymousExecutable.class));
+		assertThat(execs.size(), equalTo(2));
 	}
 
 	private <T> T head(Collection<T> collection) {

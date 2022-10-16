@@ -117,8 +117,8 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, String.format("%s method is native or abstract, both is not allowed",
 					member.getSimpleName()));
 		}
-		if (member instanceof CtAnonymousExecutable) {
-			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, "Anonymous executable is not allowed in a record");
+		if (member instanceof CtAnonymousExecutable && !member.isStatic()) {
+			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, "Instance initializer is not allowed in a record");
 		}
 		return super.addTypeMemberAt(position, member);
 	}
