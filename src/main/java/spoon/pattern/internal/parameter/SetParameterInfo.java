@@ -53,7 +53,7 @@ public class SetParameterInfo extends AbstractParameterInfo {
 		Set<Object> newSet = new LinkedHashSet<>(set.size() + 1);
 		newSet.addAll(set);
 		if (newValue instanceof Collection) {
-			if (newSet.addAll((Collection) newValue) == false) {
+			if (!newSet.addAll((Collection) newValue)) {
 				//all the values were already there. Return original set
 				return set;
 			}

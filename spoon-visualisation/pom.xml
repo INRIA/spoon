@@ -30,7 +30,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.2</version>
+                <version>3.3.0</version>
                 <configuration>
                     <outputDirectory>${project.build.directory}/modules</outputDirectory>
                 </configuration>
@@ -75,7 +75,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>main module</id>
@@ -99,7 +99,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
                 <configuration>
                     <testFailureIgnore>false</testFailureIgnore>
                     <useModulePath>false</useModulePath>
@@ -111,31 +110,6 @@
                         -Dtestfx.headless=true
                         -Dprism.order=sw</argLine>
                 </configuration>
-            </plugin>
-            <plugin>
-                <!-- see https://github.com/castor-software/depclean -->
-                <groupId>se.kth.castor</groupId>
-                <artifactId>depclean-maven-plugin</artifactId>
-                <version>2.0.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>depclean</goal>
-                        </goals>
-                        <configuration>
-                            <ignoreDependencies>
-                                <!-- DepClean should ignore these dependencies (they act as aggregators of others dependencies)-->
-                                <dependency>org.junit.jupiter:junit-jupiter-engine:5.7.1:test</dependency>
-                                <dependency>org.openjfx:javafx-graphics:11.0.2:compile</dependency>
-                                <dependency>org.openjfx:javafx-controls:11.0.2:compile</dependency>
-                                <dependency>org.openjfx:javafx-fxml:11.0.2:compile</dependency>
-                                <dependency>org.openjfx:javafx-base:11.0.2:compile</dependency>
-                            </ignoreDependencies>
-                            <!-- the build fails if there are unused direct dependencies -->
-                            <failIfUnusedDirect>true</failIfUnusedDirect>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
@@ -155,7 +129,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>10.0.0</version>
+            <version>10.1.1</version>
             <exclusions>
                     <exclusion>
                         <artifactId>*</artifactId>
@@ -216,7 +190,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.8.2</version>
+            <version>5.9.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -249,4 +223,3 @@
         </repository>
     </repositories>
 </project>
-

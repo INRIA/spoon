@@ -16,6 +16,12 @@
  */
 package spoon.support.visitor.java;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -60,6 +66,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
@@ -75,7 +82,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtElementPathBuilder;
@@ -88,6 +94,7 @@ import spoon.reflect.visitor.Root;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.code.CtAssignmentImpl;
 import spoon.support.reflect.code.CtConditionalImpl;
 import spoon.support.reflect.declaration.CtEnumValueImpl;
@@ -95,6 +102,7 @@ import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.test.generics.testclasses3.ComparableComparatorBug;
+import spoon.test.innerclasses.InnerClasses;
 import spoon.test.pkg.PackageTest;
 import spoon.test.pkg.cyclic.Outside;
 import spoon.test.pkg.cyclic.direct.Cyclic;
@@ -637,8 +645,8 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testInnerClass() {
-		// contract: JavaReflectionTreeBuilder works on internal named classes
+	public void testInnerClassOfSourceCodeClass() {
+		// contract: JavaReflectionTreeBuilder does not rescan the type if source information is available
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/java/spoon/support/visitor/java/JavaReflectionTreeBuilderTest.java");
 		launcher.buildModel();
@@ -646,6 +654,28 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("Diff", ctType.getSimpleName());
 		assertEquals(false, ctType.isAnonymous());
 		assertEquals(false, ctType.isShadow());
+
+		Class<?> klass = ctType.getActualClass();
+		assertEquals("spoon.support.visitor.java.JavaReflectionTreeBuilderTest$Diff", klass.getName());
+		assertEquals(false, klass.isAnonymousClass());
+
+		CtType<?> ctClass = new JavaReflectionTreeBuilder(launcher.getFactory()).scan(klass);
+		assertEquals("Diff", ctClass.getSimpleName());
+		assertEquals(false, ctClass.isAnonymous());
+		assertEquals(false, ctClass.isShadow());
+		assertEquals("element", ctClass.getFields().toArray(new CtField[0])[0].getSimpleName());
+	}
+
+	@Test
+	public void testPurelyReflectiveInnerClass() {
+		// contract: JavaReflectionTreeBuilder works for named nested classes
+		Launcher launcher = new Launcher();
+		// No resources, as we only want to check the reflection tree builder
+		launcher.buildModel();
+		CtType ctType = launcher.getFactory().Type().get(Diff.class);
+		assertEquals("Diff", ctType.getSimpleName());
+		assertEquals(false, ctType.isAnonymous());
+		assertEquals(true, ctType.isShadow());
 
 		Class<?> klass = ctType.getActualClass();
 		assertEquals("spoon.support.visitor.java.JavaReflectionTreeBuilderTest$Diff", klass.getName());
@@ -748,6 +778,40 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
+	@EnabledForJreRange(min = JRE.JAVA_17)
+	void testShadowSealedTypes() throws ClassNotFoundException {
+		// contract: sealed/non-sealed types are in the shadow model
+		Factory factory = createFactory();
+		// load a few ConstantDesc types
+		Class<?> constantDesc = Class.forName("java.lang.constant.ConstantDesc"); // since Java 12, sealed since Java 17
+		Class<?> dynamicConstantDesc = Class.forName("java.lang.constant.DynamicConstantDesc"); // since Java 12
+		Class<?> enumDesc = Class.forName("java.lang.Enum$EnumDesc"); // since Java 12
+		CtInterface<?> ctConstantDesc = (CtInterface<?>) factory.Type().get(constantDesc);
+		CtType<?> ctDynamicConstantDesc = factory.Type().get(dynamicConstantDesc);
+		CtType<?> ctEnumDesc = factory.Type().get(enumDesc);
+		CtType<?> ctString = factory.Type().get(String.class);
+
+		// make sure they are loaded correctly
+		assertNotNull(ctConstantDesc);
+		assertNotNull(ctDynamicConstantDesc);
+		assertNotNull(ctEnumDesc);
+		assertNotNull(ctString);
+
+		// ConstDesc is sealed
+		assertThat(ctConstantDesc.getExtendedModifiers(), hasItem(CtExtendedModifier.explicit(ModifierKind.SEALED)));
+		// DynamicConstDesc and String are permitted types
+		assertThat(ctConstantDesc.getPermittedTypes(), hasItems(ctDynamicConstantDesc.getReference(), ctString.getReference()));
+		// EnumDesc extends DynamicConstantDesc, so it should not be added to the permitted types of ConstantDesc
+		assertThat(ctConstantDesc.getPermittedTypes(), not(hasItem(ctEnumDesc.getReference())));
+		// DynamicConstDesc is non-sealed
+		assertThat(ctDynamicConstantDesc.getExtendedModifiers(), hasItem(CtExtendedModifier.explicit(ModifierKind.NON_SEALED)));
+		// EnumDesc extends DynamicConstDesc which is non-sealed, so it is not non-sealed itself
+		assertThat(ctEnumDesc.getModifiers(), not(hasItem(ModifierKind.NON_SEALED)));
+		// String is final and not sealed, so neither sealed nor non-sealed should be applied
+		assertThat(ctString.getModifiers(), not(hasItems(ModifierKind.SEALED, ModifierKind.NON_SEALED)));
+	}
+
+	@Test
 	void testCyclicAnnotationScanning() {
 		// contract: scanning annotations does not cause StackOverflowError
 		// due to recursive package -> annotation -> package -> annotation scanning
@@ -758,5 +822,22 @@ public class JavaReflectionTreeBuilderTest {
 		assertDoesNotThrow(() -> new JavaReflectionTreeBuilder(factory).scan(Indirect.class));
 		// an independent starting point, causing Cyclic and Indirect to be visited too
 		assertDoesNotThrow(() -> new JavaReflectionTreeBuilder(factory).scan(Outside.class));
+	}
+
+	@Test
+	void testInnerClassesConstructorParameters() {
+		// contract: inner classes have exactly one parameter for the immediately enclosing instance
+		Factory factory = createFactory();
+
+		CtType<InnerClasses> scan = new JavaReflectionTreeBuilder(factory).scan(InnerClasses.class);
+		List<String> inners = List.of("A", "B", "C", "D", "E", "F");
+		CtType<?> current = scan;
+		for (String inner : inners) {
+			current = current.getNestedType(inner);
+		}
+		assertThat(current, instanceOf(CtClass.class));
+		CtClass<?> asClass = (CtClass<?>) current;
+		assertThat(asClass.getConstructors().size(), equalTo(1));
+		assertThat(asClass.getConstructors().iterator().next().getParameters().size(), equalTo(inners.size()));
 	}
 }

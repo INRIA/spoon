@@ -39,10 +39,10 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFolder;
-import spoon.support.visitor.ClassTypingContext;
 
 /**
  * Represents the Spoon metamodel (incl. at runtime)
@@ -152,6 +152,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.declaration.CtNamedElement.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtPackage.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtParameter.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtSealable.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtShadowable.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtType.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtTypeInformation.class));
@@ -356,7 +357,7 @@ public class Metamodel {
 	 */
 	public static CtInterface<?> getInterfaceOfImplementation(CtClass<?> impl) {
 		String iface = impl.getQualifiedName();
-		if (iface.endsWith(CLASS_SUFFIX) == false || iface.startsWith("spoon.support.reflect.") == false) {
+		if (!iface.endsWith(CLASS_SUFFIX) || !iface.startsWith("spoon.support.reflect.")) {
 			throw new SpoonException("Unexpected spoon model implementation class: " + impl.getQualifiedName());
 		}
 		iface = iface.substring(0, iface.length() - CLASS_SUFFIX.length());
@@ -396,7 +397,7 @@ public class Metamodel {
 	private static final String modelApiImplPackage = "spoon.support.reflect";
 
 	private static String replaceApiToImplPackage(String modelInterfaceQName) {
-		if (modelInterfaceQName.startsWith(modelApiPackage) == false) {
+		if (!modelInterfaceQName.startsWith(modelApiPackage)) {
 			throw new SpoonException("The qualified name " + modelInterfaceQName + " doesn't belong to Spoon model API package: " + modelApiPackage);
 		}
 		return modelApiImplPackage + modelInterfaceQName.substring(modelApiPackage.length());
@@ -552,12 +553,12 @@ public class Metamodel {
 		CtAnnotation<A> annotation = method.getAnnotation(annotationType);
 		if (annotation == null) {
 			CtType<?> declType = method.getDeclaringType();
-			final ClassTypingContext ctc = new ClassTypingContext(declType);
+			TypeAdaptor typeAdaptor = new TypeAdaptor(declType);
 			annotation = declType.map(new AllTypeMembersFunction(CtMethod.class)).map((CtMethod<?> currentMethod) -> {
 				if (method == currentMethod) {
 					return null;
 				}
-				if (ctc.isSameSignature(method, currentMethod)) {
+				if (typeAdaptor.isConflicting(method, currentMethod)) {
 					CtAnnotation<A> annotation2 = currentMethod.getAnnotation(annotationType);
 					if (annotation2 != null) {
 						return annotation2;

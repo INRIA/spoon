@@ -2,6 +2,7 @@
 [![GHA tests Workflow Status](https://github.com/INRIA/spoon/actions/workflows/tests.yml/badge.svg)](https://github.com/INRIA/spoon/actions/workflows/tests.yml)
 [![Coverage Status](https://coveralls.io/repos/INRIA/spoon/badge.png)](https://coveralls.io/r/INRIA/spoon)
 [![Maintainability Rating](https://sonarqube.ow2.org/api/project_badges/measure?project=fr.inria.gforge.spoon%3Aspoon-core&metric=sqale_rating)](https://sonarqube.ow2.org/dashboard?id=fr.inria.gforge.spoon%3Aspoon-core)
+[![Reproducible Builds](https://img.shields.io/badge/Reproducible_Builds-ok-success?labelColor=1e5b96)](https://github.com/jvm-repo-rebuild/reproducible-central#fr.inria.gforge.spoon:spoon-core)
 
 # Spoon
 
@@ -9,7 +10,7 @@ Spoon is an open-source library to analyze, rewrite, transform, transpile Java s
 
 ## Documentation
 
-The latest official documentation is available at <http://spoon.gforge.inria.fr/> and a regularly updated PDF version is as <https://projects.ow2.org/download/spoon/WebHome/spoon-user-manual.pdf>.
+The latest official documentation is available at <http://spoon.gforge.inria.fr/>.
 
 ### Academic usage
 
@@ -35,7 +36,9 @@ If you need professional support on Spoon (development, training, extension), yo
 
 ## Getting started in 2 seconds
 
-> **Java version:** Spoon version 10 and up requires Java 11 or later. Spoon 9.1.0 is the final Spoon release compatible with Java 8.
+> **Java version:** Spoon version 10 and up requires Java 11 or later. Spoon 9.1.0 is the final Spoon release compatible
+> with Java 8, and we do not plan to backport any bug fixes or features to Spoon 9. Note that Spoon can of course still
+> consume source code for older versions of Java, but it needs JDK 11+ to run.
 
 Get latest stable version with Maven, see <https://search.maven.org/artifact/fr.inria.gforge.spoon/spoon-core>
 
@@ -54,7 +57,7 @@ Documentation:
 
 ## Contributing in 2 seconds
 
-Create your first pull-request to improve the documentation, see [doc](https://github.com/INRIA/spoon/tree/master/doc)! Proceed with your first bug fix! The community is open-minded, respectful and patient. All external contributions are welcome.
+Create your first pull request to improve the documentation, see [doc](https://github.com/INRIA/spoon/tree/master/doc)! Proceed with your first bug fix! The community is open-minded, respectful and patient. All external contributions are welcome.
 
 ## Design Philosophy
 
@@ -103,6 +106,8 @@ Maven:
 ## Releases
 
 <!-- .* Marker comment. -->
+- April 2022, Spoon 10.1.0 [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-10.1.0)
+- October 2021, Spoon 10.0.0 [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-10.0.0)
 - August 2021: Spoon 9.1.0 [(changelog)](https://github.com/INRIA/spoon/pull/4104)
 - March 2021: Spoon 9.0.0 [(changelog)](https://github.com/INRIA/spoon/issues/3845)
 - October 2020: Spoon 8.3.0 [(changelog)](https://github.com/INRIA/spoon/pull/3647)
@@ -111,7 +116,7 @@ Maven:
 - November 2019, Spoon 8.0.0 [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-8.0.0)
 - July 2019: Spoon 7.5.0 is released [(changelog)](https://github.com/INRIA/spoon/pull/3057)
 - May 2019: Spoon 7.4.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-7.4.0)
-- Februray 10, 2019: Spoon 7.3.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-7.3.0) 
+- February 10, 2019: Spoon 7.3.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-7.3.0) 
 - December 4, 2018: Spoon 7.2.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-7.2.0) 
 - October 10, 2018: Spoon 7.1.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-7.1.0) 
 - July 4, 2018: Spoon 7.0.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-7.0.0) 
@@ -119,7 +124,7 @@ Maven:
 - December 20, 2017: Spoon 6.1.0 is released, merry christmas! :christmas_tree: [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-6.1.0)
 - November 17, 2017: Spoon 6.0.0 is released! Check the [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-6.0.0) as there are few non backward-compatible changes :warning:
 - September 6, 2017: Spoon 5.9.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.9.0) *back-to-work* release!
-- July 11, 2017: Spoon 5.8.0 is released  [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.8.0) Summer release :beer: To be prefered wrt the previous one: fix lot of bugs.
+- July 11, 2017: Spoon 5.8.0 is released  [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.8.0) Summer release :beer: To be preferred wrt the previous one: fix lot of bugs.
 - June 01, 2017: Spoon 5.7.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.7.0)
 - March 16, 2017: Spoon 5.6.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.6.0) Spring release :-)
 - January 11, 2017: Spoon 5.5.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.5.0). Happy new year!
@@ -157,25 +162,35 @@ This list is generated by `chore/generate-contributor-list.py`. If you're not li
 * adamjryan
 * Alcides Fonseca
 * Alexander Shopov
-* André Cruz
+* Aman Sharma
 * andrewbwogi
+* André Cruz
+* André Silva
 * Antoine Mottier
+* Anton Lyxell
 * argius
 * Arnaud Blouin
+* arsenkhy
 * Artamm
 * Artur Bosch
 * aryan
 * Ashutosh Kumar Verma
 * aveuiller
-* Benoit Cornu
+* Axel Howind
 * Benjamin DANGLOT
-* César Soto Valero
+* Benoit Cornu
+* Carlos Noguera
+* Ceki Gülcü
 * Charm
 * ChrisSquare
+* Christophe Dufour
 * Christopher Stokes
 * Clemens Bartz
 * Clément Fournier
+* César Soto Valero
 * Darius Sas
+* David Bernard
+* Didier Donsez
 * Diorcet Yann
 * dufaux
 * dwayneb
@@ -183,18 +198,26 @@ This list is generated by `chore/generate-contributor-list.py`. If you're not li
 * Eddie T
 * Egor Bredikhin
 * Fabien DUMINY
-* fangzhen
 * Fan Long
+* fangzhen
 * fav
+* Favio DeMarco
 * Fernanda Madeiral
 * Filip Krakowski
-* Gérard Paligot
+* Gabriel Chaperon Burgos
 * gibahjoe
 * GluckZhang
 * Gregor Zeitlinger
+* gtoison
+* Guillaume Toison
+* Gérard Paligot
+* Hannes Greule
 * Haris Adzemovic
 * HectorSM
+* Henry Chu
 * Horia Constantin
+* I-Al-Istannen
+* intrigus-lgtm
 * jakobbraun
 * Jan Galinski
 * jon
@@ -210,8 +233,8 @@ This list is generated by `chore/generate-contributor-list.py`. If you're not li
 * Martin Monperrus
 * MartinWitt
 * Matias Martinez
-* Maxime CLEMENT
 * Maxim Stefanov
+* Maxime CLEMENT
 * Mehdi Kaytoue
 * Michael Täge
 * Mickael Istria
@@ -219,9 +242,10 @@ This list is generated by `chore/generate-contributor-list.py`. If you're not li
 * Mikael Forsberg
 * Muhammet Ali AKBAY
 * Nicolas Harrand
+* Nicolas Pessemier
 * Nicolas Petitprez
 * Noah Santschi-Cooney
-* Carlos Noguera
+* Olivier Barais
 * Ondřej Šebek
 * Pavel Vojtechovsky
 * peroksid90
@@ -229,6 +253,7 @@ This list is generated by `chore/generate-contributor-list.py`. If you're not li
 * Quentin LE DILAVREC
 * raymogg
 * Renaud Pawlak
+* Reza Gharibi
 * Rhys Compton
 * Rick Kellogg
 * Rijnard van Tonder
@@ -238,18 +263,22 @@ This list is generated by `chore/generate-contributor-list.py`. If you're not li
 * scootafew
 * Scott Dickerson
 * Scott Pinwell
-* Sébastien Bertrand
+* Sebastian Lamelas Marcote
 * Sergey Fedorov
 * Shantanu
 * Simon Larsén
 * Simon Urli
+* Spencer Williams
 * srlm
 * ST0NEWALL
 * Stefan Wolf
+* Sébastien Bertrand
+* Thimo Seitz
 * Thomas Durieux
 * tiagodrcarvalho
 * Tomasz Zieliński
 * Urs Keller
+* Viktor
 * Vincenzo Musco
 * Wolfgang Schmiesing
 * Wouter Smeenk

@@ -193,7 +193,7 @@ public class CtParameterRemoveRefactoring implements CtRefactoring {
 
 	private void checkInvocation(CtInvocation<?> invocation) {
 		final CtExpression<?> toBeRemovedExpression = invocation.getArguments().get(this.parameterIndex);
-		if (canRemoveExpression(toBeRemovedExpression) == false) {
+		if (!canRemoveExpression(toBeRemovedExpression)) {
 			createExpressionCannotBeRemovedIssue(invocation, toBeRemovedExpression);
 		}
 	}

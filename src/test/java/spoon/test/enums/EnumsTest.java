@@ -18,6 +18,7 @@ package spoon.test.enums;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,8 +29,10 @@ import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
@@ -37,8 +40,10 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtExtendedModifier;
+import spoon.test.GitHubIssue;
 import spoon.test.SpoonTestHelpers;
 import spoon.test.annotation.AnnotationTest;
 import spoon.test.enums.testclasses.Burritos;
@@ -58,6 +63,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -125,9 +131,9 @@ public class EnumsTest {
 	void testNestedPrivateEnumValues(CtEnum<?> type) {
 		// contract: enum values have correct modifiers matching the produced bytecode
 		assertThat(type.getField("VALUE").getExtendedModifiers(), contentEquals(
-				new CtExtendedModifier(ModifierKind.PUBLIC, true),
-				new CtExtendedModifier(ModifierKind.STATIC, true),
-				new CtExtendedModifier(ModifierKind.FINAL, true)
+				CtExtendedModifier.implicit(ModifierKind.PUBLIC),
+				CtExtendedModifier.implicit(ModifierKind.STATIC),
+				CtExtendedModifier.implicit(ModifierKind.FINAL)
 		));
 	}
 
@@ -207,8 +213,8 @@ public class EnumsTest {
 		// package-level enum, isn't static but implicitly final
 		CtType<?> publicFinalEnum = build("spoon.test.enums.testclasses", "Burritos");
 		assertThat(publicFinalEnum.getExtendedModifiers(), contentEquals(
-				new CtExtendedModifier(ModifierKind.PUBLIC, false),
-				new CtExtendedModifier(ModifierKind.FINAL, true)
+				CtExtendedModifier.explicit(ModifierKind.PUBLIC),
+				CtExtendedModifier.implicit(ModifierKind.FINAL)
 		));
 	}
 
@@ -218,7 +224,23 @@ public class EnumsTest {
 		// pre Java 17, enums aren't implicitly final if an enum value declares an anonymous type
 		CtType<?> publicEnum = build("spoon.test.enums.testclasses", "AnonEnum");
 		assertThat(publicEnum.getExtendedModifiers(), contentEquals(
-				new CtExtendedModifier(ModifierKind.PUBLIC, false)
+				CtExtendedModifier.explicit(ModifierKind.PUBLIC)
+		));
+	}
+
+	@Test
+	void testEnumClassModifiersPublicEnumJava17() throws Exception {
+		// contract: enum modifiers are applied correctly (JLS 8.9)
+		// in Java 17, enums are implicitly sealed if an enum value declares an anonymous type
+		// and the permitted types are the anonymous types declared by the enum values
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/enums/testclasses/AnonEnum.java");
+		launcher.getEnvironment().setComplianceLevel(17);
+		launcher.buildModel();
+		CtType<?> publicEnum = launcher.getFactory().Type().get("spoon.test.enums.testclasses.AnonEnum");
+		assertThat(publicEnum.getExtendedModifiers(), contentEquals(
+				new CtExtendedModifier(ModifierKind.PUBLIC, false),
+				new CtExtendedModifier(ModifierKind.SEALED, true)
 		));
 	}
 
@@ -231,7 +253,7 @@ public class EnumsTest {
 		// it has to be a CtNewClass, otherwise it wouldn't declare an anonymous type
 		assertTrue(defaultExpression instanceof CtNewClass);
 		assertThat(((CtNewClass<?>) defaultExpression).getAnonymousClass().getExtendedModifiers(), contentEquals(
-				new CtExtendedModifier(ModifierKind.FINAL, true)
+				CtExtendedModifier.implicit(ModifierKind.FINAL)
 		));
 	}
 
@@ -259,11 +281,30 @@ public class EnumsTest {
 		assertThat(enumType.getEnumValues().size(), is(2));
 		assertThat(enumType.getMethods().size(), is(1));
 		assertThat(enumType.getExtendedModifiers(), contentEquals(
-				new CtExtendedModifier(ModifierKind.STATIC, true),
-				new CtExtendedModifier(ModifierKind.FINAL, true)
+				CtExtendedModifier.implicit(ModifierKind.STATIC),
+				CtExtendedModifier.implicit(ModifierKind.FINAL)
 		));
 	}
 
+	@GitHubIssue(issueNumber = 4758, fixed = true)
+	@DisplayName("Implicit enum constructors do not contain a super call")
+	void testImplicitEnumConstructorSuperCall() {
+		CtEnum<?> myEnum = (CtEnum<?>) Launcher.parseClass("enum Foo { CONSTANT; }");
+		CtConstructor<?> constructor = myEnum.getConstructors().iterator().next();
+
+		assertThat(constructor.isImplicit(), is(true));
+		
+		for (CtStatement statement : constructor.getBody().getStatements()) {
+			if (!(statement instanceof CtInvocation)) {
+				continue;
+			}
+			CtExecutableReference<?> executable = ((CtInvocation<?>) statement).getExecutable();
+			if (!executable.getDeclaringType().getQualifiedName().equals("java.lang.Enum")) {
+				continue;
+			}
+			assertThat(executable.getSimpleName(), not(is("<init>")));
+		}
+	}
 
 	static class NestedEnumTypeProvider implements ArgumentsProvider {
 		private final CtType<?> ctClass;

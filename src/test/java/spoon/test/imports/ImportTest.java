@@ -16,8 +16,8 @@
  */
 package spoon.test.imports;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
@@ -71,15 +71,16 @@ import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.ToBeModified;
 import spoon.test.imports.testclasses.badimportissue3320.source.TestSource;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1022,10 +1023,10 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testmportInCu() throws  Exception{
+	public void testmportInCu(@TempDir Path tempDir) throws  Exception{
 		// contract: auto-import works for compilation units with multiple classes
 		String[] options = {"--output-type", "compilationunits",
-				"--output", "target/testmportInCu", "--with-imports"};
+				"--output", tempDir.toString(), "--with-imports"};
 
 		String path = "spoon/test/prettyprinter/testclasses/A.java";
 
@@ -1034,8 +1035,8 @@ public class ImportTest {
 		launcher.addInputResource("./src/test/java/"+path);
 		launcher.run();
 
-		File output = new File("target/testmportInCu/"+path);
-		String code = IOUtils.toString(new FileReader(output));
+		Path output = tempDir.resolve(path);
+		String code = Files.readString(output);
 
 		// the ArrayList is imported and used in short mode
 		assertThat(code, containsString("import java.util.ArrayList"));
@@ -1045,9 +1046,6 @@ public class ImportTest {
 
 		// sanity check: the actual code
 		assertThat(code, containsString("ArrayList<String> list = new ArrayList<>()"));
-
-		// cleaning
-		output.delete();
 	}
 
 	@Test
@@ -1061,16 +1059,15 @@ public class ImportTest {
 
 		canBeBuilt(outputDir, 7);
 
-		String pathA = "spoon/test/imports/testclasses/multiplecu/A.java";
-		String pathB = "spoon/test/imports/testclasses/multiplecu/B.java";
+		Path outputDirPath = Path.of(outputDir);
+		Path pathA = outputDirPath.resolve("spoon/test/imports/testclasses/multiplecu/A.java");
+		Path pathB = outputDirPath.resolve("spoon/test/imports/testclasses/multiplecu/B.java");
 
-		File outputA = new File(outputDir+"/"+pathA);
-		String codeA = IOUtils.toString(new FileReader(outputA));
+		String codeA = Files.readString(pathA);
 
 		assertThat(codeA, containsString("import java.util.List;"));
 
-		File outputB = new File(outputDir+"/"+pathB);
-		String codeB = IOUtils.toString(new FileReader(outputB));
+		String codeB = Files.readString(pathB);
 
 		assertThat(codeB, containsString("import java.awt.List;"));
 	}
@@ -1098,7 +1095,7 @@ public class ImportTest {
 		String output = prettyPrinter.getResult();
 
 		assertThat("The file should contain a static import ", output, containsString("import static spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite;"));
-		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.addTest(suite());"));
+		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.add(suite());"));
 
 		canBeBuilt(outputDir, 7);
 	}
@@ -1127,7 +1124,7 @@ public class ImportTest {
 		String output = prettyPrinter.getResult();
 
 		assertThat("The file should not contain a static import ", output, not(containsString("import static")));
-		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.addTest(spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite());"));
+		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.add(spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite());"));
 
 		canBeBuilt(outputDir, 3);
 	}
@@ -1156,7 +1153,7 @@ public class ImportTest {
 		String output = prettyPrinter.getResult();
 
 		assertThat("The file should not contain a static import ", output, not(containsString("import static spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite;")));
-		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.addTest(spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite());"));
+		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.add(spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite());"));
 
 		canBeBuilt(outputDir, 3);
 	}
@@ -1293,17 +1290,9 @@ public class ImportTest {
 		assertEquals(CtImportKind.ALL_TYPES, cu.getImports().iterator().next().getImportKind());
 	}
 
-	@Test
-	public void testImportWithGenerics() {
+	@ModelTest(value = "./src/test/resources/import-with-generics/TestWithGenerics.java", autoImport = true)
+	public void testImportWithGenerics(Launcher launcher) {
 		// contract: in noclasspath autoimport, we should be able to use generic type
-		final Launcher launcher = new Launcher();
-		// this class is not compilable 'spoon.test.imports.testclasses.withgenerics.Target' does not exist
-		launcher.addInputResource("./src/test/resources/import-with-generics/TestWithGenerics.java");
-		launcher.getEnvironment().setAutoImports(true);
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.setSourceOutputDirectory("./target/import-with-generics");
-		launcher.run();
-
 		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
 		CtType element = launcher.getFactory().Class().get("spoon.test.imports.testclasses.TestWithGenerics");
 		List<CtType<?>> toPrint = new ArrayList<>();
@@ -1445,12 +1434,9 @@ public class ImportTest {
 		assertNotNull(launcher.getFactory().Type().get("TestNullable"));
 	}
 
-	@Test
-	public void testBug2369_fqn() {
+	@ModelTest("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java")
+	public void testBug2369_fqn(Factory factory) {
 		// see https://github.com/INRIA/spoon/issues/2369
-		final Launcher launcher = new Launcher();
-launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java");
-		launcher.buildModel();
 		final String nl = System.lineSeparator();
 		assertEquals("public class JavaLongUse {" + nl +
 				"    public class Long {}" + nl +
@@ -1462,16 +1448,12 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 				"    public static void main(java.lang.String[] args) {" + nl +
 				"        java.lang.System.out.println(spoon.test.imports.testclasses.JavaLongUse.method());" + nl +
 				"    }" + nl +
-				"}", launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
+				"}", factory.Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
 	}
 
-	@Test
-	public void testBug2369_autoimports() {
+	@ModelTest(value = "./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java", autoImport = true)
+	public void testBug2369_autoimports(Launcher launcher) {
 		// https://github.com/INRIA/spoon/issues/2369
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java");
-		launcher.getEnvironment().setAutoImports(true);
-		launcher.buildModel();
 		final String nl = System.lineSeparator();
 		assertEquals("public class JavaLongUse {" + nl +
 				"    public class Long {}" + nl +
@@ -1585,31 +1567,23 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 			assertThat(output, containsString("import spoon.SpoonException;"));
 		}
 	}
-	@Test
-	public void testImportOnSpoon() throws IOException {
-		File targetDir = new File("./target/import-test");
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/main/java/spoon/");
-		spoon.getEnvironment().setAutoImports(true);
-		spoon.getEnvironment().setCommentEnabled(true);
-		spoon.getEnvironment().setSourceOutputDirectory(targetDir);
-		spoon.getEnvironment().setLevel("warn");
-		spoon.buildModel();
 
-		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
+	@ModelTest(value = "./src/main/java/spoon/", autoImport = true)
+	public void testImportOnSpoon(Launcher launcher, CtModel model, Factory factory) throws IOException {
+		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(launcher.getEnvironment());
 
 		Map<CtType, List<String>> missingImports = new HashMap<>();
 		Map<CtType, List<String>> unusedImports = new HashMap<>();
 
 		JavaOutputProcessor outputProcessor;
 
-		for (CtType<?> ctType : spoon.getModel().getAllTypes()) {
+		for (CtType<?> ctType : model.getAllTypes()) {
 			if (!ctType.isTopLevel()) {
 				continue;
 			}
 
 			outputProcessor = new JavaOutputProcessor(prettyPrinter);
-			outputProcessor.setFactory(spoon.getFactory());
+			outputProcessor.setFactory(factory);
 			outputProcessor.init();
 
 			Set<String> computedTypeImports = new HashSet<>();

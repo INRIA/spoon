@@ -10,6 +10,7 @@ package spoon.reflect.meta.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,18 +31,14 @@ public class RoleHandlerHelper {
 
 	private static Map<Class<?>, List<RoleHandler>> roleHandlersByClass = new HashMap<>();
 
-	@SuppressWarnings("unchecked")
-	private static final List<RoleHandler>[] roleHandlers = new List[CtRole.values().length];
+	private static final Map<CtRole, List<RoleHandler>> roleHandlers = new EnumMap<>(CtRole.class);
 	static {
-		for (int i = 0; i < roleHandlers.length; i++) {
-			roleHandlers[i] = new ArrayList<>();
-		}
 		for (RoleHandler rh : ModelRoleHandlers.roleHandlers) {
-			roleHandlers[rh.getRole().ordinal()].add(rh);
+			roleHandlers.computeIfAbsent(rh.getRole(), role -> new ArrayList<>()).add(rh);
 		}
 		Comparator<RoleHandler> cmp = (a, b) -> a.getTargetType().isAssignableFrom(b.getTargetType()) ? 1 : -1;
 		for (RoleHandler rh : ModelRoleHandlers.roleHandlers) {
-			roleHandlers[rh.getRole().ordinal()].sort(cmp);
+			roleHandlers.get(rh.getRole()).sort(cmp);
 		}
 	}
 
@@ -66,7 +63,7 @@ public class RoleHandlerHelper {
 	 * or returns null if such role doesn't exist on the `targetClass`
 	 */
 	public static RoleHandler getOptionalRoleHandler(Class<? extends CtElement> targetClass, CtRole role) {
-		List<RoleHandler> handlers = roleHandlers[role.ordinal()];
+		List<RoleHandler> handlers = roleHandlers.get(role);
 		for (RoleHandler ctRoleHandler : handlers) {
 			if (ctRoleHandler.getTargetType().isAssignableFrom(targetClass)) {
 				return ctRoleHandler;
@@ -99,7 +96,7 @@ public class RoleHandlerHelper {
 	 * @param consumer is called for each {@link RoleHandler} of SpoonModel
 	 */
 	public static void forEachRoleHandler(Consumer<RoleHandler> consumer) {
-		for (List<RoleHandler> list : roleHandlers) {
+		for (List<RoleHandler> list : roleHandlers.values()) {
 			for (RoleHandler roleHandler : list) {
 				consumer.accept(roleHandler);
 			}
@@ -111,7 +108,7 @@ public class RoleHandlerHelper {
 	 * @return {@link RoleHandler} handling relation from `element.getParent()` to `element`
 	 */
 	public static RoleHandler getRoleHandlerWrtParent(CtElement element) {
-		if (element.isParentInitialized() == false) {
+		if (!element.isParentInitialized()) {
 			return null;
 		}
 		CtElement parent = element.getParent();

@@ -118,7 +118,7 @@ public class PatternBuilderHelper {
 			throw new SpoonException("The body of " + method.getSignature() + " must contain exactly one statement. But there is:\n" + body.toString());
 		}
 		CtStatement firstStatement = body.getStatements().get(0);
-		if (firstStatement instanceof CtReturn<?> == false) {
+		if (!(firstStatement instanceof CtReturn)) {
 			throw new SpoonException("The body of " + method.getSignature() + " must contain return statement. But there is:\n" + body.toString());
 		}
 		setElements(Collections.singletonList(((CtReturn<?>) firstStatement).getReturnedExpression()));
@@ -144,7 +144,7 @@ public class PatternBuilderHelper {
 	 */
 	public PatternBuilderHelper keepTypeMembers(Filter<? super CtElement> filter) {
 		for (CtTypeMember ctTypeMember : new ArrayList<>(getClonedPatternType().getTypeMembers())) {
-			if (filter.matches(ctTypeMember) == false) {
+			if (!filter.matches(ctTypeMember)) {
 				ctTypeMember.delete();
 			}
 		}

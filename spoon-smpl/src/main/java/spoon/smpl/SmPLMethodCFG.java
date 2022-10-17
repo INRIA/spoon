@@ -32,6 +32,8 @@ import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFor;
+import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
@@ -58,10 +60,13 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static fr.inria.controlflow.NaiveExceptionControlFlowStrategy.Options.AddPathsForEmptyTryBlocks;
 import static fr.inria.controlflow.NaiveExceptionControlFlowStrategy.Options.ReturnWithoutFinalizers;
+
+import org.slf4j.LoggerFactory;
 
 // TODO: rename since its not just methods but rather executables?
 
@@ -118,6 +123,16 @@ public class SmPLMethodCFG {
 		}
 
 		@Override
+		public void visitCtFor(CtFor forLoop) {
+			replace(forLoop);
+		}
+
+		@Override
+		public void visitCtForEach(CtForEach forLoop) {
+			replace(forLoop);
+		}
+
+		@Override
 		public void visitCtBreak(CtBreak breakStatement) {
 			replace(breakStatement);
 		}
@@ -163,10 +178,43 @@ public class SmPLMethodCFG {
 				throw new IllegalStateException("there should never be a call to replace() while restoring");
 			}
 
+			logReplacementWarning(e);
+
 			swappedElements.put(swapIndex, e);
 			e.replace(createReplacementInvocation(e.getFactory(), swapIndex));
 
 			swapIndex += 1;
+		}
+
+		/**
+		 * Log a warning about a replaced element.
+		 * @param e Element about to be replaced
+		 */
+		private void logReplacementWarning(CtElement e) {
+			String file = Optional.ofNullable(e.getPosition())
+									.map(x -> x.getFile())
+									.map(x -> x.getName())
+									.orElse("[unknown file]");
+
+			String line = Optional.ofNullable(e.getPosition())
+									.map(x -> x.getLine())
+									.map(x -> Integer.toString(x))
+									.orElse("-");
+
+			String code = Optional.ofNullable(e.getPosition())
+									.map(x -> x.getFile())
+									.map(x -> e.getOriginalSourceFragment())
+									.map(x -> x.getSourceCode())
+									.orElse(e.toString());
+
+			code = code.strip()
+				.replace("\n", " ")
+				.substring(0, Math.min(40, code.length()));
+
+			LoggerFactory.getLogger("spoon-smpl")
+					.warn("Unsupported element excluded from control flow graph: "
+						+ e.getClass().getSimpleName()
+						+ "(" + file + ":" + line + " \"" +  code + " ..\")");
 		}
 
 		/**

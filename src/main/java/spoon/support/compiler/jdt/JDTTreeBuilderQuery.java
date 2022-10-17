@@ -18,6 +18,7 @@ import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemFieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -28,6 +29,7 @@ import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.reflect.CtExtendedModifier;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -364,6 +366,13 @@ class JDTTreeBuilderQuery {
 		if ((modifier & ClassFileConstants.AccNative) != 0) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.NATIVE, implicit));
 		}
+		// AccSealed == AccPatternVariable == AccOverriding, so checking context is needed
+		// AccNonSealed == AccIsDefaultConstructor == AccBlankFinal, so checking context is needed
+		if ((modifier & ExtraCompilerModifiers.AccSealed) != 0 && intersect(target, ModifierTarget.TYPE)) {
+			modifiers.add(new CtExtendedModifier(ModifierKind.SEALED, implicit));
+		} else if ((modifier & ExtraCompilerModifiers.AccNonSealed) != 0 && intersect(target, ModifierTarget.TYPE)) {
+			modifiers.add(new CtExtendedModifier(ModifierKind.NON_SEALED, implicit));
+		}
 		return modifiers;
 	}
 
@@ -377,5 +386,13 @@ class JDTTreeBuilderQuery {
 	 */
 	static Set<CtExtendedModifier> getModifiers(int modifier, boolean implicit, ModifierTarget target) {
 		return getModifiers(modifier, implicit, target.asSingleton());
+	}
+
+	/**
+	 * Returns {@code true} if the given sets intersect, that means the intersection
+	 * of {@code first} and {@code second} is non-empty.
+	 */
+	private static <E> boolean intersect(Set<E> first, Set<E> second) {
+		return !Collections.disjoint(first, second);
 	}
 }

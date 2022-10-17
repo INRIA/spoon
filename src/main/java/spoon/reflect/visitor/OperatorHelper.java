@@ -24,7 +24,7 @@ class OperatorHelper {
 	}
 
 	public static boolean isPrefixOperator(UnaryOperatorKind o) {
-		return isSufixOperator(o) == false;
+		return !isSufixOperator(o);
 	}
 	public static boolean isSufixOperator(UnaryOperatorKind o) {
 		return o.name().startsWith("POST");

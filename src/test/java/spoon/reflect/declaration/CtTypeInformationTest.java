@@ -17,7 +17,6 @@
 package spoon.reflect.declaration;
 
 
-import java.lang.reflect.Field;
 import java.util.AbstractCollection;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ import spoon.reflect.declaration.testclasses.Subinterface;
 import spoon.reflect.declaration.testclasses.TestInterface;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.support.visitor.ClassTypingContext;
+import spoon.support.adaption.TypeAdaptor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -53,8 +52,10 @@ public class CtTypeInformationTest {
 	}
 
 	@Test
-	public void testClassTypingContextContinueScanning() throws Exception {
-
+	public void testSomeSubtypes() {
+		// This test previously tested that the scanning ended early enough but that does not sound
+		// like information I want to expose. And keeping a field around for that and accessing it
+		// via reflection is *dirty*.
 		final CtType<?> subClass = this.factory.Type().get(Subclass.class);
 		final CtTypeReference<?> subinterface = this.factory.Type().createReference(Subinterface.class);
 		final CtTypeReference<?> testInterface = this.factory.Type().createReference(TestInterface.class);
@@ -65,86 +66,52 @@ public class CtTypeInformationTest {
 		final CtTypeReference<?> object = this.factory.Type().createReference(Object.class);
 
 		{
-			final ClassTypingContext ctc = (ClassTypingContext) this.factory.createTypeAdapter(subClass);
-			//contract: at the beginning, the last resolved class is a subClass
-			assertEquals(subClass.getQualifiedName(), getLastResolvedSuperclass(ctc).getQualifiedName());
+			TypeAdaptor typeAdaptor = new TypeAdaptor(subClass);
 
 			//contract: this.isSubttypeOf(this) == true
-			assertTrue(ctc.isSubtypeOf(subClass.getReference()));
-			//contract: ClassTypingContext did not scanned whole type hierarchy. It stopped on last class, which was needed to agree on isSubtypeOf
-			assertEquals(subClass.getQualifiedName(), getLastResolvedSuperclass(ctc).getQualifiedName());
+			assertTrue(typeAdaptor.isSubtypeOf(subClass.getReference()));
 
-			assertTrue(ctc.isSubtypeOf(subinterface));
-			//contract: ClassTypingContext did not scanned whole type hierarchy. It stopped on last class, which was needed to agree on isSubtypeOf
-			assertEquals(subClass.getQualifiedName(), getLastResolvedSuperclass(ctc).getQualifiedName());
+			assertTrue(typeAdaptor.isSubtypeOf(subinterface));
 
-			assertTrue(ctc.isSubtypeOf(testInterface));
-			//contract: ClassTypingContext did not scanned whole type hierarchy. It stopped on last class, which was needed to agree on isSubtypeOf
-			assertEquals(subClass.getQualifiedName(), getLastResolvedSuperclass(ctc).getQualifiedName());
+			assertTrue(typeAdaptor.isSubtypeOf(testInterface));
 
-			assertTrue(ctc.isSubtypeOf(factory.createCtTypeReference(Comparable.class)));
-			//contract: ClassTypingContext did not scanned whole type hierarchy. It stopped on last class, which was needed to agree on isSubtypeOf
-			assertEquals(subClass.getQualifiedName(), getLastResolvedSuperclass(ctc).getQualifiedName());
+			assertTrue(typeAdaptor.isSubtypeOf(factory.createCtTypeReference(Comparable.class)));
 
-			assertTrue(ctc.isSubtypeOf(extendObject));
-			//contract: ClassTypingContext did not scanned whole type hierarchy. It stopped on last class, which was needed to agree on isSubtypeOf
-			assertEquals(extendObject.getQualifiedName(), getLastResolvedSuperclass(ctc).getQualifiedName());
+			assertTrue(typeAdaptor.isSubtypeOf(extendObject));
 
-			assertTrue(ctc.isSubtypeOf(arrayList));
+			assertTrue(typeAdaptor.isSubtypeOf(arrayList));
 			//contract: ClassTypingContext#isSubtypeOf returns always the same results
-			assertTrue(ctc.isSubtypeOf(extendObject));
-			assertTrue(ctc.isSubtypeOf(subClass.getReference()));
+			assertTrue(typeAdaptor.isSubtypeOf(extendObject));
+			assertTrue(typeAdaptor.isSubtypeOf(subClass.getReference()));
 
-			//contract: ClassTypingContext did not scanned whole type hierarchy. It stopped on last class, which was needed to agree on isSubtypeOf
-			assertEquals(arrayList.getQualifiedName(), getLastResolvedSuperclass(ctc).getQualifiedName());
 
-			assertTrue(ctc.isSubtypeOf(factory.createCtTypeReference(RandomAccess.class)));
-			//contract: ClassTypingContext did not scanned whole type hierarchy. It stopped on last class, which was needed to agree on isSubtypeOf
-			assertEquals(arrayList.getQualifiedName(), getLastResolvedSuperclass(ctc).getQualifiedName());
+			assertTrue(typeAdaptor.isSubtypeOf(factory.createCtTypeReference(RandomAccess.class)));
 
-			assertTrue(ctc.isSubtypeOf(abstractList));
-			//contract: ClassTypingContext did not scanned whole type hierarchy. It stopped on last class, which was needed to agree on isSubtypeOf
-			assertEquals(abstractList.getQualifiedName(), getLastResolvedSuperclass(ctc).getQualifiedName());
+			assertTrue(typeAdaptor.isSubtypeOf(abstractList));
 
-			assertTrue(ctc.isSubtypeOf(abstractCollection));
-			//contract: ClassTypingContext did not scanned whole type hierarchy. It stopped on last class, which was needed to agree on isSubtypeOf
-			assertEquals(abstractCollection.getQualifiedName(), getLastResolvedSuperclass(ctc).getQualifiedName());
+			assertTrue(typeAdaptor.isSubtypeOf(abstractCollection));
 
-			assertTrue(ctc.isSubtypeOf(object));
-			//contract: ClassTypingContext did not scanned whole type hierarchy. It stopped on last class - even on java.lang.Object, which was needed to agree on isSubtypeOf
-			assertEquals(object.getQualifiedName(), getLastResolvedSuperclass(ctc).getQualifiedName());
+			assertTrue(typeAdaptor.isSubtypeOf(object));
 
 			//contract: ClassTypingContext returns false on a type which is not a sub type of ctc scope.
-			assertFalse(ctc.isSubtypeOf(factory.Type().createReference("java.io.InputStream")));
-			//contract: ClassTypingContext must scans whole type hierarchy if detecting subtypeof on type which is not a supertype
-			assertNull(getLastResolvedSuperclass(ctc));
+			assertFalse(typeAdaptor.isSubtypeOf(factory.Type().createReference("java.io.InputStream")));
 			//contract: ClassTypingContext#isSubtypeOf returns always the same results
-			assertTrue(ctc.isSubtypeOf(arrayList));
-			assertTrue(ctc.isSubtypeOf(extendObject));
-			assertTrue(ctc.isSubtypeOf(subClass.getReference()));
+			assertTrue(typeAdaptor.isSubtypeOf(arrayList));
+			assertTrue(typeAdaptor.isSubtypeOf(extendObject));
+			assertTrue(typeAdaptor.isSubtypeOf(subClass.getReference()));
 		}
 
 		{
 			//now try directly a type which is not a supertype
-			final ClassTypingContext ctc2 = (ClassTypingContext) this.factory.createTypeAdapter(subClass);
-			//contract: at the beginning, the last resolved class is a subClass
-			assertEquals(subClass.getQualifiedName(), getLastResolvedSuperclass(ctc2).getQualifiedName());
+			TypeAdaptor typeAdaptor = new TypeAdaptor(subClass);
 			//contract: ClassTypingContext returns false on a type which is not a sub type of ctc scope.
-			assertFalse(ctc2.isSubtypeOf(factory.Type().createReference("java.io.InputStream")));
-			//contract: ClassTypingContext must scans whole type hierarchy if detecting subtypeof on type which is not a supertype
-			assertNull(getLastResolvedSuperclass(ctc2));
+			assertFalse(typeAdaptor.isSubtypeOf(factory.Type().createReference("java.io.InputStream")));
 
 			//contract: ClassTypingContext#isSubtypeOf returns always the same results
-			assertTrue(ctc2.isSubtypeOf(arrayList));
-			assertTrue(ctc2.isSubtypeOf(extendObject));
-			assertTrue(ctc2.isSubtypeOf(subClass.getReference()));
+			assertTrue(typeAdaptor.isSubtypeOf(arrayList));
+			assertTrue(typeAdaptor.isSubtypeOf(extendObject));
+			assertTrue(typeAdaptor.isSubtypeOf(subClass.getReference()));
 		}
-	}
-
-	private CtTypeInformation getLastResolvedSuperclass(ClassTypingContext ctc) throws Exception {
-		Field f = ClassTypingContext.class.getDeclaredField("lastResolvedSuperclass");
-		f.setAccessible(true);
-		return (CtTypeInformation) f.get(ctc);
 	}
 
 	@Test

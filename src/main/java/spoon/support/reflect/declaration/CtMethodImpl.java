@@ -21,14 +21,15 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
-import spoon.support.visitor.ClassTypingContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtMethod}.
@@ -64,7 +65,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public <C extends CtTypedElement> C setType(CtTypeReference type) {
 		if (type != null) {
 			type.setParent(this);
 		}
@@ -187,7 +188,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public boolean isOverriding(CtMethod<?> superMethod) {
-		return new ClassTypingContext(getDeclaringType()).isOverriding(this, superMethod);
+		return new TypeAdaptor(getDeclaringType()).isOverriding(this, superMethod);
 	}
 
 	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
@@ -215,7 +216,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		List<CtMethod<?>> s = new ArrayList<>();
 
 		// first collect potential declarations of this method in the type hierarchy
-		ClassTypingContext context = new ClassTypingContext(this.getDeclaringType());
+		TypeAdaptor context = new TypeAdaptor(this.getDeclaringType());
 		getDeclaringType().map(new AllTypeMembersFunction(CtMethod.class)).forEach((CtMethod<?> m) -> {
 			if (m != this && context.isOverriding(this, m)) {
 				s.add(m);
@@ -223,19 +224,18 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		});
 
 		// now removing the intermediate methods for which there exists a definition upper in the hierarchy
-		List<CtMethod<?>> finalMeths = new ArrayList<>(s);
-		for (CtMethod m1 : s) {
-			boolean m1IsIntermediate = false;
-			for (CtMethod m2 : s) {
-				if (context.isOverriding(m1, m2)) {
-					m1IsIntermediate = true;
-				}
-			}
-			if (!m1IsIntermediate) {
-				finalMeths.add(m1);
-			}
-		}
-		return finalMeths;
+		return s.stream()
+				.filter(ctMethod ->  isTopDefinition(ctMethod, s, context))
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Returns {@code true} if the {@code method} parameter is a top definition,
+	 * i.e. no other candidate overrides it.
+	 */
+	private boolean isTopDefinition(CtMethod<?> method, Collection<CtMethod<?>> allCandidates, TypeAdaptor context) {
+		return allCandidates.stream()
+				.noneMatch(candidate -> candidate != method && context.isOverriding(method, candidate));
 	}
 
 	@Override

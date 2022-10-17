@@ -993,6 +993,20 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	static class CtSealablePermittedTypesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
+		private final spoon.reflect.declaration.CtSealable element;
+
+		CtSealablePermittedTypesReplaceListener(spoon.reflect.declaration.CtSealable element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.Set replace) {
+			this.element.setPermittedTypes(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	static class CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.declaration.CtFormalTypeDeclarer element;
 
@@ -1613,6 +1627,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInSetIfExist(ctClass.getSuperInterfaces(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeInformationSuperInterfacesReplaceListener(ctClass));
 		replaceInListIfExist(ctClass.getFormalCtTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener(ctClass));
 		replaceInListIfExist(ctClass.getTypeMembers(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeTypeMembersReplaceListener(ctClass));
+		replaceInSetIfExist(ctClass.getPermittedTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtSealablePermittedTypesReplaceListener(ctClass));
 		replaceInListIfExist(ctClass.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(ctClass));
 	}
 
@@ -1768,6 +1783,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInSetIfExist(intrface.getSuperInterfaces(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeInformationSuperInterfacesReplaceListener(intrface));
 		replaceInListIfExist(intrface.getFormalCtTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener(intrface));
 		replaceInListIfExist(intrface.getTypeMembers(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeTypeMembersReplaceListener(intrface));
+		replaceInSetIfExist(intrface.getPermittedTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtSealablePermittedTypesReplaceListener(intrface));
 		replaceInListIfExist(intrface.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(intrface));
 	}
 

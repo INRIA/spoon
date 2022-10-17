@@ -57,7 +57,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -355,8 +354,13 @@ public class CodeFactory extends SubFactory {
 	 * 		Modifiers of the catch variable
 	 * @return a new catch variable declaration
 	 */
-	public <T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, ModifierKind...modifierKinds) {
-		return factory.Core().<T>createCatchVariable().<CtCatchVariable<T>>setSimpleName(name).<CtCatchVariable<T>>setType(type).setModifiers(new HashSet<>(Arrays.asList(modifierKinds)));
+	public <T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, ModifierKind... modifierKinds) {
+		EnumSet<ModifierKind> modifiers = EnumSet.noneOf(ModifierKind.class);
+		modifiers.addAll(Arrays.asList(modifierKinds));
+		return factory.Core().<T>createCatchVariable()
+				.<CtCatchVariable<T>>setSimpleName(name)
+				.<CtCatchVariable<T>>setType(type)
+				.setModifiers(modifiers);
 	}
 
 	/**

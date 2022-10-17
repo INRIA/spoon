@@ -63,7 +63,7 @@ abstract class AbstractRoleHandler<T, U, V> implements RoleHandler {
 	@SuppressWarnings("unchecked")
 	protected V castItemValue(Object value) {
 		//check that item has expected class
-		if (value != null && valueClass.isInstance(value) == false) {
+		if (value != null && !valueClass.isInstance(value)) {
 			throw new ClassCastException(value.getClass().getName() + " cannot be cast to " + valueClass.getName());
 		}
 		return (V) value;

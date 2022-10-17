@@ -45,6 +45,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
@@ -811,7 +812,7 @@ public class TestSniperPrinter {
 		testSniper("ArithmeticExpression", noOpModifyFieldAssignment, assertPrintsRoundBracketsCorrectly);
 	}
 
-	@GitHubIssue(issueNumber = 4218, fixed = false)
+	@GitHubIssue(issueNumber = 4218, fixed = true)
 	void testSniperDoesNotPrintTheDeletedAnnotation() {
 		Consumer<CtType<?>> deleteAnnotation = type -> {
 			type.getAnnotations().forEach(CtAnnotation::delete);
@@ -835,6 +836,25 @@ public class TestSniperPrinter {
 				assertThat(result, containsString("private static final java.lang.Integer x;"));
 
 		testSniper("sniperPrinter.SpaceAfterFinal", modifyField, assertContainsSpaceAfterFinal);
+	}
+
+	@Test
+	void typeAdaptionBodyResetDoesNotBreakSniper() {
+		// contract: Resetting the body in the type adaption does not impact the sniper printer.
+		testSniper(
+			"sniperPrinter.Overriding",
+			type -> {
+				CtType<?> top = type.getNestedType("Super");
+				CtType<?> bottom = type.getNestedType("Sub");
+
+				CtMethod<?> topFoo = top.getMethodsByName("foo").get(0);
+				CtMethod<?> bottomFoo = bottom.getMethodsByName("foo").get(0);
+
+				assertTrue(new TypeAdaptor(bottom).isOverriding(bottomFoo, topFoo));
+			},
+			// Did not reformat body
+			(type, result) -> assertThat(result, containsString("System. out. println(1+2\n"))
+		);
 	}
 
 	@Nested
@@ -1078,15 +1098,37 @@ public class TestSniperPrinter {
 	public void testToStringWithSniperOnElementScan() throws Exception {
 		testToStringWithSniperPrinter("src/test/java/spoon/test/prettyprinter/testclasses/ElementScan.java");
 	}
-
-	/**
-	 * Files to be tested with testNoChangeDiff
-	 */
-	private static Stream<File> noChangeDiffTestFiles() {
-		Path path = Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest");
-		return FileUtils.listFiles(path.toFile(), null, false).stream();
+	@GitHubIssue(issueNumber = 3811, fixed = true)
+	void noChangeDiffBrackets() throws IOException {
+			testNoChangeDiffFailing(
+					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/Brackets").toFile());
+	}
+	@GitHubIssue(issueNumber = 3811, fixed = true)
+	void noChangeDiffConditionalComment() throws IOException {
+			testNoChangeDiffFailing(
+					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/ConditionalComment").toFile());
 	}
 
+	@GitHubIssue(issueNumber = 3811, fixed = true)
+	void noChangeDiffEnumComment() throws IOException {
+			testNoChangeDiffFailing(
+					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/EnumComment").toFile());
+	}
+	@GitHubIssue(issueNumber = 3811, fixed = true)
+	void noChangeDiffEnumTest() throws IOException {
+			testNoChangeDiffFailing(
+					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/EnumTest").toFile());
+	}
+	@GitHubIssue(issueNumber = 3811, fixed = true)
+	void noChangeDiffExceptionTest() throws IOException {
+			testNoChangeDiffFailing(
+					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/ExceptionTest").toFile());
+	}
+	@GitHubIssue(issueNumber = 3811, fixed = true)
+	void noChangeDiffMethodComment() throws IOException {
+			testNoChangeDiffFailing(
+					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/MethodComment").toFile());
+	}
 	/**
 	 * Test various syntax by doing an change to every element that should not
 	 * result in any change in source. This forces the sniper printer to recreate
@@ -1094,10 +1136,7 @@ public class TestSniperPrinter {
 	 *
 	 * Reference: #3811
 	 */
-	@ParameterizedTest
-	@MethodSource("noChangeDiffTestFiles")
-	@GitHubIssue(issueNumber = 3811, fixed = false)
-	public void testNoChangeDiff(File file) throws IOException {
+	private void testNoChangeDiffFailing(File file) throws IOException {
 		String fileName = file.getName();
 		Path outputPath = Paths.get("target/test-output");
 		File outputFile = outputPath.resolve("spoon/test/prettyprinter/testclasses/difftest")

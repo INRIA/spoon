@@ -1,20 +1,40 @@
 package spoon.reflect.visitor;
 
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
+import spoon.test.GitHubIssue;
 import spoon.test.SpoonTestHelpers;
+import spoon.testing.utils.ModelTest;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.anyOf;
@@ -57,7 +77,8 @@ public class DefaultJavaPrettyPrinterTest {
     @ValueSource(strings = {
             "int sum = 1 + 2 + 3",
             "java.lang.String s = \"Sum: \" + (1 + 2)",
-            "java.lang.String s = \"Sum: \" + 1 + 2"
+            "java.lang.String s = \"Sum: \" + 1 + 2",
+            "java.lang.System.out.println(\"1\" + \"2\" + \"3\" + \"4\")"
     })
     public void testParenOptimizationCorrectlyPrintsParenthesesForStatements(String rawStatement) {
         // contract: When input expressions as part of statements are minimally parenthesized,
@@ -191,5 +212,114 @@ public class DefaultJavaPrettyPrinterTest {
         complexTypeReference.addActualTypeArgument(complexTypeReference.clone().setSimpleName("Comhyperbola"));
         exeExpression.getExecutable().addActualTypeArgument(complexTypeReference);
         assertThat(exeExpression.toString(), containsRegexMatch("<(.*)Comparable<(.*)Integer, (.*)Comhyperbola<(.*)Integer>>>"));
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(SealedTypesProvider.class)
+    void testPrintSealedTypes(CtType<?> sealedType, List<String> explicitPermitted) {
+        // contract: sealed types are printed correctly
+        String printed = sealedType.toString();
+        // the sealed keyword is always required
+        assertThat(printed, containsString("sealed"));
+        if (explicitPermitted.isEmpty()) {
+            // the permits keyword should only exist if explicit permitted types are printed
+            assertThat(printed, not(containsString("permits")));
+        } else {
+            assertThat(printed, containsString("permits"));
+            for (String permitted : explicitPermitted) {
+                assertThat(printed, containsRegexMatch("\\s" + permitted));
+            }
+        }
+    }
+
+    @Test
+    void testPrintNonSealedTypes() {
+        // contract: the non-sealed modifier is printed
+        Launcher launcher = new Launcher();
+        CtClass<?> ctClass = launcher.getFactory().Class().create("MyClass");
+        ctClass.addModifier(ModifierKind.NON_SEALED);
+        assertThat(ctClass.toString(), containsString("non-sealed "));
+    }
+
+    static class SealedTypesProvider implements ArgumentsProvider {
+
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+            Launcher launcher = new Launcher();
+            launcher.getEnvironment().setComplianceLevel(17);
+            launcher.addInputResource("src/test/resources/sealedclasses");
+            launcher.buildModel();
+            Factory factory = launcher.getFactory();
+            return Stream.of(
+                Arguments.of(factory.Type().get("SealedClassWithPermits"), List.of("ExtendingClass", "OtherExtendingClass")),
+                Arguments.of(factory.Type().get("SealedInterfaceWithPermits"), List.of("ExtendingClass", "OtherExtendingClass")),
+                Arguments.of(factory.Type().get("SealedClassWithNestedSubclasses"), List.of()), // implicit
+                Arguments.of(factory.Type().get("SealedInterfaceWithNestedSubclasses"), List.of()) // implicit
+            );
+        }
+    }
+
+    @Nested
+    class SquareBracketsForArrayInitialization_ArrayIsBuiltUsingFactoryMethods {
+        @GitHubIssue(issueNumber = 4887, fixed = true)
+        void bracketsShouldBeAttachedToTypeByDefault() {
+            // contract: the square brackets should be attached to type by default when array is built using factory methods
+            // arrange
+            Launcher launcher = new Launcher();
+            Factory factory = launcher.getFactory();
+
+            CtArrayTypeReference<Integer> arrayTypeReference = factory.createArrayTypeReference();
+            arrayTypeReference.setComponentType(factory.Type().INTEGER_PRIMITIVE);
+            CtNewArray<Integer> newArray = factory.createNewArray();
+            newArray.setValueByRole(CtRole.TYPE, arrayTypeReference);
+            List<CtLiteral<Integer>> elements = new ArrayList<>(List.of(factory.createLiteral(3)));
+            newArray.setValueByRole(CtRole.EXPRESSION, elements);
+            CtLocalVariable<Integer> localVariable = factory.createLocalVariable(arrayTypeReference, "intArray", newArray);
+
+            // act
+            String actualStringRepresentation = localVariable.toString();
+
+            // assert
+            assertThat(actualStringRepresentation, equalTo("int[] intArray = new int[]{ 3 }"));
+        }
+
+        @Test
+        void bracketsShouldBeAttachedToIdentifierIfSpecified() {
+            // contract: the square brackets should be attached to identifier if specified explicitly
+            // arrange
+            Launcher launcher = new Launcher();
+            Factory factory = launcher.getFactory();
+
+            CtArrayTypeReference<CtElement> arrayTypeReference = factory.createArrayTypeReference();
+            CtTypeReference<CtElement> arrayType = factory.Type().createReference(CtElement.class);
+            arrayTypeReference.setComponentType(arrayType);
+            CtNewArray<CtElement> newArray = factory.createNewArray();
+            newArray.setValueByRole(CtRole.TYPE, arrayTypeReference);
+            List<CtElement> elements = new ArrayList<>(List.of(factory.createLiteral(1.0f)));
+            newArray.setValueByRole(CtRole.EXPRESSION, elements);
+            CtLocalVariable<CtElement> localVariable = factory.createLocalVariable(arrayTypeReference, "spoonElements", newArray);
+
+
+            // act
+            ((CtArrayTypeReferenceImpl<?>) arrayTypeReference).setDeclarationKind(CtArrayTypeReferenceImpl.DeclarationKind.IDENTIFIER);
+            String actualStringRepresentation = localVariable.toString();
+
+            // assert
+            assertThat(actualStringRepresentation,
+                    equalTo("spoon.reflect.declaration.CtElement spoonElements[] = new spoon.reflect.declaration.CtElement[]{ 1.0F }"));
+        }
+    }
+
+    @ModelTest(value = "src/test/resources/patternmatching/InstanceofGenerics.java", complianceLevel = 16)
+    void testKeepGenericType(Factory factory) {
+        // contract: generic type parameters can appear in instanceof expressions if they are only carried over
+        CtType<?> x = factory.Type().get("InstanceofGenerics");
+        String printed = x.toString();
+        assertThat(printed, containsString("Set<T>"));
+        assertThat(printed, containsString("List<T> list"));
+        assertThat(printed, containsRegexMatch("Collection<.*String>"));
+        assertThat(printed, containsRegexMatch("List<.*List<T>>"));
+        assertThat(printed, containsRegexMatch("List<.*List<\\? extends T>>"));
+        assertThat(printed, containsRegexMatch("List<.*List<\\? super T>>"));
     }
 }

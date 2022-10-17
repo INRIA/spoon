@@ -50,6 +50,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.trycatch.testclasses.Foo;
 import spoon.test.trycatch.testclasses.Main;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.LineSeperatorExtension;
 
 
@@ -302,7 +303,7 @@ public class TryCatchTest {
 		Set<CtExtendedModifier> extendedModifierSet = catchVariable.getExtendedModifiers();
 		assertEquals(1, extendedModifierSet.size());
 
-		assertEquals(new CtExtendedModifier(ModifierKind.FINAL, false), extendedModifierSet.iterator().next());
+		assertEquals(CtExtendedModifier.explicit(ModifierKind.FINAL), extendedModifierSet.iterator().next());
 
 		launcher = new Launcher();
 		launcher.addInputResource(inputResource);
@@ -395,8 +396,8 @@ public class TryCatchTest {
 		assertFalse(paramTypes.get(1).isSimplyQualified(), "second type reference should be qualified");
 	}
 
-	@Test
-	public void testNonCloseableGenericTypeInTryWithResources() {
+	@ModelTest("src/test/resources/NonClosableGenericInTryWithResources.java")
+	public void testNonCloseableGenericTypeInTryWithResources(CtModel model) {
 		// contract: When a non-closeable generic type is used in a try-with-resources, it's type
 		// becomes a problem type in JDT, with the type parameters included in the compound name.
 		// This is as opposed to a parameterized type, so we need to take special care in parsing
@@ -406,10 +407,6 @@ public class TryCatchTest {
 		//
 		// This previously caused a crash, see https://github.com/INRIA/spoon/issues/3951
 
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/NonClosableGenericInTryWithResources.java");
-
-		CtModel model = launcher.buildModel();
 		CtLocalVariableReference<?> varRef = model.filterChildren(CtLocalVariableReference.class::isInstance).first();
 
 		assertThat(varRef.getType().getQualifiedName(), equalTo("NonClosableGenericInTryWithResources.GenericType"));

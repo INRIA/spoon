@@ -15,6 +15,7 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -106,6 +107,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
+		scanPermittedTypes(clazz);
 	}
 
 	protected final <T> void visitType(Class<T> aClass) {
@@ -175,6 +177,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
+		scanPermittedTypes(clazz);
 	}
 
 	@Override
@@ -248,6 +251,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
+		scanPermittedTypes(clazz);
 	}
 
 	@Override
@@ -308,14 +312,14 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : constructor.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
-		int nrEnclosingClasses = getNumberOfEnclosingClasses(constructor.getDeclaringClass());
-		for (RtParameter parameter : RtParameter.parametersOf(constructor)) {
-			//ignore implicit parameters of enclosing classes
-			if (nrEnclosingClasses > 0) {
-				nrEnclosingClasses--;
+		RtParameter[] parametersOf = RtParameter.parametersOf(constructor);
+		Parameter[] parameters = constructor.getParameters();
+		for (int i = 0; i < parametersOf.length; i++) {
+			RtParameter rtParameter = parametersOf[i];
+			if (isImplicitParameter(parameters[i], constructor, i == 0)) {
 				continue;
 			}
-			visitParameter(parameter);
+			visitParameter(rtParameter);
 		}
 		for (TypeVariable<Constructor<T>> aTypeParameter : constructor.getTypeParameters()) {
 			visitTypeParameter(aTypeParameter);
@@ -325,12 +329,18 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		}
 	}
 
-	private int getNumberOfEnclosingClasses(Class<?> clazz) {
-		int depth = 0;
-		while (Modifier.isStatic(clazz.getModifiers()) == false && (clazz = clazz.getEnclosingClass()) != null) {
-			depth++;
+	/**
+	 * Check whether the constructor parameter is implicit.
+	 * It is not enough to simply use {@link Parameter#isImplicit()} as the class file format before Java 8
+	 * has no way to embed the required information. As of Java 8, the information is stored in the
+	 * MethodParameters attribute, however javac does not emit the attribute by default in current Java versions.
+	 */
+	private boolean isImplicitParameter(Parameter parameter, Constructor<?> constructor, boolean isFirstParameter) {
+		if (parameter.isImplicit()) {
+			return true;
 		}
-		return depth;
+		// best effort fallback
+		return isFirstParameter && parameter.getType() == constructor.getDeclaringClass().getEnclosingClass();
 	}
 
 	@Override
@@ -597,4 +607,17 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	}
 
+	private void scanPermittedTypes(Class<?> clazz) {
+		Class<?>[] permittedSubclasses = MethodHandleUtils.getPermittedSubclasses(clazz);
+		if (permittedSubclasses == null) {
+			return;
+		}
+		for (Class<?> subclass : permittedSubclasses) {
+			try {
+				visitTypeReference(CtRole.PERMITTED_TYPE, subclass);
+			} catch (NoClassDefFoundError ignore) {
+				// partial classpath
+			}
+		}
+	}
 }

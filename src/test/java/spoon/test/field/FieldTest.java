@@ -16,9 +16,7 @@
  */
 package spoon.test.field;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -45,6 +43,7 @@ import spoon.test.field.testclasses.A;
 import spoon.test.field.testclasses.AddFieldAtTop;
 import spoon.test.field.testclasses.BaseClass;
 import spoon.testing.utils.LineSeperatorExtension;
+import spoon.testing.utils.ModelTest;
 
 public class FieldTest {
 
@@ -127,14 +126,12 @@ public class FieldTest {
 		return first;
 	}
 
-	@Test
-	public void testGetDefaultExpression() {
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("./src/test/java/spoon/test/field/testclasses/A.java");
-		spoon.addInputResource("./src/test/java/spoon/test/field/testclasses/BaseClass.java");
-		spoon.buildModel();
-
-		final CtClass<A> aClass = spoon.getFactory().Class().get(A.class);
+	@ModelTest({
+		"./src/test/java/spoon/test/field/testclasses/A.java",
+		"./src/test/java/spoon/test/field/testclasses/BaseClass.java",
+	})
+	public void testGetDefaultExpression(Factory factory) {
+		final CtClass<A> aClass = factory.Class().get(A.class);
 
 		// contract: isPartOfJointDeclaration works per the specification in the javadoc
 		assertEquals(false,aClass.getField("alone1").isPartOfJointDeclaration());
@@ -175,14 +172,10 @@ public class FieldTest {
 		assertNotNull(retour);
 	}
 
-	@Test
-	public void getFQNofFieldReference() {
+	@ModelTest("./src/test/resources/spoon/test/noclasspath/fields/Toto.java")
+	public void getFQNofFieldReference(CtModel model) {
 		// contract: when a reference field origin cannot be determined a call to its qualified name returns an explicit value
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/fields/Toto.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		CtModel ctModel = launcher.buildModel();
-		List<CtFieldReference> elements = ctModel.getElements(new TypeFilter<>(CtFieldReference.class));
+		List<CtFieldReference> elements = model.getElements(new TypeFilter<>(CtFieldReference.class));
 		assertEquals(1, elements.size());
 
 		CtFieldReference fieldReference = elements.get(0);

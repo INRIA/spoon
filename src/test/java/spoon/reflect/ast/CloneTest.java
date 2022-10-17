@@ -276,8 +276,8 @@ public class CloneTest {
 		// contract: When cloning an element the implicit state is kept as well
 		CtClass<?> test = new Launcher().getFactory().createClass("Test");
 		Set<CtExtendedModifier> modifiers = new HashSet<>();
-		modifiers.add(new CtExtendedModifier(ModifierKind.PUBLIC, true));
-		modifiers.add(new CtExtendedModifier(ModifierKind.ABSTRACT, false));
+		modifiers.add(CtExtendedModifier.implicit(ModifierKind.PUBLIC));
+		modifiers.add(CtExtendedModifier.explicit(ModifierKind.ABSTRACT));
 		test.setExtendedModifiers(modifiers);
 
 		CtClass<?> clonedTest = test.clone();
@@ -310,8 +310,8 @@ public class CloneTest {
 		// contract: When cloning an element the extended modifiers are cloned as well
 		CtClass<?> test = new Launcher().getFactory().createClass("Test");
 		Set<CtExtendedModifier> modifiers = new HashSet<>();
-		modifiers.add(new CtExtendedModifier(ModifierKind.PUBLIC, true));
-		modifiers.add(new CtExtendedModifier(ModifierKind.ABSTRACT, false));
+		modifiers.add(CtExtendedModifier.implicit(ModifierKind.PUBLIC));
+		modifiers.add(CtExtendedModifier.explicit(ModifierKind.ABSTRACT));
 		test.setExtendedModifiers(modifiers);
 
 		CtClass<?> clonedTest = test.clone();

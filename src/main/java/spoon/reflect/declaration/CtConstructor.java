@@ -31,7 +31,7 @@ public interface CtConstructor<T> extends CtExecutable<T>, CtFormalTypeDeclarer,
 
 	@Override
 	@UnsettableProperty
-	<C extends CtTypedElement> C setType(CtTypeReference<T> type);
+	<C extends CtTypedElement> C setType(CtTypeReference type);
 
 	@Override
 	@UnsettableProperty

@@ -269,21 +269,21 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	private Object forceObjectToType(Object ret, Class<?> type) {
 		if (type.isPrimitive()) {
-			if ((type == boolean.class) && (ret.getClass() != boolean.class)) {
+			if ((type == boolean.class) && (ret.getClass() != Boolean.class)) {
 				return Boolean.parseBoolean(ret.toString());
-			} else if ((type == byte.class) && (ret.getClass() != byte.class)) {
+			} else if ((type == byte.class) && (ret.getClass() != Byte.class)) {
 				return Byte.parseByte(ret.toString());
-			} else if ((type == char.class) && (ret.getClass() != char.class)) {
+			} else if ((type == char.class) && (ret.getClass() != Character.class)) {
 				return ret.toString().charAt(0);
-			} else if ((type == double.class) && (ret.getClass() != double.class)) {
+			} else if ((type == double.class) && (ret.getClass() != Double.class)) {
 				return Double.parseDouble(ret.toString());
-			} else if ((type == float.class) && (ret.getClass() != float.class)) {
+			} else if ((type == float.class) && (ret.getClass() != Float.class)) {
 				return Float.parseFloat(ret.toString());
-			} else if ((type == int.class) && (ret.getClass() != int.class)) {
+			} else if ((type == int.class) && (ret.getClass() != Integer.class)) {
 				return Integer.parseInt(ret.toString());
-			} else if ((type == long.class) && (ret.getClass() != long.class)) {
+			} else if ((type == long.class) && (ret.getClass() != Long.class)) {
 				return Long.parseLong(ret.toString());
-			} else if (type == short.class && ret.getClass() != short.class) {
+			} else if (type == short.class && ret.getClass() != Short.class) {
 				return Short.parseShort(ret.toString());
 			}
 		}

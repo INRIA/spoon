@@ -7,11 +7,15 @@
  */
 package spoon.reflect.visitor.filter;
 
+import spoon.reflect.code.CaseKind;
 import spoon.reflect.code.CtBodyHolder;
+import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -26,6 +30,8 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.chain.CtQueryAware;
+
+import java.util.List;
 
 /**
  * This mapping function searches for all {@link CtVariable} instances,
@@ -98,7 +104,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 				//visit each CtField of `parent` CtType
 				CtQuery q = parent.map(new AllTypeMembersFunction(CtField.class));
 				q.forEach((CtField<?> field) -> {
-					if (isInStaticScope && field.hasModifier(ModifierKind.STATIC) == false) {
+					if (isInStaticScope && !field.hasModifier(ModifierKind.STATIC)) {
 						/*
 						 * the variable reference is used in static scope,
 						 * but the field is not static - ignore it
@@ -113,6 +119,23 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 				});
 				if (query.isTerminated()) {
 					return;
+				}
+			} else if (parent instanceof CtSwitch
+					&& scopeElement instanceof CtCase && ((CtCase<?>) scopeElement).getCaseKind() == CaseKind.COLON) {
+				SiblingsFunction siblingsFunction = new SiblingsFunction().mode(SiblingsFunction.Mode.PREVIOUS);
+				List<CtCase<?>> list = input.getFactory().createQuery()
+						.map(siblingsFunction)
+						.setInput(scopeElement)
+						.filterChildren(new TypeFilter<>(CtCase.class))
+						.list();
+
+				for (CtCase<?> c : list) {
+					for (CtStatement statement : c.getStatements()) {
+						if (statement instanceof CtLocalVariable && ((CtLocalVariable<?>) statement).getSimpleName().equals(variableName)) {
+							sendToOutput((CtVariable<?>) statement, outputConsumer);
+							return;
+						}
+					}
 				}
 			} else if (parent instanceof CtBodyHolder || parent instanceof CtStatementList) {
 				//visit all previous CtVariable siblings of scopeElement element in parent BodyHolder or Statement list

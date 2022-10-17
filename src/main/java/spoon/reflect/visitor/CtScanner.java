@@ -122,14 +122,14 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	/**
-	 * This method is upcalled by the scanner when entering a scanned element.
+	 * This method is called by the scanner when entering a scanned element.
 	 * To be overridden to implement specific scanners.
 	 */
 	protected void enter(CtElement e) {
 	}
 
 	/**
-	 * This method is upcalled by the scanner when exiting a scanned element. To
+	 * This method is called by the scanner when exiting a scanned element. To
 	 * be overridden to implement specific scanners.
 	 */
 	protected void exit(CtElement e) {
@@ -355,6 +355,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.INTERFACE, ctClass.getSuperInterfaces());
 		scan(CtRole.TYPE_PARAMETER, ctClass.getFormalCtTypeParameters());
 		scan(CtRole.TYPE_MEMBER, ctClass.getTypeMembers());
+		scan(CtRole.PERMITTED_TYPE, ctClass.getPermittedTypes());
 		scan(CtRole.COMMENT, ctClass.getComments());
 		exit(ctClass);
 	}
@@ -513,6 +514,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.INTERFACE, intrface.getSuperInterfaces());
 		scan(CtRole.TYPE_PARAMETER, intrface.getFormalCtTypeParameters());
 		scan(CtRole.TYPE_MEMBER, intrface.getTypeMembers());
+		scan(CtRole.PERMITTED_TYPE, intrface.getPermittedTypes());
 		scan(CtRole.COMMENT, intrface.getComments());
 		exit(intrface);
 	}

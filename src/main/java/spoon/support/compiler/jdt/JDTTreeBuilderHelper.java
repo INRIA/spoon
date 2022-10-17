@@ -15,6 +15,7 @@ import org.eclipse.jdt.internal.compiler.ast.FieldReference;
 import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
 import org.eclipse.jdt.internal.compiler.ast.OpensStatement;
+import org.eclipse.jdt.internal.compiler.ast.PackageVisibilityStatement;
 import org.eclipse.jdt.internal.compiler.ast.ProvidesStatement;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
@@ -54,6 +55,7 @@ import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
@@ -74,6 +76,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
@@ -105,12 +109,11 @@ public class JDTTreeBuilderHelper {
 	 * @return Qualified name.
 	 */
 	static String createQualifiedTypeName(char[][] typeName) {
-		StringBuilder s = new StringBuilder();
-		for (int i = 0; i < typeName.length - 1; i++) {
-			s.append(CharOperation.charToString(typeName[i])).append(".");
+		StringJoiner joiner = new StringJoiner(".");
+		for (char[] typeNamePart : typeName) {
+			joiner.add(CharOperation.charToString(typeNamePart));
 		}
-		s.append(CharOperation.charToString(typeName[typeName.length - 1]));
-		return s.toString();
+		return joiner.toString();
 	}
 
 	/**
@@ -728,6 +731,26 @@ public class JDTTreeBuilderHelper {
 				type.addSuperInterface(superInterface);
 			}
 		}
+		Consumer<CtTypeReference<?>> addPermittedType;
+		if (type instanceof CtSealable) {
+			addPermittedType = ((CtSealable) type)::addPermittedType;
+		} else {
+			addPermittedType = ref -> {
+				throw new SpoonException("Tried to add permitted type to " + type);
+			};
+		}
+		if (typeDeclaration.permittedTypes != null) {
+			for (TypeReference permittedType : typeDeclaration.permittedTypes) {
+				CtTypeReference<?> reference = jdtTreeBuilder.references.buildTypeReference(permittedType, typeDeclaration.scope);
+				addPermittedType.accept(reference);
+			}
+		} else if (typeDeclaration.binding != null && typeDeclaration.binding.permittedTypes != null) {
+			for (ReferenceBinding permittedType : typeDeclaration.binding.permittedTypes) {
+				CtTypeReference<?> reference = jdtTreeBuilder.references.getTypeReference(permittedType);
+				reference.setImplicit(true);
+				addPermittedType.accept(reference);
+			}
+		}
 
 		if (type instanceof CtClass && typeDeclaration.superclass != null) {
 			((CtClass) type).setSuperclass(jdtTreeBuilder.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
@@ -826,40 +849,18 @@ public class JDTTreeBuilderHelper {
 		return moduleRequirement;
 	}
 
-	CtPackageExport createModuleExport(ExportsStatement exportsStatement) {
-		String packageName = new String(exportsStatement.pkgName);
-		int sourceStart = exportsStatement.sourceStart;
-		int sourceEnd = exportsStatement.sourceEnd;
+	CtPackageExport createModuleExport(PackageVisibilityStatement statement) {
+		String packageName = new String(statement.pkgName);
+		int sourceStart = statement.sourceStart;
+		int sourceEnd = statement.sourceEnd;
 
 		CtPackageReference ctPackageReference = jdtTreeBuilder.references.getPackageReference(packageName);
 		CtPackageExport moduleExport = jdtTreeBuilder.getFactory().Module().createPackageExport(ctPackageReference);
 
-		if (exportsStatement.targets != null && exportsStatement.targets.length > 0) {
+		if (statement.targets != null && statement.targets.length > 0) {
 			List<CtModuleReference> moduleReferences = new ArrayList<>();
 
-			for (ModuleReference moduleReference : exportsStatement.targets) {
-				moduleReferences.add(this.jdtTreeBuilder.references.getModuleReference(moduleReference));
-			}
-
-			moduleExport.setTargetExport(moduleReferences);
-		}
-
-		moduleExport.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
-		return moduleExport;
-	}
-
-	CtPackageExport createModuleExport(OpensStatement opensStatement) {
-		String packageName = new String(opensStatement.pkgName);
-		int sourceStart = opensStatement.sourceStart;
-		int sourceEnd = opensStatement.sourceEnd;
-
-		CtPackageReference ctPackageReference = jdtTreeBuilder.references.getPackageReference(packageName);
-		CtPackageExport moduleExport = jdtTreeBuilder.getFactory().Module().createPackageExport(ctPackageReference);
-
-		if (opensStatement.targets != null && opensStatement.targets.length > 0) {
-			List<CtModuleReference> moduleReferences = new ArrayList<>();
-
-			for (ModuleReference moduleReference : opensStatement.targets) {
+			for (ModuleReference moduleReference : statement.targets) {
 				moduleReferences.add(this.jdtTreeBuilder.references.getModuleReference(moduleReference));
 			}
 

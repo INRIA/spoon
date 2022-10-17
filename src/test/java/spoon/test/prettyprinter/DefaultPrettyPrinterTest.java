@@ -17,11 +17,8 @@
 package spoon.test.prettyprinter;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
-import org.apache.maven.model.Profile;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
@@ -36,13 +33,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
-import spoon.MavenLauncher;
-import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.pattern.Match;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConstructorCall;
@@ -70,11 +64,12 @@ import spoon.testing.utils.LineSeperatorExtension;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -84,10 +79,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class DefaultPrettyPrinterTest {
@@ -271,7 +263,7 @@ public class DefaultPrettyPrinterTest {
 			+ "}";
 
 		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
-		assertEquals("We use FQN for E1", expected, computed);
+		assertEquals(expected, computed, "We use FQN for E1");
 
 		expected =
 			"public void setFieldUsingLocallyDefinedEnum() {" + nl
@@ -287,7 +279,7 @@ public class DefaultPrettyPrinterTest {
 			+ "}";
 
 		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).toString();
-		assertEquals("The static field of an external type with the same identifier as the compilation unit is printed with FQN", expected, computed);
+		assertEquals(expected, computed, "The static field of an external type with the same identifier as the compilation unit is printed with FQN");
 
 		expected =
 			"public void referToTwoInnerClassesWithTheSameName() {" + nl
@@ -298,7 +290,7 @@ public class DefaultPrettyPrinterTest {
 		//Ensure the ClassA of Class0 takes precedence over an import statement for ClassA in Class1, and its identifier can be the short version.
 
 		computed = aClass.getMethodsByName("referToTwoInnerClassesWithTheSameName").get(0).prettyprint();
-		assertEquals("where inner types have the same identifier only one may be shortened and the other should be fully qualified", expected, computed);
+		assertEquals(expected, computed, "where inner types have the same identifier only one may be shortened and the other should be fully qualified");
 
 		expected =
 			"public enum ENUM {" + nl + nl
@@ -326,7 +318,7 @@ public class DefaultPrettyPrinterTest {
 			"public java.util.List<?> aMethod() {" + nl
 			+ "    return new java.util.ArrayList<>();" + nl
 			+ "}";
-		assertEquals("the toString method of CtElementImpl should not shorten type names as it has no context or import statements", expected, computed);
+		assertEquals(expected, computed, "the toString method of CtElementImpl should not shorten type names as it has no context or import statements");
 	}
 
 	@Test
@@ -352,7 +344,7 @@ public class DefaultPrettyPrinterTest {
 		assertTrue(javaFile.exists());
 
 		assertEquals("package foo;" + nl + "class Bar {}",
-				IOUtils.toString(new FileInputStream(javaFile), "UTF-8"));
+				Files.readString(javaFile.toPath(), StandardCharsets.UTF_8));
 	}
 
 	@Test

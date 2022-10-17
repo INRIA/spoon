@@ -102,7 +102,7 @@ public class PackageFactory extends SubFactory {
 		if (parent == null) {
 			return getOrCreate(simpleName);
 		} else {
-			return getOrCreate(parent.toString() + CtPackage.PACKAGE_SEPARATOR + simpleName);
+			return getOrCreate(parent + CtPackage.PACKAGE_SEPARATOR + simpleName);
 		}
 	}
 
@@ -182,7 +182,7 @@ public class PackageFactory extends SubFactory {
 				continue;
 			}
 			lastNonNullPackage = aPackage;
-			if (!aPackage.getTypes().isEmpty()) {
+			if (aPackage.hasTypes()) {
 				packageWithTypes = aPackage;
 				foundPackageCount++;
 			}

@@ -166,7 +166,7 @@ public class DefaultGenerator implements Generator {
 	}
 	private void appendInnerTypedElements(StringBuilder result, CtType<?> mainType, CtElement ele) {
 		CtTypeMember typeMember = getFirst(ele, CtTypeMember.class);
-		if (typeMember != null && isMainType(typeMember, mainType) == false) {
+		if (typeMember != null && !isMainType(typeMember, mainType)) {
 			if (typeMember.isParentInitialized()) {
 				appendInnerTypedElements(result, mainType, typeMember.getParent());
 			}

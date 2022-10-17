@@ -125,6 +125,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private CompressionType compressionType = CompressionType.GZIP;
 
+	private boolean useLegacyTypeAdaption;
+
 	private boolean ignoreDuplicateDeclarations = false;
 
 	private Supplier<PrettyPrinter> prettyPrinterCreator;
@@ -148,7 +150,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public void setAutoImports(boolean autoImports) {
-		if (autoImports == true) {
+		if (autoImports) {
 			prettyPrintingMode = PRETTY_PRINTING_MODE.AUTOIMPORT;
 		} else {
 			prettyPrintingMode = PRETTY_PRINTING_MODE.FULLYQUALIFIED;
@@ -690,8 +692,7 @@ private transient  ClassLoader inputClassloader;
 
 
 			if (PRETTY_PRINTING_MODE.DEBUG.equals(prettyPrintingMode)) {
-				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
-				return printer;
+				return new DefaultJavaPrettyPrinter(this);
 			}
 
 			if (PRETTY_PRINTING_MODE.FULLYQUALIFIED.equals(prettyPrintingMode)) {
@@ -718,6 +719,18 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public void setPrettyPrinterCreator(Supplier<PrettyPrinter> creator) {
 		this.prettyPrinterCreator = creator;
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public boolean useLegacyTypeAdaption() {
+		return useLegacyTypeAdaption;
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public void setUseLegacyTypeAdaption(boolean useLegacyTypeAdaption) {
+		this.useLegacyTypeAdaption = useLegacyTypeAdaption;
 	}
 
 	@Override
