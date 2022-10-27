@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +31,6 @@ import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.SpoonFile;
 import spoon.reflect.CtModel;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.declaration.CtClass;
@@ -75,7 +73,7 @@ public class TestCompilationUnit {
 		launcher.getEnvironment().setEncoding(Charset.forName("ISO-8859-1"));
 		launcher.buildModel();
 
-		CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(resource.getPath());
+		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(resource.getPath());
 		assertEquals(content, cu.getOriginalSourceCode());
 	}
 
@@ -86,9 +84,9 @@ public class TestCompilationUnit {
 		launcher.buildModel();
 
 		CtType type = launcher.getFactory().Type().get(Bar.class);
-		CompilationUnit compilationUnit = type.getPosition().getCompilationUnit();
+		CtCompilationUnit compilationUnit = type.getPosition().getCompilationUnit();
 
-		assertEquals(CompilationUnit.UNIT_TYPE.TYPE_DECLARATION, compilationUnit.getUnitType());
+		assertEquals(CtCompilationUnit.UNIT_TYPE.TYPE_DECLARATION, compilationUnit.getUnitType());
 	}
 
 	@Test
@@ -98,22 +96,22 @@ public class TestCompilationUnit {
 		launcher.buildModel();
 
 		CtPackage ctPackage = launcher.getFactory().Package().get("spoon.test.pkg");
-		CompilationUnit compilationUnit = ctPackage.getPosition().getCompilationUnit();
-		assertEquals(CompilationUnit.UNIT_TYPE.PACKAGE_DECLARATION, compilationUnit.getUnitType());
+		CtCompilationUnit compilationUnit = ctPackage.getPosition().getCompilationUnit();
+		assertEquals(CtCompilationUnit.UNIT_TYPE.PACKAGE_DECLARATION, compilationUnit.getUnitType());
 	}
 
 	@Test
 	public void testGetUnitTypeWorksWithCreatedObjects() {
 		final Launcher launcher = new Launcher();
 		CtPackage myFooPackage = launcher.getFactory().Package().getOrCreate("my.foo");
-		CompilationUnit cu = launcher.getFactory().createCompilationUnit();
-		assertEquals(CompilationUnit.UNIT_TYPE.UNKNOWN, cu.getUnitType());
+		CtCompilationUnit cu = launcher.getFactory().createCompilationUnit();
+		assertEquals(CtCompilationUnit.UNIT_TYPE.UNKNOWN, cu.getUnitType());
 		
 		cu.setDeclaredPackage(myFooPackage);
-		assertEquals(CompilationUnit.UNIT_TYPE.PACKAGE_DECLARATION, cu.getUnitType());
+		assertEquals(CtCompilationUnit.UNIT_TYPE.PACKAGE_DECLARATION, cu.getUnitType());
 
 		cu.setDeclaredTypes(Collections.singletonList(launcher.getFactory().createClass()));
-		assertEquals(CompilationUnit.UNIT_TYPE.TYPE_DECLARATION, cu.getUnitType());
+		assertEquals(CtCompilationUnit.UNIT_TYPE.TYPE_DECLARATION, cu.getUnitType());
 	}
 
 	@Test
@@ -124,7 +122,7 @@ public class TestCompilationUnit {
 		launcher.addInputResource(resource.getPath());
 		launcher.buildModel();
 
-		CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(resource.getCanonicalPath());
+		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(resource.getCanonicalPath());
 		assertEquals(3, cu.getDeclaredTypes().size());
 
 		List<CtType<?>> typeList = cu.getDeclaredTypes();
@@ -154,13 +152,13 @@ public class TestCompilationUnit {
 
 	@Test
 	public void testCompilationUnitSourcePosition() throws IOException {
-		// contract: the CompilationUnit has root source position
+		// contract: the CtCompilationUnit has root source position
 		File resource = new File("./src/test/java/spoon/test/model/Foo.java");
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource(resource.getPath());
 		launcher.buildModel();
 
-		CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(resource.getCanonicalPath());
+		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(resource.getCanonicalPath());
 		SourcePosition sp = cu.getPosition();
 		assertNotNull(sp);
 		assertEquals(0, sp.getSourceStart());
@@ -178,7 +176,7 @@ public class TestCompilationUnit {
 		launcher.setSourceOutputDirectory("./target/cu-onemoretype");
 		launcher.buildModel();
 
-		CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(resource.getCanonicalPath());
+		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(resource.getCanonicalPath());
 		assertEquals(3, cu.getDeclaredTypes().size());
 
 		CtType typeBla = launcher.getFactory().Class().create("spoon.test.model.Bla");
@@ -207,7 +205,7 @@ public class TestCompilationUnit {
 		CtClass myFooClass = launcher.getFactory().createClass("my.foo.MyClass");
 		assertEquals(SourcePosition.NOPOSITION, myFooClass.getPosition());
 
-		CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(myFooClass);
+		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(myFooClass);
 
 		assertNotNull(cu);
 		assertSame(cu, launcher.getFactory().CompilationUnit().getOrCreate(myFooClass));
@@ -230,17 +228,17 @@ public class TestCompilationUnit {
 		//contract: type built from model has BodyHolderSourcePosition
 		assertTrue(type.getPosition() instanceof BodyHolderSourcePosition);
 		//contract: type has compilation unit in position
-		CompilationUnit compilationUnit = type.getPosition().getCompilationUnit();
+		CtCompilationUnit compilationUnit = type.getPosition().getCompilationUnit();
 
 		//contract: parent of compilationUnit is always null
 		//compilation unit is not part of factory.getModel()
 		assertNull(compilationUnit.getParent());
 
-		//contract: parent of CtImport is CompilationUnit
+		//contract: parent of CtImport is CtCompilationUnit
 		CtImport anImport = compilationUnit.getImports().iterator().next();
 		assertSame(compilationUnit, anImport.getParent());
 		
-		//contract: parent of type declared in Compilation unit is a package (never CompilationUnit)
+		//contract: parent of type declared in Compilation unit is a package (never CtCompilationUnit)
 		assertTrue(compilationUnit.getMainType().getParent() instanceof CtPackage);
 		
 		//contract: compilation unit which contains types has null declared module
@@ -339,16 +337,16 @@ public class TestCompilationUnit {
 
 		CtType t = launcher.getModel().getRootPackage().getPackage("matchers").getType("TestClass");
 
-		CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(t);
+		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(t);
 		List<CtImport> imports = cu.getImports();
 
-		//contract: imports are accessible from CompilationUnit
+		//contract: imports are accessible from CtCompilationUnit
 		assertEquals(2, imports.size());
 
-		//contract: CompilationUnitImpl#toString() does not throw a NPE
+		//contract: CtCompilationUnitImpl#toString() does not throw a NPE
 		assertNotNull(cu.toString());
 
-		//contract: CompilationUnitImpl#toString() returns the file's name.
+		//contract: CtCompilationUnitImpl#toString() returns the file's name.
 		assertEquals("TestClass.java", cu.toString());
 	}
 }

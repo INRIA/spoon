@@ -7,8 +7,8 @@
  */
 package spoon.support.reflect.cu.position;
 
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.CompoundSourcePosition;
+import spoon.reflect.declaration.CtCompilationUnit;
 
 /**
  * This class represents the position of a named Java program element in a source
@@ -21,7 +21,7 @@ public class CompoundSourcePositionImpl extends SourcePositionImpl
 	private int declarationSourceStart;
 	private int declarationSourceEnd;
 
-	public CompoundSourcePositionImpl(CompilationUnit compilationUnit, int nameStart, int nameEnd,
+	public CompoundSourcePositionImpl(CtCompilationUnit compilationUnit, int nameStart, int nameEnd,
 			int declarationSourceStart, int declarationSourceEnd,
 			int[] lineSeparatorPositions) {
 		// by convention, the default start and end fields

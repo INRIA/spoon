@@ -64,7 +64,6 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.CtYieldStatement;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
@@ -73,6 +72,7 @@ import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
@@ -80,6 +80,7 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
@@ -101,7 +102,6 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtModuleReference;
@@ -740,22 +740,22 @@ public interface Factory {
 	/**
 	 *  @see CoreFactory#createCompilationUnit()
 	 */
-	CompilationUnit createCompilationUnit();
+	CtCompilationUnit createCompilationUnit();
 
 	/**
-	 *  @see CoreFactory#createSourcePosition(CompilationUnit,int,int,int[])
+	 *  @see CoreFactory#createSourcePosition(CtCompilationUnit,int,int,int[])
 	 */
-	SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int[] lineSeparatorPositions);
+	SourcePosition createSourcePosition(CtCompilationUnit compilationUnit, int startSource, int end, int[] lineSeparatorPositions);
 
 	/**
-	 *  @see CoreFactory#createBodyHolderSourcePosition(CompilationUnit,int,int,int,int,int,int,int,int,int[])
+	 *  @see CoreFactory#createBodyHolderSourcePosition(CtCompilationUnit,int,int,int,int,int,int,int,int,int[])
 	 */
-	BodyHolderSourcePosition createBodyHolderSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int bodyStart, int bodyEnd, int[] lineSeparatorPositions);
+	BodyHolderSourcePosition createBodyHolderSourcePosition(CtCompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int bodyStart, int bodyEnd, int[] lineSeparatorPositions);
 
 	/**
-	 *  @see CoreFactory#createDeclarationSourcePosition(CompilationUnit,int,int,int,int,int,int,int[])
+	 *  @see CoreFactory#createDeclarationSourcePosition(CtCompilationUnit, int, int, int, int, int, int, int[])
 	 */
-	DeclarationSourcePosition createDeclarationSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int[] lineSeparatorPositions);
+	DeclarationSourcePosition createDeclarationSourcePosition(CtCompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int[] lineSeparatorPositions);
 
 	/**
 	 *  @see CoreFactory#createAnonymousExecutable()
@@ -1044,9 +1044,10 @@ public interface Factory {
 	CtUsedService createUsedService(CtTypeReference typeReference);
 
 	/**
-	 * @see CoreFactory#createPartialSourcePosition(CompilationUnit)
+	 * @see CoreFactory#createPartialSourcePosition(CtCompilationUnit)
+	 * @param compilationUnit
 	 */
-	SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit);
+	SourcePosition createPartialSourcePosition(CtCompilationUnit compilationUnit);
 
 	/**
 	 * @see PackageFactory#createPackageDeclaration(CtPackageReference)

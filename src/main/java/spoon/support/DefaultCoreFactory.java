@@ -64,7 +64,6 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.CtYieldStatement;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.CompoundSourcePosition;
@@ -74,6 +73,7 @@ import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
@@ -163,7 +163,6 @@ import spoon.support.reflect.code.CtVariableReadImpl;
 import spoon.support.reflect.code.CtVariableWriteImpl;
 import spoon.support.reflect.code.CtWhileImpl;
 import spoon.support.reflect.code.CtYieldStatementImpl;
-import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.BodyHolderSourcePositionImpl;
 import spoon.support.reflect.cu.position.CompoundSourcePositionImpl;
 import spoon.support.reflect.cu.position.DeclarationSourcePositionImpl;
@@ -173,6 +172,7 @@ import spoon.support.reflect.declaration.CtAnnotationMethodImpl;
 import spoon.support.reflect.declaration.CtAnnotationTypeImpl;
 import spoon.support.reflect.declaration.CtAnonymousExecutableImpl;
 import spoon.support.reflect.declaration.CtClassImpl;
+import spoon.support.reflect.declaration.CtCompilationUnitImpl;
 import spoon.support.reflect.declaration.CtConstructorImpl;
 import spoon.support.reflect.declaration.CtEnumImpl;
 import spoon.support.reflect.declaration.CtEnumValueImpl;
@@ -786,28 +786,28 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	}
 
 	@Override
-	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int[] lineSeparatorPositions) {
+	public SourcePosition createSourcePosition(CtCompilationUnit compilationUnit, int startSource, int end, int[] lineSeparatorPositions) {
 		return new SourcePositionImpl(compilationUnit, startSource, end, lineSeparatorPositions);
 	}
 
 	@Override
-	public SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit) {
-		return ((CompilationUnitImpl) compilationUnit).getOrCreatePartialSourcePosition();
+	public SourcePosition createPartialSourcePosition(CtCompilationUnit compilationUnit) {
+		return ((CtCompilationUnitImpl) compilationUnit).getOrCreatePartialSourcePosition();
 	}
 
 	@Override
-	public CompoundSourcePosition createCompoundSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int declarationStart, int declarationEnd, int[] lineSeparatorPositions) {
+	public CompoundSourcePosition createCompoundSourcePosition(CtCompilationUnit compilationUnit, int startSource, int end, int declarationStart, int declarationEnd, int[] lineSeparatorPositions) {
 		return new CompoundSourcePositionImpl(compilationUnit, startSource, end, declarationStart, declarationEnd, lineSeparatorPositions);
 	}
 
 	@Override
-	public DeclarationSourcePosition createDeclarationSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int[] lineSeparatorPositions) {
+	public DeclarationSourcePosition createDeclarationSourcePosition(CtCompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int[] lineSeparatorPositions) {
 		return new DeclarationSourcePositionImpl(compilationUnit, startSource, end, modifierStart, modifierEnd, declarationStart, declarationEnd, lineSeparatorPositions);
 	}
 
 	@Override
 	public BodyHolderSourcePosition createBodyHolderSourcePosition(
-			CompilationUnit compilationUnit,
+			CtCompilationUnit compilationUnit,
 			int nameStart, int nameEnd,
 			int modifierStart, int modifierEnd,
 			int declarationStart, int declarationEnd,
@@ -821,8 +821,8 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	}
 
 	@Override
-	public CompilationUnit createCompilationUnit() {
-		CompilationUnit cu = new CompilationUnitImpl();
+	public CtCompilationUnit createCompilationUnit() {
+		CtCompilationUnit cu = new CtCompilationUnitImpl();
 		cu.setFactory(getMainFactory());
 		return cu;
 	}

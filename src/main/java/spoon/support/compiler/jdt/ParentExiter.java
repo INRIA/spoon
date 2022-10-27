@@ -76,13 +76,13 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.CtYieldStatement;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
@@ -946,7 +946,7 @@ public class ParentExiter extends CtInheritanceScanner {
 				ctPackage.removeType(type);
 			}
 			ctPackage.addType(type);
-			CompilationUnit cu = type.getPosition().getCompilationUnit();
+			CtCompilationUnit cu = type.getPosition().getCompilationUnit();
 			if (cu != null) {
 				cu.addDeclaredType(type);
 			}

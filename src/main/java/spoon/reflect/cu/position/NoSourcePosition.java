@@ -7,9 +7,9 @@
  */
 package spoon.reflect.cu.position;
 
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
-import spoon.support.reflect.cu.CompilationUnitImpl;
+import spoon.reflect.declaration.CtCompilationUnit;
+import spoon.support.reflect.declaration.CtCompilationUnitImpl;
 
 import java.io.File;
 
@@ -26,13 +26,13 @@ public class NoSourcePosition implements SourcePosition {
 	}
 
 	// avoid null pointer exceptions later
-	public static class NullCompilationUnit extends CompilationUnitImpl {
+	public static class NullCompilationUnit extends CtCompilationUnitImpl {
 		private NullCompilationUnit() { }
 	}
-	private static final CompilationUnit instanceNullCompilationUnit = new NullCompilationUnit();
+	private static final CtCompilationUnit instanceNullCompilationUnit = new NullCompilationUnit();
 
 	@Override
-	public CompilationUnit getCompilationUnit() {
+	public CtCompilationUnit getCompilationUnit() {
 		return instanceNullCompilationUnit;
 	}
 
