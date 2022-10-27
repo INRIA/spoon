@@ -235,7 +235,7 @@ public class ContractVerifier {
 					return;
 				}
 				final CtExecutable<T> executableDeclaration = reference.getExecutableDeclaration();
-				assertNotNull("cannot find decl for " + reference , executableDeclaration);
+				assertNotNull("cannot find decl for " + reference, executableDeclaration);
 				assertEquals(reference.getSimpleName(), executableDeclaration.getSimpleName());
 
 				// when a generic type is used in a parameter and return type, the shadow type doesn't have these information.
@@ -265,7 +265,7 @@ public class ContractVerifier {
 				}
 
 				if (reference.getDeclaration() == null && CtShadowable.class.isAssignableFrom(executableDeclaration.getClass())) {
-					assertTrue("execDecl at " + reference  + " must be shadow ", ((CtShadowable) executableDeclaration).isShadow());
+					assertTrue("execDecl at " + reference + " must be shadow ", ((CtShadowable) executableDeclaration).isShadow());
 				}
 
 			}
@@ -400,7 +400,7 @@ public class ContractVerifier {
 			CtExpression assigned = assign.getAssigned();
 			if (!(assigned instanceof CtFieldWrite
 					|| assigned instanceof CtVariableWrite || assigned instanceof CtArrayWrite)) {
-				throw new AssertionError("AssignmentContract error:" + assign.getPosition() + "\n" + assign  + "\nAssigned is " + assigned.getClass());
+				throw new AssertionError("AssignmentContract error:" + assign.getPosition() + "\n" + assign + "\nAssigned is " + assigned.getClass());
 			}
 		}
 	}
@@ -464,7 +464,7 @@ public class ContractVerifier {
 			Exception firstStack = allElements.put(ele, secondStack);
 			if (firstStack != null) {
 				if (firstStack == dummyException) {
-					fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele  + " is shared");
+					fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele + " is shared");
 				}
 				//the element ele was already visited. It means it used on more places
 				//report the stacktrace of first and second usage, so that place can be found easily
