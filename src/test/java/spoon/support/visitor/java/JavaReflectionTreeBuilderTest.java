@@ -103,6 +103,7 @@ import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.util.compilation.JavacFacade;
 import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
+import spoon.test.GitHubIssue;
 import spoon.test.generics.testclasses3.ComparableComparatorBug;
 import spoon.test.innerclasses.InnerClasses;
 import spoon.test.pkg.PackageTest;
@@ -843,7 +844,7 @@ public class JavaReflectionTreeBuilderTest {
 		assertThat(asClass.getConstructors().iterator().next().getParameters().size(), equalTo(inners.size()));
 	}
 
-	@Test
+	@GitHubIssue(issueNumber = 4972, fixed = false)
 	void parameterNamesAreParsedWhenCompilingWithParametersFlag() throws ClassNotFoundException {
 		ClassLoader loader = JavacFacade.compileFiles(
 			Map.of(
