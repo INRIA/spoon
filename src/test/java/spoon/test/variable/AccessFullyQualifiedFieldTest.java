@@ -20,6 +20,7 @@ package spoon.test.variable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import spoon.ContractVerifier;
 import spoon.Launcher;
@@ -92,7 +93,7 @@ public class AccessFullyQualifiedFieldTest {
 		String result = this.buildResourceAndReturnResult(pathResource, output);
 		//the package name `spoon.test.variable.testclasses` cannot be used in FQN mode because it is shadowed by local variable `spoon`
 		//so use at least Type name
-		assertTrue(result.contains(" BurritosStaticMethod.toto();"), "The inner class should contain call using import");
+		assertTrue(result.contains("    toto();"), "The inner class should contain call using import");
 		canBeBuilt(output, 7);
 	}
 
