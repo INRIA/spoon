@@ -400,7 +400,7 @@ public class PathTest {
 		assertTrue(path.evaluateOn().iterator().hasNext());
 		CtType class_HashSet = new TypeFactory().get(java.util.HashSet.class);
 		assertEquals(path.evaluateOn().iterator().next(), class_HashSet);
-		// if unable to get the method or the field, it will try to return the method.
+		// if unable to get the method or the field, it will try to return the class.
 		// test method
 		path = new CtPathStringBuilder().fromString("#subPackage[name=java]#subPackage[name=util]#containedType[name=HashSet]#method[signature=contains(java.lang.Object)]");
 		assertTrue(path.evaluateOn().iterator().hasNext());

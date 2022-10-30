@@ -14,11 +14,7 @@ import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtRole;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Default implementation for a CtPath
@@ -52,8 +48,8 @@ public class CtPathImpl implements CtPath {
 
 						Class<?> cls = getJdkClass(String.join(".", cls_name_list));
 						if (cls != null) {
-							ctType = new TypeFactory().get(cls);
-							if (ctType != null) {
+							if (ctType == null) ctType = new TypeFactory().get(cls);
+							else {
 								CtElement result = null;
 								if (CtRole.METHOD.equals(((CtRolePathElement) element).getRole())) {
 									result = ctType.getMethodBySignature(val);
