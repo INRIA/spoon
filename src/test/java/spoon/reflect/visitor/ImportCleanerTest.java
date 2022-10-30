@@ -51,6 +51,12 @@ public class ImportCleanerTest {
 		testImportCleanerDoesNotAlterImports("./src/test/resources/inherit-static-method", "Derived");
 	}
 
+	@Test
+	void testDoesNotRemoveStaticImports() {
+		// contract: The import cleaner should not remove static imports
+		testImportCleanerDoesNotAlterImports("src/test/resources/importCleaner/StaticImports.java", "test.Test");
+	}
+
 	/**
 	 * Test that processing the target class' compilation unit with the import cleaner does not
 	 * alter the imports.
