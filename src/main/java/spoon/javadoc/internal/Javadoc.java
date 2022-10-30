@@ -36,7 +36,7 @@ import spoon.reflect.code.CtComment;
 public class Javadoc implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private JavadocDescription description;
+	transient private JavadocDescription description;
 	private List<JavadocBlockTag> blockTags;
 
 	public Javadoc() {
