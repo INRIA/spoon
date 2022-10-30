@@ -145,7 +145,8 @@ public class CtPathStringBuilder {
 				}
 			} else if ("]".equals(token) || ";".equals(token)) {
 				//finished reading of argument value
-				pathElement.addArgument(argName, argValue.toString());
+				//[fix bug]:AbstractPathElement.getArguments([constructor with no parameters])
+				pathElement.addArgument(argName, argValue.toString().replace("())","()"));
 				return token;
 			}
 			argValue.append(token);
