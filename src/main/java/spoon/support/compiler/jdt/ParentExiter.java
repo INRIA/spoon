@@ -719,7 +719,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		} else if (child instanceof CtExpression) {
 			if (hasChildEqualsToReceiver(invocation) || hasChildEqualsToQualification(invocation)) {
-				if (child instanceof CtThisAccess) {
+				if (child instanceof CtThisAccess && !setTargetFromStaticImport(invocation)) {
 					final CtTypeReference<?> declaringType = invocation.getExecutable().getDeclaringType();
 					if (declaringType != null && invocation.getExecutable().isStatic() && child.isImplicit()) {
 						invocation.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(declaringType, true));
@@ -735,6 +735,34 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtInvocation(invocation);
+	}
+
+	private <T> boolean setTargetFromStaticImport(CtInvocation<T> invocation) {
+		// A call to a statically imported method (e.g. assertTrue(false)) is modelled as
+		// "this.assertTrue(false)" by JDT. We need to unscramble that heuristically and replace the
+		// "this" reference with the correct type (e.g. org.junit.api.Assertions)
+
+		// We need a MessageSend as the parent to resolve the actualType from the receiver
+		if (!(parentPair.node instanceof MessageSend)) {
+			return false;
+		}
+		MessageSend messageSend = (MessageSend) parentPair.node;
+		if (messageSend.actualReceiverType == null || messageSend.receiver.resolvedType == null) {
+			return false;
+		}
+
+		ReferenceBuilder referenceBuilder = jdtTreeBuilder.getReferencesBuilder();
+		CtTypeReference<?> actualReceiverType = referenceBuilder.getTypeReference(messageSend.actualReceiverType);
+		CtTypeReference<?> resolvedReceiverType = referenceBuilder.getTypeReference(messageSend.receiver.resolvedType);
+
+		// If they match we have a normal "this" reference
+		if (actualReceiverType.equals(resolvedReceiverType)) {
+			return false;
+		}
+
+		// If not, we probably had a static import here and should use the actual type instead
+		invocation.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(actualReceiverType, true));
+		return true;
 	}
 
 	private <T> boolean hasChildEqualsToQualification(CtInvocation<T> ctInvocation) {

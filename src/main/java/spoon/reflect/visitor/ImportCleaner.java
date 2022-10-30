@@ -198,7 +198,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			if (packageRef == null) {
 				return;
 			}
-			if ("java.lang".equals(packageRef.getQualifiedName())) {
+			if ("java.lang".equals(packageRef.getQualifiedName()) && !isStaticExecutableRef(ref)) {
 				//java.lang is always imported implicitly. Ignore it
 				return;
 			}
