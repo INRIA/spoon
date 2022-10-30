@@ -1,4 +1,4 @@
-version: 1.0
+version: "1.0"
 profile:
   name: qodana.recommended
 include:
