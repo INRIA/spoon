@@ -50,7 +50,7 @@ public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTyp
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtTypedElement> C setType(CtTypeReference<Void> type) {
+	public <C extends CtTypedElement> C setType(CtTypeReference type) {
 		// type is used in setAccessedType now.
 		return (C) this;
 	}

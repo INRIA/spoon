@@ -537,11 +537,21 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSpace();
 		try (Writable _context = context.modify()) {
 			if (operator.getKind() == BinaryOperatorKind.INSTANCEOF) {
-				_context.forceWildcardGenerics(true);
+				_context.forceWildcardGenerics(canForceWildcardInInstanceof());
 			}
 			scan(operator.getRightHandOperand());
 		}
 		exitCtExpression(operator);
+	}
+
+	/**
+	 * Since Java 16, it is allowed to have type parameters other than {@code <?>} in instanceof checks.
+	 * This is allowed in cases where the generic type can be carried over from the type on the left side.
+	 * In previous Java versions, only {@code <?>} is allowed, and to keep the original behavior for such
+	 * versions, this method returns {@code true} if the compliance level is below 16.
+	 */
+	private boolean canForceWildcardInInstanceof() {
+		return env.getComplianceLevel() < 16;
 	}
 
 	@Override

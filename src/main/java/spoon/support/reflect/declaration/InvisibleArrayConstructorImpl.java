@@ -34,7 +34,7 @@ public class InvisibleArrayConstructorImpl<T> extends CtConstructorImpl<T> {
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public <C extends CtTypedElement> C setType(CtTypeReference type) {
 		if (type == null) {
 			return (C) this;
 		}

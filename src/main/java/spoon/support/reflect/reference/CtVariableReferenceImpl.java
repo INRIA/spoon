@@ -40,7 +40,7 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl impleme
 	}
 
 	@Override
-	public <C extends CtVariableReference<T>> C setType(CtTypeReference<T> type) {
+	public <C extends CtVariableReference<T>> C setType(CtTypeReference type) {
 		if (type != null) {
 			type.setParent(this);
 		}

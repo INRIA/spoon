@@ -83,3 +83,22 @@ The public API is composed of all public classes and methods, except those for w
 * located in a package called `internal`, including all subpackages, that is `**.internal.**`
 
 Classes annotated with `@Experimental` are planned to in the public API in the future, but are still considered unstable and can change in non-backward compatble manner.
+
+Submodule Policy
+----------
+
+By default, we favor adding new functionalities in spoon-core, in order to have the easiest possible integration for clients. We commit to maintain the code in spoon-core.
+
+We create submodules when
+
+1) the functionality would bloat the spoon-core binary too much
+
+OR
+
+2) the functionality is too experimental / too unstable to meet the high quality standard of spoon-core
+
+OR
+
+3) the integrator team welcomes the contribution, but cannot commit to maintaining it.
+
+Submodules are not published to Maven central, and so need to be built from source.

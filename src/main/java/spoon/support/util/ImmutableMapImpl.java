@@ -88,7 +88,7 @@ public class ImmutableMapImpl implements ImmutableMap {
 		appendMap(sb, map);
 		if (parent != null) {
 			sb.append("\nparent:\n");
-			sb.append(parent.toString());
+			sb.append(parent);
 		}
 		return sb.toString();
 	}

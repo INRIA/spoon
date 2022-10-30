@@ -18,44 +18,6 @@ Once per week, a beta version is pushed to central. This is done by script https
 
 This article is a short summary of the [official documentation of sonatype](http://central.sonatype.org/pages/ossrh-guide.html), an [article by yegor](http://www.yegor256.com/2014/08/19/how-to-release-to-maven-central.html) and [official documentation of maven release plugin](http://maven.apache.org/maven-release/maven-release-plugin/).
 
-## Core tasks:
-
-* [ ] Release on Maven Central
-    * with `mvn deploy` (using profile `release`, see below)
-* [ ] Release on Github
-    * With `git push` (git push <release_tag>)
-* [ ] PR to update the information
-* [ ] PR to remove deprecated methods
-
-## Prerequisites
-
-1. Gforge: open an account on `https://gforge.inria.fr`, add an SSH key there, check that you are a member of project `spoon`
-1. check that gpg2, keepass are installed
-1. get the Sonatype credentials for Spoon (on `davs://partage.inria.fr/alfresco/webdav/Sites/spirals/documentLibrary/security/`, in `Spirals Team >> Document Library >> security >> spoon.kdbx`)
-1. get the GPG credentials for Spoon (on `davs://partage.inria.fr/alfresco/webdav/Sites/spirals/documentLibrary/security/`, in `Spirals Team >> Document Library >> security >> spoon.kdbx`)
-    1. download the keepass file
-    1. import the keys with `gpg2 --import` (one key for Spoon, one key for Spoon Maven plugin)
-    1. check with `gpg2 --list-keys`
-1. update  `~/.m2/settings.xml`  with
-    * Sonatype username and password
-    * GPG keyname and passphrase
-
-## Maven Release
-
-1. update the version number (remove the snapshopt)
-    * `mvn release:clean release:prepare`
-    * alternatively, change `pom.xml` if master is a protected branch on Github
-1. send to Maven Central
-    * `mvn release:perform` (sends the new version on Maven Central)
-    * alternatively `mvn -Prelease deploy`
-1. check that the new version is on Maven Central (connect to `oss.sonatype.org`)
-
-## Github Release
-1. push the release tag on Github (git push)
-    - `git push origin master`
-    - `git push origin spoon-core-X.X.X`
-1. open `Releases` tab, click on `Draft a new release`.
-    - Add the changelod (`node doc/_release/changelog_generator/changelog.js 7.2.0`)
 
 ## Checklists 
 
@@ -64,16 +26,32 @@ This article is a short summary of the [official documentation of sonatype](http
 - Prepare changelog with the changelog_generator, see folder `doc/_release/changelog_generator`
 - Abnnounce the release with a new issue, a few days in advance (eg #2489)
 
+**Release**
+
+* [ ] Checkout commit to be released: 
+  * `git checkout -b <version> <commit>`
+  * eg `git checkout -b 10.2.0 ee73f4376aa929d8dce950202fabb8992a77c9fb`
+* [ ] Modify the pom.xml 
+  * `sed -i -e 's/<version>-SNAPSHOT/<version>/' pom.xml `
+  * eg `sed -i -e 's/10.2.0-SNAPSHOT/10.2.0/' pom.xml `
+* [ ] Create release on Maven Central with `mvn deploy` (using profile `release`, see below)
+  * JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64/  mvn clean deploy -Prelease -DskipTests -Dgpg. -Dgpg.keyname=074F73B36D8DD649B132BAC18035014A2B7BFA92
+* [ ] Create release on Github
+    * `git tag spoon-core-<version>`
+    * eg `git tag spoon-core-10.2.0`
+    * `git push inria spoon-core-<version>`
+    * eg `git push inria spoon-core-10.2.0`
+
 **After release**
 
-- Create Pull request on Github with (example #1732)
+- [ ] Create Pull request on Github with (example #1732)
     - News section in `doc/doc_homepage.md`
-    - Information in `pom.xml`
-- Update version information and date on [INRIA's BIL](https://bil.inria.fr/en/software/view/251/tab)
-- Update version information on <https://projects.ow2.org/view/spoon/>
-- Announce the release:
-  * mailing-lists (gdr-gpl, OW2)
-  * social media (twitter, reddit, linkedin)  
+- [ ] Check if release documentation it up-to-date and improve accordingly
+- [ ] Update version information and date on [INRIA's BIL](https://bil.inria.fr/en/software/view/251/tab)
+- [ ] Update version information on <https://projects.ow2.org/view/spoon/>
+- [ ] Announce the release:
+  * mailing-lists (eg gdr-gpl, OW2)
+  * social media (eg twitter, reddit, linkedin)  
 
 ## Additional Information
 ###  Typical `settings.xml` for Maven
