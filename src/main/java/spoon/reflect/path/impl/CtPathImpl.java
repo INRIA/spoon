@@ -7,8 +7,12 @@
  */
 package spoon.reflect.path.impl;
 
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtPath;
+import spoon.reflect.path.CtRole;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +36,41 @@ public class CtPathImpl implements CtPath {
 		Collection<CtElement> filtered = Arrays.asList(startNode);
 		for (CtPathElement element : elements) {
 			filtered = element.getElements(filtered);
+		}
+		if (filtered.isEmpty()) {
+			List<String> cls_name_list = new LinkedList<>();
+			CtType<?> ctType = null;
+			for (CtPathElement element : elements) {
+				if (element instanceof CtRolePathElement) {    // search by CtRolePathElement
+					Collection<String> values = ((CtRolePathElement) element).getArguments().values();
+					String val = null;
+					if (values.iterator().hasNext()) val = values.iterator().next();
+					if (val != null) {
+						if (CtRole.SUB_PACKAGE.equals(((CtRolePathElement) element).getRole())
+								|| CtRole.CONTAINED_TYPE.equals(((CtRolePathElement) element).getRole()))
+							cls_name_list.add(val);
+
+						Class<?> cls = getJdkClass(String.join(".", cls_name_list));
+						if (cls != null) {
+							ctType = new TypeFactory().get(cls);
+							if (ctType != null) {
+								CtElement result = null;
+								if (CtRole.METHOD.equals(((CtRolePathElement) element).getRole())) {
+									result = ctType.getMethodBySignature(val);
+								}
+								if (CtRole.CONSTRUCTOR.equals(((CtRolePathElement) element).getRole())) {
+									result = ((CtClass) ctType).getConstructorBySignature(val);
+								}
+								if (CtRole.FIELD.equals(((CtRolePathElement) element).getRole())) {
+									result = ctType.getField(val);
+								}
+								if (result != null) filtered.add(result);
+							}
+						}
+					}
+				}
+			}
+			if (filtered.isEmpty() && ctType != null) filtered.add(ctType);
 		}
 		return (List<T>) filtered;
 	}

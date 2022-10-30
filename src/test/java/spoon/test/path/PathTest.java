@@ -17,12 +17,6 @@
 package spoon.test.path;
 
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -31,30 +25,18 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.path.CtElementPathBuilder;
-import spoon.reflect.path.CtPath;
-import spoon.reflect.path.CtPathBuilder;
-import spoon.reflect.path.CtPathException;
-import spoon.reflect.path.CtPathStringBuilder;
-import spoon.reflect.path.CtRole;
+import spoon.reflect.factory.TypeFactory;
+import spoon.reflect.path.*;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by nicolas on 10/06/2015.
@@ -408,5 +390,32 @@ public class PathTest {
 		List<CtElement> result = pathFromString.evaluateOn(factory.getModel().getRootPackage());
 		assertEquals(1, result.size());
 		assertSame(argType, result.get(0));
+	}
+
+	@Test
+	public void testGetJdkElementByCtPathString() {
+		CtPath path;
+		// test class
+		path = new CtPathStringBuilder().fromString("#subPackage[name=java]#subPackage[name=util]#containedType[name=HashSet]");
+		assertTrue(path.evaluateOn().iterator().hasNext());
+		CtType class_HashSet = new TypeFactory().get(java.util.HashSet.class);
+		assertEquals(path.evaluateOn().iterator().next(), class_HashSet);
+		// if unable to get the method or the field, it will try to return the method.
+		// test method
+		path = new CtPathStringBuilder().fromString("#subPackage[name=java]#subPackage[name=util]#containedType[name=HashSet]#method[signature=contains(java.lang.Object)]");
+		assertTrue(path.evaluateOn().iterator().hasNext());
+		assertEquals(path.evaluateOn().iterator().next(), class_HashSet.getMethodBySignature("contains(java.lang.Object)"));
+		// test constructor
+		path = new CtPathStringBuilder().fromString("#subPackage[name=java]#subPackage[name=util]#containedType[name=HashSet]#constructor[signature=()]");
+		assertTrue(path.evaluateOn().iterator().hasNext());
+		assertEquals(path.evaluateOn().iterator().next(), ((CtClass) class_HashSet).getConstructorBySignature("()"));
+
+		path = new CtPathStringBuilder().fromString("#subPackage[name=java]#subPackage[name=util]#containedType[name=HashSet]#constructor[signature=(int)]");
+		assertTrue(path.evaluateOn().iterator().hasNext());
+		assertEquals(path.evaluateOn().iterator().next(), ((CtClass) class_HashSet).getConstructorBySignature("(int)"));
+		// test field
+		path = new CtPathStringBuilder().fromString("#subPackage[name=java]#subPackage[name=util]#containedType[name=HashSet]#field[name=map]");
+		assertTrue(path.evaluateOn().iterator().hasNext());
+		assertEquals(path.evaluateOn().iterator().next(), class_HashSet.getField("map"));
 	}
 }
