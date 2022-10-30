@@ -13,11 +13,20 @@ For instance, a "then" branch in an if/then/else is a role (and not a node). All
 
 ### Evaluating AST paths
 
-Paths are used to find code elements, from a given root element.
+Paths are used to find code elements, from a given root element(e.g. `model.getRootPackage()`).
 
 ```java
 path = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.foo#body#statement[index=0]");
 List<CtElement> l = path.evaluateOn(root)
+```
+
+If the root parameter is not given, spoon will try to find shadow elements(e.g. jdk classes).
+
+> If so, it can only supperts `CtType`, `CtMethod` and `CtField` for now.
+
+```java
+path = new CtPathStringBuilder().fromString("#subPackage[name=java]#subPackage[name=util]#containedType[name=HashSet]");
+List<CtElement> l = path.evaluateOn()
 ```
 
 ### Creating AST paths
