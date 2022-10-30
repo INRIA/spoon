@@ -170,8 +170,8 @@ class TypeNameScope extends NameScopeImpl {
 		CtPackage pack = compilationUnit.getDeclaredPackage();
 		if (pack != null) {
 			for (CtType<?> packageType : pack.getTypes()) {
-				if (packageType != getScopeElement() && !typesByName.containsKey(packageType.getSimpleName())) {
-					typesByName.put(packageType.getSimpleName(), packageType);
+				if (packageType != getScopeElement()) {
+					typesByName.putIfAbsent(packageType.getSimpleName(), packageType);
 				}
 			}
 		}
@@ -184,8 +184,6 @@ class TypeNameScope extends NameScopeImpl {
 			return;
 		}
 		String name = element.getSimpleName();
-		if (!map.containsKey(name)) {
-			map.put(name, element);
-		}
+		map.putIfAbsent(name, element);
 	}
 }

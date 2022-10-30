@@ -126,7 +126,7 @@ public abstract class CtElementImpl implements CtElement {
 		boolean ret = EqualsVisitor.equals(this, (CtElement) o);
 		// neat online testing of core Java contract
 		if (ret && !factory.getEnvironment().checksAreSkipped() && this.hashCode() != o.hashCode()) {
-			throw new IllegalStateException("violation of equal/hashcode contract between \n" + this.toString() + "\nand\n" + o.toString() + "\n");
+			throw new IllegalStateException("violation of equal/hashcode contract between \n" + this + "\nand\n" + o + "\n");
 		}
 		return ret;
 	}

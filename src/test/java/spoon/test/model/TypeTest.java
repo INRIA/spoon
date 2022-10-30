@@ -7,6 +7,8 @@
  */
 package spoon.test.model;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import spoon.Launcher;
 import spoon.compiler.ModelBuildingException;
 import spoon.reflect.CtModel;
@@ -61,24 +63,23 @@ public class TypeTest {
 	}
 
 	@Test
+	@DisabledForJreRange(min = JRE.JAVA_14)
+	/*
+	* This annotation is needed because in java.lang.object the method registerNative was removed.
+	* See https://bugs.openjdk.java.net/browse/JDK-8232801 for details.
+	*/
 	public void testAllTypeMembersFunctionMode() throws Exception {
 		// contract: AllTypeMembersFunction can be configured to return all members or only internally visible members
 		CtClass<?> type = build("spoon.test.model", "Foo");
 		List<CtMethod<?>> internallyAccessibleMethods = type.map(new AllTypeMembersFunction(CtMethod.class).setMode(AllTypeMembersFunction.Mode.SKIP_PRIVATE)).list();
 		List<CtMethod<?>> allMethods = type.map(new AllTypeMembersFunction(CtMethod.class)).list();
-		assertAll(
-			() -> assertEquals(16, internallyAccessibleMethods.size()),
-			() -> assertTrue(17 == allMethods.size() || 16 == allMethods.size()));
+		assertEquals(16, internallyAccessibleMethods.size());
+		assertEquals(17, allMethods.size());
 
-		/*
-		This if-clause is needed because in java.lang.object the method registerNative was removed.
-		See https://bugs.openjdk.java.net/browse/JDK-8232801 for details.
-		*/
 		allMethods.removeAll(internallyAccessibleMethods);
-		if (allMethods.size() == 1) {
-			assertEquals(1, allMethods.size());
-			assertEquals("registerNatives()", allMethods.get(0).getSignature());
-		}
+		assertEquals(1, allMethods.size());
+		assertEquals("registerNatives()", allMethods.get(0).getSignature());
+
 	}
 
 	@Test

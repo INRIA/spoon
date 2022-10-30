@@ -64,16 +64,22 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 
 	@Override
 	public <T extends CtTry> T addCatcher(CtCatch catcher) {
+		addCatcherAt(catchers.size(), catcher);
+		return (T) this;
+	}
+
+	@Override
+	public CtTry addCatcherAt(int position, CtCatch catcher) {
 		if (catcher == null) {
-			return (T) this;
+			return this;
 		}
 		if (catchers == CtElementImpl.<CtCatch>emptyList()) {
 			catchers = new ArrayList<>(CATCH_CASES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		catcher.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CATCH, this.catchers, catcher);
-		catchers.add(catcher);
-		return (T) this;
+		catchers.add(position, catcher);
+		return this;
 	}
 
 	@Override

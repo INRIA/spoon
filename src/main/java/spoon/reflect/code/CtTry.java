@@ -48,6 +48,18 @@ public interface CtTry extends CtStatement, TemplateParameter<Void>, CtBodyHolde
 	<T extends CtTry> T addCatcher(CtCatch catcher);
 
 	/**
+	 * Adds a catch block at the specified position in the <code>try</code> statement.
+	 * Behaves similarly to {@link java.util.List#add(int, Object)}.
+	 *
+	 * @param position the position at which the <code>catcher</code> is to be inserted
+	 * @param catcher the catch statement to be inserted
+	 * @return this try statement
+	 * @throws IndexOutOfBoundsException if the position is out of range (position < 0 || position > number of catchers)
+	 */
+	@PropertySetter(role = CATCH)
+	CtTry addCatcherAt(int position, CtCatch catcher);
+
+	/**
 	 * Removes a catch block.
 	 */
 	@PropertySetter(role = CATCH)

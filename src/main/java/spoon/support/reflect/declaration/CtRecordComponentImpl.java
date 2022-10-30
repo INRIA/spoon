@@ -67,7 +67,7 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<Object> type) {
+	public <C extends CtTypedElement> C setType(CtTypeReference type) {
 		if (type != null) {
 			type.setParent(this);
 		}

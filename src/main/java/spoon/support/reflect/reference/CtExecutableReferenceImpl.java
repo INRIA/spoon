@@ -260,7 +260,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public <C extends CtExecutableReference<T>> C setType(CtTypeReference<T> type) {
+	public <C extends CtExecutableReference<T>> C setType(CtTypeReference type) {
 		if (type != null) {
 			type.setParent(this);
 		}

@@ -24,5 +24,6 @@ include:
   - name: UnnecessaryLocalVariable
   - name: UnnecessaryUnboxing
   - name: UNUSED_IMPORT
+  - name: PointlessBooleanExpression 
 exclude:
   - name: UseOfClone
