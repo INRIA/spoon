@@ -101,7 +101,7 @@ public class MainTest {
 		for (CtType t : launcher.getFactory().getModel().getAllTypes()) {
 			if ("spoon.metamodel".equals(t.getPackage().getQualifiedName())
 					|| t.getPackage().getQualifiedName().startsWith("spoon.generating")
-					|| t.getPackage().getQualifiedName().startsWith("spoon.support.compilation")) {
+					|| t.getPackage().getQualifiedName().startsWith("spoon.support.util.compilation")) {
 				//Meta model classes doesn't have to follow test class naming conventions
 				continue;
 			}
