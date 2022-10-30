@@ -49,9 +49,6 @@ public class ZipFolder implements SpoonFolder {
 		}
 		this.file = file;
 	}
-	private Object deleteMe() {
-		return null;
-	}
 
 	@Override
 	public List<SpoonFile> getAllFiles() {
