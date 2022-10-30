@@ -198,8 +198,10 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			if (packageRef == null) {
 				return;
 			}
-			if ("java.lang".equals(packageRef.getQualifiedName()) && !isStaticExecutableRef(ref)) {
-				//java.lang is always imported implicitly. Ignore it
+			if ("java.lang".equals(packageRef.getQualifiedName())
+				&& !isStaticExecutableRef(ref)
+				&& !isStaticFieldRef(ref)) {
+				//java.lang is always imported implicitly. Ignore it, unless it is a static field or method import
 				return;
 			}
 			if (ref instanceof CtTypeReference && Objects.equals(packageQName, packageRef.getQualifiedName()) && !isStaticExecutableRef(ref)) {
@@ -470,5 +472,9 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 	private static boolean isStaticExecutableRef(CtElement element) {
 		return element instanceof CtExecutableReference<?>
 				&& ((CtExecutableReference<?>) element).isStatic();
+	}
+
+	private static boolean isStaticFieldRef(CtReference ref) {
+		return ref instanceof CtFieldReference<?> && ((CtFieldReference<?>) ref).isStatic();
 	}
 }
