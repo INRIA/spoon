@@ -36,6 +36,32 @@ public class CtPathImpl implements CtPath {
 		return (List<T>) filtered;
 	}
 
+	private Class<?> getJdkClass(String name) {
+		name = name.replaceAll("[\\[\\]]", "");
+		switch (name) {
+			case "byte":
+				return byte.class;
+			case "int":
+				return int.class;
+			case "long":
+				return long.class;
+			case "float":
+				return float.class;
+			case "double":
+				return double.class;
+			case "char":
+				return char.class;
+			case "boolean":
+				return boolean.class;
+			default:
+				try {
+					return Class.forName(name);
+				} catch (ClassNotFoundException e) {
+				}
+		}
+		return null;
+	}
+
 	@Override
 	public CtPath relativePath(CtElement parent) {
 		List<CtElement> roots = new ArrayList<>();
