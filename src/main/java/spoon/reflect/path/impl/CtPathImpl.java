@@ -33,42 +33,40 @@ public class CtPathImpl implements CtPath {
 		for (CtPathElement element : elements) {
 			filtered = element.getElements(filtered);
 		}
-		if (filtered.isEmpty()) {
-			List<String> cls_name_list = new LinkedList<>();
-			CtType<?> ctType = null;
-			for (CtPathElement element : elements) {
-				if (element instanceof CtRolePathElement) {    // search by CtRolePathElement
-					Collection<String> values = ((CtRolePathElement) element).getArguments().values();
-					String val = null;
-					if (values.iterator().hasNext()) val = values.iterator().next();
-					if (val != null) {
-						if (CtRole.SUB_PACKAGE.equals(((CtRolePathElement) element).getRole())
-								|| CtRole.CONTAINED_TYPE.equals(((CtRolePathElement) element).getRole()))
-							cls_name_list.add(val);
+		return (List<T>) filtered;
+	}
 
-						Class<?> cls = getJdkClass(String.join(".", cls_name_list));
-						if (cls != null) {
-							if (ctType == null) ctType = new TypeFactory().get(cls);
-							else {
-								CtElement result = null;
-								if (CtRole.METHOD.equals(((CtRolePathElement) element).getRole())) {
-									result = ctType.getMethodBySignature(val);
-								}
-								if (CtRole.CONSTRUCTOR.equals(((CtRolePathElement) element).getRole())) {
-									result = ((CtClass) ctType).getConstructorBySignature(val);
-								}
-								if (CtRole.FIELD.equals(((CtRolePathElement) element).getRole())) {
-									result = ctType.getField(val);
-								}
-								if (result != null) filtered.add(result);
+	@Override
+	public CtElement evaluateOnShadowModel() {
+		List<String> cls_name_list = new LinkedList<>();
+		CtType<?> ctType = null;
+		for (CtPathElement element : elements) {
+			if (element instanceof CtRolePathElement) {    // search by CtRolePathElement
+				Collection<String> values = ((CtRolePathElement) element).getArguments().values();
+				String val = null;
+				if (values.iterator().hasNext()) val = values.iterator().next();
+				if (val != null) {
+					if (CtRole.SUB_PACKAGE.equals(((CtRolePathElement) element).getRole())
+							|| CtRole.CONTAINED_TYPE.equals(((CtRolePathElement) element).getRole()))
+						cls_name_list.add(val);
+
+					Class<?> cls = getJdkClass(String.join(".", cls_name_list));
+					if (cls != null) {
+						if (ctType == null) ctType = new TypeFactory().get(cls);
+						else {
+							if (CtRole.METHOD.equals(((CtRolePathElement) element).getRole()))
+								return ctType.getMethodBySignature(val);
+							if (CtRole.CONSTRUCTOR.equals(((CtRolePathElement) element).getRole()))
+								return ((CtClass) ctType).getConstructorBySignature(val);
+							if (CtRole.FIELD.equals(((CtRolePathElement) element).getRole())) {
+								return ctType.getField(val);
 							}
 						}
 					}
 				}
 			}
-			if (filtered.isEmpty() && ctType != null) filtered.add(ctType);
 		}
-		return (List<T>) filtered;
+		return ctType;
 	}
 
 	private Class<?> getJdkClass(String name) {

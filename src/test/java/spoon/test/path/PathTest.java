@@ -56,6 +56,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Created by nicolas on 10/06/2015.
@@ -416,25 +417,25 @@ public class PathTest {
 		CtPath path;
 		// test class
 		path = new CtPathStringBuilder().fromString("#subPackage[name=java]#subPackage[name=util]#containedType[name=HashSet]");
-		assertTrue(path.evaluateOn().iterator().hasNext());
+		assertNotNull(path.evaluateOnShadowModel());
 		CtType class_HashSet = new TypeFactory().get(java.util.HashSet.class);
-		assertEquals(path.evaluateOn().iterator().next(), class_HashSet);
+		assertEquals(path.evaluateOnShadowModel(), class_HashSet);
 		// if unable to get the method or the field, it will try to return the class.
 		// test method
 		path = new CtPathStringBuilder().fromString("#subPackage[name=java]#subPackage[name=util]#containedType[name=HashSet]#method[signature=contains(java.lang.Object)]");
-		assertTrue(path.evaluateOn().iterator().hasNext());
-		assertEquals(path.evaluateOn().iterator().next(), class_HashSet.getMethodBySignature("contains(java.lang.Object)"));
+		assertNotNull(path.evaluateOnShadowModel());
+		assertEquals(path.evaluateOnShadowModel(), class_HashSet.getMethodBySignature("contains(java.lang.Object)"));
 		// test constructor
 		path = new CtPathStringBuilder().fromString("#subPackage[name=java]#subPackage[name=util]#containedType[name=HashSet]#constructor[signature=()]");
-		assertTrue(path.evaluateOn().iterator().hasNext());
-		assertEquals(path.evaluateOn().iterator().next(), ((CtClass) class_HashSet).getConstructorBySignature("()"));
+		assertNotNull(path.evaluateOnShadowModel());
+		assertEquals(path.evaluateOnShadowModel(), ((CtClass) class_HashSet).getConstructorBySignature("()"));
 
 		path = new CtPathStringBuilder().fromString("#subPackage[name=java]#subPackage[name=util]#containedType[name=HashSet]#constructor[signature=(int)]");
-		assertTrue(path.evaluateOn().iterator().hasNext());
-		assertEquals(path.evaluateOn().iterator().next(), ((CtClass) class_HashSet).getConstructorBySignature("(int)"));
+		assertNotNull(path.evaluateOnShadowModel());
+		assertEquals(path.evaluateOnShadowModel(), ((CtClass) class_HashSet).getConstructorBySignature("(int)"));
 		// test field
 		path = new CtPathStringBuilder().fromString("#subPackage[name=java]#subPackage[name=util]#containedType[name=HashSet]#field[name=map]");
-		assertTrue(path.evaluateOn().iterator().hasNext());
-		assertEquals(path.evaluateOn().iterator().next(), class_HashSet.getField("map"));
+		assertNotNull(path.evaluateOnShadowModel());
+		assertEquals(path.evaluateOnShadowModel(), class_HashSet.getField("map"));
 	}
 }
