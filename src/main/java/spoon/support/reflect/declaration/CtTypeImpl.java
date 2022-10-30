@@ -737,6 +737,21 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		return null;
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public <R> CtMethod<R> getMethodBySignature(String signature) {
+		if (signature == null) {
+			return null;
+		}
+		String name = signature.substring(0, signature.indexOf('('));
+		for (CtMethod<?> candidate : getMethodsByName(name)) {
+			if (candidate.getSignature().equals(signature)) {
+				return (CtMethod<R>) candidate;
+			}
+		}
+		return null;
+	}
+
 	protected boolean hasSameParameters(CtExecutable<?> candidate, CtTypeReference<?>... parameterTypes) {
 		if (candidate.getParameters().size() != parameterTypes.length) {
 			return false;
