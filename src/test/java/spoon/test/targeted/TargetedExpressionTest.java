@@ -375,7 +375,8 @@ public class TargetedExpressionTest {
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.staticMethod()"), elements.get(3));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.staticMethod()"), elements.get(4));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedBarType).target(expectedBarTypeAccess).result("spoon.test.targeted.testclasses.Bar.staticMethodBar()"), elements.get(5));
-		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedBarType).target(expectedBarTypeAccess).result("spoon.test.targeted.testclasses.Bar.staticMethodBar()"), elements.get(6));
+		assertEquals("staticMethodBar()", elements.get(6).toString());
+		assertEquals("spoon.test.targeted.testclasses.Bar", elements.get(6).getExecutable().getDeclaringType().getQualifiedName());
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedFuuType).target(factory.Code().createTypeAccess(expectedFuuType)).result("spoon.test.targeted.testclasses.Foo.Fii.Fuu.m()"), elements.get(7));
 	}
 
@@ -404,9 +405,10 @@ public class TargetedExpressionTest {
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("inv()"), elements.get(0));
 		expectedThisAccess.setType(expectedType);
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("this.inv()"), elements.get(1));
-		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(fooTypeAccess).result("spoon.test.targeted.testclasses.Foo.staticMethod()"), elements.get(2));
-		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(fooTypeAccess).result("spoon.test.targeted.testclasses.Foo.staticMethod()"), elements.get(3));
-		expectedSuperThisAccess.setType(expectedInnerClass);
+		assertEquals("spoon.test.targeted.testclasses.Foo", elements.get(2).getExecutable().getDeclaringType().getQualifiedName());
+		assertEquals("staticMethod()", elements.get(2).toString());
+		assertEquals("spoon.test.targeted.testclasses.Foo", elements.get(3).getExecutable().getDeclaringType().getQualifiedName());
+		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(fooTypeAccess).result("spoon.test.targeted.testclasses.Foo.staticMethod()"), elements.get(3));		expectedSuperThisAccess.setType(expectedInnerClass);
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedSuperClassType).target(expectedSuperThisAccess).result("superMethod()"), elements.get(4));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedSuperClassType).target(expectedThisAccess).result("this.superMethod()"), elements.get(5));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("method()"), elements.get(6));
