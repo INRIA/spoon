@@ -14,7 +14,11 @@ import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtRole;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Default implementation for a CtPath
@@ -44,20 +48,25 @@ public class CtPathImpl implements CtPath {
 			if (element instanceof CtRolePathElement) {    // search by CtRolePathElement
 				Collection<String> values = ((CtRolePathElement) element).getArguments().values();
 				String val = null;
-				if (values.iterator().hasNext()) val = values.iterator().next();
+				if (values.iterator().hasNext()) {
+					val = values.iterator().next();
+				}
 				if (val != null) {
 					if (CtRole.SUB_PACKAGE.equals(((CtRolePathElement) element).getRole())
-							|| CtRole.CONTAINED_TYPE.equals(((CtRolePathElement) element).getRole()))
+							|| CtRole.CONTAINED_TYPE.equals(((CtRolePathElement) element).getRole())) {
 						cls_name_list.add(val);
-
+					}
 					Class<?> cls = getJdkClass(String.join(".", cls_name_list));
 					if (cls != null) {
-						if (ctType == null) ctType = new TypeFactory().get(cls);
-						else {
-							if (CtRole.METHOD.equals(((CtRolePathElement) element).getRole()))
+						if (ctType == null) {
+							ctType = new TypeFactory().get(cls);
+						} else {
+							if (CtRole.METHOD.equals(((CtRolePathElement) element).getRole())) {
 								return ctType.getMethodBySignature(val);
-							if (CtRole.CONSTRUCTOR.equals(((CtRolePathElement) element).getRole()))
+							}
+							if (CtRole.CONSTRUCTOR.equals(((CtRolePathElement) element).getRole())) {
 								return ((CtClass) ctType).getConstructorBySignature(val);
+							}
 							if (CtRole.FIELD.equals(((CtRolePathElement) element).getRole())) {
 								return ctType.getField(val);
 							}
