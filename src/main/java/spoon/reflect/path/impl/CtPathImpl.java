@@ -42,7 +42,7 @@ public class CtPathImpl implements CtPath {
 
 	@Override
 	public CtElement evaluateOnShadowModel() {
-		List<String> cls_name_list = new LinkedList<>();
+		List<String> classRoleNameList = new LinkedList<>();
 		CtType<?> ctType = null;
 		for (CtPathElement element : elements) {
 			if (element instanceof CtRolePathElement) {    // search by CtRolePathElement
@@ -54,9 +54,9 @@ public class CtPathImpl implements CtPath {
 				if (val != null) {
 					if (CtRole.SUB_PACKAGE.equals(((CtRolePathElement) element).getRole())
 							|| CtRole.CONTAINED_TYPE.equals(((CtRolePathElement) element).getRole())) {
-						cls_name_list.add(val);
+						classRoleNameList.add(val);
 					}
-					Class<?> cls = getJdkClass(String.join(".", cls_name_list));
+					Class<?> cls = getJdkClass(String.join(".", classRoleNameList));
 					if (cls != null) {
 						if (ctType == null) {
 							ctType = new TypeFactory().get(cls);
