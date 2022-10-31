@@ -42,7 +42,7 @@ class ReplacementVisitor extends CtScanner {
 		new ReplacementVisitor(original, replace == null ? EMPTY : new CtElement[]{replace}).scan(original.getParent());
 	}
 	public static <E extends CtElement> void replace(CtElement original, Collection<E> replaces) {
-			new ReplacementVisitor(original, replaces.toArray(new CtElement[replaces.size()])).scan(original.getParent());
+			new ReplacementVisitor(original, replaces.toArray(new CtElement[0])).scan(original.getParent());
 	}
 
 	private CtElement original;
