@@ -719,12 +719,14 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		} else if (child instanceof CtExpression) {
 			if (hasChildEqualsToReceiver(invocation) || hasChildEqualsToQualification(invocation)) {
-				if (child instanceof CtThisAccess && !setTargetFromStaticImport(invocation)) {
-					final CtTypeReference<?> declaringType = invocation.getExecutable().getDeclaringType();
-					if (declaringType != null && invocation.getExecutable().isStatic() && child.isImplicit()) {
-						invocation.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(declaringType, true));
-					} else {
-						invocation.setTarget((CtThisAccess<?>) child);
+				if (child instanceof CtThisAccess) {
+					if (!setTargetFromStaticImport(invocation)) {
+						final CtTypeReference<?> declaringType = invocation.getExecutable().getDeclaringType();
+						if (declaringType != null && invocation.getExecutable().isStatic() && child.isImplicit()) {
+							invocation.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(declaringType, true));
+						} else {
+							invocation.setTarget((CtThisAccess<?>) child);
+						}
 					}
 				} else {
 					invocation.setTarget((CtExpression<?>) child);
