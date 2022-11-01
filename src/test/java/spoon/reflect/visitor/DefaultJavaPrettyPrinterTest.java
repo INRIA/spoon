@@ -27,6 +27,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.test.GitHubIssue;
 import spoon.test.SpoonTestHelpers;
@@ -323,5 +324,20 @@ public class DefaultJavaPrettyPrinterTest {
         assertThat(printed, containsRegexMatch("List<.*List<T>>"));
         assertThat(printed, containsRegexMatch("List<.*List<\\? extends T>>"));
         assertThat(printed, containsRegexMatch("List<.*List<\\? super T>>"));
+    }
+
+    @GitHubIssue(issueNumber = 4881, fixed = true)
+    void bracketsShouldBeMinimallyPrintedForTypeCastOnFieldRead() {
+        // contract: the brackets should be minimally printed for type cast on field read
+        // arrange
+        Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
+        launcher.addInputResource("src/test/resources/printer-test/TypeCastOnFieldRead.java");
+
+        // act
+        CtModel model = launcher.buildModel();
+
+        // assert
+        CtLocalVariable<Integer> localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+        assertThat(localVariable.toString(), equalTo("int myInt = (int) myDouble"));
     }
 }
