@@ -79,8 +79,8 @@ public class DefaultJavaPrettyPrinterTest {
             "java.lang.String s = \"Sum: \" + (1 + 2)",
             "java.lang.String s = \"Sum: \" + 1 + 2",
             "java.lang.System.out.println(\"1\" + \"2\" + \"3\" + \"4\")",
-            "int myInt = (int) 0.0d",
-            "int myInt = (int) (float) 0.0d",
+            "int myInt = (int) 0.0",
+            "int myInt = (int) (float) 0.0",
     })
     public void testParenOptimizationCorrectlyPrintsParenthesesForStatements(String rawStatement) {
         // contract: When input expressions as part of statements are minimally parenthesized,
