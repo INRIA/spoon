@@ -89,7 +89,12 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 		}
 
 		if (targetedExpression instanceof CtFieldRead) {
-			context.addImport(((CtFieldRead<?>) targetedExpression).getVariable());
+			// Type can be null in no-classpath => Just add a computed import to keep existing ones alive
+			// Only add an import for the field if the type of the target is implicit, to prevent adding imports
+			// for fully-qualified field accesses.
+			if (target.getType() == null || target.getType().isImplicit()) {
+				context.addImport(((CtFieldRead<?>) targetedExpression).getVariable());
+			}
 		}
 
 		if (target.isImplicit()) {
