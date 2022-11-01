@@ -471,7 +471,9 @@ public class JDTTreeBuilderHelper {
 					qualifiedNameReference.actualReceiverType.getPackage(),
 					qualifiedNameReference, fieldReference.getSimpleName(), typeAccess.getAccessedType());
 		} else {
-			typeAccess.setImplicit(qualifiedNameReference.isImplicitThis());
+			if (qualifiedNameReference.isImplicitThis() || qualifiedNameReference.tokens.length == 2) {
+				typeAccess.setImplicit(true);
+			}
 		}
 		return typeAccess;
 	}
