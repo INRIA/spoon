@@ -305,8 +305,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.writeSeparator("(");
 				scan(r);
 				printer.writeSeparator(")").writeSpace();
-				printer.writeSeparator("(");
-				context.parenthesedExpression.push(e);
+				if (!isMinimizeRoundBrackets()) {
+					printer.writeSeparator("(");
+					context.parenthesedExpression.push(e);
+				}
 			}
 		}
 	}
@@ -400,7 +402,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean shouldSetBracket(CtExpression<?> e) {
-		if (!e.getTypeCasts().isEmpty()) {
+		if (!e.getTypeCasts().isEmpty() && !isMinimizeRoundBrackets()) {
 			return true;
 		}
 		try {
