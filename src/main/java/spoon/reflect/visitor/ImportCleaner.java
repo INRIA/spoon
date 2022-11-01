@@ -222,10 +222,22 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 		}
 
 		private boolean isReferencePresentInImports(CtReference ref) {
+			boolean found = compilationUnit.getImports()
+				.stream()
+				.anyMatch(ctImport -> ctImport.getReference() != null
+					&& isEqualAfterSkippingRole(ctImport.getReference(), ref, CtRole.TYPE_ARGUMENT));
+
+			if (found) {
+				return true;
+			}
+			if (!(ref instanceof CtFieldReference)) {
+				return false;
+			}
 			return compilationUnit.getImports()
-					.stream()
-					.anyMatch(ctImport -> ctImport.getReference() != null
-							&& isEqualAfterSkippingRole(ctImport.getReference(), ref, CtRole.TYPE_ARGUMENT));
+				.stream()
+				.filter(it -> it.getReference() instanceof CtTypeMemberWildcardImportReference)
+				.map(it -> (CtTypeMemberWildcardImportReference) it.getReference())
+				.anyMatch(it -> it.getTypeReference().equals(((CtFieldReference<?>) ref).getDeclaringType()));
 		}
 
 		/**
