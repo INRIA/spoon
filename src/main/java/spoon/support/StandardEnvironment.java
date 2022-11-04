@@ -257,16 +257,22 @@ public class StandardEnvironment implements Serializable, Environment {
 			buffer.append(" (Unknown Source)");
 		} else {
 			if (type != null) {
-				buffer.append(" at " + type.getQualifiedName() + ".");
+				buffer.append(" at ")
+							.append(type.getQualifiedName())
+							.append(".");
 			} else {
-				buffer.append("at  (??).");
+				buffer.append("at (?).");
 			}
 			CtExecutable<?> exe = (element instanceof CtExecutable) ? (CtExecutable<?>) element : element.getParent(CtExecutable.class);
 			if (exe != null) {
 				buffer.append(exe.getSimpleName());
 			}
 			if (sp.getFile() != null) {
-				buffer.append("(" + sp.getFile().getName() + ":" + sp.getLine() + ")");
+				buffer.append("(")
+							.append(sp.getFile().getName())
+							.append(":")
+							.append(sp.getLine())
+							.append(")");
 			} else {
 				buffer.append("(?:?)");
 			}
@@ -274,6 +280,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 		print(buffer.toString(), level);
 	}
+
 
 	@Override
 	public void report(Processor<?> processor, Level level, String message) {
