@@ -133,6 +133,6 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 			}
 		}
 		this.initializeParser();
-		return sourceUnitList.toArray(new CompilationUnit[sourceUnitList.size()]);
+		return sourceUnitList.toArray(new CompilationUnit[0]);
 	}
 }
