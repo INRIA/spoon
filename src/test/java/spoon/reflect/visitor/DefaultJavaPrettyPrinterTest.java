@@ -10,6 +10,8 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
+import spoon.SpoonModelBuilder;
+import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExecutableReferenceExpression;
@@ -33,6 +35,7 @@ import spoon.test.GitHubIssue;
 import spoon.test.SpoonTestHelpers;
 import spoon.testing.utils.ModelTest;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -327,16 +330,21 @@ public class DefaultJavaPrettyPrinterTest {
     }
 
     @GitHubIssue(issueNumber = 4881, fixed = true)
-    void bracketsShouldBeMinimallyPrintedForTypeCastOnFieldRead() {
+    void bracketsShouldBeMinimallyPrintedForTypeCastOnFieldRead() throws FileNotFoundException {
         // contract: the brackets should be minimally printed for type cast on field read
         // arrange
         Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
         launcher.addInputResource("src/test/resources/printer-test/TypeCastOnFieldRead.java");
+        Launcher launcherForCompilingPrettyPrintedString = createLauncherWithOptimizeParenthesesPrinter();
 
         // act
         CtModel model = launcher.buildModel();
+        launcher.prettyprint();
+        SpoonModelBuilder spoonModelBuilder = launcherForCompilingPrettyPrintedString.createCompiler(SpoonResourceHelper.resources("spooned/TypeCastOnFieldRead.java"));
 
         // assert
+        assertThat(spoonModelBuilder.build(), equalTo(true));
+
         CtLocalVariable<Integer> localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
         assertThat(localVariable.toString(), equalTo("int myInt = (int) myDouble"));
     }
