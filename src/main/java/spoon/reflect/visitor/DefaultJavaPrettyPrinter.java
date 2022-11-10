@@ -104,7 +104,6 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
