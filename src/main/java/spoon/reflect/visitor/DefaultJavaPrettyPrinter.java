@@ -414,27 +414,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					return requiresBrackets == RoundBracketAnalyzer.EncloseInRoundBrackets.YES;
 				}
 			}
-			if (isTargetOfInvocation(e)) {
-				return true;
-			}
 			if ((e.getParent() instanceof CtBinaryOperator) || (e.getParent() instanceof CtUnaryOperator)) {
 				return (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator) || e instanceof CtBinaryOperator;
 			}
 			if (e.getParent() instanceof CtTargetedExpression && ((CtTargetedExpression) e.getParent()).getTarget() == e) {
-				return (e instanceof CtBinaryOperator) || (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator);
+				return (e instanceof CtBinaryOperator) || (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator) || (e instanceof CtFieldRead && !e.getTypeCasts().isEmpty());
 			}
 		} catch (ParentNotInitializedException ex) {
 			// nothing we accept not to have a parent
 		}
 		return false;
-	}
-
-	/**
-	 * If the target of an invocation is type-casted, it must be enclosed in round brackets before attaching the
-	 * executable to it.
-	 */
-	private static boolean isTargetOfInvocation(CtExpression<?> e) {
-		return e.getRoleInParent() == CtRole.TARGET;
 	}
 
 	/**
