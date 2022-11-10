@@ -104,6 +104,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -413,6 +414,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					return requiresBrackets == RoundBracketAnalyzer.EncloseInRoundBrackets.YES;
 				}
 			}
+			if (isTargetOfInvocation(e)) {
+				return true;
+			}
 			if ((e.getParent() instanceof CtBinaryOperator) || (e.getParent() instanceof CtUnaryOperator)) {
 				return (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator) || e instanceof CtBinaryOperator;
 			}
@@ -423,6 +427,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			// nothing we accept not to have a parent
 		}
 		return false;
+	}
+
+	/**
+	 * If the target of an invocation is type-casted, it must be enclosed in round brackets before attaching the
+	 * executable to it.
+	 */
+	private static boolean isTargetOfInvocation(CtExpression<?> e) {
+		return e.getRoleInParent() == CtRole.TARGET;
 	}
 
 	/**

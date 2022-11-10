@@ -347,5 +347,8 @@ public class DefaultJavaPrettyPrinterTest {
 
         CtLocalVariable<Integer> localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
         assertThat(localVariable.toString(), equalTo("int myInt = (int) myDouble"));
+
+        CtLocalVariable<Integer> localVariable2 = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(1);
+        assertThat(localVariable2.toString(), equalTo("int myInt2 = ((java.lang.Double) myDouble).intValue()"));
     }
 }
