@@ -354,4 +354,24 @@ public class DefaultJavaPrettyPrinterTest {
         CtLocalVariable<Integer> localVariable3 = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(2);
         assertThat(localVariable3.toString(), equalTo("double withoutTypeCast = myDoubleObject.doubleValue()"));
     }
+
+    @Test
+    void bracketsShouldBeMinimallyPrintedOnShadowedFields() throws FileNotFoundException {
+        // contract: the brackets should be minimally printed for type cast on shadowed field read
+        // arrange
+        Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
+        launcher.addInputResource("src/test/resources/printer-test/ShadowFieldRead.java");
+        Launcher launcherForCompilingPrettyPrintedString = createLauncherWithOptimizeParenthesesPrinter();
+
+        // act
+        CtModel model = launcher.buildModel();
+        launcher.prettyprint();
+        SpoonModelBuilder spoonModelBuilder = launcherForCompilingPrettyPrintedString.createCompiler(SpoonResourceHelper.resources("spooned/ShadowFieldRead.java", "spooned/A.java", "spooned/C.java"));
+
+        // assert
+        assertThat(spoonModelBuilder.build(), equalTo(true));
+
+        CtLocalVariable<Integer> localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(1);
+        assertThat(localVariable.toString(), equalTo("int fieldReadOfA = ((A) c).a.i"));
+    }
 }
