@@ -402,25 +402,22 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean shouldSetBracket(CtExpression<?> e) {
-		if (!e.getTypeCasts().isEmpty() && !isMinimizeRoundBrackets()) {
+		if (isMinimizeRoundBrackets()) {
+			RoundBracketAnalyzer.EncloseInRoundBrackets requiresBrackets =
+					RoundBracketAnalyzer.requiresRoundBrackets(e);
+			if (requiresBrackets != RoundBracketAnalyzer.EncloseInRoundBrackets.UNKNOWN) {
+				return requiresBrackets == RoundBracketAnalyzer.EncloseInRoundBrackets.YES;
+			}
+		} else if (!e.getTypeCasts().isEmpty()) {
 			return true;
 		}
-		try {
-			if (isMinimizeRoundBrackets()) {
-				RoundBracketAnalyzer.EncloseInRoundBrackets requiresBrackets =
-						RoundBracketAnalyzer.requiresRoundBrackets(e);
-				if (requiresBrackets != RoundBracketAnalyzer.EncloseInRoundBrackets.UNKNOWN) {
-					return requiresBrackets == RoundBracketAnalyzer.EncloseInRoundBrackets.YES;
-				}
-			}
+		if (e.isParentInitialized()) {
 			if ((e.getParent() instanceof CtBinaryOperator) || (e.getParent() instanceof CtUnaryOperator)) {
 				return (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator) || e instanceof CtBinaryOperator;
 			}
 			if (e.getParent() instanceof CtTargetedExpression && ((CtTargetedExpression) e.getParent()).getTarget() == e) {
-				return (e instanceof CtBinaryOperator) || (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator) || (e instanceof CtVariableRead<?> && !e.getTypeCasts().isEmpty());
+				return (e instanceof CtBinaryOperator) || (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator);
 			}
-		} catch (ParentNotInitializedException ex) {
-			// nothing we accept not to have a parent
 		}
 		return false;
 	}
