@@ -121,12 +121,11 @@ public class LogTest {
 			public void process(CtConstructor<?> element) {
 				// do nothing
 			}
-			public boolean isToBeProcessed(CtConstructor<?> candidate) {
-        List<CtInvocation<?>> invocations = Query.getElements(candidate, new TypeFilter<>(CtInvocation.class));
-        invocations.forEach(i -> getEnvironment().report(this, Level.INFO, i, "Message"));
-        return false;
-			}
-		};
-		assertDoesNotThrow(() ->new FluentLauncher().inputResource(codePath).processor(processor).buildModel());
+		public boolean isToBeProcessed(CtConstructor<?> candidate) {
+        		List<CtInvocation<?>> invocations = Query.getElements(candidate, new TypeFilter<>(CtInvocation.class));
+        		invocations.forEach(i -> getEnvironment().report(this, Level.INFO, i, "Message"));
+       				return false;
+	  	}};
+		assertDoesNotThrow(() -> new FluentLauncher().inputResource(codePath).processor(processor).buildModel());
 	}
 }
