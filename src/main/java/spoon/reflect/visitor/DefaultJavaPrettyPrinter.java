@@ -408,6 +408,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (requiresBrackets != RoundBracketAnalyzer.EncloseInRoundBrackets.UNKNOWN) {
 				return requiresBrackets == RoundBracketAnalyzer.EncloseInRoundBrackets.YES;
 			}
+			if (e.isParentInitialized() && e.getParent() instanceof CtTargetedExpression && ((CtTargetedExpression) e.getParent()).getTarget() == e) {
+				return e instanceof CtVariableRead<?> && !e.getTypeCasts().isEmpty();
+			}
 		} else if (!e.getTypeCasts().isEmpty()) {
 			return true;
 		}
