@@ -23,7 +23,11 @@ public class ExecutableReferencePositionTestClass {
 
 		new ExecutableReferencePositionTestClass();
 		new <String>ExecutableReferencePositionTestClass(20);
+
+		new TestClassWithGenericParameter<String>();
 	}
+
+	private static class TestClassWithGenericParameter<X> {}
 
 	private static class TestUntypedExplicitConstructorCall {
 

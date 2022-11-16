@@ -1499,8 +1499,20 @@ public class PositionTest {
 			sourceSubstring(untypedInvocation.getExecutable().getPosition())
 		);
 		assertEquals(
-			"<String> ExecutableReferencePositionTestClass",
+			"<String>ExecutableReferencePositionTestClass",
 			sourceSubstring(typedInvocation.getExecutable().getPosition())
+		);
+	}
+
+	@ModelTest("src/test/java/spoon/test/position/testclasses/ExecutableReferencePositionTestClass.java")
+	void testExecutableReferenceWithGenericClassConstructorCall(Factory factory) {
+		CtType<?> type = factory.Type().getAll().get(0);
+		CtMethod<?> method = type.getMethodsByName("entrypoint").get(0);
+		CtConstructorCall<?> untypedInvocation = method.getBody().getStatement(6);
+
+		assertEquals(
+			"TestClassWithGenericParameter<String>",
+			sourceSubstring(untypedInvocation.getExecutable().getPosition())
 		);
 	}
 
