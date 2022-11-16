@@ -67,7 +67,9 @@ public class DefaultJavaPrettyPrinterTest {
             "1 | 2 & 3",
             "(1 | 2) & 3",
             "1 | 2 ^ 3",
-            "(1 | 2) ^ 3"
+            "(1 | 2) ^ 3",
+            "((int) (1 + 2)) * 3",
+            "(int) (int) (1 + 1)",
     })
     public void testParenOptimizationCorrectlyPrintsParenthesesForExpressions(String rawExpression) {
         // contract: When input expressions are minimally parenthesized, pretty-printed output

@@ -68,6 +68,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -296,7 +297,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeComment(e, CommentOffset.BEFORE);
 		}
 		getPrinterHelper().mapLine(e, sourceCompilationUnit);
-		if (shouldSetBracket(e)) {
+		if (shouldSetBracketAroundExpressionAndCast(e)) {
 			context.parenthesedExpression.push(e);
 			printer.writeSeparator("(");
 		}
@@ -305,12 +306,29 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.writeSeparator("(");
 				scan(r);
 				printer.writeSeparator(")").writeSpace();
-				if (!isMinimizeRoundBrackets()) {
-					printer.writeSeparator("(");
-					context.parenthesedExpression.push(e);
-				}
+			}
+			if (shouldSetBracketAroundCastTarget(e)) {
+				printer.writeSeparator("(");
+				context.parenthesedExpression.push(e);
 			}
 		}
+	}
+
+	private boolean shouldSetBracketAroundCastTarget(CtExpression<?> expr) {
+		if (!isMinimizeRoundBrackets()) {
+			return true;
+		}
+
+		if (expr instanceof CtTargetedExpression) {
+			return false;
+		}
+		if (expr instanceof CtLiteral) {
+			return false;
+		}
+		if (expr instanceof CtVariableAccess) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -401,12 +419,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return this;
 	}
 
-	private boolean shouldSetBracket(CtExpression<?> e) {
+	private boolean shouldSetBracketAroundExpressionAndCast(CtExpression<?> e) {
 		if (isMinimizeRoundBrackets()) {
 			RoundBracketAnalyzer.EncloseInRoundBrackets requiresBrackets =
 					RoundBracketAnalyzer.requiresRoundBrackets(e);
 			if (requiresBrackets != RoundBracketAnalyzer.EncloseInRoundBrackets.UNKNOWN) {
-				return requiresBrackets == RoundBracketAnalyzer.EncloseInRoundBrackets.YES && e.getTypeCasts().isEmpty();
+				return requiresBrackets == RoundBracketAnalyzer.EncloseInRoundBrackets.YES || !e.getTypeCasts().isEmpty();
 			}
 			if (e.isParentInitialized() && e.getParent() instanceof CtTargetedExpression && ((CtTargetedExpression) e.getParent()).getTarget() == e) {
 				return e instanceof CtVariableRead<?> && !e.getTypeCasts().isEmpty();

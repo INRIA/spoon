@@ -96,7 +96,7 @@ public class EvalTest {
 		CtBlock<?> b = type.getMethodsByName("testDoNotSimplifyCasts").get(0).getBody();
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
-		assertEquals("return ((U) ((java.lang.Object) (spoon.test.eval.testclasses.ToEvaluate.castTarget(element).getClass())))", b.getStatements().get(0).toString());
+		assertEquals("return ((U) (java.lang.Object) (spoon.test.eval.testclasses.ToEvaluate.castTarget(element).getClass()))", b.getStatements().get(0).toString());
 	}
 
 	@Test
