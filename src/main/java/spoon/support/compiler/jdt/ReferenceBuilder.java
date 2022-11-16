@@ -390,34 +390,19 @@ public class ReferenceBuilder {
 		);
 	}
 
-	<T> CtExecutableReference<T> getExecutableReference(ExplicitConstructorCall explicitConstructorCall) {
-		if (explicitConstructorCall.isImplicitSuper()) {
-			return getExecutableReference(
-				explicitConstructorCall.binding,
-				-1,
-				-1
-			);
+	<T> CtExecutableReference<T> getExecutableReference(ExplicitConstructorCall explicitConstructor) {
+		CtExecutableReference<T> ref = getExecutableReference(explicitConstructor.binding);
+		if (ref != null) {
+			ref.setImplicit(true);
 		}
-		// -3 for `(` and `)` and `;`
-		int end = explicitConstructorCall.nameSourceEnd() - 3;
-		if (explicitConstructorCall.arguments != null) {
-			for (Expression argument : explicitConstructorCall.arguments) {
-				// -2 for `(` and first char
-				end = Math.min(end, argument.sourceStart - 2);
-			}
-		}
-		int start = getExecutableRefSourceStart(
-			explicitConstructorCall.typeArguments,
-			explicitConstructorCall.nameSourceStart()
-		);
-		return getExecutableReference(
-			explicitConstructorCall.binding,
-			start,
-			end
-		);
+		return ref;
 	}
 
-	private <T> CtExecutableReference<T> getExecutableReference(MethodBinding exec, int sourceStart, int sourceEnd) {
+	private <T> CtExecutableReference<T> getExecutableReference(MethodBinding exec) {
+		return getExecutableReference(exec, -1, -1);
+	}
+
+	<T> CtExecutableReference<T> getExecutableReference(MethodBinding exec, int sourceStart, int sourceEnd) {
 		if (exec == null) {
 			return null;
 		}
@@ -487,11 +472,7 @@ public class ReferenceBuilder {
 	<T> CtExecutableReference<T> getExecutableReference(AllocationExpression allocationExpression) {
 		CtExecutableReference<T> ref;
 		if (allocationExpression.binding != null) {
-			ref = getExecutableReference(
-				allocationExpression.binding,
-				-1,
-				-1
-			);
+			ref = getExecutableReference(allocationExpression.binding);
 			// in some cases the binding is not null but points wrong to object type see #4643
 			if (isIncorrectlyBoundExecutableInNoClasspath(ref, allocationExpression)) {
 				adjustExecutableAccordingToResolvedType(ref, allocationExpression);

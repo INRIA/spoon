@@ -1546,26 +1546,16 @@ public class PositionTest {
 		CtInvocation<?> untypedSuperInvocation = untypedSuperConstructor.getBody().getStatement(0);
 		CtInvocation<?> typedSuperInvocation = typedSuperConstructor.getBody().getStatement(0);
 
-		assertEquals(
-			"this",
-			sourceSubstring(untypedInvocation.getExecutable().getPosition())
-		);
-		assertEquals(
-			"<String>this",
-			sourceSubstring(typedInvocation.getExecutable().getPosition())
-		);
-		assertEquals(
-			"this",
-			sourceSubstring(untypedNoArgsInvocation.getExecutable().getPosition())
-		);
-		assertEquals(
-			"super",
-			sourceSubstring(untypedSuperInvocation.getExecutable().getPosition())
-		);
-		assertEquals(
-			"<String>super",
-			sourceSubstring(typedSuperInvocation.getExecutable().getPosition())
-		);
+		assertTrue(untypedInvocation.getExecutable().isImplicit());
+		assertFalse(untypedInvocation.getExecutable().getPosition().isValidPosition());
+		assertTrue(typedInvocation.getExecutable().isImplicit());
+		assertFalse(typedInvocation.getExecutable().getPosition().isValidPosition());
+		assertTrue(untypedNoArgsInvocation.getExecutable().isImplicit());
+		assertFalse(untypedNoArgsInvocation.getExecutable().getPosition().isValidPosition());
+		assertTrue(untypedSuperInvocation.getExecutable().isImplicit());
+		assertFalse(untypedSuperInvocation.getExecutable().getPosition().isValidPosition());
+		assertTrue(typedSuperInvocation.getExecutable().isImplicit());
+		assertFalse(typedSuperInvocation.getExecutable().getPosition().isValidPosition());
 	}
 
 	private static String sourceSubstring(SourcePosition position) {
