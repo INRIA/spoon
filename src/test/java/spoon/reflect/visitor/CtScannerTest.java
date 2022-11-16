@@ -271,9 +271,9 @@ public class CtScannerTest {
 		// this is a coarse-grain check to see if the scanner changes
 		// no more exec ref in paramref
 		// also takes into account the comments
-		assertEquals(3655, counter.nElement + countOfCommentsInCompilationUnits);
-		assertEquals(2435, counter.nEnter + countOfCommentsInCompilationUnits);
-		assertEquals(2435, counter.nExit + countOfCommentsInCompilationUnits);
+		assertEquals(3631, counter.nElement + countOfCommentsInCompilationUnits);
+		assertEquals(2423, counter.nEnter + countOfCommentsInCompilationUnits);
+		assertEquals(2423, counter.nExit + countOfCommentsInCompilationUnits);
 
 		// contract: all AST nodes which are part of Collection or Map are visited first by method "scan(Collection|Map)" and then by method "scan(CtElement)"
 		Counter counter2 = new Counter();

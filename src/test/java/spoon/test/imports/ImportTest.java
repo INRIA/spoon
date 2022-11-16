@@ -92,6 +92,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
@@ -1772,5 +1774,48 @@ public class ImportTest {
 		assertEquals(1, compilationUnit.getImports().stream()
 				.filter(ctImport -> ctImport.prettyprint().equals("import spoon.test.imports.testclasses.badimportissue3320.source.other.SomeObjectDto;"))
 				.count());
+	}
+
+	@ModelTest("src/test/resources/imports/UnqualifiedCalls.java")
+	void correctlySetsThisTargetForUnqualifiedCalls(Factory factory) {
+		CtType<?> test = factory.Type().get("Test$Inner");
+		CtMethod<?> method = test.getMethodsByName("entrypoint").get(0);
+		CtInvocation<?> actualThisInvocation = method.getBody().getStatement(0);
+		CtInvocation<?> outerThisInvocation = method.getBody().getStatement(1);
+		CtInvocation<?> staticOuterInvocation = method.getBody().getStatement(2);
+		CtInvocation<?> staticInvocation = method.getBody().getStatement(3);
+
+		assertThat(actualThisInvocation.getTarget().isImplicit(), is(true));
+		assertThat(actualThisInvocation.getTarget(), is(instanceOf(CtThisAccess.class)));
+		assertThat(
+			((CtTypeAccess<?>) ((CtThisAccess<?>) actualThisInvocation.getTarget()).getTarget())
+				.getAccessedType()
+				.getQualifiedName(),
+			is("Test$Inner")
+		);
+
+		assertThat(outerThisInvocation.getTarget().isImplicit(), is(true));
+		assertThat(outerThisInvocation.getTarget(), is(instanceOf(CtThisAccess.class)));
+		assertThat(
+			((CtTypeAccess<?>) ((CtThisAccess<?>) outerThisInvocation.getTarget()).getTarget())
+				.getAccessedType()
+				.getQualifiedName(),
+			is("Test")
+		);
+
+		assertThat(staticOuterInvocation.getTarget().isImplicit(), is(true));
+		assertThat(staticOuterInvocation.getTarget(), is(instanceOf(CtTypeAccess.class)));
+		assertThat(
+			((CtTypeAccess<?>) staticOuterInvocation.getTarget()).getAccessedType().getQualifiedName(),
+			is("Test")
+		);
+
+		assertThat(staticInvocation.getTarget().isImplicit(), is(true));
+		assertThat(staticInvocation.getTarget(), is(instanceOf(CtTypeAccess.class)));
+		assertThat(
+			((CtTypeAccess<?>) staticInvocation.getTarget()).getAccessedType().getQualifiedName(),
+			is("java.lang.System")
+		);
+
 	}
 }
