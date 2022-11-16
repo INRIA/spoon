@@ -508,6 +508,11 @@ public class ReferenceBuilder {
 		CtExecutableReference<T> ref = jdtTreeBuilder.getFactory().Core().createExecutableReference();
 		ref.setSimpleName(CharOperation.charToString(messageSend.selector));
 		ref.setType(this.<T>getTypeReference(messageSend.expectedType(), true));
+		ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(
+			// (start << 32) + end
+			(int) (messageSend.nameSourcePosition >>> 32),
+			(int) messageSend.nameSourcePosition
+		));
 		if (messageSend.receiver.resolvedType == null) {
 			// It is crisis dude! static context, we don't have much more information.
 			ref.setStatic(true);
