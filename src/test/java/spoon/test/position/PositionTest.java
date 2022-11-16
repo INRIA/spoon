@@ -1494,14 +1494,10 @@ public class PositionTest {
 		CtConstructorCall<?> untypedInvocation = method.getBody().getStatement(4);
 		CtConstructorCall<?> typedInvocation = method.getBody().getStatement(5);
 
-		assertEquals(
-			"ExecutableReferencePositionTestClass",
-			sourceSubstring(untypedInvocation.getExecutable().getPosition())
-		);
-		assertEquals(
-			"<String>ExecutableReferencePositionTestClass",
-			sourceSubstring(typedInvocation.getExecutable().getPosition())
-		);
+		assertTrue(untypedInvocation.getExecutable().isImplicit());
+		assertFalse(untypedInvocation.getExecutable().getPosition().isValidPosition());
+		assertTrue(typedInvocation.getExecutable().isImplicit());
+		assertFalse(typedInvocation.getExecutable().getPosition().isValidPosition());
 	}
 
 	@ModelTest("src/test/java/spoon/test/position/testclasses/ExecutableReferencePositionTestClass.java")
@@ -1510,10 +1506,8 @@ public class PositionTest {
 		CtMethod<?> method = type.getMethodsByName("entrypoint").get(0);
 		CtConstructorCall<?> untypedInvocation = method.getBody().getStatement(6);
 
-		assertEquals(
-			"TestClassWithGenericParameter<String>",
-			sourceSubstring(untypedInvocation.getExecutable().getPosition())
-		);
+		assertTrue(untypedInvocation.getExecutable().isImplicit());
+		assertFalse(untypedInvocation.getExecutable().getPosition().isValidPosition());
 	}
 
 	@ModelTest("src/test/java/spoon/test/position/testclasses/ExecutableReferencePositionTestClass.java")

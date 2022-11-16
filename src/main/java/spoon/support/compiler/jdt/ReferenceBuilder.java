@@ -394,8 +394,8 @@ public class ReferenceBuilder {
 		if (explicitConstructorCall.isImplicitSuper()) {
 			return getExecutableReference(
 				explicitConstructorCall.binding,
-				explicitConstructorCall.nameSourceStart(),
-				explicitConstructorCall.nameSourceEnd()
+				-1,
+				-1
 			);
 		}
 		// -3 for `(` and `)` and `;`
@@ -422,7 +422,9 @@ public class ReferenceBuilder {
 			return null;
 		}
 		final CtExecutableReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createExecutableReference();
-		ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+		if (sourceStart >= 0 && sourceEnd >= 0) {
+			ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+		}
 		if (exec.isConstructor()) {
 			ref.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
 
@@ -487,8 +489,8 @@ public class ReferenceBuilder {
 		if (allocationExpression.binding != null) {
 			ref = getExecutableReference(
 				allocationExpression.binding,
-				getExecutableRefSourceStart(allocationExpression.typeArguments, allocationExpression.nameSourceStart()),
-				allocationExpression.nameSourceEnd()
+				-1,
+				-1
 			);
 			// in some cases the binding is not null but points wrong to object type see #4643
 			if (isIncorrectlyBoundExecutableInNoClasspath(ref, allocationExpression)) {
@@ -509,6 +511,7 @@ public class ReferenceBuilder {
 		if (allocationExpression.type == null) {
 			ref.setType(this.<T>getTypeReference(allocationExpression.expectedType(), true));
 		}
+		ref.setImplicit(true);
 		return ref;
 	}
 
@@ -564,9 +567,8 @@ public class ReferenceBuilder {
 		ref.setSimpleName(CharOperation.charToString(messageSend.selector));
 		ref.setType(this.<T>getTypeReference(messageSend.expectedType(), true));
 		ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(
-			// (start << 32) + end
-			(int) (messageSend.nameSourcePosition >>> 32),
-			(int) messageSend.nameSourcePosition
+			getExecutableRefSourceStart(messageSend.typeArguments, messageSend.nameSourceStart()),
+			messageSend.nameSourceEnd()
 		));
 		if (messageSend.receiver.resolvedType == null) {
 			// It is crisis dude! static context, we don't have much more information.
