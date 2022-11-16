@@ -13,6 +13,7 @@ import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.LambdaExpression;
@@ -22,6 +23,7 @@ import org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference
 import org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
@@ -83,7 +85,6 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.Level;
 import spoon.support.reflect.CtExtendedModifier;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -381,12 +382,47 @@ public class ReferenceBuilder {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	<T> CtExecutableReference<T> getExecutableReference(MethodBinding exec) {
+	<T> CtExecutableReference<T> getExecutableReference(ReferenceExpression referenceExpression) {
+		return getExecutableReference(
+			referenceExpression.binding,
+			getExecutableRefSourceStart(referenceExpression.typeArguments, referenceExpression.nameSourceStart),
+			referenceExpression.nameSourceEnd()
+		);
+	}
+
+	<T> CtExecutableReference<T> getExecutableReference(ExplicitConstructorCall explicitConstructorCall) {
+		if (explicitConstructorCall.isImplicitSuper()) {
+			return getExecutableReference(
+				explicitConstructorCall.binding,
+				explicitConstructorCall.nameSourceStart(),
+				explicitConstructorCall.nameSourceEnd()
+			);
+		}
+		// -3 for `(` and `)` and `;`
+		int end = explicitConstructorCall.nameSourceEnd() - 3;
+		if (explicitConstructorCall.arguments != null) {
+			for (Expression argument : explicitConstructorCall.arguments) {
+				// -2 for `(` and first char
+				end = Math.min(end, argument.sourceStart - 2);
+			}
+		}
+		int start = getExecutableRefSourceStart(
+			explicitConstructorCall.typeArguments,
+			explicitConstructorCall.nameSourceStart()
+		);
+		return getExecutableReference(
+			explicitConstructorCall.binding,
+			start,
+			end
+		);
+	}
+
+	private <T> CtExecutableReference<T> getExecutableReference(MethodBinding exec, int sourceStart, int sourceEnd) {
 		if (exec == null) {
 			return null;
 		}
-		final CtExecutableReference ref = this.jdtTreeBuilder.getFactory().Core().createExecutableReference();
+		final CtExecutableReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createExecutableReference();
+		ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 		if (exec.isConstructor()) {
 			ref.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
 
@@ -449,7 +485,11 @@ public class ReferenceBuilder {
 	<T> CtExecutableReference<T> getExecutableReference(AllocationExpression allocationExpression) {
 		CtExecutableReference<T> ref;
 		if (allocationExpression.binding != null) {
-			ref = getExecutableReference(allocationExpression.binding);
+			ref = getExecutableReference(
+				allocationExpression.binding,
+				getExecutableRefSourceStart(allocationExpression.typeArguments, allocationExpression.nameSourceStart()),
+				allocationExpression.nameSourceEnd()
+			);
 			// in some cases the binding is not null but points wrong to object type see #4643
 			if (isIncorrectlyBoundExecutableInNoClasspath(ref, allocationExpression)) {
 				adjustExecutableAccordingToResolvedType(ref, allocationExpression);
@@ -501,9 +541,24 @@ public class ReferenceBuilder {
 		ref.setDeclaringType(resolvedTypeRef);
 	}
 
+	private static int getExecutableRefSourceStart(TypeReference[] typeArguments, int start) {
+		int sourceStart = start;
+		if (typeArguments != null) {
+			for (TypeReference typeArgument : typeArguments) {
+				// We want to include the `<` to preserve symmetry with `>`
+				sourceStart = Math.min(typeArgument.sourceStart() - 1, sourceStart);
+			}
+		}
+		return sourceStart;
+	}
+
 	<T> CtExecutableReference<T> getExecutableReference(MessageSend messageSend) {
 		if (messageSend.binding != null) {
-			return getExecutableReference(messageSend.binding);
+			return getExecutableReference(
+				messageSend.binding,
+				getExecutableRefSourceStart(messageSend.typeArguments, messageSend.nameSourceStart()),
+				messageSend.nameSourceEnd()
+			);
 		}
 		CtExecutableReference<T> ref = jdtTreeBuilder.getFactory().Core().createExecutableReference();
 		ref.setSimpleName(CharOperation.charToString(messageSend.selector));
