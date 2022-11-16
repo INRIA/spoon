@@ -256,17 +256,31 @@ public class StandardEnvironment implements Serializable, Environment {
 		if (sp == null) {
 			buffer.append(" (Unknown Source)");
 		} else {
-			// TODO: will explode if type == null
-			buffer.append(" at " + type.getQualifiedName() + ".");
+			if (type != null) {
+				buffer.append(" at ")
+							.append(type.getQualifiedName())
+							.append(".");
+			} else {
+				buffer.append("at (?).");
+			}
 			CtExecutable<?> exe = (element instanceof CtExecutable) ? (CtExecutable<?>) element : element.getParent(CtExecutable.class);
 			if (exe != null) {
 				buffer.append(exe.getSimpleName());
 			}
-			buffer.append("(" + sp.getFile().getName() + ":" + sp.getLine() + ")");
+			if (sp.getFile() != null) {
+				buffer.append("(")
+							.append(sp.getFile().getName())
+							.append(":")
+							.append(sp.getLine())
+							.append(")");
+			} else {
+				buffer.append("(?:?)");
+			}
 		}
 
 		print(buffer.toString(), level);
 	}
+
 
 	@Override
 	public void report(Processor<?> processor, Level level, String message) {
