@@ -132,7 +132,14 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 					// TODO: this is not the best way to handle this, but it's the best we can do for now
 					if (annotationType != null) {
 						Target target = annotationType.getAnnotation(Target.class);
-						if (Arrays.stream(target.value()).anyMatch(e -> e == elementType)) {
+						// https://docs.oracle.com/javase/specs/jls/se19/html/jls-9.html#jls-9.6.4.1
+						// If an annotation of type java.lang.annotation.Target is not present on the declaration of
+						// an annotation interface A, then A is applicable in all declaration contexts and in no
+						// type contexts.
+						if (target == null && elementType == ElementType.TYPE_USE) {
+							continue;
+						}
+						if (target == null || Arrays.stream(target.value()).anyMatch(e -> e == elementType)) {
 							result.add(annotation.clone());
 						}
 					}
