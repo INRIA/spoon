@@ -51,6 +51,7 @@ class InlineTagParser {
 	}
 
 	private JavadocInlineTag parseStandardTag(StringReader reader, StandardJavadocTagType type) {
+		reader.readWhile(Character::isWhitespace);
 		switch (type) {
 			case CODE:
 			case DOC_ROOT:
