@@ -481,8 +481,7 @@ public class CompilationTest {
 		launcher.getEnvironment().setInputClassLoader(urlClassLoader);
 		String[] sourceClassPath = launcher.getEnvironment().getSourceClasspath();
 		assertEquals(1, sourceClassPath.length);
-		String tail = sourceClassPath[0].substring(sourceClassPath[0].length() - expected.length());
-		assertEquals(expected, tail);
+		assertEquals(Path.of(expected).toAbsolutePath(), Path.of(sourceClassPath[0]).toAbsolutePath());
 	}
 
 	@Test
