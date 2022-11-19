@@ -184,7 +184,7 @@ class LinkResolver {
 	) {
 		List<CtExecutableReference<?>> possibleMethods = type.getAllExecutables()
 			.stream()
-			.filter(it -> it.getSimpleName().equals(elementName))
+			.filter(it -> executableNameMatches(elementName, it))
 			.collect(Collectors.toList());
 
 		Optional<CtReference> relevantMethod;
@@ -200,6 +200,13 @@ class LinkResolver {
 		}
 
 		return relevantMethod;
+	}
+
+	private static boolean executableNameMatches(String elementName, CtExecutableReference<?> it) {
+		if (it.getSimpleName().equals(elementName)) {
+			return true;
+		}
+		return it.isConstructor() && it.getDeclaringType().getSimpleName().equals(elementName);
 	}
 
 	private boolean parameterTypesMatch(
