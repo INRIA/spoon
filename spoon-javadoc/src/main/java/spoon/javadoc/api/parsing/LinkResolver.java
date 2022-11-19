@@ -10,12 +10,15 @@ package spoon.javadoc.api.parsing;
 import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -152,6 +155,17 @@ class LinkResolver {
 	}
 
 	private Optional<CtReference> qualifyTypeNameForField(CtType<?> enclosingType, String memberName) {
+		if (enclosingType instanceof CtEnum<?>) {
+			Optional<CtReference> enumRef = ((CtEnum<?>) enclosingType).getEnumValues()
+				.stream()
+				.filter(it -> it.getSimpleName().equals(memberName))
+				.<CtReference>map(CtField::getReference)
+				.findFirst();
+
+			if (enumRef.isPresent()) {
+				return enumRef;
+			}
+		}
 		return enclosingType.getAllFields()
 			.stream()
 			.filter(it -> it.getSimpleName().equals(memberName))
