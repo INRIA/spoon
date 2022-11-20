@@ -763,11 +763,4 @@ private transient  ClassLoader inputClassloader;
 	public void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations) {
 		this.ignoreDuplicateDeclarations = ignoreDuplicateDeclarations;
 	}
-	
-	static public void foo() {
-		// TODO Auto-generated method stub
-		int[] a = null;
-		Arrays.toString(a);
-		boolean b = a == null | false;
-	}
 }
