@@ -471,7 +471,13 @@ public class JDTTreeBuilderHelper {
 					qualifiedNameReference.actualReceiverType.getPackage(),
 					qualifiedNameReference, fieldReference.getSimpleName(), typeAccess.getAccessedType());
 		} else {
-			if (qualifiedNameReference.isImplicitThis() || qualifiedNameReference.tokens.length == 2) {
+			// If we have an implicit this, the type access is implicit.
+			//   This happens for calls without a target like "foo()"
+			// If the qualified name references has only two tokens it consists of "Target.fieldName".
+			//   This happens for field accesses on statically imported constants: "CONSTANT.foo"
+			boolean isStaticallyImportedConstantFieldAccess = (receiverType != null && receiverType.isStatic())
+				&& qualifiedNameReference.tokens.length == 2;
+			if (qualifiedNameReference.isImplicitThis() || isStaticallyImportedConstantFieldAccess) {
 				typeAccess.setImplicit(true);
 			}
 		}
