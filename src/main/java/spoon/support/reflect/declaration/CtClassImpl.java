@@ -267,7 +267,7 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 		}
 	}
 
-	private class NewInstanceClassloader extends URLClassLoader {
+	private static class NewInstanceClassloader extends URLClassLoader {
 		NewInstanceClassloader(File binaryOutputDirectory) throws MalformedURLException {
 			super(new URL[] { binaryOutputDirectory.toURI().toURL()});
 		}
