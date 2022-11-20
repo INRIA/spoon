@@ -54,6 +54,9 @@ class BlockTagParser {
 	}
 
 	private JavadocElement parseStandardTag(StringReader reader, StandardJavadocTagType type) {
+		// Skip preceding whitespace
+		reader.readWhile(Character::isWhitespace);
+
 		switch (type) {
 			case AUTHOR:
 			case DEPRECATED:
