@@ -1464,10 +1464,13 @@ public class PositionTest {
 
 	@ModelTest("src/test/java/spoon/test/position/testclasses/ExecutableReferencePositionTestClass.java")
 	void testExecutableReferencesInInvocation(Factory factory) {
+		// contract: Executable references in invocations should have a proper source position
 		CtType<?> type = factory.Type().getAll().get(0);
 		CtMethod<?> method = type.getMethodsByName("entrypoint").get(0);
 
+		// referencedPlain();
 		CtInvocation<?> untypedInvocation = method.getBody().getStatement(2);
+		// ExecutableReferencePositionTestClass.<String>referencedTyped();
 		CtInvocation<?> typedInvocation = method.getBody().getStatement(3);
 
 		assertEquals("referencedPlain", sourceSubstring(untypedInvocation.getExecutable().getPosition()));
@@ -1476,10 +1479,13 @@ public class PositionTest {
 
 	@ModelTest("src/test/java/spoon/test/position/testclasses/ExecutableReferencePositionTestClass.java")
 	void testExecutableReferencesInMethodReference(Factory factory) {
+		// contract: Executable references in method references should have a proper source position
 		CtType<?> type = factory.Type().getAll().get(0);
 		CtMethod<?> method = type.getMethodsByName("entrypoint").get(0);
+		// Runnable r1 = ExecutableReferencePositionTestClass::referencedPlain;
 		CtLocalVariable<?> untypedVar = method.getBody().getStatement(0);
 		CtExecutableReferenceExpression<?, ?> untypedInvocation = (CtExecutableReferenceExpression<?, ?>) untypedVar.getAssignment();
+		// Runnable r2 = ExecutableReferencePositionTestClass::<String>referencedTyped;
 		CtLocalVariable<?> typedVar = method.getBody().getStatement(1);
 		CtExecutableReferenceExpression<?, ?> typedInvocation = (CtExecutableReferenceExpression<?, ?>) typedVar.getAssignment();
 
@@ -1489,9 +1495,12 @@ public class PositionTest {
 
 	@ModelTest("src/test/java/spoon/test/position/testclasses/ExecutableReferencePositionTestClass.java")
 	void testExecutableReferencesInConstructorCall(Factory factory) {
+		// contract: Executable references in constructor calls should not have a source position and be implicit
 		CtType<?> type = factory.Type().getAll().get(0);
 		CtMethod<?> method = type.getMethodsByName("entrypoint").get(0);
+		// new ExecutableReferencePositionTestClass();
 		CtConstructorCall<?> untypedInvocation = method.getBody().getStatement(4);
+		// new <String>ExecutableReferencePositionTestClass(20);
 		CtConstructorCall<?> typedInvocation = method.getBody().getStatement(5);
 
 		assertTrue(untypedInvocation.getExecutable().isImplicit());
@@ -1502,8 +1511,10 @@ public class PositionTest {
 
 	@ModelTest("src/test/java/spoon/test/position/testclasses/ExecutableReferencePositionTestClass.java")
 	void testExecutableReferenceWithGenericClassConstructorCall(Factory factory) {
+		// contract: Executable references in constructor calls should not have a source position and be implicit
 		CtType<?> type = factory.Type().getAll().get(0);
 		CtMethod<?> method = type.getMethodsByName("entrypoint").get(0);
+		// new TestClassWithGenericParameter<String>();
 		CtConstructorCall<?> untypedInvocation = method.getBody().getStatement(6);
 
 		assertTrue(untypedInvocation.getExecutable().isImplicit());
@@ -1512,6 +1523,8 @@ public class PositionTest {
 
 	@ModelTest("src/test/java/spoon/test/position/testclasses/ExecutableReferencePositionTestClass.java")
 	void testExecutableReferencesInExplicitConstructorInvocation(Factory factory) {
+		// contract: Executable references in explicit constructor calls (delegation) should not have a source position
+		//           and be implicit
 		CtType<?> enclosingType = factory.Type().getAll().get(0);
 		CtClass<?> untypedType = (CtClass<?>) enclosingType.getNestedTypes().stream()
 			.filter(it -> it.getSimpleName().equals("TestUntypedExplicitConstructorCall"))
