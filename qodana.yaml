@@ -1,6 +1,7 @@
-version: 1.0
 profile:
   name: qodana.recommended
+version: "1.0"
+linter: jetbrains/qodana-jvm-community:2022.3-eap
 include:
   - name: Anonymous2MethodRef
   - name: AssignmentToCatchBlockParameter
