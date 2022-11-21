@@ -1,4 +1,4 @@
-# Workflow for testing Spoon code quality.
+# Workflow for testing spoon code quality.
 #
 # Note that actions are specified by commit hash. This is to avoid the security
 # risk of someone injecting malicious code into a release and then simply
