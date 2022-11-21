@@ -20,6 +20,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -99,8 +100,10 @@ import spoon.support.reflect.code.CtAssignmentImpl;
 import spoon.support.reflect.code.CtConditionalImpl;
 import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
+import spoon.support.util.compilation.JavacFacade;
 import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
+import spoon.test.GitHubIssue;
 import spoon.test.generics.testclasses3.ComparableComparatorBug;
 import spoon.test.innerclasses.InnerClasses;
 import spoon.test.pkg.PackageTest;
@@ -840,4 +843,23 @@ public class JavaReflectionTreeBuilderTest {
 		assertThat(asClass.getConstructors().size(), equalTo(1));
 		assertThat(asClass.getConstructors().iterator().next().getParameters().size(), equalTo(inners.size()));
 	}
+
+	@GitHubIssue(issueNumber = 4972, fixed = false)
+	void parameterNamesAreParsedWhenCompilingWithParametersFlag() throws ClassNotFoundException {
+		ClassLoader loader = JavacFacade.compileFiles(
+			Map.of(
+				"Test",
+				"class Test {\n"
+					+ "  public void foo(String bar) {}\n" +
+					"}\n"
+			),
+			List.of("-parameters")
+		);
+		CtType<?> test = new JavaReflectionTreeBuilder(createFactory()).scan(loader.loadClass("Test"));
+		CtMethod<?> method = test.getMethodsByName("foo").get(0);
+		CtParameter<?> parameter = method.getParameters().get(0);
+
+		assertThat(parameter.getSimpleName(), is("bar"));
+	}
+
 }
