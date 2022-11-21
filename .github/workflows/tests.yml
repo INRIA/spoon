@@ -142,39 +142,20 @@ jobs:
       - name: Run Javadoc quality check
         run: ./chore/check-javadoc-regressions.py COMPARE_WITH_MASTER
 
-  code-quality: # we create a new step here because qodana analyzer takes around 10min
+  code-quality:
     runs-on: ubuntu-latest
-    env:
-      MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
-      QODANA_LINTER: jetbrains/qodana-jvm-community@sha256:c388ddd7b852296f71b1a786d3b30f458a993eb252d5cd4963422007e5b824db
     name: code-quality qodana
     steps:
-      - name: Checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
+      - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
         with:
-          path: pull_request
-      - uses: actions/setup-java@de1bb2b0c5634f0fc4438d7aa9944e68f9bf86cc # tag=v3.6.0
+          fetch-depth: 0
+      - name: 'Qodana Scan'
+        uses: JetBrains/qodana-action@v2022.2.2
         with:
-          java-version: 17
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-      - name: git reset
-        run: cd pull_request && git fetch && git reset --soft origin/master
-      - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@f8a64bc18ee8f15e4a7c6e092270c470da7ad091 # tag=v2022.2.2
+          args: --source-directory,./src/main/java , --fail-threshold, 0
+      - uses: github/codeql-action/upload-sarif@v2
         with:
-          linter: ${{ env.QODANA_LINTER }}
-          project-dir: "${{ github.workspace }}/pull_request"
-          inspected-dir: ./src/main/java # only main spoon project at first
-          results-dir:  "${{ github.workspace }}/result"
-          changes: true
-          fail-threshold: 0
-          use-annotations: false
-          use-caches: false # we disable cache for consistent results
-      - uses: github/codeql-action/upload-sarif@678fc3afe258fb2e0cdc165ccf77b85719de7b3c # v2
-        if: always()
-        with:
-          sarif_file: "${{ github.workspace }}/result/qodana.sarif.json"
-
+          sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
   reproducible-builds:
     runs-on: ubuntu-latest
     env:
