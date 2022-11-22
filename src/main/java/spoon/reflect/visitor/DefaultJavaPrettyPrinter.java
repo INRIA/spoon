@@ -68,6 +68,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -296,7 +297,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeComment(e, CommentOffset.BEFORE);
 		}
 		getPrinterHelper().mapLine(e, sourceCompilationUnit);
-		if (shouldSetBracket(e)) {
+		if (shouldSetBracketAroundExpressionAndCast(e)) {
 			context.parenthesedExpression.push(e);
 			printer.writeSeparator("(");
 		}
@@ -305,10 +306,29 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.writeSeparator("(");
 				scan(r);
 				printer.writeSeparator(")").writeSpace();
+			}
+			if (shouldSetBracketAroundCastTarget(e)) {
 				printer.writeSeparator("(");
 				context.parenthesedExpression.push(e);
 			}
 		}
+	}
+
+	private boolean shouldSetBracketAroundCastTarget(CtExpression<?> expr) {
+		if (!isMinimizeRoundBrackets()) {
+			return true;
+		}
+
+		if (expr instanceof CtTargetedExpression) {
+			return false;
+		}
+		if (expr instanceof CtLiteral) {
+			return false;
+		}
+		if (expr instanceof CtVariableAccess) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -399,26 +419,26 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return this;
 	}
 
-	private boolean shouldSetBracket(CtExpression<?> e) {
-		if (!e.getTypeCasts().isEmpty()) {
+	private boolean shouldSetBracketAroundExpressionAndCast(CtExpression<?> e) {
+		if (isMinimizeRoundBrackets()) {
+			RoundBracketAnalyzer.EncloseInRoundBrackets requiresBrackets =
+					RoundBracketAnalyzer.requiresRoundBrackets(e);
+			if (requiresBrackets != RoundBracketAnalyzer.EncloseInRoundBrackets.UNKNOWN) {
+				return requiresBrackets == RoundBracketAnalyzer.EncloseInRoundBrackets.YES || !e.getTypeCasts().isEmpty();
+			}
+			if (e.isParentInitialized() && e.getParent() instanceof CtTargetedExpression && ((CtTargetedExpression) e.getParent()).getTarget() == e) {
+				return e instanceof CtVariableRead<?> && !e.getTypeCasts().isEmpty();
+			}
+		} else if (!e.getTypeCasts().isEmpty()) {
 			return true;
 		}
-		try {
-			if (isMinimizeRoundBrackets()) {
-				RoundBracketAnalyzer.EncloseInRoundBrackets requiresBrackets =
-						RoundBracketAnalyzer.requiresRoundBrackets(e);
-				if (requiresBrackets != RoundBracketAnalyzer.EncloseInRoundBrackets.UNKNOWN) {
-					return requiresBrackets == RoundBracketAnalyzer.EncloseInRoundBrackets.YES;
-				}
-			}
+		if (e.isParentInitialized()) {
 			if ((e.getParent() instanceof CtBinaryOperator) || (e.getParent() instanceof CtUnaryOperator)) {
 				return (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator) || e instanceof CtBinaryOperator;
 			}
 			if (e.getParent() instanceof CtTargetedExpression && ((CtTargetedExpression) e.getParent()).getTarget() == e) {
 				return (e instanceof CtBinaryOperator) || (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator);
 			}
-		} catch (ParentNotInitializedException ex) {
-			// nothing we accept not to have a parent
 		}
 		return false;
 	}

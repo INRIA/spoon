@@ -10,6 +10,8 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
+import spoon.SpoonModelBuilder;
+import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExecutableReferenceExpression;
@@ -27,11 +29,13 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.test.GitHubIssue;
 import spoon.test.SpoonTestHelpers;
 import spoon.testing.utils.ModelTest;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -63,7 +67,9 @@ public class DefaultJavaPrettyPrinterTest {
             "1 | 2 & 3",
             "(1 | 2) & 3",
             "1 | 2 ^ 3",
-            "(1 | 2) ^ 3"
+            "(1 | 2) ^ 3",
+            "((int) (1 + 2)) * 3",
+            "(int) (int) (1 + 1)",
     })
     public void testParenOptimizationCorrectlyPrintsParenthesesForExpressions(String rawExpression) {
         // contract: When input expressions are minimally parenthesized, pretty-printed output
@@ -78,7 +84,9 @@ public class DefaultJavaPrettyPrinterTest {
             "int sum = 1 + 2 + 3",
             "java.lang.String s = \"Sum: \" + (1 + 2)",
             "java.lang.String s = \"Sum: \" + 1 + 2",
-            "java.lang.System.out.println(\"1\" + \"2\" + \"3\" + \"4\")"
+            "java.lang.System.out.println(\"1\" + \"2\" + \"3\" + \"4\")",
+            "int myInt = (int) 0.0",
+            "int myInt = (int) (float) 0.0",
     })
     public void testParenOptimizationCorrectlyPrintsParenthesesForStatements(String rawStatement) {
         // contract: When input expressions as part of statements are minimally parenthesized,
@@ -321,5 +329,51 @@ public class DefaultJavaPrettyPrinterTest {
         assertThat(printed, containsRegexMatch("List<.*List<T>>"));
         assertThat(printed, containsRegexMatch("List<.*List<\\? extends T>>"));
         assertThat(printed, containsRegexMatch("List<.*List<\\? super T>>"));
+    }
+
+    @GitHubIssue(issueNumber = 4881, fixed = true)
+    void bracketsShouldBeMinimallyPrintedForTypeCastOnFieldRead() throws FileNotFoundException {
+        // contract: the brackets should be minimally printed for type cast on field read
+        // arrange
+        Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
+        launcher.addInputResource("src/test/resources/printer-test/TypeCastOnFieldRead.java");
+        Launcher launcherForCompilingPrettyPrintedString = createLauncherWithOptimizeParenthesesPrinter();
+
+        // act
+        CtModel model = launcher.buildModel();
+        launcher.prettyprint();
+        SpoonModelBuilder spoonModelBuilder = launcherForCompilingPrettyPrintedString.createCompiler(SpoonResourceHelper.resources("spooned/TypeCastOnFieldRead.java"));
+
+        // assert
+        assertThat(spoonModelBuilder.build(), equalTo(true));
+
+        CtLocalVariable<Integer> localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+        assertThat(localVariable.toString(), equalTo("int myInt = (int) myDouble"));
+
+        CtLocalVariable<Integer> localVariable2 = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(1);
+        assertThat(localVariable2.toString(), equalTo("int myInt2 = ((java.lang.Double) myDouble).intValue()"));
+
+        CtLocalVariable<Integer> localVariable3 = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(2);
+        assertThat(localVariable3.toString(), equalTo("double withoutTypeCast = myDoubleObject.doubleValue()"));
+    }
+
+    @Test
+    void bracketsShouldBeMinimallyPrintedOnShadowedFields() throws FileNotFoundException {
+        // contract: the brackets should be minimally printed for type cast on shadowed field read
+        // arrange
+        Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
+        launcher.addInputResource("src/test/resources/printer-test/ShadowFieldRead.java");
+        Launcher launcherForCompilingPrettyPrintedString = createLauncherWithOptimizeParenthesesPrinter();
+
+        // act
+        CtModel model = launcher.buildModel();
+        launcher.prettyprint();
+        SpoonModelBuilder spoonModelBuilder = launcherForCompilingPrettyPrintedString.createCompiler(SpoonResourceHelper.resources("spooned/ShadowFieldRead.java", "spooned/A.java", "spooned/C.java"));
+
+        // assert
+        assertThat(spoonModelBuilder.build(), equalTo(true));
+
+        CtLocalVariable<Integer> localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(1);
+        assertThat(localVariable.toString(), equalTo("int fieldReadOfA = ((A) c).a.i"));
     }
 }
