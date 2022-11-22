@@ -683,7 +683,7 @@ public class JDTTreeBuilderHelper {
 	 */
 	<T, E extends CtExpression<?>> CtExecutableReferenceExpression<T, E> createExecutableReferenceExpression(ReferenceExpression referenceExpression) {
 		CtExecutableReferenceExpression<T, E> executableRef = jdtTreeBuilder.getFactory().Core().createExecutableReferenceExpression();
-		CtExecutableReference<T> executableReference = jdtTreeBuilder.getReferencesBuilder().getExecutableReference(referenceExpression.binding);
+		CtExecutableReference<T> executableReference = jdtTreeBuilder.getReferencesBuilder().getExecutableReference(referenceExpression);
 		if (executableReference == null) {
 			// No classpath mode.
 			executableReference = jdtTreeBuilder.getFactory().Core().createExecutableReference();
