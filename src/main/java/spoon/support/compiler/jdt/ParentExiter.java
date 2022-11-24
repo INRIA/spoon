@@ -720,11 +720,13 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (child instanceof CtExpression) {
 			if (hasChildEqualsToReceiver(invocation) || hasChildEqualsToQualification(invocation)) {
 				if (child instanceof CtThisAccess) {
-					final CtTypeReference<?> declaringType = invocation.getExecutable().getDeclaringType();
-					if (declaringType != null && invocation.getExecutable().isStatic() && child.isImplicit()) {
-						invocation.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(declaringType, true));
-					} else {
-						invocation.setTarget((CtThisAccess<?>) child);
+					if (!setTargetFromUnqualifiedAccess(invocation)) {
+						final CtTypeReference<?> declaringType = invocation.getExecutable().getDeclaringType();
+						if (declaringType != null && invocation.getExecutable().isStatic() && child.isImplicit()) {
+							invocation.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(declaringType, true));
+						} else {
+							invocation.setTarget((CtThisAccess<?>) child);
+						}
 					}
 				} else {
 					invocation.setTarget((CtExpression<?>) child);
@@ -735,6 +737,51 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtInvocation(invocation);
+	}
+
+	private <T> boolean setTargetFromUnqualifiedAccess(CtInvocation<T> invocation) {
+		// A call to a statically imported method (e.g. assertTrue(false)) is modelled as
+		// "this.assertTrue(false)" by JDT. We need to unscramble that heuristically and replace the
+		// "this" reference with the correct type (e.g. org.junit.api.Assertions)
+
+		// Additionally, references to methods of enclosing classes are also modelled as "this" by JDT.
+		// Compare with Test "correctlySetsThisTargetForUnqualifiedCalls".
+
+		// We need a MessageSend as the parent to resolve the actualType from the receiver
+		if (!(parentPair.node instanceof MessageSend)) {
+			return false;
+		}
+		MessageSend messageSend = (MessageSend) parentPair.node;
+		if (messageSend.actualReceiverType == null || messageSend.receiver.resolvedType == null) {
+			return false;
+		}
+
+		ReferenceBuilder referenceBuilder = jdtTreeBuilder.getReferencesBuilder();
+		CtTypeReference<?> actualReceiverType = referenceBuilder.getTypeReference(messageSend.actualReceiverType);
+		CtTypeReference<?> resolvedReceiverType = referenceBuilder.getTypeReference(messageSend.receiver.resolvedType);
+
+		// If they match we have a normal "this" reference
+		if (actualReceiverType.equals(resolvedReceiverType)) {
+			return false;
+		}
+
+		if (messageSend.binding() == null || !messageSend.binding().isStatic()) {
+			// Emulate outer this access
+			while (resolvedReceiverType != null) {
+				resolvedReceiverType = resolvedReceiverType.getDeclaringType();
+				if (actualReceiverType.equals(resolvedReceiverType)) {
+					invocation.setTarget(jdtTreeBuilder.getFactory().Code().createThisAccess(actualReceiverType, true));
+					return true;
+				}
+			}
+			// I don't think this can happen but let's be conservative and preserve the previous behaviour
+			return false;
+		}
+
+		// If not, we probably had a static import/static outer method reference here and should use the actual type
+		// instead
+		invocation.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(actualReceiverType, true));
+		return true;
 	}
 
 	private <T> boolean hasChildEqualsToQualification(CtInvocation<T> ctInvocation) {
