@@ -9,7 +9,7 @@
 # fails if anything fails
 set -e
 
-pip install --user CommonMark==0.7.5 requests pygithub
+pip install --user CommonMark==0.9.1 requests pygithub
 
 mvn -version
 
