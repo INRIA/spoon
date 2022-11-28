@@ -122,7 +122,7 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
       - uses: actions/setup-python@13ae5bb136fac2878aff31522b9efb785519f984 # tag=v4.3.0
         with:
-          python-version: 3.6
+          python-version: 3.11
 
       - name: Get date for cache # see https://github.com/actions/cache README
         id: get-date
