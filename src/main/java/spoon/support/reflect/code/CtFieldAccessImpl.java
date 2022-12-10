@@ -33,7 +33,7 @@ public abstract class CtFieldAccessImpl<T> extends CtVariableAccessImpl<T> imple
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TARGET, target, this.target);
 		this.target = target;
-		return null;
+		return (C) this;
 	}
 
 	@Override
