@@ -35,25 +35,34 @@ import spoon.metamodel.Metamodel;
 import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.CtModel;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtSuperAccess;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.adaption.TypeAdaptor;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -533,4 +542,65 @@ public class SpoonArchitectureEnforcerTest {
 		fields.removeAll(fieldsWithRead);
 		assertEquals(Collections.emptyList(), fields, "Some Fields have no read/write");
 	}
+
+	@ModelTest("src/main/java")
+	void fluentSetterReturnsThis(CtModel model, Factory factory) {
+		// contract: Fluent API setters return this and not null
+
+		CtTypeReference<?> element = factory.Type().get(CtElement.class).getReference();
+		for (CtModule module : model.getAllModules()) {
+			module.accept(new CtScanner() {
+				@Override
+				public <T> void visitCtMethod(CtMethod<T> m) {
+					if (!TypeAdaptor.isSubtype(m.getDeclaringType(), element)) {
+						return;
+					}
+					if(!isFluentSetter(m)) {
+						return;
+					}
+
+					m.accept(new CtScanner() {
+						@Override
+						public <R> void visitCtReturn(CtReturn<R> returnStatement) {
+							if (returnStatement.getReturnedExpression() instanceof CtThisAccess) {
+								return;
+							}
+							if (returnStatement.getReturnedExpression() instanceof CtInvocation) {
+								CtInvocation<?> invocation = ((CtInvocation<R>) returnStatement.getReturnedExpression());
+								// returning "super.foo()" in "foo" is allowed
+								if (invocation.getTarget() instanceof CtSuperAccess) {
+									return;
+								}
+								// returning "this.bar()" in "foo" is allowed
+								if (invocation.getTarget() instanceof CtThisAccess) {
+									return;
+								}
+							}
+							fail(
+								"Return statement in property setter "
+									+ m.getDeclaringType().getQualifiedName() + "#" + m.getSignature()
+									+ " does not return this: " + returnStatement
+							);
+						}
+					});
+				}
+
+				private <T> boolean isFluentSetter(CtMethod<T> m) {
+					if (m.getType().isPrimitive()) {
+						return false;
+					}
+					if (m.hasAnnotation(PropertySetter.class)) {
+						return true;
+					}
+					for (CtMethod<?> topDefinition : m.getTopDefinitions()) {
+						if (topDefinition.hasAnnotation(PropertySetter.class)) {
+							return true;
+						}
+					}
+					return false;
+				}
+			});
+		}
+	}
+
 }
