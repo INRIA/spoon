@@ -689,7 +689,7 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals(false, ctClass.isAnonymous());
 		assertEquals(true, ctClass.isShadow());
 		assertTrue("element".contains(ctClass.getFields().toArray(new CtField[0])[0].getSimpleName()) ||
-				"other".contains(ctClass.getFields().toArray(new CtField[0])[0].getSimpleName()));
+							"other".contains(ctClass.getFields().toArray(new CtField[0])[0].getSimpleName()));
 	}
 
 
