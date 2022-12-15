@@ -1,5 +1,9 @@
 version = 1
 
+test_patterns = ["src/test/**"]
+
+exclude_patterns = ["**/testclasses/**"]
+
 [[analyzers]]
 name = "java"
 enabled = true
