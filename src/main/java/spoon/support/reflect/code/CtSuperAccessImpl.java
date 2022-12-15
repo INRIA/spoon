@@ -39,7 +39,7 @@ public class CtSuperAccessImpl<T> extends CtVariableReadImpl<T> implements CtSup
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TARGET, target, this.target);
 		this.target = target;
-		return null;
+		return (C) this;
 	}
 
 	@Override
