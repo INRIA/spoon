@@ -31,7 +31,7 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.codehaus.plexus.util.CollectionUtils;
 
-import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -277,7 +277,7 @@ public class IncrementalLauncher extends Launcher {
 		CacheInfo newCacheInfo = new CacheInfo();
 		newCacheInfo.lastBuildTime = System.currentTimeMillis();
 		Map<File, Set<File>> newSourcesMap = new HashMap<>();
-		for (Entry<String, CompilationUnit> e : factory.CompilationUnit().getMap().entrySet()) {
+		for (Entry<String, CtCompilationUnit> e : factory.CompilationUnit().getMap().entrySet()) {
 			newSourcesMap.put(new File(e.getKey()), new HashSet<>(e.getValue().getBinaryFiles()));
 		}
 

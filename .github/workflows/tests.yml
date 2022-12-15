@@ -43,7 +43,7 @@ jobs:
       - name: Disable Git's autocrlf
         run: git config --global core.autocrlf false
       - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
-      - uses: actions/setup-java@de1bb2b0c5634f0fc4438d7aa9944e68f9bf86cc # tag=v3.6.0
+      - uses: actions/setup-java@c3ac5dd0ed8db40fedb61c32fbe677e6b355e94c # v3.8.0
         with:
           java-version: ${{ matrix.java }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -80,7 +80,7 @@ jobs:
     name: Test with coverage
     steps:
       - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
-      - uses: actions/setup-java@de1bb2b0c5634f0fc4438d7aa9944e68f9bf86cc # tag=v3.6.0
+      - uses: actions/setup-java@c3ac5dd0ed8db40fedb61c32fbe677e6b355e94c # v3.8.0
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -116,13 +116,13 @@ jobs:
       - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@de1bb2b0c5634f0fc4438d7aa9944e68f9bf86cc # tag=v3.6.0
+      - uses: actions/setup-java@c3ac5dd0ed8db40fedb61c32fbe677e6b355e94c # v3.8.0
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}
       - uses: actions/setup-python@13ae5bb136fac2878aff31522b9efb785519f984 # tag=v4.3.0
         with:
-          python-version: 3.6
+          python-version: 3.11
 
       - name: Get date for cache # see https://github.com/actions/cache README
         id: get-date
@@ -141,40 +141,6 @@ jobs:
         run: ./chore/ci-extra.sh
       - name: Run Javadoc quality check
         run: ./chore/check-javadoc-regressions.py COMPARE_WITH_MASTER
-
-  code-quality: # we create a new step here because qodana analyzer takes around 10min
-    runs-on: ubuntu-latest
-    env:
-      MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
-      QODANA_LINTER: jetbrains/qodana-jvm-community@sha256:c388ddd7b852296f71b1a786d3b30f458a993eb252d5cd4963422007e5b824db
-    name: code-quality qodana
-    steps:
-      - name: Checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
-        with:
-          path: pull_request
-      - uses: actions/setup-java@de1bb2b0c5634f0fc4438d7aa9944e68f9bf86cc # tag=v3.6.0
-        with:
-          java-version: 17
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-      - name: git reset
-        run: cd pull_request && git fetch && git reset --soft origin/master
-      - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@f8a64bc18ee8f15e4a7c6e092270c470da7ad091 # tag=v2022.2.2
-        with:
-          linter: ${{ env.QODANA_LINTER }}
-          project-dir: "${{ github.workspace }}/pull_request"
-          inspected-dir: ./src/main/java # only main spoon project at first
-          results-dir:  "${{ github.workspace }}/result"
-          changes: true
-          fail-threshold: 0
-          use-annotations: false
-          use-caches: false # we disable cache for consistent results
-      - uses: github/codeql-action/upload-sarif@cc7986c02bac29104a72998e67239bb5ee2ee110 # tag=v2
-        if: always()
-        with:
-          sarif_file: "${{ github.workspace }}/result/qodana.sarif.json"
-
   reproducible-builds:
     runs-on: ubuntu-latest
     env:
@@ -184,7 +150,7 @@ jobs:
       - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@de1bb2b0c5634f0fc4438d7aa9944e68f9bf86cc # tag=v3.6.0
+      - uses: actions/setup-java@c3ac5dd0ed8db40fedb61c32fbe677e6b355e94c # v3.8.0
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}

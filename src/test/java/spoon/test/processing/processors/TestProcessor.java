@@ -19,8 +19,8 @@ package spoon.test.processing.processors;
 import java.util.Date;
 
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtTypedElement;
@@ -52,7 +52,7 @@ public class TestProcessor extends AbstractProcessor<CtElement> {
 			CtClass<?> c = (CtClass<?>) element;
 			if ("Secondary".equals(c.getSimpleName())) {
 				@SuppressWarnings("unused")
-				CompilationUnit cu = c.getPosition().getCompilationUnit();
+				CtCompilationUnit cu = c.getPosition().getCompilationUnit();
 			}
 			if ("C1".equals(c.getSimpleName())) {
 				Substitution.insertAll(c, new TemplateWithConstructor(

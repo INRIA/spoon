@@ -15,9 +15,9 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnonymousExecutable;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -105,7 +105,7 @@ public class ContractVerifier {
 					continue;
 				}
 				SourcePosition position = modifier.getPosition();
-				CompilationUnit compilationUnit = position.getCompilationUnit();
+				CtCompilationUnit compilationUnit = position.getCompilationUnit();
 				String originalSourceCode = compilationUnit.getOriginalSourceCode();
 				assertEquals(modifier.getKind().toString(), originalSourceCode.substring(position.getSourceStart(), position.getSourceEnd() + 1));
 			}

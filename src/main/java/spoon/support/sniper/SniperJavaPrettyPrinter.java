@@ -22,7 +22,6 @@ import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtComment;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
@@ -268,7 +267,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	public String printElementSniper(CtElement element) {
 		reset();
 		if (!hasImplicitAncestor(element)) {
-			CompilationUnit compilationUnit = element.getPosition().getCompilationUnit();
+			CtCompilationUnit compilationUnit = element.getPosition().getCompilationUnit();
 			if (compilationUnit != null
 					&& !(compilationUnit instanceof NoSourcePosition.NullCompilationUnit)) {
 
@@ -407,10 +406,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	 * Call normal java printing in defined `context`
 	 * @param element to be printed element
 	 * @param context to be used context
-	 * @param muted whether it has to be processed using
-	 * 	true - muted,
-	 * 	false - not muted
-	 * 	null - same like before
 	 */
 	private void superScanInContext(CtElement element, SourceFragmentPrinter context) {
 			runInContext(context, () -> super.scan(element));

@@ -32,7 +32,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -92,6 +92,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
@@ -363,7 +365,7 @@ public class ImportTest {
 		final CtType<Object> aTacos = launcher.getFactory().Type().get(Tacos.class);
 		final CtStatement assignment = aTacos.getMethod("m").getBody().getStatement(0);
 		assertTrue(assignment instanceof CtLocalVariable);
-		assertEquals("Constants.CONSTANT.foo", printByPrinter(((CtLocalVariable) assignment).getAssignment()));
+		assertEquals("CONSTANT.foo", printByPrinter(((CtLocalVariable) assignment).getAssignment()));
 	}
 
 	@Test
@@ -1282,7 +1284,7 @@ public class ImportTest {
 		launcher.run();
 
 		File f = new File("./src/test/java/spoon/test/imports/testclasses/DumbClassUsingInternal.java");
-		CompilationUnit cu = launcher.getFactory().CompilationUnit().getMap().get(f.getCanonicalPath());
+		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getMap().get(f.getCanonicalPath());
 
 		assertNotNull(cu);
 
@@ -1767,10 +1769,53 @@ public class ImportTest {
 		launcher.run();
 
 		CtType<TestSource> objectCtType = launcher.getFactory().Type().get(TestSource.class);
-		CompilationUnit compilationUnit = launcher.getFactory().CompilationUnit().getOrCreate(objectCtType);
+		CtCompilationUnit compilationUnit = launcher.getFactory().CompilationUnit().getOrCreate(objectCtType);
 
 		assertEquals(1, compilationUnit.getImports().stream()
 				.filter(ctImport -> ctImport.prettyprint().equals("import spoon.test.imports.testclasses.badimportissue3320.source.other.SomeObjectDto;"))
 				.count());
+	}
+
+	@ModelTest("src/test/resources/imports/UnqualifiedCalls.java")
+	void correctlySetsThisTargetForUnqualifiedCalls(Factory factory) {
+		CtType<?> test = factory.Type().get("Test$Inner");
+		CtMethod<?> method = test.getMethodsByName("entrypoint").get(0);
+		CtInvocation<?> actualThisInvocation = method.getBody().getStatement(0);
+		CtInvocation<?> outerThisInvocation = method.getBody().getStatement(1);
+		CtInvocation<?> staticOuterInvocation = method.getBody().getStatement(2);
+		CtInvocation<?> staticInvocation = method.getBody().getStatement(3);
+
+		assertThat(actualThisInvocation.getTarget().isImplicit(), is(true));
+		assertThat(actualThisInvocation.getTarget(), is(instanceOf(CtThisAccess.class)));
+		assertThat(
+			((CtTypeAccess<?>) ((CtThisAccess<?>) actualThisInvocation.getTarget()).getTarget())
+				.getAccessedType()
+				.getQualifiedName(),
+			is("Test$Inner")
+		);
+
+		assertThat(outerThisInvocation.getTarget().isImplicit(), is(true));
+		assertThat(outerThisInvocation.getTarget(), is(instanceOf(CtThisAccess.class)));
+		assertThat(
+			((CtTypeAccess<?>) ((CtThisAccess<?>) outerThisInvocation.getTarget()).getTarget())
+				.getAccessedType()
+				.getQualifiedName(),
+			is("Test")
+		);
+
+		assertThat(staticOuterInvocation.getTarget().isImplicit(), is(true));
+		assertThat(staticOuterInvocation.getTarget(), is(instanceOf(CtTypeAccess.class)));
+		assertThat(
+			((CtTypeAccess<?>) staticOuterInvocation.getTarget()).getAccessedType().getQualifiedName(),
+			is("Test")
+		);
+
+		assertThat(staticInvocation.getTarget().isImplicit(), is(true));
+		assertThat(staticInvocation.getTarget(), is(instanceOf(CtTypeAccess.class)));
+		assertThat(
+			((CtTypeAccess<?>) staticInvocation.getTarget()).getAccessedType().getQualifiedName(),
+			is("java.lang.System")
+		);
+
 	}
 }

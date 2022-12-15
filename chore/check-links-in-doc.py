@@ -2,7 +2,7 @@
 # checks the links of the Spoon documentation
 # a problem is reported as an exception, hence as a Unic return code != -1, hence as a build failure
 
-import CommonMark
+import commonmark
 import glob
 import os
 import codecs
@@ -23,7 +23,7 @@ def check_external_url(url):
 
 
 def main(where):
-  parser = CommonMark.Parser()
+  parser = commonmark.Parser()
 
   for root, subdirs, files in os.walk(where):
     for i in files:
@@ -44,6 +44,6 @@ def main(where):
             if not os.path.exists(linked_page): raise Exception("no such page "+linked_page)
     
 def debug(filename):
-  print("\n".join(str(x) for x in list(CommonMark.Parser().parse(codecs.open(filename, encoding="utf8").read()).walker())))
+  print("\n".join(str(x) for x in list(commonmark.Parser().parse(codecs.open(filename, encoding="utf8").read()).walker())))
 
 main("./doc")

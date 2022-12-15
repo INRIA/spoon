@@ -19,8 +19,8 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -64,7 +64,7 @@ public class ContextBuilder {
 
 	CompilationUnitDeclaration compilationunitdeclaration;
 
-	CompilationUnit compilationUnitSpoon;
+	CtCompilationUnit compilationUnitSpoon;
 
 	boolean isBuildLambda;
 

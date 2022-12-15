@@ -7,8 +7,8 @@
  */
 package spoon.support.reflect.cu.position;
 
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
+import spoon.reflect.declaration.CtCompilationUnit;
 
 /**
  * This class represents the position of a Java program element in a source
@@ -22,7 +22,7 @@ public class BodyHolderSourcePositionImpl extends DeclarationSourcePositionImpl
 	private int bodyEnd;
 
 	public BodyHolderSourcePositionImpl(
-			CompilationUnit compilationUnit,
+			CtCompilationUnit compilationUnit,
 			int nameStart, int nameEnd,
 			int modifierSourceStart, int modifierSourceEnd,
 			int declarationSourceStart, int declarationSourceEnd,

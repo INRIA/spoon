@@ -471,7 +471,15 @@ public class JDTTreeBuilderHelper {
 					qualifiedNameReference.actualReceiverType.getPackage(),
 					qualifiedNameReference, fieldReference.getSimpleName(), typeAccess.getAccessedType());
 		} else {
-			typeAccess.setImplicit(qualifiedNameReference.isImplicitThis());
+			// If we have an implicit this, the type access is implicit.
+			//   This happens for calls without a target like "foo()"
+			// If the qualified name references has only two tokens it consists of "Target.fieldName".
+			//   This happens for field accesses on statically imported constants: "CONSTANT.foo"
+			boolean isStaticallyImportedConstantFieldAccess = (receiverType != null && receiverType.isStatic())
+				&& qualifiedNameReference.tokens.length == 2;
+			if (qualifiedNameReference.isImplicitThis() || isStaticallyImportedConstantFieldAccess) {
+				typeAccess.setImplicit(true);
+			}
 		}
 		return typeAccess;
 	}
@@ -683,7 +691,7 @@ public class JDTTreeBuilderHelper {
 	 */
 	<T, E extends CtExpression<?>> CtExecutableReferenceExpression<T, E> createExecutableReferenceExpression(ReferenceExpression referenceExpression) {
 		CtExecutableReferenceExpression<T, E> executableRef = jdtTreeBuilder.getFactory().Core().createExecutableReferenceExpression();
-		CtExecutableReference<T> executableReference = jdtTreeBuilder.getReferencesBuilder().getExecutableReference(referenceExpression.binding);
+		CtExecutableReference<T> executableReference = jdtTreeBuilder.getReferencesBuilder().getExecutableReference(referenceExpression);
 		if (executableReference == null) {
 			// No classpath mode.
 			executableReference = jdtTreeBuilder.getFactory().Core().createExecutableReference();

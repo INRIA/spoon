@@ -61,7 +61,6 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.CtYieldStatement;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.CompoundSourcePosition;
@@ -71,6 +70,7 @@ import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
@@ -397,17 +397,17 @@ public interface CoreFactory {
 	 * Creates a source position.
 	 */
 	SourcePosition createSourcePosition(
-			CompilationUnit compilationUnit,
+			CtCompilationUnit compilationUnit,
 			int startSource, int end, int[] lineSeparatorPositions);
 
 	/** Creates a source position that points to the given compilation unit */
-	SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit);
+	SourcePosition createPartialSourcePosition(CtCompilationUnit compilationUnit);
 
 	/**
 	 * Creates a compound source position.
 	 */
 	CompoundSourcePosition createCompoundSourcePosition(
-			CompilationUnit compilationUnit,
+			CtCompilationUnit compilationUnit,
 			int startSource, int end,
 			int declarationStart, int declarationEnd,
 			int[] lineSeparatorPositions);
@@ -416,7 +416,7 @@ public interface CoreFactory {
 	 * Creates a declaration source position.
 	 */
 	DeclarationSourcePosition createDeclarationSourcePosition(
-			CompilationUnit compilationUnit,
+			CtCompilationUnit compilationUnit,
 			int startSource, int end,
 			int modifierStart, int modifierEnd,
 			int declarationStart, int declarationEnd,
@@ -426,7 +426,7 @@ public interface CoreFactory {
 	 * Creates a body holder source position.
 	 */
 	BodyHolderSourcePosition createBodyHolderSourcePosition(
-			CompilationUnit compilationUnit,
+			CtCompilationUnit compilationUnit,
 			int nameSource, int nameEnd,
 			int modifierStart, int modifierEnd,
 			int declarationStart, int declarationEnd,
@@ -567,7 +567,7 @@ public interface CoreFactory {
 	/**
 	 * Creates a compilation unit.
 	 */
-	CompilationUnit createCompilationUnit();
+	CtCompilationUnit createCompilationUnit();
 
 	/**
 	 * Create an access to annotation value

@@ -65,7 +65,6 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.CtYieldStatement;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
@@ -74,6 +73,7 @@ import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
@@ -316,7 +316,7 @@ public class FactoryImpl implements Factory, Serializable {
 	private transient CompilationUnitFactory compilationUnit;
 
 	/**
-	 * The {@link CompilationUnit} sub-factory.
+	 * The {@link CtCompilationUnit} sub-factory.
 	 */
 	@Override
 	public CompilationUnitFactory CompilationUnit() {
@@ -981,22 +981,22 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
-	public CompilationUnit createCompilationUnit() {
+	public CtCompilationUnit createCompilationUnit() {
 		return Core().createCompilationUnit();
 	}
 
 	@Override
-	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int[] lineSeparatorPositions) {
+	public SourcePosition createSourcePosition(CtCompilationUnit compilationUnit, int startSource, int end, int[] lineSeparatorPositions) {
 		return Core().createSourcePosition(compilationUnit, startSource, end, lineSeparatorPositions);
 	}
 
 	@Override
-	public BodyHolderSourcePosition createBodyHolderSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int bodyStart, int bodyEnd, int[] lineSeparatorPositions) {
+	public BodyHolderSourcePosition createBodyHolderSourcePosition(CtCompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int bodyStart, int bodyEnd, int[] lineSeparatorPositions) {
 		return Core().createBodyHolderSourcePosition(compilationUnit, startSource, end, modifierStart, modifierEnd, declarationStart, declarationEnd, bodyStart, bodyEnd, lineSeparatorPositions);
 	}
 
 	@Override
-	public DeclarationSourcePosition createDeclarationSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int[] lineSeparatorPositions) {
+	public DeclarationSourcePosition createDeclarationSourcePosition(CtCompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int[] lineSeparatorPositions) {
 		return Core().createDeclarationSourcePosition(compilationUnit, startSource, end, modifierStart, modifierEnd, declarationStart, declarationEnd, lineSeparatorPositions);
 	}
 
@@ -1266,7 +1266,7 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
-	public SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit) {
+	public SourcePosition createPartialSourcePosition(CtCompilationUnit compilationUnit) {
 		return Core().createPartialSourcePosition(compilationUnit);
 	}
 

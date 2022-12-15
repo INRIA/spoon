@@ -13,6 +13,7 @@ import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.LambdaExpression;
@@ -22,6 +23,7 @@ import org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference
 import org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
@@ -381,12 +383,34 @@ public class ReferenceBuilder {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	<T> CtExecutableReference<T> getExecutableReference(MethodBinding exec) {
+	<T> CtExecutableReference<T> getExecutableReference(ReferenceExpression referenceExpression) {
+		return getExecutableReference(
+			referenceExpression.binding,
+			getExecutableRefSourceStart(referenceExpression.typeArguments, referenceExpression.nameSourceStart),
+			referenceExpression.nameSourceEnd()
+		);
+	}
+
+	<T> CtExecutableReference<T> getExecutableReference(ExplicitConstructorCall explicitConstructor) {
+		CtExecutableReference<T> ref = getExecutableReference(explicitConstructor.binding);
+		if (ref != null) {
+			ref.setImplicit(true);
+		}
+		return ref;
+	}
+
+	private <T> CtExecutableReference<T> getExecutableReference(MethodBinding exec) {
+		return getExecutableReference(exec, -1, -1);
+	}
+
+	<T> CtExecutableReference<T> getExecutableReference(MethodBinding exec, int sourceStart, int sourceEnd) {
 		if (exec == null) {
 			return null;
 		}
-		final CtExecutableReference ref = this.jdtTreeBuilder.getFactory().Core().createExecutableReference();
+		final CtExecutableReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createExecutableReference();
+		if (sourceStart >= 0 && sourceEnd >= 0) {
+			ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+		}
 		if (exec.isConstructor()) {
 			ref.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
 
@@ -469,6 +493,7 @@ public class ReferenceBuilder {
 		if (allocationExpression.type == null) {
 			ref.setType(this.<T>getTypeReference(allocationExpression.expectedType(), true));
 		}
+		ref.setImplicit(true);
 		return ref;
 	}
 
@@ -501,13 +526,32 @@ public class ReferenceBuilder {
 		ref.setDeclaringType(resolvedTypeRef);
 	}
 
+	private static int getExecutableRefSourceStart(TypeReference[] typeArguments, int start) {
+		int sourceStart = start;
+		if (typeArguments != null) {
+			for (TypeReference typeArgument : typeArguments) {
+				// We want to include the `<` to preserve symmetry with `>`
+				sourceStart = Math.min(typeArgument.sourceStart() - 1, sourceStart);
+			}
+		}
+		return sourceStart;
+	}
+
 	<T> CtExecutableReference<T> getExecutableReference(MessageSend messageSend) {
 		if (messageSend.binding != null) {
-			return getExecutableReference(messageSend.binding);
+			return getExecutableReference(
+				messageSend.binding,
+				getExecutableRefSourceStart(messageSend.typeArguments, messageSend.nameSourceStart()),
+				messageSend.nameSourceEnd()
+			);
 		}
 		CtExecutableReference<T> ref = jdtTreeBuilder.getFactory().Core().createExecutableReference();
 		ref.setSimpleName(CharOperation.charToString(messageSend.selector));
 		ref.setType(this.<T>getTypeReference(messageSend.expectedType(), true));
+		ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(
+			getExecutableRefSourceStart(messageSend.typeArguments, messageSend.nameSourceStart()),
+			messageSend.nameSourceEnd()
+		));
 		if (messageSend.receiver.resolvedType == null) {
 			// It is crisis dude! static context, we don't have much more information.
 			ref.setStatic(true);

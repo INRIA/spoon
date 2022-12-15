@@ -1,0 +1,26 @@
+# Workflow for testing spoon code quality.
+#
+# Note that actions are specified by commit hash. This is to avoid the security
+# risk of someone injecting malicious code into a release and then simply
+# changing a tag.
+
+name: Qodana
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+    code-quality:
+      runs-on: ubuntu-latest
+      name: code-quality qodana
+      steps:
+        - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
+          with:
+            fetch-depth: 0
+        - name: 'Qodana Scan'
+          uses: JetBrains/qodana-action@f8a64bc18ee8f15e4a7c6e092270c470da7ad091 # v2022.2.2
+          with:
+            args: --source-directory,./src/main/java , --fail-threshold, 0
+        - uses: github/codeql-action/upload-sarif@a669cc5936cc5e1b6a362ec1ff9e410dc570d190 # v2
+          with:
+            sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json

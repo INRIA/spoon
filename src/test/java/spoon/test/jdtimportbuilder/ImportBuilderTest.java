@@ -16,11 +16,11 @@
  */
 package spoon.test.jdtimportbuilder;
 
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.factory.Factory;
 import spoon.test.imports.testclasses.A;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.test.jdtimportbuilder.testclasses.StaticImport;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtImport;
 import spoon.test.jdtimportbuilder.testclasses.StaticImportWithInheritance;
 import spoon.reflect.declaration.CtImportKind;
@@ -51,7 +51,7 @@ public class ImportBuilderTest {
 	public void testWithNoImport(Factory factory) {
 		// contract: when the source code has no import, none is created when building model
 		CtClass classA = factory.Class().get(A.class);
-		CompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtCompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		assertTrue(unitA.getImports().isEmpty());
 	}
 
@@ -59,7 +59,7 @@ public class ImportBuilderTest {
 	public void testWithSimpleImport(Factory factory) {
 		// contract: when the source has one import, the same import is created as a reference in auto-import mode
 		CtClass classA = factory.Class().get(ClassWithInvocation.class);
-		CompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtCompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitA.getImports();
 
 		assertEquals(1, imports.size());
@@ -82,7 +82,7 @@ public class ImportBuilderTest {
 		spoon.run();
 
 		CtClass classA = spoon.getFactory().Class().get(ClassWithInvocation.class);
-		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtCompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		assertTrue(unitA.getImports().isEmpty());
 	}
 
@@ -90,7 +90,7 @@ public class ImportBuilderTest {
 	public void testInternalImportWhenNoClasspath(Factory factory) {
 		// contract: in no-classpath anything which is not loaded becomes CtUnresolvedImport, even if original source code has imports
 		CtClass classA = factory.Class().get("it.feio.android.omninotes.models.Attachment");
-		CompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtCompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 
 		assertTrue(unitA.getImports().stream().filter(i -> !(i instanceof CtUnresolvedImport)).collect(Collectors.toList()).isEmpty());
 		assertEquals(3, unitA.getImports().size());
@@ -105,7 +105,7 @@ public class ImportBuilderTest {
 	public void testSimpleStaticImport(Factory factory) {
 		// contract: simple static import are imported correctly
 		CtClass classA = factory.Class().get(StaticImport.class);
-		CompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtCompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitA.getImports();
 
 		assertEquals(1, imports.size());
@@ -126,7 +126,7 @@ public class ImportBuilderTest {
 	public void testWithStaticStarredImportFromInterface(Factory factory) {
 		// contract: when a starred import is used with a target package, all classes of the package should be imported
 		CtClass classA = factory.Class().get(StarredImport.class);
-		CompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtCompilationUnit unitA = factory.CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitA.getImports();
 
 		assertEquals(1, imports.size());
@@ -152,7 +152,7 @@ public class ImportBuilderTest {
 	public void testWithStaticInheritedImport(Factory factory) {
 		// contract: When using starred static import of a type, it imports a starred type
 		CtClass classStatic = factory.Class().get(StaticImportWithInheritance.class);
-		CompilationUnit unitStatic = factory.CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
+		CtCompilationUnit unitStatic = factory.CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitStatic.getImports();
 
 		assertEquals(1, imports.size());
@@ -165,7 +165,7 @@ public class ImportBuilderTest {
 	public void testWithImportFromItf(Factory factory) {
 		// contract: When using starred static import of an interface, it imports a starred type
 		CtClass classStatic = factory.Class().get("jdtimportbuilder.ItfImport");
-		CompilationUnit unitStatic = factory.CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
+		CtCompilationUnit unitStatic = factory.CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitStatic.getImports();
 
 		assertEquals(1, imports.size(), imports.toString());

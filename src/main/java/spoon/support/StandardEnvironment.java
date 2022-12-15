@@ -41,11 +41,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystemNotFoundException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -256,17 +259,31 @@ public class StandardEnvironment implements Serializable, Environment {
 		if (sp == null) {
 			buffer.append(" (Unknown Source)");
 		} else {
-			// TODO: will explode if type == null
-			buffer.append(" at " + type.getQualifiedName() + ".");
+			if (type != null) {
+				buffer.append(" at ")
+							.append(type.getQualifiedName())
+							.append(".");
+			} else {
+				buffer.append("at (?).");
+			}
 			CtExecutable<?> exe = (element instanceof CtExecutable) ? (CtExecutable<?>) element : element.getParent(CtExecutable.class);
 			if (exe != null) {
 				buffer.append(exe.getSimpleName());
 			}
-			buffer.append("(" + sp.getFile().getName() + ":" + sp.getLine() + ")");
+			if (sp.getFile() != null) {
+				buffer.append("(")
+							.append(sp.getFile().getName())
+							.append(":")
+							.append(sp.getLine())
+							.append(")");
+			} else {
+				buffer.append("(?:?)");
+			}
 		}
 
 		print(buffer.toString(), level);
 	}
+
 
 	@Override
 	public void report(Processor<?> processor, Level level, String message) {
@@ -422,7 +439,11 @@ private transient  ClassLoader inputClassloader;
 				if (onlyFileURLs) {
 					List<String> classpath = new ArrayList<>();
 					for (URL url : urls) {
-						classpath.add(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8));
+						try {
+							classpath.add(Path.of(url.toURI()).toAbsolutePath().toString());
+						} catch (URISyntaxException | FileSystemNotFoundException | IllegalArgumentException ignored) {
+							classpath.add(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8));
+						}
 					}
 					setSourceClasspath(classpath.toArray(new String[0]));
 				} else {

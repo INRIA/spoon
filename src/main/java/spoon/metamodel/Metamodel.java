@@ -338,6 +338,13 @@ public class Metamodel {
 	private static String getConceptName(String simpleName) {
 		if (simpleName.endsWith(CLASS_SUFFIX)) {
 			simpleName = simpleName.substring(0, simpleName.length() - CLASS_SUFFIX.length());
+			// The unnamed module and certain other classes are a special case due to their names
+		} else if (simpleName.equals("CtUnnamedModule")) {
+			simpleName = "CtModule";
+		} else if (simpleName.equals("CtRootPackage")) {
+			simpleName = "CtPackage";
+		} else if (simpleName.equals("CtUnresolvedImport")) {
+			simpleName = "CtImport";
 		}
 		return simpleName;
 	}

@@ -140,11 +140,11 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.LiteralBase;
 import spoon.reflect.code.UnaryOperatorKind;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnumValue;
@@ -797,8 +797,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return false;
 	}
 
-	static CompilationUnit getOrCreateCompilationUnit(CompilationUnitDeclaration compilationUnitDeclaration, Factory factory) {
-		CompilationUnit compilationUnitSpoon = factory.CompilationUnit().getOrCreate(new String(compilationUnitDeclaration.getFileName()));
+	static CtCompilationUnit getOrCreateCompilationUnit(CompilationUnitDeclaration compilationUnitDeclaration, Factory factory) {
+		CtCompilationUnit compilationUnitSpoon = factory.CompilationUnit().getOrCreate(new String(compilationUnitDeclaration.getFileName()));
 		if (compilationUnitSpoon.getLineSeparatorPositions() == null) {
 			compilationUnitSpoon.setLineSeparatorPositions(compilationUnitDeclaration.compilationResult.lineSeparatorPositions);
 		} else if (compilationUnitSpoon.getLineSeparatorPositions() != compilationUnitDeclaration.compilationResult.lineSeparatorPositions) {
@@ -1218,9 +1218,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(ExplicitConstructorCall explicitConstructor, BlockScope scope) {
 		CtInvocation<Object> inv = factory.Core().createInvocation();
 		inv.setImplicit(explicitConstructor.isImplicitSuper());
-		inv.setExecutable(references.getExecutableReference(explicitConstructor.binding));
+		inv.setExecutable(references.getExecutableReference(explicitConstructor));
 		CtTypeReference<?> declaringType = inv.getExecutable().getDeclaringType();
-		inv.getExecutable().setType(declaringType == null ? null : (CtTypeReference<Object>) declaringType.clone());
+		inv.getExecutable().setType(declaringType == null ? null : declaringType.clone());
 		context.enter(inv, explicitConstructor);
 		return true;
 	}
