@@ -24,9 +24,8 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -44,8 +43,8 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
@@ -271,16 +270,9 @@ public class CompilationTest {
 		launcher.getEnvironment().setComplianceLevel(9);
 		launcher.addInputResource("./src/test/resources/simple-module");
 		launcher.buildModel();
-
-		Collection<CtModule> allModules = launcher.getModel().getAllModules();
-		Iterator itr = allModules.iterator();
-		CtModule one = (CtModule) itr.next();
-		CtModule two = (CtModule) itr.next();
-		if(!one.getSimpleName().equals("spoonmod")){
-			assertTrue(two.getSimpleName().equals("spoonmod"));
-		}else{
-			assertTrue(two.getSimpleName().equals("unnamed module"));
-		}
+		Set<String> moduleNames = launcher.getModel().getAllModules().stream()
+				.map(CtNamedElement::getSimpleName).collect(Collectors.toSet());
+		assertEquals(moduleNames, Set.of("spoonmod", "unnamed module"));
 	}
 
 	@Test

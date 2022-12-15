@@ -143,7 +143,7 @@ public class SubstitutionTest {
         launcher.buildModel();
         Factory factory = launcher.getFactory();
 
-        Map<String, Object> parameters = new LinkedHashMap<>();
+        Map<String, Object> parameters = new HashMap<>();
         //replace someMethod with genMethod
         parameters.put("someMethod", "genMethod");
 
@@ -176,13 +176,8 @@ public class SubstitutionTest {
         assertNotNull(genEnum);
         assertSame(genEnum, factory.Type().get("generated.GenEnum"));
         assertEquals(2, genEnum.getEnumValues().size());
-        if("GOOD".equals(genEnum.getEnumValues().get(0).getSimpleName())){
-            assertTrue("GOOD".equals(genEnum.getEnumValues().get(0).getSimpleName()));
-            assertTrue("BETTER".equals(genEnum.getEnumValues().get(1).getSimpleName()));
-        }else{
-            assertTrue("BETTER".equals(genEnum.getEnumValues().get(0).getSimpleName()));
-            assertTrue("GOOD".equals(genEnum.getEnumValues().get(1).getSimpleName()));
-        }
+        assertEquals("GOOD", genEnum.getEnumValues().get(0).getSimpleName());
+        assertEquals("BETTER", genEnum.getEnumValues().get(1).getSimpleName());
     }
 
     @Test

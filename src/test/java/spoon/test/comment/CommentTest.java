@@ -1189,20 +1189,14 @@ public class CommentTest {
 	public void testAnnotationTypeComment(Launcher launcher, CtModel model) {
 		//contract: comments in annotations should be properly added to the AST
 		List<CtAnnotationType> annotations = model.getElements(new TypeFilter<>(CtAnnotationType.class));
-		assertTrue("comment1comment2comment3comment4".contains(annotations.get(0).getComments().get(0).getContent()));
+		assertEquals("comment1", annotations.get(0).getComments().get(0).getContent());
 		assertTrue(annotations.get(1).getComments().isEmpty());
 
 		Object[] annotationMethods = annotations.get(1).getAnnotationMethods().toArray();
-		for(int i=0;i<annotationMethods.length;i++){
-			CtAnnotationMethod annotationMethod = ((CtAnnotationMethod) annotationMethods[i]);
-			for(int j=0;j<annotationMethod.getComments().size();j++){
-				assertTrue("comment1comment2comment3comment4".contains(annotationMethod.getComments().get(j).getContent()));
-			}
-		}
-		assertTrue("comment1comment2comment3comment4".contains(((CtAnnotationMethod) annotationMethods[0]).getComments().get(0).getContent()));
-		assertTrue("comment1comment2comment3comment4".contains(((CtAnnotationMethod) annotationMethods[0]).getComments().get(1).getContent()));
-		assertTrue("comment1comment2comment3comment4".contains(((CtAnnotationMethod) annotationMethods[1]).getComments().get(0).getContent()));
-		assertTrue("comment1comment2comment3comment4".contains(((CtAnnotationMethod) annotationMethods[3]).getComments().get(0).getContent()));
+		assertEquals("comment1", ((CtAnnotationMethod) annotationMethods[0]).getComments().get(0).getContent());
+		assertEquals("comment2", ((CtAnnotationMethod) annotationMethods[0]).getComments().get(1).getContent());
+		assertEquals("comment3", ((CtAnnotationMethod) annotationMethods[1]).getComments().get(0).getContent());
+		assertEquals("comment4", ((CtAnnotationMethod) annotationMethods[3]).getComments().get(0).getContent());
 	}
 
   public void testLambdaComments() {

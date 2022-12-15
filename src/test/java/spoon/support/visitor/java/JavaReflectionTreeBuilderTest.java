@@ -688,8 +688,10 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("Diff", ctClass.getSimpleName());
 		assertEquals(false, ctClass.isAnonymous());
 		assertEquals(true, ctClass.isShadow());
-		assertTrue("element".contains(ctClass.getFields().toArray(new CtField[0])[0].getSimpleName()) ||
-							"other".contains(ctClass.getFields().toArray(new CtField[0])[0].getSimpleName()));
+		Set<String> moduleNames1 = ctClass.getFields().stream()
+				.map(CtField::getSimpleName).collect(Collectors.toSet());
+
+		assertEquals(moduleNames1, Set.of("element", "other", "roles"));
 	}
 
 
