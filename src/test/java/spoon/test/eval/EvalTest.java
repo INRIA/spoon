@@ -337,11 +337,8 @@ public class EvalTest {
 	 	+ "double test() {"
 		+ "	System.out.println(%s);"
  		+ "}"
- 		+ "};";
-		Launcher spoon = new Launcher();
-		spoon.addInputResource(new VirtualFile(String.format(code, literal)));
-		CtModel model = spoon.buildModel();
-		CtMethod<?> method = model.getElements(new TypeFilter<>(CtMethod.class)).get(0);
+    + "};";
+		CtMethod<?> method =  Launcher.parseClass(code).getElements(new TypeFilter<>(CtMethod.class)).get(0);
 		CtInvocation<?> parameter = method.getElements(new TypeFilter<>(CtInvocation.class)).get(0);
 		method.setBody(method.getBody().partiallyEvaluate());
 		assertEquals(expected, parameter.getArguments().get(0).toString());
