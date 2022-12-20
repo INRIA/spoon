@@ -20,7 +20,7 @@ import spoon.support.UnsettableProperty;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -90,7 +90,7 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 
 	@Override
 	public Set<CtAnnotationMethod<?>> getAnnotationMethods() {
-		Set<CtAnnotationMethod<?>> annotationsMethods = new HashSet<>();
+		Set<CtAnnotationMethod<?>> annotationsMethods = new LinkedHashSet<>();
 		for (CtMethod<?> method : getMethods()) {
 			if (method instanceof  CtAnnotationMethod) {
 				annotationsMethods.add((CtAnnotationMethod<?>) method);
