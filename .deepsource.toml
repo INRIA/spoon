@@ -2,7 +2,7 @@ version = 1
 
 test_patterns = ["src/test/**"]
 
-exclude_patterns = ["**/testclasses/**", "**/testcases/**]
+exclude_patterns = ["**/testclasses/**", "**/testcases/**"]
 
 [[analyzers]]
 name = "java"
