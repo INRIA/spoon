@@ -17,38 +17,42 @@
 package spoon.test.eval;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.testing.utils.ModelUtils.build;
 import java.io.File;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.AccessibleVariablesFinder;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.eval.EvalHelper;
 import spoon.support.reflect.eval.InlinePartialEvaluator;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.eval.testclasses.Foo;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static spoon.testing.utils.ModelUtils.build;
 
 public class EvalTest {
 
@@ -311,7 +315,35 @@ public class EvalTest {
 
 	}
 
-	private CtBinaryOperator<?> createBinaryOperatorOnLiterals(Factory factory, Object leftLiteral, Object rightLiteral, BinaryOperatorKind opKind) {
-		return factory.createBinaryOperator(factory.createLiteral(leftLiteral), factory.createLiteral(rightLiteral), opKind);
+	private CtBinaryOperator<?> createBinaryOperatorOnLiterals(Factory factory, Object leftLiteral,
+			Object rightLiteral, BinaryOperatorKind opKind) {
+		return factory.createBinaryOperator(factory.createLiteral(leftLiteral),
+				factory.createLiteral(rightLiteral), opKind);
+	}
+	
+	@ParameterizedTest
+	@CsvSource(
+	delimiter = '|',
+	useHeadersInDisplayName = true,
+	value = {
+	" Literal  | Expected ",	
+	"-1.234567 | -1.234567",
+	"-2.345F   | -2.345F   ", 
+	"-3        | -3 		  ",
+	"-4L 		   | -4L       "})
+	void testDoublePrecisionLost(String literal, String expected) {
+		// contract: the partial evaluation of a binary operator on literals does not lose precision for double and float
+		String code = "public class Test {"
+	 	+ "double test() {"
+		+ "	System.out.println(%s);"
+ 		+ "}"
+ 		+ "};";
+		Launcher spoon = new Launcher();
+		spoon.addInputResource(new VirtualFile(String.format(code, literal)));
+		CtModel model = spoon.buildModel();
+		CtMethod<?> method = model.getElements(new TypeFilter<>(CtMethod.class)).get(0);
+		CtInvocation<?> parameter = method.getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		method.setBody(method.getBody().partiallyEvaluate());
+		assertEquals(expected, parameter.getArguments().get(0).toString());
 	}
 }

@@ -78,6 +78,9 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		if ((type.getActualClass() == short.class) || (type.getActualClass() == Short.class)) {
 			return n.shortValue();
 		}
+		if ((type.getActualClass() == double.class) || (type.getActualClass() == Double.class)) {
+			return n.doubleValue();
+		}
 		return n;
 	}
 
@@ -554,9 +557,13 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				res.setValue(!(Boolean) object);
 				break;
 			case NEG:
-				res.setValue(convert(operator.getType(),
-					-1 * ((Number) object).longValue()));
-				break;
+				if (isFloatingType(operator.getType())) {
+					res.setValue(convert(operator.getType(), -1 * ((Number) object).doubleValue()));
+				}
+				else {
+					res.setValue(convert(operator.getType(), -1 * ((Number) object).longValue()));
+				}
+			break;
 			default:
 				throw new RuntimeException("unsupported operator " + operator.getKind());
 			}
@@ -564,6 +571,22 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 			return;
 		}
 		setResult(operator.clone());
+	}
+
+	/**
+	 * Checks if the given type reference is a floating type. This includes both primitive and non-primitive types. 
+	 * A type is considered floating if it is either a double or a float.
+	 * @param type the type reference to check
+	 * @return true if the type is a floating type, false otherwise. If the type is null, false is returned.
+	 */
+	private boolean isFloatingType(CtTypeReference<?> type) {
+		if(type == null) {
+			return false;
+		}
+		return type.equals(type.getFactory().Type().doublePrimitiveType())
+				|| type.equals(type.getFactory().Type().floatPrimitiveType())
+				|| type.equals(type.getFactory().Type().doubleType())
+				|| type.equals(type.getFactory().Type().floatType());
 	}
 
 	@Override
