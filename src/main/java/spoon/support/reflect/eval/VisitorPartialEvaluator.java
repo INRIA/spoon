@@ -580,7 +580,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 	 * @return true if the type is a floating type, false otherwise. If the type is null, false is returned.
 	 */
 	private boolean isFloatingType(CtTypeReference<?> type) {
-		if(type == null) {
+		if (type == null) {
 			return false;
 		}
 		return type.equals(type.getFactory().Type().doublePrimitiveType())
