@@ -559,8 +559,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 			case NEG:
 				if (isFloatingType(operator.getType())) {
 					res.setValue(convert(operator.getType(), -1 * ((Number) object).doubleValue()));
-				}
-				else {
+				} else {
 					res.setValue(convert(operator.getType(), -1 * ((Number) object).longValue()));
 				}
 			break;
