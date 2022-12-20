@@ -574,7 +574,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 
 	/**
 	 * Checks if the given type reference is a floating type. This includes both primitive and non-primitive types.
-	 * A type is considered floating if it is either a double or a float.
+	 * A type is considered floating iff it is {@code double} or  {@code float}.
 	 * @param type the type reference to check
 	 * @return true if the type is a floating type, false otherwise. If the type is null, false is returned.
 	 */
