@@ -175,6 +175,8 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 
 	private static boolean isSpecialType(String identifier) {
 		return identifier.isEmpty()
+				|| "package-info".equals(identifier)
+				|| "module-info".equals(identifier)
 				|| "?".equals(identifier) // is wildcard, used for intersection types
 				|| (identifier.startsWith("<") && identifier.endsWith(">"));
 	}
