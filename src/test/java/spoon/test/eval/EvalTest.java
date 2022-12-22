@@ -339,7 +339,7 @@ public class EvalTest {
 	 	+ "void test() {"
 		+ "	System.out.println(%s);"
  		+ "}"
-    + "};";
+		+ "};";
 		CtMethod<?> method =  Launcher.parseClass(String.format(code, literal)).getElements(new TypeFilter<>(CtMethod.class)).get(0);
 		CtInvocation<?> parameter = method.getElements(new TypeFilter<>(CtInvocation.class)).get(0);
 		method.setBody(method.getBody().partiallyEvaluate());
