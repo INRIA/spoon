@@ -315,10 +315,8 @@ public class EvalTest {
 
 	}
 
-	private CtBinaryOperator<?> createBinaryOperatorOnLiterals(Factory factory, Object leftLiteral,
-			Object rightLiteral, BinaryOperatorKind opKind) {
-		return factory.createBinaryOperator(factory.createLiteral(leftLiteral),
-				factory.createLiteral(rightLiteral), opKind);
+	private CtBinaryOperator<?> createBinaryOperatorOnLiterals(Factory factory, Object leftLiteral, Object rightLiteral, BinaryOperatorKind opKind) {
+		return factory.createBinaryOperator(factory.createLiteral(leftLiteral), factory.createLiteral(rightLiteral), opKind);
 	}
 	
 	@ParameterizedTest
