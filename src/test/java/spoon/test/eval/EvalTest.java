@@ -326,17 +326,17 @@ public class EvalTest {
 		delimiter = '|',
 		useHeadersInDisplayName = true,
 		value = {
-			" Literal  | Expected ",	
-			"-1.234567 | -1.234567",
+			" Literal  | Expected  ",	
+			"-1.234567 | -1.234567 ",
 			"-2.345F   | -2.345F   ", 
-			"-3        | -3 		  ",
-			"-4L 		   | -4L       "
+			"-3        | -3        ",
+			"-4L       | -4L       "
 		}
 	)
 	void testDoublePrecisionLost(String literal, String expected) {
 		// contract: the partial evaluation of a binary operator on literals does not lose precision for double and float
 		String code = "public class Test {"
-	 	+ "double test() {"
+	 	+ "void test() {"
 		+ "	System.out.println(%s);"
  		+ "}"
     + "};";
