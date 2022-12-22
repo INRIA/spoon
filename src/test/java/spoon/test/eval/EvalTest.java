@@ -336,7 +336,7 @@ public class EvalTest {
 	void testDoublePrecisionLost(String literal, String expected) {
 		// contract: the partial evaluation of a binary operator on literals does not lose precision for double and float
 		String code = "public class Test {"
-	 	+ "	void test() {"
+		+ "	void test() {"
 		+ "		System.out.println(%s);"
 		+ "	}"
 		+ "}";
