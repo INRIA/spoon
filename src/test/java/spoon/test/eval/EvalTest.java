@@ -333,11 +333,11 @@ public class EvalTest {
 	)
 	void testDoublePrecisionLost(String literal, String expected) {
 		// contract: the partial evaluation of a binary operator on literals does not lose precision for double and float
-		String code = "public class Test {"
-		+ "	void test() {"
-		+ "		System.out.println(%s);"
-		+ "	}"
-		+ "}";
+		String code = "public class Test {\n"
+		+ "	void test() {\n"
+		+ "		System.out.println(%s);\n"
+		+ "	}\n"
+		+ "}\n";
 		CtMethod<?> method =  Launcher.parseClass(String.format(code, literal)).getElements(new TypeFilter<>(CtMethod.class)).get(0);
 		CtInvocation<?> parameter = method.getElements(new TypeFilter<>(CtInvocation.class)).get(0);
 		method.setBody(method.getBody().partiallyEvaluate());
