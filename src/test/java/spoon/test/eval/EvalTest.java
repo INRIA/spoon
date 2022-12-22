@@ -17,11 +17,6 @@
 package spoon.test.eval;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static spoon.testing.utils.ModelUtils.build;
 import java.io.File;
 import java.util.List;
 
@@ -30,7 +25,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import spoon.Launcher;
 import spoon.SpoonException;
-import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
@@ -49,11 +43,16 @@ import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.AccessibleVariablesFinder;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.eval.EvalHelper;
 import spoon.support.reflect.eval.InlinePartialEvaluator;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.eval.testclasses.Foo;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class EvalTest {
 
