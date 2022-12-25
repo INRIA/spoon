@@ -320,9 +320,11 @@ public class CtTypeTest {
 		launcher.getEnvironment().setComplianceLevel(17);
 		CtType<?> foo = launcher.buildModel().getAllTypes().iterator().next();
 		assertEquals(foo, foo.getReference().getTypeDeclaration());
+		assertEquals(1, foo.getNestedTypes().size());
 
 		for (CtType<?> nestedType : foo.getNestedTypes()) {
 			assertEquals(nestedType, nestedType.getReference().getTypeDeclaration());
+			assertEquals(1, nestedType.getNestedTypes().size());
 			for (CtType<?> type : nestedType.getNestedTypes()) {
 				assertEquals(type, type.getReference().getTypeDeclaration());
 			}
