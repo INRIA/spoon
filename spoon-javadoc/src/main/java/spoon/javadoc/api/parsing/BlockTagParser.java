@@ -113,9 +113,10 @@ class BlockTagParser {
 			elements.add(new JavadocText(reader.readRemaining()));
 		} else {
 			String reference = reader.readWhile(it -> !Character.isWhitespace(it));
-			if (reference.contains("(")) {
+			// read "@see #foo(int, char)" completely
+			if (reference.contains("(") && !reference.endsWith(")")) {
 				reference += reader.readWhile(it -> it != ')');
-				reference += reader.read(1);
+				reader.read(1);
 			}
 			elements.add(
 				linkResolver.resolve(reference)
