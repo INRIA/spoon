@@ -104,12 +104,16 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 	/**
 	 * Returns the text of the documentation ("javadoc") comment of this
-	 * element. It contains the text of Javadoc together with the tags.
-	 *
-	 * If one only wants only the text without the tag, one can call `getComments().get(0).getContent()`
-	 *
-	 * If one wants to analyze the tags, one can call `getComments().get(0).asJavaDoc().getTags()`
-	 *
+	 * element. It contains the text of Javadoc together with the block tags.
+	 * <p>
+	 * To get only the text without block tags, use {@code getComments().get(0).getContent()}.
+	 * <p>
+	 * To instead extract block tags, use {@code getComments().get(0).asJavaDoc().getTags()}.
+	 * <p><br>
+	 * To obtain an <strong>AST representation of the comment with resolved references</strong>,
+	 * you can use the {@code JavadocParser} from
+	 * <a href="https://spoon.gforge.inria.fr/spoon_javadoc.html">spoon-javadoc</a>.
+	 * <p>
 	 * See also {@link #getComments()}.and {@link spoon.reflect.code.CtJavaDoc}
 	 */
 	@DerivedProperty
