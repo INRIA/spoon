@@ -394,7 +394,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			@Override
 			protected void enter(CtElement e) {
 				if (e instanceof CtType) {
-					throw new SpoonException("Unknown type, extend scanner: " + e.getClass());
+					throw new SpoonException(
+						"Please open a bug report (https://github.com/INRIA/spoon/issues/new/choose) " +
+							"with the following information: " +
+							"Unhandled type detected in CtTypeImpl#getNestedType. " +
+							"The scanner should probably be extended to cover " + e.getClass() + "."
+					);
 				}
 			}
 
