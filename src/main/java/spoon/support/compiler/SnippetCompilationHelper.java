@@ -88,7 +88,7 @@ public class SnippetCompilationHelper {
 			pkg = "package " + pkg + ";";
 		}
 		try {
-			build(f, pkg + clonedInitialClass );
+			build(f, pkg + clonedInitialClass);
 		} finally {
 			// restore modifiers
 			initialClass.setModifiers(backup);
