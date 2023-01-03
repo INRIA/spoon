@@ -4,7 +4,7 @@ tags: [javadoc, javadoc-parsing]
 keywords: javadoc, javadoc-parsing, comments, spoon
 ---
 
-The [spoon-javadoc](https://github.com/INRIA/spoon/tree/master/spoon-javadoc)
+The spoon-javadoc
 submodule provides a parser for javadoc comments, producing a structured syntax
 tree representing the comment. Each tag is parsed and tokenized according to
 the rules in the javadoc specification. Additionally, references in e.g.
