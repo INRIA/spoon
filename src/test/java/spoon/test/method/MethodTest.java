@@ -16,8 +16,6 @@
  */
 package spoon.test.method;
 
-import org.hamcrest.CoreMatchers;
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtParameter;
@@ -37,7 +35,6 @@ import spoon.test.method.testclasses.Methods;
 import org.junit.jupiter.api.Test;
 import spoon.testing.utils.ModelTest;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.ConcurrentModificationException;
@@ -254,26 +251,12 @@ public class MethodTest {
 	void testSignaturePolymorphicMethodInvocations(Factory factory) {
 		CtType<?> type = factory.Type().get("spoon.test.method.testclasses.SignaturePolymorphicMethods");
 		for (CtMethod<?> method : type.getMethods()) {
-			CtTypeReference<?> returnType = method.getType();
 			CtInvocation<?> invocation = method.getBody().getElements(new TypeFilter<>(CtInvocation.class)).get(0);
-			System.out.println(invocation.getExecutable().getExecutableDeclaration());
 			assertThat(invocation, instanceOf(CtInvocation.class));
-			assertThat(invocation.getType(), equalTo(returnType));
+			assertThat(invocation.getType(), equalTo(factory.Type().objectType()));
 			List<CtTypeReference<?>> parameters = invocation.getExecutable().getParameters();
-			List<CtExpression<?>> arguments = invocation.getArguments();
-			assertThat(parameters.size(), equalTo(arguments.size()));
-			for (int i = 0; i < arguments.size(); i++) {
-				CtTypeReference<?> parameter = parameters.get(i);
-				CtExpression<?> argument = arguments.get(i);
-				assertThat(parameter, equalTo(typeAfterCasting(argument)));
-			}
+			assertThat(parameters.size(), equalTo(1));
+			assertThat(parameters.get(0), equalTo(factory.Type().createArrayReference(factory.Type().objectType())));
 		}
-	}
-
-	private CtTypeReference<?> typeAfterCasting(CtExpression<?> expression) {
-		if (expression.getTypeCasts().isEmpty()) {
-			return expression.getType();
-		}
-		return expression.getTypeCasts().get(0);
 	}
 }
