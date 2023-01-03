@@ -18,10 +18,7 @@ import static spoon.reflect.path.CtRole.COMMENT_TAG;
 
 /**
  * This code element defines a javadoc comment
- * <p><br>
- * Further utilities to parse javadoc comments to an AST with resolved references can be found in the
- * <a href="https://spoon.gforge.inria.fr/spoon_javadoc.html">spoon-javadoc</a> submodule.
- * <p><br>>
+ *
  * Example:
  * <pre>
  * &#x2F;**
