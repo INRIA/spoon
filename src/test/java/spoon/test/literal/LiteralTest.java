@@ -22,6 +22,7 @@ import spoon.support.comparator.DeepRepresentationComparator;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.factory.CodeFactory;
+import spoon.test.GitHubIssue;
 import spoon.test.literal.testclasses.Tacos;
 import spoon.Launcher;
 import spoon.reflect.code.LiteralBase;
@@ -258,8 +259,8 @@ public class LiteralTest {
 		assertEquals("'c'", ctClass.getField("c1").getDefaultExpression().toString());
 		assertEquals("\"hello\"", ctClass.getField("s1").getDefaultExpression().toString());
 	}
-	//TODO: add issue number
-	@Test
+
+	@GitHubIssue(issueNumber = 5070, fixed = true)
 	void tooStrictEscaping() {
 		// contract: inside a string without a position ' are not escaped.
 		List<CtLiteral<?>> literals = Launcher.parseClass("class Foo { String s = \"'\"; }")
