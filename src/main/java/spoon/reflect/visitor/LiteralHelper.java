@@ -118,7 +118,7 @@ abstract class LiteralHelper {
 	 * This exists for backwards compatibility.
 	 * @param literal to be converted literal
 	 * @param sb the string builder to append the literal
-	 * @param c  the character to append 
+	 * @param c  the character to append
 	 * @param mayContainsSpecialCharacter  true if the string may contains special characters.
 	 */
 	static void appendCharLiteral(StringBuilder sb, Character c, boolean mayContainsSpecialCharacter) {
