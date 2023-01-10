@@ -25,11 +25,12 @@ import spoon.reflect.factory.CodeFactory;
 import spoon.test.literal.testclasses.Tacos;
 import spoon.Launcher;
 import spoon.reflect.code.LiteralBase;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.declaration.CtClass;
 import org.junit.jupiter.api.Test;
 import spoon.testing.utils.ModelTest;
-
+import java.util.List;
 import java.util.TreeSet;
 
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -256,5 +257,17 @@ public class LiteralTest {
 
 		assertEquals("'c'", ctClass.getField("c1").getDefaultExpression().toString());
 		assertEquals("\"hello\"", ctClass.getField("s1").getDefaultExpression().toString());
+	}
+	//TODO: add issue number
+	@Test
+	void tooStrictEscaping() {
+		// contract: inside a string without a position ' are not escaped.
+		List<CtLiteral<?>> literals = Launcher.parseClass("class Foo { String s = \"'\"; }")
+				.getElements(new TypeFilter<>(CtLiteral.class));
+		CtLiteral<?> ctLiteral = literals.get(0);
+		ctLiteral.setPosition(SourcePosition.NOPOSITION);
+		String literal = (String) ctLiteral.getValue();
+		assertEquals("'", literal);
+		assertEquals("\"'\"", ctLiteral.toString());
 	}
 }
