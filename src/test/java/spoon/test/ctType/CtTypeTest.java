@@ -35,6 +35,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.test.ctType.testclasses.X;
 import spoon.testing.utils.ModelTest;
 
@@ -304,5 +305,29 @@ public class CtTypeTest {
 		assertThat(types.size(), is(1));
 		assertThat(types.stream().findFirst().get(), notNullValue());
 		assertThat(types.stream().findFirst().get().getQualifiedName(), is("keywordCompliance.enum.Foo"));
+	}
+
+	@Test
+	void testRecordInnerClassesHaveDefinition() {
+		// contract: Record inner classes should have a definition
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile("class Foo {\n" +
+			"  class Inner {\n" +
+			"    record Inner2(String name) {\n" +
+			"    }\n" +
+			"  }\n" +
+			"}"));
+		launcher.getEnvironment().setComplianceLevel(17);
+		CtType<?> foo = launcher.buildModel().getAllTypes().iterator().next();
+		assertEquals(foo, foo.getReference().getTypeDeclaration());
+		assertEquals(1, foo.getNestedTypes().size());
+
+		for (CtType<?> nestedType : foo.getNestedTypes()) {
+			assertEquals(nestedType, nestedType.getReference().getTypeDeclaration());
+			assertEquals(1, nestedType.getNestedTypes().size());
+			for (CtType<?> type : nestedType.getNestedTypes()) {
+				assertEquals(type, type.getReference().getTypeDeclaration());
+			}
+		}
 	}
 }
