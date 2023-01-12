@@ -38,8 +38,8 @@ public class CtLiteralImpl<T> extends CtExpressionImpl<T> implements CtLiteral<T
 
 	@Override
 	public <C extends CtLiteral<T>> C setValue(T value) {
-		if (this.value instanceof CtElement) {
-			((CtElement) this.value).setParent(this);
+		if (value instanceof CtElement) {
+			((CtElement) value).setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, value, this.value);
 		this.value = value;
