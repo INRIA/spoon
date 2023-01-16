@@ -433,15 +433,22 @@ public class TypeFactory extends SubFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtType<T> get(final String qualifiedName) {
-		if (qualifiedName == null) return null;
+		if (qualifiedName == null) {
+			return null;
+		}
 		cacheCheck: if (typeRefCache.containsKey(qualifiedName)) {
 			WeakReference<CtType<?>> typeRef = typeRefCache.get(qualifiedName);
-			if (typeRef == null) break cacheCheck;
+			if (typeRef == null) {
+				break cacheCheck;
+			}
 			CtType<T> type = (CtType<T>) typeRef.get();
-			if (type == null) break cacheCheck;
+			if (type == null) {
+				break cacheCheck;
+			}
 
-			if (type.getFactory() == this.factory)
+			if (type.getFactory() == this.factory) {
 				return type;
+			}
 		}
 
 		int packageIndex = qualifiedName.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
@@ -480,7 +487,9 @@ public class TypeFactory extends SubFactory {
 				}
 
 				CtType<T> enclosingClass = enclosingClasses.get(0);
-				if (enclosingClass != null) typeRefCache.put(qualifiedName, new WeakReference<>(enclosingClass));
+				if (enclosingClass != null) {
+					typeRefCache.put(qualifiedName, new WeakReference<>(enclosingClass));
+				}
 				return enclosingClass;
 			}
 			if (isNumber(className)) {
@@ -503,12 +512,16 @@ public class TypeFactory extends SubFactory {
 					return anonymousClasses.get(0).getAnonymousClass();
 				});
 
-				if (cachedType != null) typeRefCache.put(qualifiedName, new WeakReference<>(cachedType));
+				if (cachedType != null) {
+					typeRefCache.put(qualifiedName, new WeakReference<>(cachedType));
+				}
 				return cachedType;
 			} else {
 				CtType<T> thing = t.getNestedType(className);
 
-				if (thing != null) typeRefCache.put(qualifiedName, new WeakReference<>(thing));
+				if (thing != null) {
+					typeRefCache.put(qualifiedName, new WeakReference<>(thing));
+				}
 				return thing;
 			}
 		}

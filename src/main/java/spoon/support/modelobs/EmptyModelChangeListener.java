@@ -105,7 +105,7 @@ public class EmptyModelChangeListener implements FineModelChangeListener {
 			Collection<? extends CtElement> oldValue) {
 		if (currentElement != null) {
 
-			oldValue.forEach( it -> {
+			oldValue.forEach(it -> {
 				if (it instanceof CtType<?>) {
 					currentElement.getFactory().Type().removeCachedType(((CtType) it).getQualifiedName());
 				}
@@ -139,8 +139,9 @@ public class EmptyModelChangeListener implements FineModelChangeListener {
 		if (currentElement != null) {
 			currentElement.putMetadata(CtElementImpl.META_DIRTY_KEY, true);
 			for (Object elem : oldValue) {
-				if (elem instanceof CtType<?>)
+				if (elem instanceof CtType<?>) {
 					currentElement.getFactory().Type().removeCachedType(((CtType<?>) elem).getQualifiedName());
+				}
 			}
 			updateParent(currentElement, currentElement, currentElement);
 		}

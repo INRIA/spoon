@@ -72,7 +72,7 @@ import static spoon.reflect.visitor.CommentHelper.printComment;
  */
 public abstract class CtElementImpl implements CtElement {
 	private static final long serialVersionUID = 1L;
-	public final static String META_DIRTY_KEY = "###DIRTY_KEY###";
+	public static final String META_DIRTY_KEY = "###DIRTY_KEY###";
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";

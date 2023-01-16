@@ -24,7 +24,7 @@ public abstract class CtCodeElementImpl extends CtElementImpl implements CtCodeE
 		var existingMetadata = this.getMetadata(EVAL_KEY);
 		if (existingMetadata != null) {
 			// We do a dirty check to make sure we don't have stale info.
-			if (getMetadata(META_DIRTY_KEY) != (Boolean)true) {
+			if (getMetadata(META_DIRTY_KEY) != (Boolean) true) {
 				return (R) this.getMetadata(EVAL_KEY);
 			}
 		}
