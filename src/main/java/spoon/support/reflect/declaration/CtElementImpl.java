@@ -72,6 +72,8 @@ import static spoon.reflect.visitor.CommentHelper.printComment;
  */
 public abstract class CtElementImpl implements CtElement {
 	private static final long serialVersionUID = 1L;
+	public final static String META_DIRTY_KEY = "###DIRTY_KEY###";
+
 	protected static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
 	private static final Factory DEFAULT_FACTORY = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
@@ -454,11 +456,25 @@ public abstract class CtElementImpl implements CtElement {
 
 	@Override
 	public void replace(CtElement element) {
+		if (this instanceof CtType<?>) {
+			factory.Type().removeCachedType(((CtType<?>) this).getQualifiedName());
+		}
+		if (element instanceof CtType<?>) {
+			factory.Type().addToCache((CtType<?>) element);
+		}
 		ReplacementVisitor.replace(this, element);
 	}
 
 	@Override
 	public <E extends CtElement> void replace(Collection<E> elements) {
+		if (this instanceof CtType<?>) {
+			factory.Type().removeCachedType(((CtType<?>) this).getQualifiedName());
+		}
+		for (CtElement element : elements) {
+			if (element instanceof CtType<?>) {
+				factory.Type().addToCache((CtType<?>) element);
+			}
+		}
 		ReplacementVisitor.replace(this, elements);
 	}
 

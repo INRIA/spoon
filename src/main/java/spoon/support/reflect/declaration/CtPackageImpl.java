@@ -202,6 +202,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public void removeType(CtType<?> type) {
+		factory.Type().removeCachedType(type.getQualifiedName());
 		types.remove(type.getSimpleName());
 	}
 
