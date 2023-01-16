@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.CtModel;
@@ -47,6 +48,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static spoon.test.SpoonTestHelpers.containsRegexMatch;
 
 public class DefaultJavaPrettyPrinterTest {
@@ -375,5 +377,19 @@ public class DefaultJavaPrettyPrinterTest {
 
         CtLocalVariable<Integer> localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(1);
         assertThat(localVariable.toString(), equalTo("int fieldReadOfA = ((A) c).a.i"));
+    }
+
+    @ParameterizedTest(name = "Printing literal ''{0}'' throws an error")
+    @ValueSource(doubles = {
+        Double.NEGATIVE_INFINITY,
+        Double.POSITIVE_INFINITY,
+        Double.NaN
+    })
+    void throwsExceptionWhenPrintingInvalidFloatingLiteral(double value) {
+        // contract: Printing invalid floating literals throws an exception
+        Factory factory = new Launcher().getFactory();
+
+        assertThrows(SpoonException.class, () -> factory.createLiteral(value).toString());
+        assertThrows(SpoonException.class, () -> factory.createLiteral((float) value).toString());
     }
 }
