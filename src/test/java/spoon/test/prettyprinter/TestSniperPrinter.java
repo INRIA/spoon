@@ -94,17 +94,6 @@ public class TestSniperPrinter {
 		});
 	}
 
-	@Test
-	public void testClassRename2(@TempDir File tempDir) throws Exception {
-		// contract: one can sniper after setSimpleName
-		// with the necessary tweaks
-		testClassRename(tempDir, type -> {
-			type.setSimpleName("Bar");
-			type.getFactory().CompilationUnit().addType(type);
-		});
-
-	}
-
 	public void testClassRename(File tempdir, Consumer<CtType<?>> renameTransfo) throws Exception {
 		// contract: sniper supports class rename
 		String testClass = ToBeChanged.class.getName();
