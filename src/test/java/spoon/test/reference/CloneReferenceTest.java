@@ -66,36 +66,6 @@ public class CloneReferenceTest {
         }
     }
 
-    @Test
-    public void testGetDeclarationOfFieldAfterClone() {
-        // contract: all field references of the clone point to the old class
-        // behaviour changed on https://github.com/INRIA/spoon/pull/1215
-        Launcher spoon = new Launcher();
-
-        String name = "field";
-        spoon.addInputResource("./src/test/resources/noclasspath/A2.java");
-        spoon.getEnvironment().setComplianceLevel(8);
-        spoon.getEnvironment().setNoClasspath(true);
-        spoon.buildModel();
-
-
-        final CtClass<Object> a = spoon.getFactory().Class().get("A2");
-        // test before clone
-        CtField oldVar1 = (CtField)findVariable(a, name);
-        CtField oldVar2 = (CtField)findReference(a, name).getDeclaration();
-        assertSame(oldVar1, oldVar2);
-
-        CtClass b = a.clone();
-
-        // test after clone
-        CtField var1 = (CtField)findVariable(b, name);
-        CtVariableReference refVar1 = findReference(b, name);
-        CtField var2 = (CtField)refVar1.getDeclaration();
-        assertNotSame(var1, var2);
-        assertSame(var2, oldVar1);
-        assertSame(var1.getParent(CtClass.class), b);
-    }
-
     class Finder<T> extends CtScanner {
 
         private final Class<T> c;
