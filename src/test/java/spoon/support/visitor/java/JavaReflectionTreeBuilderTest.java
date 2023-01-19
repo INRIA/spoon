@@ -847,7 +847,7 @@ public class JavaReflectionTreeBuilderTest {
 		assertThat(asClass.getConstructors().iterator().next().getParameters().size(), equalTo(inners.size()));
 	}
 
-	@GitHubIssue(issueNumber = 4972, fixed = false)
+	@GitHubIssue(issueNumber = 4972, fixed = true)
 	void parameterNamesAreParsedWhenCompilingWithParametersFlag() throws ClassNotFoundException {
 		ClassLoader loader = JavacFacade.compileFiles(
 			Map.of(
