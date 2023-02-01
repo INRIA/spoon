@@ -596,16 +596,31 @@ public class CodeFactory extends SubFactory {
 		if (originalClass == null) {
 			return null;
 		}
-		CtTypeReference<T> typeReference = factory.Core().<T>createTypeReference();
-		typeReference.setSimpleName(originalClass.getSimpleName());
-		if (originalClass.isPrimitive()) {
-			return typeReference;
+		int arrayDimensionCount = 0;
+		Class<?> currentClass = originalClass;
+		while (currentClass.isArray()) {
+			currentClass = currentClass.getComponentType();
+			arrayDimensionCount++;
 		}
-		if (originalClass.getDeclaringClass() != null) {
-			// the inner class reference does not have package
-			return typeReference.setDeclaringType(createCtTypeReference(originalClass.getDeclaringClass()));
+		CtTypeReference<T> typeReference = factory.Core().createTypeReference();
+		if (currentClass.isAnonymousClass()) {
+			int end = currentClass.getName().lastIndexOf('$');
+			typeReference.setSimpleName(currentClass.getName().substring(end + 1));
+		} else {
+			typeReference.setSimpleName(currentClass.getSimpleName());
 		}
-		return typeReference.setPackage(createCtPackageReference(originalClass.getPackage()));
+		if (currentClass.getEnclosingClass() != null) {
+			typeReference.setDeclaringType(createCtTypeReference(currentClass.getEnclosingClass()));
+		}
+		if (currentClass.getPackage() != null) {
+			typeReference.setPackage(createCtPackageReference(currentClass.getPackage()));
+		}
+
+		if (arrayDimensionCount > 0) {
+			typeReference = (CtTypeReference<T>) factory.createArrayReference(typeReference, arrayDimensionCount);
+		}
+
+		return typeReference;
 	}
 
 	/**
