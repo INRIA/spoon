@@ -23,6 +23,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -863,6 +864,56 @@ public class JavaReflectionTreeBuilderTest {
 		CtParameter<?> parameter = method.getParameters().get(0);
 
 		assertThat(parameter.getSimpleName(), is("bar"));
+	}
+
+	@Test
+	void testStaticInnerClassConstructorWithEnclosingClassArgument() throws ClassNotFoundException {
+		// contract: Static inner classes can take explicit arguments of the enclosing type
+		ClassLoader loader = JavacFacade.compileFiles(
+			Map.of(
+				"Outer",
+				"class Outer {\n"
+					+ "  static class Inner { public Inner(Outer outer) {} } \n" +
+					"}\n"
+			),
+			List.of()
+		);
+		Class<?> inner = loader.loadClass("Outer$Inner");
+		CtClass<?> ctInner = (CtClass<?>) new JavaReflectionTreeBuilder(createFactory()).scan(inner);
+
+		assertEquals(1, inner.getConstructors().length);
+		assertEquals(1, inner.getConstructors()[0].getParameterCount());
+
+		assertThat(ctInner.getConstructors(), hasSize(1));
+		assertThat(
+			ctInner.getConstructors().iterator().next().getParameters(),
+			hasSize(1)
+		);
+	}
+
+	@Test
+	void testNonStaticInnerClassConstructorWithEnclosingClassArgument() throws ClassNotFoundException {
+		// contract: Non-static inner classes have one implicit argument of the enclosing type
+		ClassLoader loader = JavacFacade.compileFiles(
+			Map.of(
+				"Outer",
+				"class Outer {\n"
+					+ "  class Inner { public Inner(Outer outer) {} } \n" +
+					"}\n"
+			),
+			List.of()
+		);
+		Class<?> inner = loader.loadClass("Outer$Inner");
+		CtClass<?> ctInner = (CtClass<?>) new JavaReflectionTreeBuilder(createFactory()).scan(inner);
+
+		assertEquals(1, inner.getConstructors().length);
+		assertEquals(2, inner.getConstructors()[0].getParameterCount());
+
+		assertThat(ctInner.getConstructors(), hasSize(1));
+		assertThat(
+			ctInner.getConstructors().iterator().next().getParameters(),
+			hasSize(1)
+		);
 	}
 
 }
