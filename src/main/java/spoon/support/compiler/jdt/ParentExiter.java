@@ -100,6 +100,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -1059,7 +1060,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (child instanceof CtVariableRead) {
 			// special case of the resource being declared before
 			final CtVariableReference<?> variableRef = ((CtVariableRead<?>) child).getVariable();
-			if (variableRef.getDeclaration() != null) {
+			if (variableRef.getDeclaration() != null && !(variableRef instanceof CtFieldReference)) {
 				// getDeclaration works
 				tryWithResource.addResource((CtResource<?>) variableRef.getDeclaration().clone().setImplicit(true));
 			} else {
