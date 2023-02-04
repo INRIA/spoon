@@ -339,7 +339,13 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (parameter.isImplicit()) {
 			return true;
 		}
-		// best effort fallback
+		// best effort fallback for the implicit enclosing class parameter in non-static inner class constructors
+
+		// static inner classes have no implicit parameter
+		if (Modifier.isStatic(constructor.getDeclaringClass().getModifiers())) {
+			return false;
+		}
+
 		return isFirstParameter && parameter.getType() == constructor.getDeclaringClass().getEnclosingClass();
 	}
 
