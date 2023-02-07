@@ -21,6 +21,6 @@ jobs:
           uses: JetBrains/qodana-action@c25ee7dc4d0697b27ac54877a4ff71cf5b6dde3c # v2022.3.2
           with:
             args: --source-directory,./src/main/java , --fail-threshold, 0
-        - uses: github/codeql-action/upload-sarif@3ebbd71c74ef574dbc558c82f70e52732c8b44fe # v2
+        - uses: github/codeql-action/upload-sarif@39d8d7e78f59cf6b40ac3b9fbebef0c753d7c9e5 # v2
           with:
             sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
