@@ -13,10 +13,12 @@ import spoon.javadoc.api.StandardJavadocTagType;
 import spoon.javadoc.api.elements.JavadocElement;
 import spoon.javadoc.api.elements.JavadocText;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -173,4 +175,15 @@ public class JavadocParser {
 		}
 		return line.substring(starIndex + 1);
 	}
+
+	public static List<JavadocElement> forElement(CtElement element) {
+		return element.getComments()
+			.stream()
+			.filter(comment -> comment instanceof CtJavaDoc)
+			.map(comment -> new JavadocParser(comment.getRawContent(), element))
+			.map(JavadocParser::parse)
+			.flatMap(Collection::stream)
+			.collect(Collectors.toCollection(ArrayList::new));
+	}
+
 }
