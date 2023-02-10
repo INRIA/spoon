@@ -1073,6 +1073,7 @@ public class ParentExiter extends CtInheritanceScanner {
 							// we clone it in order to comply with the contract of being a tree
 							final CtLocalVariable clone = v.clone();
 							clone.setImplicit(true);
+							clone.putMetadata(CtTryWithResource.RESOURCE_REF_KEY, v.getReference());
 							tryWithResource.addResource(clone);
 							// Break out of the outer loop, we're done searching.
 							break outer;
