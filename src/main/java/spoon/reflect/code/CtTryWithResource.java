@@ -27,7 +27,7 @@ import static spoon.reflect.path.CtRole.TRY_RESOURCE;
  */
 public interface CtTryWithResource extends CtTry {
 
-	public static final String RESOURCE_REF_KEY = "###EXISTING_LOCAL_KEY###";
+	String RESOURCE_REF_KEY = "###EXISTING_LOCAL_KEY###";
 
 	/**
 	 * Gets the auto-closeable resources of this <code>try</code>. Available
