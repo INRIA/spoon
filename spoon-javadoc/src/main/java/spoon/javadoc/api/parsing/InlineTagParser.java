@@ -82,7 +82,7 @@ class InlineTagParser {
 
 	private JavadocInlineTag parseLinkTag(StringReader reader, StandardJavadocTagType type) {
 		String referenceText = reader.readWhile(it -> !Character.isWhitespace(it));
-		if (referenceText.contains("(")) {
+		if (referenceText.contains("(") && !referenceText.contains(")")) {
 			referenceText += reader.readWhile(it -> it != ')');
 			referenceText += reader.read(1);
 
