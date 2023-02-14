@@ -1062,7 +1062,8 @@ public class ParentExiter extends CtInheritanceScanner {
 			final CtVariableReference<?> variableRef = ((CtVariableRead<?>) child).getVariable();
 			if (variableRef.getDeclaration() != null && !(variableRef instanceof CtFieldReference)) {
 				// getDeclaration works
-				tryWithResource.addResource((CtResource<?>) variableRef.getDeclaration().clone().setImplicit(true));
+				tryWithResource.addResource((CtResource<?>) variableRef.getDeclaration()
+						.clone().setImplicit(true).putMetadata(CtTryWithResource.RESOURCE_REF_KEY, variableRef));
 			} else {
 				// we have to find it manually
 				outer: for (ASTPair pair: this.jdtTreeBuilder.getContextBuilder().stack) {
