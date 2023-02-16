@@ -949,7 +949,7 @@ public class JavaReflectionTreeBuilderTest {
 		factory.Type().get(loader.loadClass("First"));
 
 		// This will throw if the replacement was successful
-		CtType<?> victim = factory.Type().get(loader.loadClass("Victim$Inner"));
+		CtType<?> victim = assertDoesNotThrow(() -> factory.Type().get(loader.loadClass("Victim$Inner")));
 
 		// Make sure we got the right class, but this should be fine now in any case
 		assertNotNull(victim.getField("bar"));
