@@ -39,7 +39,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T> void visitClass(Class<T> clazz) {
-		if (clazz.getEnclosingClass() == null && clazz.getPackage() != null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		try {
@@ -125,7 +125,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T> void visitInterface(Class<T> clazz) {
 		assert clazz.isInterface();
-		if (clazz.getEnclosingClass() == null && clazz.getPackage() != null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		try {
@@ -183,7 +183,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T> void visitEnum(Class<T> clazz) {
 		assert clazz.isEnum();
-		if (clazz.getEnclosingClass() == null && clazz.getPackage() != null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		try {
@@ -257,7 +257,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T extends Annotation> void visitAnnotationClass(Class<T> clazz) {
 		assert clazz.isAnnotation();
-		if (clazz.getEnclosingClass() == null && clazz.getPackage() != null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		try {
@@ -499,7 +499,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T> void visitTypeReference(CtRole role, Class<T> clazz) {
-		if (clazz.getEnclosingClass() == null && clazz.getPackage() != null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		if (clazz.getEnclosingClass() != null) {
@@ -599,6 +599,9 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	}
 
+	private static boolean isTopLevelType(Class<?> clazz) {
+		return clazz.getEnclosingClass() == null && clazz.getPackage() != null;
+	}
 
 	private static Class<?> getRecordClass() {
 		try {
