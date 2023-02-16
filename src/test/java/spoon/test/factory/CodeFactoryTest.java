@@ -28,7 +28,12 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.util.compilation.JavacFacade;
 import spoon.test.GitHubIssue;
+
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -85,19 +90,29 @@ public class CodeFactoryTest {
 	}
 
 	@Test
-	void testCreateCtReferenceOfInnerClass() {
+	void testCreateCtReferenceOfInnerClass() throws ClassNotFoundException {
 		// contract: References for inner classes are created
 		Factory factory = createFactory();
+		Class<?> innerClass = JavacFacade.compileFiles(
+				Map.of(
+					"Test.java",
+					"class Test {" +
+						"  class TestClassInner {}" +
+						"}"
+				),
+				List.of()
+			)
+			.loadClass("Test$TestClassInner");
 		assertEquals(
-			TestClassInnerClass.class.getSimpleName(),
-			factory.createCtTypeReference(TestClassInnerClass.class).getSimpleName()
+			innerClass.getSimpleName(),
+			factory.createCtTypeReference(innerClass).getSimpleName()
 		);
 	}
 
 	@Test
 	void testCreateCtReferenceOfLocalClass() {
-		class LocalClass {}
 		// contract: References for local classes are created
+		class LocalClass {}
 		Factory factory = createFactory();
 		assertEquals(
 			LocalClass.class.getSimpleName(),
@@ -117,5 +132,4 @@ public class CodeFactoryTest {
 		);
 	}
 
-	private static class TestClassInnerClass {}
 }
