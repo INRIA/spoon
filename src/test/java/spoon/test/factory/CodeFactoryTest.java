@@ -17,6 +17,8 @@
 package spoon.test.factory;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
@@ -26,7 +28,12 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.util.compilation.JavacFacade;
 import spoon.test.GitHubIssue;
+
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -66,4 +73,63 @@ public class CodeFactoryTest {
 		CtTypeReference<Exception> exceptionType = factory.Type().createReference(Exception.class);
 		assertDoesNotThrow(() -> factory.Code().createCatchVariable(exceptionType, "e"));
 	}
+
+	@ParameterizedTest
+	@ValueSource(classes = {
+		byte[].class,
+		byte[][].class,
+		String[][].class,
+	})
+	void testCreateCtReferenceOfArray(Class<?> clazz) {
+		// contract: References for arrays are created
+		Factory factory = createFactory();
+		assertEquals(
+			clazz.getSimpleName(),
+			factory.createCtTypeReference(clazz).getSimpleName()
+		);
+	}
+
+	@Test
+	void testCreateCtReferenceOfInnerClass() throws ClassNotFoundException {
+		// contract: References for inner classes are created
+		Factory factory = createFactory();
+		Class<?> innerClass = JavacFacade.compileFiles(
+				Map.of(
+					"Test.java",
+					"class Test {" +
+						"  class TestClassInner {}" +
+						"}"
+				),
+				List.of()
+			)
+			.loadClass("Test$TestClassInner");
+		assertEquals(
+			innerClass.getSimpleName(),
+			factory.createCtTypeReference(innerClass).getSimpleName()
+		);
+	}
+
+	@Test
+	void testCreateCtReferenceOfLocalClass() {
+		// contract: References for local classes are created
+		class LocalClass {}
+		Factory factory = createFactory();
+		assertEquals(
+			LocalClass.class.getSimpleName(),
+			factory.createCtTypeReference(LocalClass.class).getSimpleName()
+		);
+	}
+
+	@Test
+	void testCreateCtReferenceOfAnonymousClass() {
+		// contract: References for anonymous classes are created
+		Class<?> clazz = (new Object() {
+		}.getClass());
+		Factory factory = createFactory();
+		assertEquals(
+			clazz.getName(),
+			factory.createCtTypeReference(clazz).getQualifiedName()
+		);
+	}
+
 }
