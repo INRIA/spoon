@@ -60,7 +60,7 @@ import spoon.support.compiler.SpoonPom;
 import spoon.test.imports.ImportTest;
 import spoon.test.prettyprinter.testclasses.AClass;
 import spoon.test.prettyprinter.testclasses.ClassUsingStaticMethod;
-import spoon.testing.utils.LineSeperatorExtension;
+import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -447,7 +447,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testElseIf() {
 		//contract: else if statements should be printed without break else and if
 		Launcher launcher = new Launcher();

@@ -16,7 +16,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
-import spoon.testing.utils.LineSeperatorExtension;
+import spoon.testing.utils.LineSeparatorExtension;
 
 /** Test for the new Java 15 text block feature with */
 public class TextBlockTest{
@@ -97,7 +97,7 @@ public class TextBlockTest{
 	}
 
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testTextBlockCreation(){
 		// contract: Test creation of TextBlock and prettyprinting
 		Factory factory = getSpoonFactory();
@@ -121,7 +121,7 @@ public class TextBlockTest{
 	}
 
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testTextBlockEscapes(){
 		//contract: text-blocks should retain escape sequences in code
 		Launcher launcher = setUpTest();
