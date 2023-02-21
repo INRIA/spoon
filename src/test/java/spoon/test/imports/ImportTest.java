@@ -17,6 +17,7 @@
 package spoon.test.imports;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -62,6 +63,7 @@ import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.util.SortedList;
 import spoon.test.imports.testclasses.A;
 import spoon.test.imports.testclasses.ClientClass;
@@ -71,6 +73,7 @@ import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.ToBeModified;
 import spoon.test.imports.testclasses.badimportissue3320.source.TestSource;
+import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
@@ -1818,4 +1821,44 @@ public class ImportTest {
 		);
 
 	}
+
+	@Test
+	@ExtendWith(LineSeparatorExtension.class)
+	void testAutoimportConflictingSimpleNames() {
+		// contract: Do not import two classes with the same simple name
+
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.addInputResource(new VirtualFile(
+			"package foo.bar.baz;" +
+				"public class Locale {\n" +
+				"  public static Locale HELLO;\n" +
+				"}\n",
+			"foo/bar/Locale.java"
+		));
+		launcher.addInputResource(new VirtualFile(
+			"package bar;\n" +
+				"public class User {\n" +
+				"  public static void foo() {\n" +
+				"    System.out.println(foo.bar.baz.Locale.HELLO);\n" +
+				"    System.out.println(java.util.Locale.GERMANY);\n" +
+				"  }\n" +
+				"}\n",
+			"bar/User.java"
+		));
+		launcher.buildModel();
+		CtType<?> user = launcher.getFactory().Type().get("bar.User");
+		assertEquals(
+			"package bar;\n" +
+				"import foo.bar.baz.Locale;\n" +
+				"public class User {\n" +
+				"    public static void foo() {\n" +
+				"        System.out.println(Locale.HELLO);\n" +
+				"        System.out.println(java.util.Locale.GERMANY);\n" +
+				"    }\n" +
+				"}",
+			user.toStringWithImports()
+		);
+	}
+
 }
