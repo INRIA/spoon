@@ -83,7 +83,7 @@ import spoon.test.comment.testclasses.OtherJavaDoc;
 import spoon.test.comment.testclasses.TestClassWithComments;
 import spoon.test.comment.testclasses.WildComments;
 import spoon.test.comment.testclasses.WindowsEOL;
-import spoon.testing.utils.LineSeperatorExtension;
+import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelTest;
 
 import java.io.File;
@@ -870,7 +870,7 @@ public class CommentTest {
 
 	@Test
 	@EnabledForJreRange(min = JRE.JAVA_16)
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testDocumentationContract() throws Exception {
 		// contract: all metamodel classes must be commented with an example.
 		

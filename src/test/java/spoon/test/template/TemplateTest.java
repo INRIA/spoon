@@ -60,7 +60,7 @@ import spoon.test.template.testclasses.inheritance.SuperClass;
 import spoon.test.template.testclasses.inheritance.SuperTemplate;
 import spoon.test.template.testclasses.logger.Logger;
 import spoon.test.template.testclasses.logger.LoggerTemplateProcessor;
-import spoon.testing.utils.LineSeperatorExtension;
+import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -92,7 +92,7 @@ public class TemplateTest {
 	private String newLine = "\n";
 
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testTemplateInheritance() throws Exception {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.getFactory();
