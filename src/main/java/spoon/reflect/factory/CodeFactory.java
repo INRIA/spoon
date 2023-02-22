@@ -739,7 +739,7 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a javadoc tag
 	 *
-	 * @param content The content of the javadoc tag with a possible paramater
+	 * @param content The content of the javadoc tag with a possible parameter
 	 * @param type The tag type
 	 * @return a new CtJavaDocTag
 	 */
@@ -767,7 +767,7 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a javadoc tag
 	 *
-	 * @param content The content of the javadoc tag with a possible paramater
+	 * @param content The content of the javadoc tag with a possible parameter
 	 * @param type The tag type
 	 * @param realName The real name of the tag
 	 * @return a new CtJavaDocTag
