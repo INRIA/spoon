@@ -259,7 +259,7 @@ public class DefaultPrettyPrinterTest {
 
 		String expected =
 			"public void setFieldUsingExternallyDefinedEnumWithSameNameAsLocal() {" + nl
-			+ "    localField = TypeIdentifierCollision.ENUM.E1.ordinal();" + nl
+			+ "    localField = spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1.ordinal();" + nl
 			+ "}";
 
 		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
@@ -294,7 +294,7 @@ public class DefaultPrettyPrinterTest {
 
 		expected =
 			"public enum ENUM {" + nl + nl
-			+ "    E1(TypeIdentifierCollision.globalField, TypeIdentifierCollision.ENUM.E1);" + nl
+			+ "    E1(spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField, spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1);" + nl
 			+ "    final int NUM;" + nl + nl
 			+ "    final Enum<?> e;" + nl + nl
 			+ "    private ENUM(int num, Enum<?> e) {" + nl
