@@ -113,7 +113,6 @@ abstract class LiteralHelper {
 		}
 	}
 
-
 	static void appendCharLiteral(StringBuilder sb, Character c, boolean mayContainsSpecialCharacter, boolean isInsideString) {
 		if (!mayContainsSpecialCharacter) {
 			sb.append(c);
