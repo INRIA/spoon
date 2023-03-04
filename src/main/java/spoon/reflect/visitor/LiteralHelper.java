@@ -92,7 +92,7 @@ abstract class LiteralHelper {
 			}
 			StringBuilder sb = new StringBuilder(10);
 			sb.append('\'');
-			appendCharLiteral(sb, (Character) literal.getValue(), mayContainsSpecialCharacter);
+			appendCharLiteral(sb, (Character) literal.getValue(), mayContainsSpecialCharacter, false);
 			sb.append('\'');
 			return sb.toString();
 		} else if (literal.getValue() instanceof String) {
@@ -113,17 +113,7 @@ abstract class LiteralHelper {
 		}
 	}
 
-	/**
-	 * This methods only calls {@link #appendCharLiteral(StringBuilder, Character, boolean, boolean)} with {@code isInsideString = false}.
-	 * This exists for backwards compatibility.
-	 * @param literal to be converted literal
-	 * @param sb the string builder to append the literal
-	 * @param c  the character to append
-	 * @param mayContainsSpecialCharacter  true if the string may contains special characters.
-	 */
-	static void appendCharLiteral(StringBuilder sb, Character c, boolean mayContainsSpecialCharacter) {
-		appendCharLiteral(sb, c, mayContainsSpecialCharacter, false);
-}
+
 	static void appendCharLiteral(StringBuilder sb, Character c, boolean mayContainsSpecialCharacter, boolean isInsideString) {
 		if (!mayContainsSpecialCharacter) {
 			sb.append(c);
