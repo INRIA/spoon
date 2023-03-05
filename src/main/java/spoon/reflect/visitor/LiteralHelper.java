@@ -156,12 +156,11 @@ abstract class LiteralHelper {
 	static String getStringLiteral(String value, boolean mayContainsSpecialCharacter) {
 		if (!mayContainsSpecialCharacter) {
 			return value;
-		} else {
-			StringBuilder sb = new StringBuilder(value.length() * 2);
-			for (int i = 0; i < value.length(); i++) {
-				appendCharLiteral(sb, value.charAt(i), true, true);
-			}
-			return sb.toString();
 		}
+		StringBuilder sb = new StringBuilder(value.length() * 2);
+		for (int i = 0; i < value.length(); i++) {
+			appendCharLiteral(sb, value.charAt(i), true, true);
+		}
+		return sb.toString();
 	}
 }

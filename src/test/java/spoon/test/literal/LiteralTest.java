@@ -271,4 +271,15 @@ public class LiteralTest {
 		assertEquals("'", literal);
 		assertEquals("\"'\"", ctLiteral.toString());
 	}
+
+	@GitHubIssue(issueNumber = 5070, fixed = true)
+	void tooStrictEscapingCharTest() {
+		// contract: inside a string with a position ' are escaped.
+		List<CtLiteral<?>> literals = Launcher.parseClass("class Foo { char c = \'\\'\'; }")
+				.getElements(new TypeFilter<>(CtLiteral.class));
+		CtLiteral<?> ctLiteral = literals.get(0);
+		char literal = (char) ctLiteral.getValue();
+		assertEquals('\'', literal);
+		assertEquals("\'\\'\'", ctLiteral.toString());
+	}
 }
