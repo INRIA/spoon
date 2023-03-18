@@ -51,6 +51,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.JavaOutputProcessor;
+import spoon.support.reflect.declaration.NoPackage;
 import spoon.test.annotation.testclasses.GlobalAnnotation;
 import spoon.test.pkg.name.PackageTestClass;
 import spoon.test.pkg.processors.ElementProcessor;
@@ -451,5 +452,19 @@ public class PackageTest {
 
 		var typeNames = types.stream().map(CtType::getSimpleName).collect(Collectors.toList());
 		assertEquals(typeNames, List.of("A", "D", "C", "B"));
+	}
+
+	@Test
+	public void testNoPackage() {
+		Launcher launcher = new Launcher();
+		Factory factory = launcher.getFactory();
+
+		CtClass<?> fooClass = factory.Class().create("test.Foo");
+		// Set the package to the null object
+		CtClass<?> noPackageClass = fooClass.clone().setParent(new NoPackage());
+
+		assertNotNull(noPackageClass.getPackage());
+
+		assertEquals(fooClass.toString(), noPackageClass.toString());
 	}
 }
