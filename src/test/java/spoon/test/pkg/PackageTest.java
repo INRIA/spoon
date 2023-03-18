@@ -51,7 +51,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.JavaOutputProcessor;
-import spoon.support.reflect.declaration.NoPackage;
+import spoon.support.reflect.NoPackage;
 import spoon.test.annotation.testclasses.GlobalAnnotation;
 import spoon.test.pkg.name.PackageTestClass;
 import spoon.test.pkg.processors.ElementProcessor;

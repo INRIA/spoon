@@ -1,4 +1,4 @@
-package spoon.support.reflect.declaration;
+package spoon.support.reflect;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -35,7 +35,7 @@ import spoon.support.sniper.internal.ElementSourceFragment;
  */
 public class NoPackage implements CtPackage {
 	private static final long serialVersionUID = 1L;
-	private String NO_PACKAGE_NAME = "<no package>";
+	private static final String NO_PACKAGE_NAME = "<no package>";
 
 	@Override
 	public void accept(CtVisitor visitor) {
