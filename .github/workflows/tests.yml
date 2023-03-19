@@ -31,7 +31,7 @@ jobs:
           - os: windows-latest
             java: 19
           - os: windows-latest
-            java: 20-ea
+            java: 21-ea
 
 
 
