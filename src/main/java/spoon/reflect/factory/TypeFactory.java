@@ -295,6 +295,9 @@ public class TypeFactory extends SubFactory {
 	 */
 	public CtArrayTypeReference<?> createArrayReference(CtTypeReference<?> reference, int n) {
 		CtTypeReference<?> componentType;
+		if (n < 1) {
+			throw new SpoonException("Array dimension must be >= 1");
+		}
 		if (n == 1) {
 			return createArrayReference(reference);
 		}

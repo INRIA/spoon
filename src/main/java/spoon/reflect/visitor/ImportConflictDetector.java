@@ -26,6 +26,7 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.Experimental;
 
+import java.util.Map;
 
 /**
  * Detects conflicts needed to be required be a fully-qualified name.
@@ -196,6 +197,16 @@ public class ImportConflictDetector extends ImportAnalyzer<LexicalScope> {
 				ref.setSimplyQualified(false);
 				return false;
 			});
+
+			if (!ref.isImplicit() && ref.isSimplyQualified()) {
+				Map<String, String> encounteredNames = ((LexicalScopeScanner) scanner).getEncounteredImportedQualifiedNames();
+				encounteredNames.putIfAbsent(ref.getSimpleName(), ref.getQualifiedName());
+				if (!encounteredNames.get(ref.getSimpleName()).equals(ref.getQualifiedName())) {
+					// We have found a different type with the same simple name, do not import this one
+					ref.setImplicit(false);
+					ref.setSimplyQualified(false);
+				}
+			}
 		} //else it is already fully qualified
 		checkConflictOfTypeReference(nameScope, ref);
 	}

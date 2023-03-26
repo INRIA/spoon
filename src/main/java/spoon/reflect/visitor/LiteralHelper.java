@@ -7,6 +7,7 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.LiteralBase;
@@ -43,13 +44,19 @@ abstract class LiteralHelper {
 	}
 
 	private static String getBasedString(Float value, LiteralBase base) {
+		if (value.isInfinite() || value.isNaN()) {
+			throw new SpoonException("Can not convert " + value + " to a float literal.");
+		}
 		if (base == LiteralBase.HEXADECIMAL) {
 			return Float.toHexString(value) + "F";
 		}
-		return Float.toString(value) + "F";
+		return value + "F";
 	}
 
 	private static String getBasedString(Double value, LiteralBase base) {
+		if (value.isInfinite() || value.isNaN()) {
+			throw new SpoonException("Can not convert " + value + " to a double literal.");
+		}
 		if (base == LiteralBase.HEXADECIMAL) {
 			return Double.toHexString(value);
 		}

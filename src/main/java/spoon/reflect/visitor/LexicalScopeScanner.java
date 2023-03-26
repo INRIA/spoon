@@ -23,6 +23,8 @@ import spoon.reflect.declaration.CtMethod;
 import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A {@link CtScanner} which provides current lexical scope
@@ -30,6 +32,8 @@ import java.util.Deque;
  */
 public class LexicalScopeScanner extends EarlyTerminatingScanner<Object> {
 	private final Deque<LexicalScope> scopes = new ArrayDeque<>();
+	private final Map<String, String> encounteredImportedQualifiedNames = new HashMap<>();
+
 	protected void enter(spoon.reflect.declaration.CtElement e) {
 		LexicalScope newFinder = onElement(scopes.peek(), e);
 		if (newFinder != null) {
@@ -51,6 +55,10 @@ public class LexicalScopeScanner extends EarlyTerminatingScanner<Object> {
 	public LexicalScope getCurrentLexicalScope() {
 		LexicalScope ns = scopes.peek();
 		return ns == null ? EMPTY : ns;
+	}
+
+	Map<String, String> getEncounteredImportedQualifiedNames() {
+		return encounteredImportedQualifiedNames;
 	}
 
 	/**

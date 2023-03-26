@@ -3,10 +3,13 @@ package spoon.reflect.reference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
+import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
@@ -32,9 +35,9 @@ public class CtTypeReferenceTest {
     @Mock private ClassLoader classLoader;
 
     @BeforeEach public void setUp() {
-        when(factory.Type()).thenReturn(typeFactory);
-        when(factory.getEnvironment()).thenReturn(environment);
-        when(environment.getModelChangeListener()).thenReturn(listener);
+        Mockito.lenient().when(factory.Type()).thenReturn(typeFactory);
+        Mockito.lenient().when(factory.getEnvironment()).thenReturn(environment);
+        Mockito.lenient().when(environment.getModelChangeListener()).thenReturn(listener);
         Mockito.lenient().when(environment.getInputClassLoader()).thenReturn(classLoader);
     }
 
@@ -90,4 +93,32 @@ public class CtTypeReferenceTest {
         //contract: box/unbox returns a reference toward the expected type
         assertEquals(expectedClass.getName(), result.getQualifiedName());
     }
+
+    @ParameterizedTest
+    @CsvSource(value = {
+        "byte,              2, byte[][]",
+        "byte,              3, byte[][][]",
+        "java.lang.String,  3, String[][][]",
+        "char,              1, char[]",
+        "boolean,           1, boolean[]",
+        "byte,              1, byte[]",
+        "short,             1, short[]",
+        "int,               1, int[]",
+        "long,              1, long[]",
+        "float,             1, float[]",
+        "double,            1, double[]",
+    })
+    void testGetActualClassForArray(String className, int arrayDepth, String expected) {
+        // contract: "getActualClass" should return proper classes for multi-dimensional arrays
+        Factory factory = new Launcher().getFactory();
+        CtArrayTypeReference<?> reference = factory.createArrayReference(
+            factory.createReference(className),
+            arrayDepth
+        );
+        assertEquals(
+            expected,
+            reference.getActualClass().getSimpleName()
+        );
+    }
+
 }

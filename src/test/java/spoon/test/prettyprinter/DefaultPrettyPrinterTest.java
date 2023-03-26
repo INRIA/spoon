@@ -60,7 +60,7 @@ import spoon.support.compiler.SpoonPom;
 import spoon.test.imports.ImportTest;
 import spoon.test.prettyprinter.testclasses.AClass;
 import spoon.test.prettyprinter.testclasses.ClassUsingStaticMethod;
-import spoon.testing.utils.LineSeperatorExtension;
+import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -259,7 +259,7 @@ public class DefaultPrettyPrinterTest {
 
 		String expected =
 			"public void setFieldUsingExternallyDefinedEnumWithSameNameAsLocal() {" + nl
-			+ "    localField = TypeIdentifierCollision.ENUM.E1.ordinal();" + nl
+			+ "    localField = spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1.ordinal();" + nl
 			+ "}";
 
 		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
@@ -294,7 +294,7 @@ public class DefaultPrettyPrinterTest {
 
 		expected =
 			"public enum ENUM {" + nl + nl
-			+ "    E1(TypeIdentifierCollision.globalField, TypeIdentifierCollision.ENUM.E1);" + nl
+			+ "    E1(spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField, spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1);" + nl
 			+ "    final int NUM;" + nl + nl
 			+ "    final Enum<?> e;" + nl + nl
 			+ "    private ENUM(int num, Enum<?> e) {" + nl
@@ -447,7 +447,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testElseIf() {
 		//contract: else if statements should be printed without break else and if
 		Launcher launcher = new Launcher();
