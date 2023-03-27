@@ -547,8 +547,9 @@ public class PositionBuilder {
 			} catch (Exception _ignored) {
 				// can't do anything.
 			}
-			Logger.getLogger(PositionBuilder.class.getName()).severe("An error occurred while processing a case statement.\n" +
-					"The statement's child looks like: " + repr);
+			Logger.getLogger(PositionBuilder.class.getName())
+					.severe("An error occurred while processing a case statement.\nThe statement's child looks like: "
+					+ repr);
 
 			return null;
 		}
