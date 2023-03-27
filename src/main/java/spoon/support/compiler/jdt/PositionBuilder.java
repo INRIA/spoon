@@ -54,6 +54,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 
@@ -538,6 +539,15 @@ public class PositionBuilder {
 					bodyStart, bodyEnd,
 					lineSeparatorPositions);
 		} catch (UnsupportedOperationException | SpoonException e) {
+			String repr = null;
+			try {
+				repr = child.toString();
+			} catch (Exception _ignored) {
+				; // can't do anything.
+			}
+			Logger.getLogger(PositionBuilder.class.getName()).severe("An error occurred while processing a case statement."+
+					"The statement's child looks like: " + repr);
+
 			return null;
 		}
 	}
