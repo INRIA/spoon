@@ -526,15 +526,20 @@ public class PositionBuilder {
 		}
 		int[] lineSeparatorPositions = this.jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions();
 
-		int bodyStart = child.getPosition().getSourceEnd() + 1;
-		int bodyEnd = statements.get(statements.size() - 1).getPosition().getSourceEnd();
-		return child.getFactory().Core().createBodyHolderSourcePosition(
-				oldPosition.getCompilationUnit(),
-				oldPosition.getSourceStart(), oldPosition.getSourceEnd(),
-				oldPosition.getSourceStart(), oldPosition.getSourceStart() - 1,
-				oldPosition.getSourceStart(), bodyEnd,
-				bodyStart, bodyEnd,
-				lineSeparatorPositions);
+		try {
+
+			int bodyStart = child.getPosition().getSourceEnd() + 1;
+			int bodyEnd = statements.get(statements.size() - 1).getPosition().getSourceEnd();
+			return child.getFactory().Core().createBodyHolderSourcePosition(
+					oldPosition.getCompilationUnit(),
+					oldPosition.getSourceStart(), oldPosition.getSourceEnd(),
+					oldPosition.getSourceStart(), oldPosition.getSourceStart() - 1,
+					oldPosition.getSourceStart(), bodyEnd,
+					bodyStart, bodyEnd,
+					lineSeparatorPositions);
+		} catch (UnsupportedOperationException | SpoonException e) {
+			return null;
+		}
 	}
 
 	/**
