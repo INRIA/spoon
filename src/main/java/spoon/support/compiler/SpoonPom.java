@@ -310,7 +310,7 @@ public class SpoonPom implements SpoonResource {
 	}
 
 	// Pattern corresponding to maven properties ${propertyName}
-	private static Pattern mavenProperty = Pattern.compile("\\$\\{.*\\}");
+	private static Pattern mavenProperty = Pattern.compile("\\$\\{.*?\\}");
 
 	/**
 	 * Extract the variable from a string
@@ -353,6 +353,8 @@ public class SpoonPom implements SpoonResource {
 			}
 		} else if ("project.basedir".equals(key) || "pom.basedir".equals(key) || "basedir".equals(key)) {
 			return pomFile.getParent();
+		} else if ("file.separator".equals(key)) {
+			return File.separator;
 		}
 		String value = extractVariable(model.getProperties().getProperty(key));
 		if (value == null) {
