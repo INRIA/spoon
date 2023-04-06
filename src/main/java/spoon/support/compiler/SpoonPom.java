@@ -310,7 +310,7 @@ public class SpoonPom implements SpoonResource {
 	}
 
 	// Pattern corresponding to maven properties ${propertyName}
-	private static Pattern mavenProperty = Pattern.compile("\\$\\{.*?\\}");
+	private static final Pattern MAVEN_PROPERTY = Pattern.compile("\\$\\{.*?}");
 
 	/**
 	 * Extract the variable from a string
@@ -318,7 +318,7 @@ public class SpoonPom implements SpoonResource {
 	private String extractVariable(String value) {
 		String val = value;
 		if (value != null && value.contains("$")) {
-			Matcher matcher = mavenProperty.matcher(value);
+			Matcher matcher = MAVEN_PROPERTY.matcher(value);
 			while (matcher.find()) {
 				String var = matcher.group();
 				val = val.replace(var, getProperty(var.substring(2, var.length() - 1)));
