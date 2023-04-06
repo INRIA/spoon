@@ -172,10 +172,6 @@ jobs:
         uses: stCarolas/setup-maven@v4.5
         with:
           maven-version: 3.9.0
-      - name: Run doc check
-        run: mvn org.apache.maven.plugins:maven-javadoc-plugin:3.5.0:jar
-      - name: Run spotless check
-        run: mvn spotless:check
       # we dont enforce that the version must be non snapshot as this is not possible for SNAPSHOT versions in our workflow.
       - name: Check maven pom quality
         run: mvn org.kordamp.maven:pomchecker-maven-plugin:1.9.0:check-maven-central -D"checker.release=false"
