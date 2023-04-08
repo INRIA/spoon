@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -71,6 +71,7 @@ import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.reflect.code.CtCommentImpl;
+import spoon.test.GitHubIssue;
 import spoon.test.comment.testclasses.BlockComment;
 import spoon.test.comment.testclasses.Comment1;
 import spoon.test.comment.testclasses.Comment2;
@@ -1248,5 +1249,77 @@ public class CommentTest {
 		assertEquals("first comment", catches.get(0).getComments().get(0).getContent());
 		assertEquals(1, catches.get(0).getBody().getComments().size());
 		assertEquals("second comment", catches.get(0).getBody().getComments().get(0).getContent());
+	}
+
+	@ModelTest("./src/test/java/spoon/test/comment/testclasses/AnnotationComments.java")
+	@GitHubIssue(issueNumber = 2482, fixed = false)
+	public void testAnnotationComments(CtModel model) {
+		//contract: comments at annotations should be properly added to the AST
+		List<CtComment> comments = model.getElements(new TypeFilter<>(CtComment.class));
+		List<CtAnnotation<?>> annotations = model.getElements(new TypeFilter<>(CtAnnotation.class));
+
+		assertEquals(3, comments.size());
+		assertEquals("comment 1", comments.get(0).getContent());
+		assertEquals("comment 2", comments.get(1).getContent());
+		assertEquals("comment 3", comments.get(2).getContent());
+
+		assertEquals(1, annotations.get(0).getComments().size());
+		assertEquals("comment 1", annotations.get(0).getComments().get(0).getContent());
+		assertEquals(1, annotations.get(1).getComments().size());
+		assertEquals("comment 2", annotations.get(1).getComments().get(0).getContent());
+		assertEquals(1, annotations.get(2).getComments().size());
+		assertEquals("comment 3", annotations.get(2).getComments().get(0).getContent());
+	}
+
+	@ModelTest("./src/test/java/spoon/test/comment/testclasses/ArrayAccessComments.java")
+	@GitHubIssue(issueNumber = 2482, fixed = false)
+	public void testArrayAccessComments(CtModel model) {
+		//contract: comments at array accesses should be properly added to the AST
+		List<CtComment> comments = model.getElements(new TypeFilter<>(CtComment.class));
+		List<CtArrayAccess<?, ?>> arrayAccesses = model.getElements(new TypeFilter<>(CtArrayAccess.class));
+
+		assertEquals(2,comments.size());
+		assertEquals("comment 1", comments.get(0).getContent());
+		assertEquals("comment 2", comments.get(1).getContent());
+
+		assertEquals(1, arrayAccesses.get(0).getComments().size());
+		assertEquals("comment 1", arrayAccesses.get(0).getComments().get(0).getContent());
+		assertEquals(1, arrayAccesses.get(1).getComments().size());
+		assertEquals("comment 2", arrayAccesses.get(1).getComments().get(0).getContent());
+	}
+
+	@ModelTest("./src/test/java/spoon/test/comment/testclasses/BinaryOperatorComments.java")
+	@GitHubIssue(issueNumber = 2482, fixed = false)
+	public void testBinaryOperatorComments(CtModel model) {
+		//contract: comments at binary operators should be properly added to the AST
+		List<CtComment> comments = model.getElements(new TypeFilter<>(CtComment.class));
+		List<CtBinaryOperator<?>> binaryOperators = model.getElements(new TypeFilter<>(CtBinaryOperator.class));
+
+		assertEquals(1, comments.size());
+		assertEquals("comment 1", comments.get(0).getContent());
+
+		assertEquals(1, binaryOperators.get(0).getComments().size());
+		assertEquals("comment 1", binaryOperators.get(0).getComments().get(0).getContent());
+	}
+
+	@ModelTest("./src/test/java/spoon/test/comment/testclasses/TypeParameterComments.java")
+	@GitHubIssue(issueNumber = 2482, fixed = false)
+	public void testTypeParameterComments(CtModel model) {
+		//contract: comments at type parameters should be properly added to the AST
+		List<CtComment> comments = model.getElements(new TypeFilter<>(CtComment.class));
+		List<CtTypeParameter> typeParameters = model.getElements(new TypeFilter<>(CtTypeParameter.class));
+
+		assertEquals(4, comments.size());
+		assertEquals("comment 1", comments.get(0).getContent());
+		assertEquals("comment 2", comments.get(1).getContent());
+		assertEquals("comment 3", comments.get(2).getContent());
+		assertEquals("comment 4", comments.get(3).getContent());
+
+		assertEquals(1, typeParameters.get(0).getComments().size());
+		assertEquals("comment 1", typeParameters.get(0).getComments().get(0).getContent());
+		assertEquals(3, typeParameters.get(1).getComments().size());
+		assertEquals("comment 2", typeParameters.get(1).getComments().get(0).getContent());
+		assertEquals("comment 3", typeParameters.get(1).getComments().get(1).getContent());
+		assertEquals("comment 4", typeParameters.get(1).getComments().get(2).getContent());
 	}
 }
