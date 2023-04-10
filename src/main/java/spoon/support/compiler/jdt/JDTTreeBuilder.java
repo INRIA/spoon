@@ -1525,11 +1525,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(factory.Code().createTypeAccessWithoutCloningReference(typeRef), qualifiedNameRef);
 			return true;
 		} else if (qualifiedNameRef.binding instanceof ProblemBinding) {
-			if (context.stack.peek().element instanceof CtInvocation) {
+			if (helper.isProblemNameRefProbablyTypeRef(qualifiedNameRef)) {
 				context.enter(helper.createTypeAccessNoClasspath(qualifiedNameRef), qualifiedNameRef);
-				return true;
+			} else {
+				context.enter(helper.createFieldAccessNoClasspath(qualifiedNameRef), qualifiedNameRef);
 			}
-			context.enter(helper.createFieldAccessNoClasspath(qualifiedNameRef), qualifiedNameRef);
 			return true;
 		} else {
 			context.enter(

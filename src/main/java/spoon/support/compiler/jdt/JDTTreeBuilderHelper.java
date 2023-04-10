@@ -7,11 +7,13 @@
  */
 package spoon.support.compiler.jdt;
 
+import java.util.Arrays;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.ExportsStatement;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
+import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
 import org.eclipse.jdt.internal.compiler.ast.OpensStatement;
@@ -390,6 +392,48 @@ public class JDTTreeBuilderHelper {
 			va.getVariable().setStatic(true);
 		}
 		return va;
+	}
+
+	boolean isProblemNameRefProbablyTypeRef(QualifiedNameReference qualifiedNameReference) {
+		ContextBuilder contextBuilder = jdtTreeBuilder.getContextBuilder();
+		if (contextBuilder.compilationunitdeclaration == null) {
+			return false;
+		}
+		if (contextBuilder.compilationunitdeclaration.imports == null) {
+			return false;
+		}
+		char[][] ourName = qualifiedNameReference.tokens;
+		for (ImportReference anImport : contextBuilder.compilationunitdeclaration.imports) {
+			char[][] importName = anImport.getImportName();
+			int i = indexOfSubList(importName, ourName);
+			if (i > 0) {
+				boolean extendsToEndOfImport = i + ourName.length == importName.length;
+				boolean isStaticImport = anImport.isStatic();
+				if (!isStaticImport) {
+					// import foo.bar.baz.A; => "A" is probably a type
+					// import foo.bar.baz.A; => "baz" is probably a type
+					return true;
+				}
+				// import static foo.Bar.bar; => bar is probably a method/field
+				// import static foo.Bar;     => Bar is probably a type
+				char[] simpleName = qualifiedNameReference.tokens[qualifiedNameReference.tokens.length - 1];
+				return !extendsToEndOfImport || !Character.isLowerCase(simpleName[0]);
+			}
+		}
+		return false;
+	}
+
+	private static int indexOfSubList(char[][] haystack, char[][] needle) {
+		outer:
+		for (int i = 0; i < haystack.length - needle.length; i++) {
+			for (int j = 0; j < needle.length; j++) {
+				if (!Arrays.equals(haystack[i + j], needle[j])) {
+					continue outer;
+				}
+			}
+			return i;
+		}
+		return -1;
 	}
 
 	/**
