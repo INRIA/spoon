@@ -1,0 +1,958 @@
+{
+  "artifactID": "spoon-core",
+  "groupID": "fr.inria.gforge.spoon",
+  "version": "10.4.0-SNAPSHOT",
+  "lockFileVersion": 1,
+  "dependencies": [
+    {
+      "groupId": "ch.qos.logback",
+      "artifactId": "logback-classic",
+      "version": "1.4.6",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "60d7030939d962afd3cec302e97eda66684f23b6d2de627a57734405bc8ebca8",
+      "id": "ch.qos.logback:logback-classic:1.4.6",
+      "children": [
+        {
+          "groupId": "ch.qos.logback",
+          "artifactId": "logback-core",
+          "version": "1.4.6",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "f19cbd234b3f7d4e1292c62cb49e9090ee12a80e72891431076cbbc7df2d694c",
+          "id": "ch.qos.logback:logback-core:1.4.6",
+          "parent": "ch.qos.logback:logback-classic:1.4.6",
+          "children": []
+        },
+        {
+          "groupId": "org.slf4j",
+          "artifactId": "slf4j-api",
+          "version": "2.0.4",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "57fa874599ace9259286b99253d7a877afdd2db4b07a6827ac6c847ca5d601a2",
+          "id": "org.slf4j:slf4j-api:2.0.4",
+          "parent": "ch.qos.logback:logback-classic:1.4.6",
+          "children": []
+        }
+      ]
+    },
+    {
+      "groupId": "com.fasterxml.jackson.core",
+      "artifactId": "jackson-databind",
+      "version": "2.14.2",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "501d3abce4d18dcc381058ec593c5b94477906bba6efbac14dae40a642f77424",
+      "id": "com.fasterxml.jackson.core:jackson-databind:2.14.2",
+      "children": [
+        {
+          "groupId": "com.fasterxml.jackson.core",
+          "artifactId": "jackson-annotations",
+          "version": "2.14.2",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "2c6869d505cf60dc066734b7d50339f975bd3adc635e26a78abb71acb4473c0d",
+          "id": "com.fasterxml.jackson.core:jackson-annotations:2.14.2",
+          "parent": "com.fasterxml.jackson.core:jackson-databind:2.14.2",
+          "children": []
+        },
+        {
+          "groupId": "com.fasterxml.jackson.core",
+          "artifactId": "jackson-core",
+          "version": "2.14.2",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "b5d37a77c88277b97e3593c8740925216c06df8e4172bbde058528df04ad3e7a",
+          "id": "com.fasterxml.jackson.core:jackson-core:2.14.2",
+          "parent": "com.fasterxml.jackson.core:jackson-databind:2.14.2",
+          "children": []
+        }
+      ]
+    },
+    {
+      "groupId": "com.google.guava",
+      "artifactId": "guava",
+      "version": "31.1-jre",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "a42edc9cab792e39fe39bb94f3fca655ed157ff87a8af78e1d6ba5b07c4a00ab",
+      "id": "com.google.guava:guava:31.1-jre",
+      "children": [
+        {
+          "groupId": "com.google.code.findbugs",
+          "artifactId": "jsr305",
+          "version": "3.0.2",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+          "id": "com.google.code.findbugs:jsr305:3.0.2",
+          "parent": "com.google.guava:guava:31.1-jre",
+          "children": []
+        },
+        {
+          "groupId": "com.google.errorprone",
+          "artifactId": "error_prone_annotations",
+          "version": "2.11.0",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "721cb91842b46fa056847d104d5225c8b8e1e8b62263b993051e1e5a0137b7ec",
+          "id": "com.google.errorprone:error_prone_annotations:2.11.0",
+          "parent": "com.google.guava:guava:31.1-jre",
+          "children": []
+        },
+        {
+          "groupId": "com.google.guava",
+          "artifactId": "failureaccess",
+          "version": "1.0.1",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+          "id": "com.google.guava:failureaccess:1.0.1",
+          "parent": "com.google.guava:guava:31.1-jre",
+          "children": []
+        },
+        {
+          "groupId": "com.google.guava",
+          "artifactId": "listenablefuture",
+          "version": "9999.0-empty-to-avoid-conflict-with-guava",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+          "id": "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava",
+          "parent": "com.google.guava:guava:31.1-jre",
+          "children": []
+        },
+        {
+          "groupId": "com.google.j2objc",
+          "artifactId": "j2objc-annotations",
+          "version": "1.3",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "21af30c92267bd6122c0e0b4d20cccb6641a37eaf956c6540ec471d584e64a7b",
+          "id": "com.google.j2objc:j2objc-annotations:1.3",
+          "parent": "com.google.guava:guava:31.1-jre",
+          "children": []
+        },
+        {
+          "groupId": "org.checkerframework",
+          "artifactId": "checker-qual",
+          "version": "3.12.0",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "ff10785ac2a357ec5de9c293cb982a2cbb605c0309ea4cc1cb9b9bc6dbe7f3cb",
+          "id": "org.checkerframework:checker-qual:3.12.0",
+          "parent": "com.google.guava:guava:31.1-jre",
+          "children": []
+        }
+      ]
+    },
+    {
+      "groupId": "com.martiansoftware",
+      "artifactId": "jsap",
+      "version": "2.1",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "331746fa62cfbc3368260c5a2e660936ad11be612308c120a044e120361d474e",
+      "id": "com.martiansoftware:jsap:2.1",
+      "children": []
+    },
+    {
+      "groupId": "com.mysema.querydsl",
+      "artifactId": "querydsl-core",
+      "version": "3.7.4",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "fdba2e1b956dab5bbbf79b87f98d5a1f41d23d615154692d1b5a91dc2c823bef",
+      "id": "com.mysema.querydsl:querydsl-core:3.7.4",
+      "children": [
+        {
+          "groupId": "com.google.guava",
+          "artifactId": "guava",
+          "version": "18.0",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "d664fbfc03d2e5ce9cab2a44fb01f1d0bf9dfebeccc1a473b1f9ea31f79f6f99",
+          "id": "com.google.guava:guava:18.0",
+          "parent": "com.mysema.querydsl:querydsl-core:3.7.4",
+          "children": []
+        }
+      ]
+    },
+    {
+      "groupId": "commons-io",
+      "artifactId": "commons-io",
+      "version": "2.11.0",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "961b2f6d87dbacc5d54abf45ab7a6e2495f89b75598962d8c723cea9bc210908",
+      "id": "commons-io:commons-io:2.11.0",
+      "children": []
+    },
+    {
+      "groupId": "javax.validation",
+      "artifactId": "validation-api",
+      "version": "2.0.1.Final",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "9873b46df1833c9ee8f5bc1ff6853375115dadd8897bcb5a0dffb5848835ee6c",
+      "id": "javax.validation:validation-api:2.0.1.Final",
+      "children": []
+    },
+    {
+      "groupId": "org.apache.commons",
+      "artifactId": "commons-compress",
+      "version": "1.23.0",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "c267f17160e9ef662b4d78b7f29dca7c82b15c5cff2cb6a9865ef4ab3dd5b787",
+      "id": "org.apache.commons:commons-compress:1.23.0",
+      "children": []
+    },
+    {
+      "groupId": "org.apache.commons",
+      "artifactId": "commons-lang3",
+      "version": "3.12.0",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "d919d904486c037f8d193412da0c92e22a9fa24230b9d67a57855c5c31c7e94e",
+      "id": "org.apache.commons:commons-lang3:3.12.0",
+      "children": []
+    },
+    {
+      "groupId": "org.apache.maven",
+      "artifactId": "maven-model",
+      "version": "4.0.0-alpha-5",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "dd7de8ddb2915a47c656f96293802e180c24fcad3d303e5b4fd4eaebdde6968b",
+      "id": "org.apache.maven:maven-model:4.0.0-alpha-5",
+      "children": [
+        {
+          "groupId": "org.apache.maven",
+          "artifactId": "maven-api-model",
+          "version": "4.0.0-alpha-5",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "e309107a010fcdfcbaab508ceb3ae78476e09ec990468929d3b0fc981d41f10a",
+          "id": "org.apache.maven:maven-api-model:4.0.0-alpha-5",
+          "parent": "org.apache.maven:maven-model:4.0.0-alpha-5",
+          "children": [
+            {
+              "groupId": "org.apache.maven",
+              "artifactId": "maven-api-xml",
+              "version": "4.0.0-alpha-5",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "e34556a7abe2509194942cceb9ba25587f16f5964ff160102fe4926f67e38951",
+              "id": "org.apache.maven:maven-api-xml:4.0.0-alpha-5",
+              "parent": "org.apache.maven:maven-api-model:4.0.0-alpha-5",
+              "children": [
+                {
+                  "groupId": "org.apache.maven",
+                  "artifactId": "maven-api-meta",
+                  "version": "4.0.0-alpha-5",
+                  "checksumAlgorithm": "SHA-256",
+                  "checksum": "768895e11ad37abc8e92c1dcf6ee52ac81af80d47a3d608ccd5863d7d4dd14b2",
+                  "id": "org.apache.maven:maven-api-meta:4.0.0-alpha-5",
+                  "parent": "org.apache.maven:maven-api-xml:4.0.0-alpha-5",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "groupId": "org.apache.maven",
+          "artifactId": "maven-xml-impl",
+          "version": "4.0.0-alpha-5",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "fa7d0d05a262976947e95f72c7e2a3300b8eebe2a6b33eb4080043cddaa13854",
+          "id": "org.apache.maven:maven-xml-impl:4.0.0-alpha-5",
+          "parent": "org.apache.maven:maven-model:4.0.0-alpha-5",
+          "children": [
+            {
+              "groupId": "org.apache.maven",
+              "artifactId": "maven-api-xml",
+              "version": "4.0.0-alpha-5",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "e34556a7abe2509194942cceb9ba25587f16f5964ff160102fe4926f67e38951",
+              "id": "org.apache.maven:maven-api-xml:4.0.0-alpha-5",
+              "parent": "org.apache.maven:maven-xml-impl:4.0.0-alpha-5",
+              "children": [
+                {
+                  "groupId": "org.apache.maven",
+                  "artifactId": "maven-api-meta",
+                  "version": "4.0.0-alpha-5",
+                  "checksumAlgorithm": "SHA-256",
+                  "checksum": "768895e11ad37abc8e92c1dcf6ee52ac81af80d47a3d608ccd5863d7d4dd14b2",
+                  "id": "org.apache.maven:maven-api-meta:4.0.0-alpha-5",
+                  "parent": "org.apache.maven:maven-api-xml:4.0.0-alpha-5",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "groupId": "org.eclipse.sisu",
+              "artifactId": "org.eclipse.sisu.plexus",
+              "version": "0.3.5",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "7e4c61096d70826f20f7a7d55c59a5528e7aa5ad247ee2dfe544e4dd25f6a784",
+              "id": "org.eclipse.sisu:org.eclipse.sisu.plexus:0.3.5",
+              "parent": "org.apache.maven:maven-xml-impl:4.0.0-alpha-5",
+              "children": [
+                {
+                  "groupId": "javax.annotation",
+                  "artifactId": "javax.annotation-api",
+                  "version": "1.2",
+                  "checksumAlgorithm": "SHA-256",
+                  "checksum": "5909b396ca3a2be10d0eea32c74ef78d816e1b4ead21de1d78de1f890d033e04",
+                  "id": "javax.annotation:javax.annotation-api:1.2",
+                  "parent": "org.eclipse.sisu:org.eclipse.sisu.plexus:0.3.5",
+                  "children": []
+                },
+                {
+                  "groupId": "org.codehaus.plexus",
+                  "artifactId": "plexus-classworlds",
+                  "version": "2.5.2",
+                  "checksumAlgorithm": "SHA-256",
+                  "checksum": "b2931d41740490a8d931cbe0cfe9ac20deb66cca606e679f52522f7f534c9fd7",
+                  "id": "org.codehaus.plexus:plexus-classworlds:2.5.2",
+                  "parent": "org.eclipse.sisu:org.eclipse.sisu.plexus:0.3.5",
+                  "children": []
+                },
+                {
+                  "groupId": "org.codehaus.plexus",
+                  "artifactId": "plexus-component-annotations",
+                  "version": "1.5.5",
+                  "checksumAlgorithm": "SHA-256",
+                  "checksum": "4df7a6a7be64b35bbccf60b5c115697f9ea3421d22674ae67135dde375fcca1f",
+                  "id": "org.codehaus.plexus:plexus-component-annotations:1.5.5",
+                  "parent": "org.eclipse.sisu:org.eclipse.sisu.plexus:0.3.5",
+                  "children": []
+                },
+                {
+                  "groupId": "org.codehaus.plexus",
+                  "artifactId": "plexus-utils",
+                  "version": "3.0.24",
+                  "checksumAlgorithm": "SHA-256",
+                  "checksum": "83ee748b12d06afb0ad4050a591132b3e8025fbb1990f1ed002e8b73293e69b4",
+                  "id": "org.codehaus.plexus:plexus-utils:3.0.24",
+                  "parent": "org.eclipse.sisu:org.eclipse.sisu.plexus:0.3.5",
+                  "children": []
+                },
+                {
+                  "groupId": "org.eclipse.sisu",
+                  "artifactId": "org.eclipse.sisu.inject",
+                  "version": "0.3.5",
+                  "checksumAlgorithm": "SHA-256",
+                  "checksum": "c5994010bcdce1d2bd603a4d50c47191ddbd7875d1157b23aaa26d33c82fda13",
+                  "id": "org.eclipse.sisu:org.eclipse.sisu.inject:0.3.5",
+                  "parent": "org.eclipse.sisu:org.eclipse.sisu.plexus:0.3.5",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "groupId": "org.apache.maven.shared",
+      "artifactId": "maven-invoker",
+      "version": "3.2.0",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "51cdc34d2092a47f394b31e0545858c022030b47fcf30de16389c15ce7afd17c",
+      "id": "org.apache.maven.shared:maven-invoker:3.2.0",
+      "children": [
+        {
+          "groupId": "javax.inject",
+          "artifactId": "javax.inject",
+          "version": "1",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
+          "id": "javax.inject:javax.inject:1",
+          "parent": "org.apache.maven.shared:maven-invoker:3.2.0",
+          "children": []
+        },
+        {
+          "groupId": "org.apache.maven.shared",
+          "artifactId": "maven-shared-utils",
+          "version": "3.3.4",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "7925d9c5a0e2040d24b8fae3f612eb399cbffe5838b33ba368777dc7bddf6dda",
+          "id": "org.apache.maven.shared:maven-shared-utils:3.3.4",
+          "parent": "org.apache.maven.shared:maven-invoker:3.2.0",
+          "children": [
+            {
+              "groupId": "commons-io",
+              "artifactId": "commons-io",
+              "version": "2.6",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
+              "id": "commons-io:commons-io:2.6",
+              "parent": "org.apache.maven.shared:maven-shared-utils:3.3.4",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "groupId": "org.eclipse.jdt",
+      "artifactId": "org.eclipse.jdt.core",
+      "version": "3.33.0",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "c03cbbf5ab447d954efb8268a58dd9f2fe70f9e5d9be0a8371f79d785357eba3",
+      "id": "org.eclipse.jdt:org.eclipse.jdt.core:3.33.0",
+      "children": [
+        {
+          "groupId": "org.eclipse.jdt",
+          "artifactId": "ecj",
+          "version": "3.33.0",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "f7686c4960cf70c2ebc5c500a73a8cfc04541b730c18f1c5c21329889b137f45",
+          "id": "org.eclipse.jdt:ecj:3.33.0",
+          "parent": "org.eclipse.jdt:org.eclipse.jdt.core:3.33.0",
+          "children": []
+        }
+      ]
+    },
+    {
+      "groupId": "org.hamcrest",
+      "artifactId": "hamcrest",
+      "version": "2.2",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "5e62846a89f05cd78cd9c1a553f340d002458380c320455dd1f8fc5497a8a1c1",
+      "id": "org.hamcrest:hamcrest:2.2",
+      "children": []
+    },
+    {
+      "groupId": "org.junit.jupiter",
+      "artifactId": "junit-jupiter-engine",
+      "version": "5.9.2",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "74cfc49388f760413ff348ca2c9ab39527484b57deecd157f2275a5f8a5fe971",
+      "id": "org.junit.jupiter:junit-jupiter-engine:5.9.2",
+      "children": [
+        {
+          "groupId": "org.apiguardian",
+          "artifactId": "apiguardian-api",
+          "version": "1.1.2",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+          "id": "org.apiguardian:apiguardian-api:1.1.2",
+          "parent": "org.junit.jupiter:junit-jupiter-engine:5.9.2",
+          "children": []
+        },
+        {
+          "groupId": "org.junit.jupiter",
+          "artifactId": "junit-jupiter-api",
+          "version": "5.9.2",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "f767a170f97127b0ad3582bf3358eabbbbe981d9f96411853e629d9276926fd5",
+          "id": "org.junit.jupiter:junit-jupiter-api:5.9.2",
+          "parent": "org.junit.jupiter:junit-jupiter-engine:5.9.2",
+          "children": [
+            {
+              "groupId": "org.apiguardian",
+              "artifactId": "apiguardian-api",
+              "version": "1.1.2",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+              "id": "org.apiguardian:apiguardian-api:1.1.2",
+              "parent": "org.junit.jupiter:junit-jupiter-api:5.9.2",
+              "children": []
+            },
+            {
+              "groupId": "org.junit.platform",
+              "artifactId": "junit-platform-commons",
+              "version": "1.9.2",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "624a3d745ef1d28e955a6a67af8edba0fdfc5c9bad680a73f67a70bb950a683d",
+              "id": "org.junit.platform:junit-platform-commons:1.9.2",
+              "parent": "org.junit.jupiter:junit-jupiter-api:5.9.2",
+              "children": [
+                {
+                  "groupId": "org.apiguardian",
+                  "artifactId": "apiguardian-api",
+                  "version": "1.1.2",
+                  "checksumAlgorithm": "SHA-256",
+                  "checksum": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+                  "id": "org.apiguardian:apiguardian-api:1.1.2",
+                  "parent": "org.junit.platform:junit-platform-commons:1.9.2",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "groupId": "org.opentest4j",
+              "artifactId": "opentest4j",
+              "version": "1.2.0",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "58812de60898d976fb81ef3b62da05c6604c18fd4a249f5044282479fc286af2",
+              "id": "org.opentest4j:opentest4j:1.2.0",
+              "parent": "org.junit.jupiter:junit-jupiter-api:5.9.2",
+              "children": []
+            }
+          ]
+        },
+        {
+          "groupId": "org.junit.platform",
+          "artifactId": "junit-platform-engine",
+          "version": "1.9.2",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "25f23dc535a091e9dc80c008faf29dcb92be902e6911f77a736fbaf019908367",
+          "id": "org.junit.platform:junit-platform-engine:1.9.2",
+          "parent": "org.junit.jupiter:junit-jupiter-engine:5.9.2",
+          "children": [
+            {
+              "groupId": "org.apiguardian",
+              "artifactId": "apiguardian-api",
+              "version": "1.1.2",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+              "id": "org.apiguardian:apiguardian-api:1.1.2",
+              "parent": "org.junit.platform:junit-platform-engine:1.9.2",
+              "children": []
+            },
+            {
+              "groupId": "org.junit.platform",
+              "artifactId": "junit-platform-commons",
+              "version": "1.9.2",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "624a3d745ef1d28e955a6a67af8edba0fdfc5c9bad680a73f67a70bb950a683d",
+              "id": "org.junit.platform:junit-platform-commons:1.9.2",
+              "parent": "org.junit.platform:junit-platform-engine:1.9.2",
+              "children": [
+                {
+                  "groupId": "org.apiguardian",
+                  "artifactId": "apiguardian-api",
+                  "version": "1.1.2",
+                  "checksumAlgorithm": "SHA-256",
+                  "checksum": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+                  "id": "org.apiguardian:apiguardian-api:1.1.2",
+                  "parent": "org.junit.platform:junit-platform-commons:1.9.2",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "groupId": "org.opentest4j",
+              "artifactId": "opentest4j",
+              "version": "1.2.0",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "58812de60898d976fb81ef3b62da05c6604c18fd4a249f5044282479fc286af2",
+              "id": "org.opentest4j:opentest4j:1.2.0",
+              "parent": "org.junit.platform:junit-platform-engine:1.9.2",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "groupId": "org.junit.jupiter",
+      "artifactId": "junit-jupiter-params",
+      "version": "5.9.2",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "bde91900a5ce5d6663bb44bc708494b35daefcd73e1bb7afa61a4affe38ea97d",
+      "id": "org.junit.jupiter:junit-jupiter-params:5.9.2",
+      "children": [
+        {
+          "groupId": "org.apiguardian",
+          "artifactId": "apiguardian-api",
+          "version": "1.1.2",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+          "id": "org.apiguardian:apiguardian-api:1.1.2",
+          "parent": "org.junit.jupiter:junit-jupiter-params:5.9.2",
+          "children": []
+        },
+        {
+          "groupId": "org.junit.jupiter",
+          "artifactId": "junit-jupiter-api",
+          "version": "5.9.2",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "f767a170f97127b0ad3582bf3358eabbbbe981d9f96411853e629d9276926fd5",
+          "id": "org.junit.jupiter:junit-jupiter-api:5.9.2",
+          "parent": "org.junit.jupiter:junit-jupiter-params:5.9.2",
+          "children": [
+            {
+              "groupId": "org.apiguardian",
+              "artifactId": "apiguardian-api",
+              "version": "1.1.2",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+              "id": "org.apiguardian:apiguardian-api:1.1.2",
+              "parent": "org.junit.jupiter:junit-jupiter-api:5.9.2",
+              "children": []
+            },
+            {
+              "groupId": "org.junit.platform",
+              "artifactId": "junit-platform-commons",
+              "version": "1.9.2",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "624a3d745ef1d28e955a6a67af8edba0fdfc5c9bad680a73f67a70bb950a683d",
+              "id": "org.junit.platform:junit-platform-commons:1.9.2",
+              "parent": "org.junit.jupiter:junit-jupiter-api:5.9.2",
+              "children": [
+                {
+                  "groupId": "org.apiguardian",
+                  "artifactId": "apiguardian-api",
+                  "version": "1.1.2",
+                  "checksumAlgorithm": "SHA-256",
+                  "checksum": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+                  "id": "org.apiguardian:apiguardian-api:1.1.2",
+                  "parent": "org.junit.platform:junit-platform-commons:1.9.2",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "groupId": "org.opentest4j",
+              "artifactId": "opentest4j",
+              "version": "1.2.0",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "58812de60898d976fb81ef3b62da05c6604c18fd4a249f5044282479fc286af2",
+              "id": "org.opentest4j:opentest4j:1.2.0",
+              "parent": "org.junit.jupiter:junit-jupiter-api:5.9.2",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "groupId": "org.junit.platform",
+      "artifactId": "junit-platform-launcher",
+      "version": "1.9.2",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "eef139eb09c98e9cdd358b6ce4c6cdd59b30c6a88096e369c33ba96e67edf0e4",
+      "id": "org.junit.platform:junit-platform-launcher:1.9.2",
+      "children": [
+        {
+          "groupId": "org.apiguardian",
+          "artifactId": "apiguardian-api",
+          "version": "1.1.2",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+          "id": "org.apiguardian:apiguardian-api:1.1.2",
+          "parent": "org.junit.platform:junit-platform-launcher:1.9.2",
+          "children": []
+        },
+        {
+          "groupId": "org.junit.platform",
+          "artifactId": "junit-platform-engine",
+          "version": "1.9.2",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "25f23dc535a091e9dc80c008faf29dcb92be902e6911f77a736fbaf019908367",
+          "id": "org.junit.platform:junit-platform-engine:1.9.2",
+          "parent": "org.junit.platform:junit-platform-launcher:1.9.2",
+          "children": [
+            {
+              "groupId": "org.apiguardian",
+              "artifactId": "apiguardian-api",
+              "version": "1.1.2",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+              "id": "org.apiguardian:apiguardian-api:1.1.2",
+              "parent": "org.junit.platform:junit-platform-engine:1.9.2",
+              "children": []
+            },
+            {
+              "groupId": "org.junit.platform",
+              "artifactId": "junit-platform-commons",
+              "version": "1.9.2",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "624a3d745ef1d28e955a6a67af8edba0fdfc5c9bad680a73f67a70bb950a683d",
+              "id": "org.junit.platform:junit-platform-commons:1.9.2",
+              "parent": "org.junit.platform:junit-platform-engine:1.9.2",
+              "children": [
+                {
+                  "groupId": "org.apiguardian",
+                  "artifactId": "apiguardian-api",
+                  "version": "1.1.2",
+                  "checksumAlgorithm": "SHA-256",
+                  "checksum": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+                  "id": "org.apiguardian:apiguardian-api:1.1.2",
+                  "parent": "org.junit.platform:junit-platform-commons:1.9.2",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "groupId": "org.opentest4j",
+              "artifactId": "opentest4j",
+              "version": "1.2.0",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "58812de60898d976fb81ef3b62da05c6604c18fd4a249f5044282479fc286af2",
+              "id": "org.opentest4j:opentest4j:1.2.0",
+              "parent": "org.junit.platform:junit-platform-engine:1.9.2",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "groupId": "org.kohsuke.metainf-services",
+      "artifactId": "metainf-services",
+      "version": "1.9",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "de4e6d30f80f66c3309033d6ba2ad866946b07c52d3c6a34fa7c721856414530",
+      "id": "org.kohsuke.metainf-services:metainf-services:1.9",
+      "children": []
+    },
+    {
+      "groupId": "org.mockito",
+      "artifactId": "mockito-core",
+      "version": "5.2.0",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "46e3f8dacd8ec62c8aa6fb11f8867624fb44a03e97fdfc628609346d5dc7e159",
+      "id": "org.mockito:mockito-core:5.2.0",
+      "children": [
+        {
+          "groupId": "net.bytebuddy",
+          "artifactId": "byte-buddy",
+          "version": "1.14.1",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "63479f9a0a1b28f98313230d688a46b02bd80d09a700e127482d0bd635b47bad",
+          "id": "net.bytebuddy:byte-buddy:1.14.1",
+          "parent": "org.mockito:mockito-core:5.2.0",
+          "children": []
+        },
+        {
+          "groupId": "net.bytebuddy",
+          "artifactId": "byte-buddy-agent",
+          "version": "1.14.1",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "f4809b9d0f00e71be98a61a25b3e14437f53f6821485694011beeb25e9231dde",
+          "id": "net.bytebuddy:byte-buddy-agent:1.14.1",
+          "parent": "org.mockito:mockito-core:5.2.0",
+          "children": []
+        },
+        {
+          "groupId": "org.objenesis",
+          "artifactId": "objenesis",
+          "version": "3.3",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "2dfd0b0439a5591e35b708ed2f5474eb0948f53abf74637e959b8e4ef69bfeb",
+          "id": "org.objenesis:objenesis:3.3",
+          "parent": "org.mockito:mockito-core:5.2.0",
+          "children": []
+        }
+      ]
+    },
+    {
+      "groupId": "org.mockito",
+      "artifactId": "mockito-junit-jupiter",
+      "version": "5.2.0",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "c7dd82180320799c167d714499ac64fb5ad4ae8790e1d93da531c82236febe07",
+      "id": "org.mockito:mockito-junit-jupiter:5.2.0",
+      "children": [
+        {
+          "groupId": "org.junit.jupiter",
+          "artifactId": "junit-jupiter-api",
+          "version": "5.9.2",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "f767a170f97127b0ad3582bf3358eabbbbe981d9f96411853e629d9276926fd5",
+          "id": "org.junit.jupiter:junit-jupiter-api:5.9.2",
+          "parent": "org.mockito:mockito-junit-jupiter:5.2.0",
+          "children": [
+            {
+              "groupId": "org.apiguardian",
+              "artifactId": "apiguardian-api",
+              "version": "1.1.2",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+              "id": "org.apiguardian:apiguardian-api:1.1.2",
+              "parent": "org.junit.jupiter:junit-jupiter-api:5.9.2",
+              "children": []
+            },
+            {
+              "groupId": "org.junit.platform",
+              "artifactId": "junit-platform-commons",
+              "version": "1.9.2",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "624a3d745ef1d28e955a6a67af8edba0fdfc5c9bad680a73f67a70bb950a683d",
+              "id": "org.junit.platform:junit-platform-commons:1.9.2",
+              "parent": "org.junit.jupiter:junit-jupiter-api:5.9.2",
+              "children": [
+                {
+                  "groupId": "org.apiguardian",
+                  "artifactId": "apiguardian-api",
+                  "version": "1.1.2",
+                  "checksumAlgorithm": "SHA-256",
+                  "checksum": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+                  "id": "org.apiguardian:apiguardian-api:1.1.2",
+                  "parent": "org.junit.platform:junit-platform-commons:1.9.2",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "groupId": "org.opentest4j",
+              "artifactId": "opentest4j",
+              "version": "1.2.0",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "58812de60898d976fb81ef3b62da05c6604c18fd4a249f5044282479fc286af2",
+              "id": "org.opentest4j:opentest4j:1.2.0",
+              "parent": "org.junit.jupiter:junit-jupiter-api:5.9.2",
+              "children": []
+            }
+          ]
+        },
+        {
+          "groupId": "org.mockito",
+          "artifactId": "mockito-core",
+          "version": "5.2.0",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "46e3f8dacd8ec62c8aa6fb11f8867624fb44a03e97fdfc628609346d5dc7e159",
+          "id": "org.mockito:mockito-core:5.2.0",
+          "parent": "org.mockito:mockito-junit-jupiter:5.2.0",
+          "children": [
+            {
+              "groupId": "net.bytebuddy",
+              "artifactId": "byte-buddy",
+              "version": "1.14.1",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "63479f9a0a1b28f98313230d688a46b02bd80d09a700e127482d0bd635b47bad",
+              "id": "net.bytebuddy:byte-buddy:1.14.1",
+              "parent": "org.mockito:mockito-core:5.2.0",
+              "children": []
+            },
+            {
+              "groupId": "net.bytebuddy",
+              "artifactId": "byte-buddy-agent",
+              "version": "1.14.1",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "f4809b9d0f00e71be98a61a25b3e14437f53f6821485694011beeb25e9231dde",
+              "id": "net.bytebuddy:byte-buddy-agent:1.14.1",
+              "parent": "org.mockito:mockito-core:5.2.0",
+              "children": []
+            },
+            {
+              "groupId": "org.objenesis",
+              "artifactId": "objenesis",
+              "version": "3.3",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "2dfd0b0439a5591e35b708ed2f5474eb0948f53abf74637e959b8e4ef69bfeb",
+              "id": "org.objenesis:objenesis:3.3",
+              "parent": "org.mockito:mockito-core:5.2.0",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "groupId": "org.slf4j",
+      "artifactId": "slf4j-api",
+      "version": "1.7.36",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "d3ef575e3e4979678dc01bf1dcce51021493b4d11fb7f1be8ad982877c16a1c0",
+      "id": "org.slf4j:slf4j-api:1.7.36",
+      "children": []
+    },
+    {
+      "groupId": "org.tukaani",
+      "artifactId": "xz",
+      "version": "1.9",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "211b306cfc44f8f96df3a0a3ddaf75ba8c5289eed77d60d72f889bb855f535e5",
+      "id": "org.tukaani:xz:1.9",
+      "children": []
+    },
+    {
+      "groupId": "uk.org.lidalia",
+      "artifactId": "slf4j-test",
+      "version": "1.2.0",
+      "checksumAlgorithm": "SHA-256",
+      "checksum": "ba7004db2ef5e431711b8a11af87d1e4b1b574c66aedc21a06c225f762b5befd",
+      "id": "uk.org.lidalia:slf4j-test:1.2.0",
+      "children": [
+        {
+          "groupId": "com.google.guava",
+          "artifactId": "guava",
+          "version": "14.0.1",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "d69df3331840605ef0e5fe4add60f2d28e870e3820937ea29f713d2035d9ab97",
+          "id": "com.google.guava:guava:14.0.1",
+          "parent": "uk.org.lidalia:slf4j-test:1.2.0",
+          "children": []
+        },
+        {
+          "groupId": "joda-time",
+          "artifactId": "joda-time",
+          "version": "2.2",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "e5183ca131f7195bde5b27e4cd18deeb6d14f8bc5c483b1431421132927240af",
+          "id": "joda-time:joda-time:2.2",
+          "parent": "uk.org.lidalia:slf4j-test:1.2.0",
+          "children": []
+        },
+        {
+          "groupId": "org.slf4j",
+          "artifactId": "slf4j-api",
+          "version": "1.7.5",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91",
+          "id": "org.slf4j:slf4j-api:1.7.5",
+          "parent": "uk.org.lidalia:slf4j-test:1.2.0",
+          "children": []
+        },
+        {
+          "groupId": "uk.org.lidalia",
+          "artifactId": "lidalia-lang",
+          "version": "1.0.0",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "513297c2fd1877f81cf5920b36e2cc177d6ed283d257a685d31cde798f66b5f4",
+          "id": "uk.org.lidalia:lidalia-lang:1.0.0",
+          "parent": "uk.org.lidalia:slf4j-test:1.2.0",
+          "children": [
+            {
+              "groupId": "com.google.guava",
+              "artifactId": "guava",
+              "version": "14.0.1",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "d69df3331840605ef0e5fe4add60f2d28e870e3820937ea29f713d2035d9ab97",
+              "id": "com.google.guava:guava:14.0.1",
+              "parent": "uk.org.lidalia:lidalia-lang:1.0.0",
+              "children": []
+            },
+            {
+              "groupId": "org.apache.commons",
+              "artifactId": "commons-lang3",
+              "version": "3.1",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "131f0519a8e4602e47cf024bfd7e0834bcf5592a7207f9a2fdb711d4f5afc166",
+              "id": "org.apache.commons:commons-lang3:3.1",
+              "parent": "uk.org.lidalia:lidalia-lang:1.0.0",
+              "children": []
+            },
+            {
+              "groupId": "org.slf4j",
+              "artifactId": "slf4j-api",
+              "version": "1.7.5",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91",
+              "id": "org.slf4j:slf4j-api:1.7.5",
+              "parent": "uk.org.lidalia:lidalia-lang:1.0.0",
+              "children": []
+            }
+          ]
+        },
+        {
+          "groupId": "uk.org.lidalia",
+          "artifactId": "lidalia-slf4j-ext",
+          "version": "1.0.0",
+          "checksumAlgorithm": "SHA-256",
+          "checksum": "731943f31c7867d1d5570ab16f6bef309f8947504e4e835e7103b196f110d657",
+          "id": "uk.org.lidalia:lidalia-slf4j-ext:1.0.0",
+          "parent": "uk.org.lidalia:slf4j-test:1.2.0",
+          "children": [
+            {
+              "groupId": "com.google.guava",
+              "artifactId": "guava",
+              "version": "14.0.1",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "d69df3331840605ef0e5fe4add60f2d28e870e3820937ea29f713d2035d9ab97",
+              "id": "com.google.guava:guava:14.0.1",
+              "parent": "uk.org.lidalia:lidalia-slf4j-ext:1.0.0",
+              "children": []
+            },
+            {
+              "groupId": "org.slf4j",
+              "artifactId": "slf4j-api",
+              "version": "1.7.5",
+              "checksumAlgorithm": "SHA-256",
+              "checksum": "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91",
+              "id": "org.slf4j:slf4j-api:1.7.5",
+              "parent": "uk.org.lidalia:lidalia-slf4j-ext:1.0.0",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
