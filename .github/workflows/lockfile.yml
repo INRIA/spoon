@@ -1,0 +1,14 @@
+name: Lockfile
+on:
+  pull_request:
+
+jobs:
+  check-lockfile:
+        runs-on: ubuntu-latest
+        steps:
+        - name: run maven-lockfile
+          uses: chains-project/maven-lockfile@v1.1.11
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            commit-message: "chore: update lockfile"
+            commit-lockfile: true
