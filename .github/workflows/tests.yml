@@ -16,7 +16,7 @@ on:
   - cron: "0 0 * * *"
 
 env:
-  JAVA_DISTRIBUTION: temurin
+  JAVA_DISTRIBUTION: microsoft
 
 jobs:
   build:
