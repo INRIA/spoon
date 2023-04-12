@@ -21,6 +21,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -121,6 +122,7 @@ import spoon.support.reflect.code.CtBinaryOperatorImpl;
 import spoon.support.reflect.code.CtBlockImpl;
 import spoon.support.reflect.code.CtBreakImpl;
 import spoon.support.reflect.code.CtCaseImpl;
+import spoon.support.reflect.code.CtCasePatternImpl;
 import spoon.support.reflect.code.CtCatchImpl;
 import spoon.support.reflect.code.CtCatchVariableImpl;
 import spoon.support.reflect.code.CtCodeSnippetExpressionImpl;
@@ -1192,5 +1194,12 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		CtRecordComponent recordComponent = new CtRecordComponentImpl();
 		recordComponent.setFactory(getMainFactory());
 		return recordComponent;
+	}
+
+	@Override
+	public CtCasePattern createCasePattern() {
+		CtCasePattern casePattern = new CtCasePatternImpl();
+		casePattern.setFactory(getMainFactory());
+		return casePattern;
 	}
 }

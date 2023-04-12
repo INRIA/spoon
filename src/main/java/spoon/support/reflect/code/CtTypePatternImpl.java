@@ -10,6 +10,7 @@ package spoon.support.reflect.code;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.declaration.CtElement;
@@ -50,7 +51,8 @@ public class CtTypePatternImpl extends CtExpressionImpl<Void> implements CtTypeP
 
 	@Override
 	public <E extends CtElement> E setParent(CtElement parent) {
-		if (parent != null && !(parent instanceof CtBinaryOperator<?>)) {
+		if (parent != null && !(parent instanceof CtBinaryOperator<?> || parent instanceof CtCasePattern)) {
+			// TODO
 			throw new SpoonException("type pattern can only be used in an instanceof binary operator");
 		}
 		return super.setParent(parent);

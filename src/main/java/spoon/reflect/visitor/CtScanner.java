@@ -21,6 +21,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -1078,7 +1079,16 @@ public abstract class CtScanner implements CtVisitor {
 		exit(recordType);
 	}
 
-
-
+	@Override
+	public void visitCtCasePattern(CtCasePattern casePattern) {
+		enter(casePattern);
+		// FIXME: annotations are not supported in case pattern (?)
+		scan(CtRole.ANNOTATION, casePattern.getAnnotations());
+		scan(CtRole.PATTERN, casePattern.getPattern());
+		scan(CtRole.EXPRESSION, casePattern.getGuard());
+		scan(CtRole.TYPE, casePattern.getType()); // TODO does this make sense?
+		scan(CtRole.COMMENT, casePattern.getComments());
+		exit(casePattern);
+	}
 }
 

@@ -121,7 +121,7 @@ public enum CtRole {
 	CASE_KIND,
 	RECORD_COMPONENT,
 	COMPACT_CONSTRUCTOR,
-	PERMITTED_TYPE;
+	PERMITTED_TYPE, PATTERN;
 
 	private final CtRole superRole;
 	private final List<CtRole> subRoles;

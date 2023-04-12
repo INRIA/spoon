@@ -26,6 +26,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -2334,5 +2335,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		visitCtTypeReference(recordComponent.getType());
 		printer.writeSpace();
 		printer.writeIdentifier(recordComponent.getSimpleName());
+	}
+
+	@Override
+	public void visitCtCasePattern(CtCasePattern casePattern) {
+		// FIXME or not
 	}
 }

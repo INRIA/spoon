@@ -21,6 +21,7 @@ import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeElement;
@@ -1102,5 +1103,12 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtShadowable(recordComponent);
 	}
 
-
+	@Override
+	public void visitCtCasePattern(CtCasePattern casePattern) {
+		scanCtExpression(casePattern);
+		scanCtTypedElement(casePattern);
+		scanCtCodeElement(casePattern);
+		scanCtElement(casePattern);
+		scanCtVisitable(casePattern);
+	}
 }
