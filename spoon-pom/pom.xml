@@ -460,5 +460,30 @@
 
     <developers>
         <!-- the list is maintained in the README https://github.com/INRIA/spoon/blob/master/README.md -->
+        <!-- We list all current integrators here for mavencentral-->
+        <developer>
+            <id>slarse</id>
+            <name>Simon Larsén</name>
+        </developer>
+        <developer>
+            <id>monperrus</id>
+            <name>Martin Monperrus</name>
+        </developer>
+        <developer>
+            <id>nharrand</id>
+            <name>Nicolas Harrand</name>
+        </developer>
+        <developer>
+            <id>martinwitt</id>
+            <name>Martin Wittlinger</name>
+        </developer>
+        <developer>
+            <id>sirywell</id>
+            <name>Hannes Greule</name>
+        </developer>
+        <developer>
+            <id>I-Al-Istannen</id>
+            <name>I-Al-Istannen</name>
+        </developer>
     </developers>
 </project>
