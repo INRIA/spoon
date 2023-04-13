@@ -423,6 +423,18 @@ public class JDTTreeBuilderHelper {
 		return false;
 	}
 
+	/**
+	 * Finds the lowest index where {@code needle} appears in {@code haystack}. This is akin to a
+	 * substring search, but JDT uses a String[] to omit separators and a char[] to represent strings.
+	 * If we want to find out where "String" appears in "java.lang.String", we would call
+	 * {@code indexOfSubList(["java", "lang", "String"], ["lang", "String"])} and receive {@code 1}.
+	 *
+	 * @param haystack the haystack to search in
+	 * @param needle the needle to search
+	 * @return the first index where needle appears in haystack
+	 * @see java.util.Collections#indexOfSubList(List, List) Collections#indexOfSubList for a more
+	 *     general version that does not correctly handle array equality
+	 */
 	private static int indexOfSubList(char[][] haystack, char[][] needle) {
 		outer:
 		for (int i = 0; i < haystack.length - needle.length; i++) {
