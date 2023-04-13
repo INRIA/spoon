@@ -59,20 +59,12 @@ body:
       placeholder: X.Y.Z
     validations:
       required: true
-  - type: dropdown
+  - type: input
     id: jvm-version
     attributes:
       label: JVM Version
       description: Which JVM version are you running Spoon with? Note that Spoon is built for Java 11+, and we cannot maintain support for older versions.
-      options:
-        - "11"
-        - "12"
-        - "13"
-        - "14"
-        - "15"
-        - "16"
-        - "17"
-        - "18"
+      placeholder: You can run 'java -version' to get this information.
     validations:
       required: true
   - type: textarea
