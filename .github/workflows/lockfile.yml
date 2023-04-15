@@ -7,7 +7,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
         - name: run maven-lockfile
-          uses: chains-project/maven-lockfile@v1.1.11
+          uses: chains-project/maven-lockfile@v1.2.0
           with:
             github-token: ${{ secrets.GITHUB_TOKEN }}
             commit-message: "chore: update lockfile"
