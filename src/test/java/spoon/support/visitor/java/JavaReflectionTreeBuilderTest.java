@@ -23,6 +23,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -54,6 +55,8 @@ import com.mysema.query.support.ProjectableQuery;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.metamodel.Metamodel;
@@ -847,7 +850,7 @@ public class JavaReflectionTreeBuilderTest {
 		assertThat(asClass.getConstructors().iterator().next().getParameters().size(), equalTo(inners.size()));
 	}
 
-	@GitHubIssue(issueNumber = 4972, fixed = false)
+	@GitHubIssue(issueNumber = 4972, fixed = true)
 	void parameterNamesAreParsedWhenCompilingWithParametersFlag() throws ClassNotFoundException {
 		ClassLoader loader = JavacFacade.compileFiles(
 			Map.of(
@@ -864,5 +867,94 @@ public class JavaReflectionTreeBuilderTest {
 
 		assertThat(parameter.getSimpleName(), is("bar"));
 	}
+
+	@Test
+	void testStaticInnerClassConstructorWithEnclosingClassArgument() throws ClassNotFoundException {
+		// contract: Static inner classes can take explicit arguments of the enclosing type
+		ClassLoader loader = JavacFacade.compileFiles(
+			Map.of(
+				"Outer",
+				"class Outer {\n"
+					+ "  static class Inner { public Inner(Outer outer) {} } \n" +
+					"}\n"
+			),
+			List.of()
+		);
+		Class<?> inner = loader.loadClass("Outer$Inner");
+		CtClass<?> ctInner = (CtClass<?>) new JavaReflectionTreeBuilder(createFactory()).scan(inner);
+
+		assertEquals(1, inner.getConstructors().length);
+		assertEquals(1, inner.getConstructors()[0].getParameterCount());
+
+		assertThat(ctInner.getConstructors(), hasSize(1));
+		assertThat(
+			ctInner.getConstructors().iterator().next().getParameters(),
+			hasSize(1)
+		);
+	}
+
+	@Test
+	void testNonStaticInnerClassConstructorWithEnclosingClassArgument() throws ClassNotFoundException {
+		// contract: Non-static inner classes have one implicit argument of the enclosing type
+		ClassLoader loader = JavacFacade.compileFiles(
+			Map.of(
+				"Outer",
+				"class Outer {\n"
+					+ "  class Inner { public Inner(Outer outer) {} } \n" +
+					"}\n"
+			),
+			List.of()
+		);
+		Class<?> inner = loader.loadClass("Outer$Inner");
+		CtClass<?> ctInner = (CtClass<?>) new JavaReflectionTreeBuilder(createFactory()).scan(inner);
+
+		assertEquals(1, inner.getConstructors().length);
+		assertEquals(2, inner.getConstructors()[0].getParameterCount());
+
+		assertThat(ctInner.getConstructors(), hasSize(1));
+		assertThat(
+			ctInner.getConstructors().iterator().next().getParameters(),
+			hasSize(1)
+		);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {
+		"class Victim {}",
+		"enum Victim {;}",
+		"interface Victim {}",
+		"@interface Victim {}"
+	})
+	void testInnerClassesAreNotAddedToPackage(String collider) throws ClassNotFoundException {
+		// contract: Inner classes are not added to their package
+		ClassLoader loader = JavacFacade.compileFiles(
+			Map.of(
+				"First.java",
+				"class First {\n"
+					+ collider +
+					"}\n",
+				"Victim.java",
+				"class Victim {\n" +
+					"  class Inner {\n" +
+					"    int bar;\n" +
+					"  }\n" +
+					"}\n"
+			),
+			List.of()
+		);
+		Factory factory = createFactory();
+		// Load the victim
+		factory.Type().get(loader.loadClass("Victim"));
+		// Let it get replaced by First$Collider
+		factory.Type().get(loader.loadClass("First"));
+
+		// This will throw if the replacement was successful
+		CtType<?> victim = assertDoesNotThrow(() -> factory.Type().get(loader.loadClass("Victim$Inner")));
+
+		// Make sure we got the right class, but this should be fine now in any case
+		assertNotNull(victim.getField("bar"));
+		assertNull(victim.getField("foo"));
+	}
+
 
 }

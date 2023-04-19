@@ -51,7 +51,7 @@ import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.trycatch.testclasses.Foo;
 import spoon.test.trycatch.testclasses.Main;
 import spoon.testing.utils.ModelTest;
-import spoon.testing.utils.LineSeperatorExtension;
+import spoon.testing.utils.LineSeparatorExtension;
 
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -417,7 +417,7 @@ public class TryCatchTest {
 		assertThat(varRef.getType().getActualTypeArguments().size(), equalTo(0));
 	}
 
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	@Test
 	public void testTryWithVariableAsResource() {
 		Factory factory = createFactory();

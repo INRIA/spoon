@@ -13,10 +13,12 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.adaption.TypeAdaptor;
+import spoon.testing.utils.ModelTest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.Assert.assertThat;
 
@@ -387,5 +389,55 @@ class TypeAdaptorTest {
 
 		@Override
 		void crashyArray(String[] paramTypes);
+	}
+
+	@ModelTest("src/test/java/spoon/support/TypeAdaptorTest.java")
+	void testIsOverridingWithMethodDeclaredParameter(Factory factory) {
+		// contract: Overriding checks of a method with a generic throws clause work
+		CtType<?> parent = factory.Type().get(GenericThrowsParent.class.getName());
+		CtType<?> child = factory.Type().get(GenericThrowsChild.class.getName());
+
+		CtMethod<?> parentCrashyMethod = parent.getMethodsByName("orElseThrow").get(0);
+		CtMethod<?> childCrashyMethod = child.getMethodsByName("orElseThrow").get(0);
+
+		assertTrue(new TypeAdaptor(child).isOverriding(childCrashyMethod, parentCrashyMethod));
+		assertFalse(new TypeAdaptor(child).isOverriding(parentCrashyMethod, childCrashyMethod));
+	}
+
+	@ModelTest("src/test/java/spoon/support/TypeAdaptorTest.java")
+	void testOverridenOverloadingWithMethodDeclaredParameter(Factory factory) {
+		// contract: Overloading/Overriding distinction works with type parameters with different erasure
+		CtType<?> parent = factory.Type().get(GenericThrowsParent.class.getName());
+		CtType<?> child = factory.Type().get(GenericThrowsChild.class.getName());
+
+		CtMethod<?> parentOverloadedMethod = parent.getMethodsByName("overloaded").get(0);
+		CtMethod<?> childOverloadedMethod = child.getMethodsByName("overloaded").get(0);
+		CtMethod<?> parentOverriddenMethod = parent.getMethodsByName("overriden").get(0);
+		CtMethod<?> childOverriddenMethod = child.getMethodsByName("overriden").get(0);
+
+		assertFalse(new TypeAdaptor(child).isOverriding(childOverloadedMethod, parentOverloadedMethod));
+		assertFalse(new TypeAdaptor(child).isOverriding(parentOverloadedMethod, childOverloadedMethod));
+
+		assertTrue(new TypeAdaptor(child).isOverriding(childOverriddenMethod, parentOverriddenMethod));
+		assertFalse(new TypeAdaptor(child).isOverriding(parentOverriddenMethod, childOverriddenMethod));
+	}
+
+	private static abstract class GenericThrowsParent {
+		public abstract <E extends Throwable> void orElseThrow(E throwable) throws E;
+
+		public <T extends String> void overloaded(T t) {}
+
+		public abstract <T extends String> void overriden(T t);
+	}
+
+	private static class GenericThrowsChild extends GenericThrowsParent {
+		@Override
+		public <E extends Throwable> void orElseThrow(E throwable) throws E {
+			throw throwable;
+		}
+
+		public <T extends CharSequence> void overloaded(T t) {}
+
+		public <T extends String> void overriden(T t) {}
 	}
 }

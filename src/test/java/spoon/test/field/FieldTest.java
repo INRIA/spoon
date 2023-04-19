@@ -42,7 +42,7 @@ import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.field.testclasses.A;
 import spoon.test.field.testclasses.AddFieldAtTop;
 import spoon.test.field.testclasses.BaseClass;
-import spoon.testing.utils.LineSeperatorExtension;
+import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelTest;
 
 public class FieldTest {
@@ -184,7 +184,7 @@ public class FieldTest {
 	}
 
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void bugAfterRefactoringImports() {
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
