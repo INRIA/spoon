@@ -9,8 +9,7 @@
             "minor",
             "patch",
             "pin",
-            "digest",
-            "fix"
+            "digest"
          ],
          "automerge":true,
          "semanticCommitType":":arrow_up:"
