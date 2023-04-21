@@ -24,7 +24,7 @@ Current integrators:
     - Email: nicolas.harrand@gmail.com
 - Martin Monperrus [@monperrus](https://github.com/monperrus/)
     - Email: martin.monperrus@gnieh.org
-    - GPG fingerprint: [AF7B251DA8126C30896FAFF77D398AD45AEEEC93](https://keyserver.ubuntu.com/pks/lookup?op=get&search=AF7B251DA8126C30896FAFF77D398AD45AEEEC93)
+    - GPG fingerprint: [AF7B251DA8126C30896FAFF77D398AD45AEEEC93](https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xAF7B251DA8126C30896FAFF77D398AD45AEEEC93)
 - Martin Wittlinger [@MartinWitt](https://github.com/MartinWitt)
     - Email: wittlinger.martin@gmail.com
 - Hannes Greule [@SirYwell](https://github.com/SirYwell)
