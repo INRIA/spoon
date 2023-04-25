@@ -39,8 +39,6 @@ jobs:
 
 
 
-    env:
-      MAVEN_OPTS: -Djava.src.version=${{ matrix.java }}
 
     name: Tests with Java ${{ matrix.java }} on ${{ matrix.os }}
     steps:
