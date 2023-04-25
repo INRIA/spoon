@@ -40,7 +40,7 @@ jobs:
 
 
     env:
-      MAVEN_OPTS: -Djava.src.version=${{ matrix.java }} -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
+      MAVEN_OPTS: -Djava.src.version=${{ matrix.java }}
 
     name: Tests with Java ${{ matrix.java }} on ${{ matrix.os }}
     steps:
@@ -79,8 +79,6 @@ jobs:
         run: cat testResults.spoon
   coverage:
     runs-on: ubuntu-latest
-    env:
-      MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
     name: Test with coverage
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
@@ -113,8 +111,6 @@ jobs:
 
   extra:
     runs-on: ubuntu-latest
-    env:
-      MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
     name: Extra checks
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
@@ -147,8 +143,6 @@ jobs:
         run: ./chore/check-javadoc-regressions.py COMPARE_WITH_MASTER
   reproducible-builds:
     runs-on: ubuntu-latest
-    env:
-      MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
     name: reproducible-builds
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
@@ -162,8 +156,6 @@ jobs:
         run: chore/check-reproducible-builds.sh
   maven-central-requirements:
     runs-on: ubuntu-latest
-    env:
-      MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
