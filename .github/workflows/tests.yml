@@ -17,6 +17,10 @@ on:
 
 env:
   JAVA_DISTRIBUTION: temurin
+  MAVEN_OPTS: >-
+    -Dmaven.resolver.transport=native
+    -Daether.connector.connectTimeout=300000
+    -Daether.connector.requestTimeout=300000
 
 jobs:
   build:
