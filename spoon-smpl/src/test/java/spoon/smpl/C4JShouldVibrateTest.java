@@ -63,7 +63,7 @@ public class C4JShouldVibrateTest {
 				/* 22 */      "...\n" +
 				/* 23 */      "}\n";
 
-		ctx = new ZippedCodeBaseTestContext(smpl, "src/test/resources/C4JShouldVibrate.zip", false);
+		ctx = new ZippedCodeBaseTestContext(smpl, "src/test/resources/C4JShouldVibrate.zip", true);
 	}
 
 	@Test

@@ -48,7 +48,7 @@
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.32.0</version>
+      <version>3.33.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.platform</groupId>
@@ -110,7 +110,7 @@
       <!-- support for compressed serialized ASTs -->
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
-      <version>1.22</version>
+      <version>1.23.0</version>
 	</dependency>
     <dependency>
       <!-- to reproduce JTD error with nullable annotation -->
@@ -122,7 +122,7 @@
     <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.4.6</version>
+        <version>1.4.7</version>
         <scope>test</scope>
     </dependency>
     <dependency>
