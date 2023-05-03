@@ -9,7 +9,8 @@
             "minor",
             "patch",
             "pin",
-            "digest"
+            "digest",
+            "pinDigest"
          ],
          "automerge":true,
       }
