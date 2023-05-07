@@ -12,7 +12,7 @@
             "digest",
             "pinDigest"
          ],
-         "automerge":true,
+         "automerge":true
       }
    ]
 }
