@@ -23,6 +23,7 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,11 +34,13 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.field.testclasses.A;
 import spoon.test.field.testclasses.AddFieldAtTop;
@@ -213,6 +216,30 @@ public class FieldTest {
 				"    public static final String separator = File.separator;\n" +
 				"}", klass.toStringWithImports());
 
+	}
+
+	@Test
+	void test() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile("public class Example {\n" +
+																							"    static final String[] field;\n" +
+																							"    public static void main(String[] args) {\n" +
+																							"        int i = args.length;\n" +
+																							"        int j = field.length;\n" +
+																							"    }\n" +
+																							"}\n"));
+		CtModel ctModel = launcher.buildModel();
+		List<CtFieldReference<?>> elements = ctModel.getElements(new TypeFilter<CtFieldReference<?>>(CtFieldReference.class))
+						.stream()
+						.filter(field -> field.getSimpleName().equals("length"))
+						.collect(Collectors.toList());
+		CtType<?> component = launcher.getFactory().Type().get(String.class);
+		CtTypeReference<?> arrayType = launcher.getFactory().Type().createArrayReference(component);
+
+		assertEquals(2, elements.size(), "Unexpected number of .length references");
+
+		assertEquals(arrayType, elements.get(0).getDeclaringType());
+		assertEquals(arrayType, elements.get(1).getDeclaringType());
 	}
 
 

@@ -285,8 +285,9 @@ public class JDTTreeBuilderHelper {
 			sourceStart = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32);
 			for (FieldBinding b : qualifiedNameReference.otherBindings) {
 				isOtherBinding = qualifiedNameReference.otherBindings.length == i + 1;
+				TypeBinding type = ((VariableBinding) qualifiedNameReference.binding).type;
 				CtFieldAccess<T> other = createFieldAccess(
-						jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
+						jdtTreeBuilder.getReferencesBuilder().getVariableReference(type, b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
 				//set source position of fa
 				if (i + qualifiedNameReference.indexOfFirstFieldBinding >= qualifiedNameReference.otherBindings.length) {
 					sourceEnd = qualifiedNameReference.sourceEnd();
@@ -301,8 +302,9 @@ public class JDTTreeBuilderHelper {
 			sourceStart = (int) (positions[0] >>> 32);
 			for (int i = 1; i < qualifiedNameReference.tokens.length; i++) {
 				isOtherBinding = qualifiedNameReference.tokens.length == i + 1;
+				TypeBinding type = ((VariableBinding) qualifiedNameReference.binding).type;
 				CtFieldAccess<T> other = createFieldAccess(//
-						jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(null, qualifiedNameReference.tokens[i]), va, isOtherBinding && fromAssignment);
+						jdtTreeBuilder.getReferencesBuilder().getVariableReference(type, null, qualifiedNameReference.tokens[i]), va, isOtherBinding && fromAssignment);
 				//set source position of va;
 				sourceEnd = (int) (positions[i]);
 				va.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
@@ -486,7 +488,7 @@ public class JDTTreeBuilderHelper {
 		} else {
 			fieldAccess = jdtTreeBuilder.getFactory().Core().createFieldRead();
 		}
-		fieldAccess.setVariable(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(fieldReference.binding, fieldReference.token));
+		fieldAccess.setVariable(jdtTreeBuilder.getReferencesBuilder().getVariableReference(fieldReference.actualReceiverType, fieldReference.binding, fieldReference.token));
 		fieldAccess.setType(jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(fieldReference.resolvedType));
 		return fieldAccess;
 	}
