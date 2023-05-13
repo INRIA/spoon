@@ -1,0 +1,41 @@
+project:
+  name: spoon-core
+  description: A plugin to lock and validate the integrity of the dependencies of a maven based project.
+  longDescription: Spoon is an open-source library to analyze, rewrite, transform, transpile Java source code. 
+                   It parses source files to build a well-designed AST with powerful analysis and transformation API. 
+                   It supports modern Java versions up to Java 20.
+  authors:
+    - MartinWitt
+  license: (MIT OR CECILL-C)
+  links:
+    homepage: https://github.com/chains-project/maven-lockfile
+  java:
+    groupId: fr.inria.gforge.spoon
+    version: 11
+  inceptionYear: 2015
+
+release:
+  github:
+    owner: INRIA
+    changelog:
+      formatted: ALWAYS
+      format: '- {{commitShortHash}} {{commitTitle}}'
+      contributors:
+        format: '- {{contributorName}} ({{contributorUsernameAsLink}})'
+      hide:
+        contributors:
+          - '[bot]'
+          - 'GitHub'
+signing:
+  active: ALWAYS
+  armored: true
+deploy:
+  maven:
+    nexus2:
+      maven-central:
+        active: ALWAYS
+        url: https://s01.oss.sonatype.org/service/local
+        closeRepository: true
+        releaseRepository: true
+        stagingRepositories:
+          - target/staging-deploy
