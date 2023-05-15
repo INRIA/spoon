@@ -102,7 +102,7 @@ class JDTImportBuilder {
 						}
 
 						// if the field is not found, try to find a method
-						if (methodOrFieldOrType == null ) {
+						if (methodOrFieldOrType == null) {
 							List<CtMethod<?>> methods = klass.getMethodsByName(methodOrFieldNameOrTypeName);
 							if (methods.size() > 0) {
 								methodOrFieldOrType = methods.get(0);
