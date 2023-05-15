@@ -1,7 +1,7 @@
-package import_static;
+package inner_class;
 
 import java.util.List;
-import static import_static.inner_class.Constants.InnerClass;
+import static inner_class.constants.Constants.InnerClass;
 
 public class Main {
     public void fun() {

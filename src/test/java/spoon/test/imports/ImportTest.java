@@ -1870,7 +1870,7 @@ public class ImportTest {
 		launcher.getEnvironment().setComplianceLevel(11);
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);
-		launcher.addInputResource("src/test/resources/import-static");
+		launcher.addInputResource("src/test/resources/inner-class");
 		CtModel model = launcher.buildModel();
 
 		CtType<?> mainType = model.getElements(new TypeFilter<>(CtType.class)).stream()

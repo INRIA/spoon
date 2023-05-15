@@ -1,4 +1,4 @@
-package import_static.inner_class;
+package inner_class.constants;
 
 public class Constants {
     public static int ZERO = 0;
