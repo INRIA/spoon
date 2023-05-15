@@ -65,6 +65,7 @@ import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.util.SortedList;
+import spoon.test.GitHubIssue;
 import spoon.test.imports.testclasses.A;
 import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.Pozole;
@@ -99,6 +100,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -1859,6 +1861,30 @@ public class ImportTest {
 				"}",
 			user.toStringWithImports()
 		);
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 5210, fixed = false)
+	void staticImports_ofNestedTypes_shouldBeRecorded() {
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(11);
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);
+		launcher.addInputResource("src/test/resources/import-static");
+		CtModel model = launcher.buildModel();
+
+		CtType<?> mainType = model.getElements(new TypeFilter<>(CtType.class)).stream()
+				.filter(t -> t.getSimpleName().equals("Main"))
+				.findFirst().orElseThrow();
+
+		List<CtImport> imports = mainType.getPosition().getCompilationUnit().getImports();
+		assertThat(imports, hasSize(2));
+
+		CtImport import1 = imports.get(0);
+		assertThat(import1.getReference().getSimpleName(), is("InnerClass"));
+
+		CtImport import2 = imports.get(1);
+		assertThat(import2.getReference().getSimpleName(), is("List"));
 	}
 
 }
