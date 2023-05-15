@@ -23,6 +23,7 @@ import spoon.reflect.reference.CtReference;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -89,7 +90,7 @@ class JDTImportBuilder {
 
 				CtType<?> klass = this.getOrLoadClass(className);
 				if (klass != null) {
-if (Objects.equals(methodOrFieldNameOrTypeName, "*")) {
+					if (Objects.equals(methodOrFieldNameOrTypeName, "*")) {
 						this.imports.add(createImportWithPosition(factory.Type().createTypeMemberWildcardImportReference(klass.getReference()), importRef));
 					} else {
 						CtNamedElement methodOrFieldOrType;
