@@ -85,26 +85,30 @@ class JDTImportBuilder {
 			} else {
 				int lastDot = importName.lastIndexOf('.');
 				String className = importName.substring(0, lastDot);
-				String methodOrFieldName = importName.substring(lastDot + 1);
+				String methodOrFieldNameOrTypeName = importName.substring(lastDot + 1);
 
-				CtType klass = this.getOrLoadClass(className);
+				CtType<?> klass = this.getOrLoadClass(className);
 				if (klass != null) {
-					if ("*".equals(methodOrFieldName)) {
+					if ("*".equals(methodOrFieldNameOrTypeName)) {
 						this.imports.add(createImportWithPosition(factory.Type().createTypeMemberWildcardImportReference(klass.getReference()), importRef));
 					} else {
-						CtNamedElement methodOrField = null;
+						CtNamedElement methodOrFieldOrType = null;
 
-						methodOrField = klass.getField(methodOrFieldName);
+						methodOrFieldOrType = klass.getField(methodOrFieldNameOrTypeName);
 
-						if (methodOrField == null) {
-							List<CtMethod> methods = klass.getMethodsByName(methodOrFieldName);
-							if (methods.size() > 0) {
-								methodOrField = methods.get(0);
-							}
+						if (methodOrFieldOrType != null) {
+							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
 						}
 
-						if (methodOrField != null) {
-							this.imports.add(createImportWithPosition(methodOrField.getReference(), importRef));
+						List<CtMethod<?>> methods = klass.getMethodsByName(methodOrFieldNameOrTypeName);
+						if (methods.size() > 0) {
+							methodOrFieldOrType = methods.get(0);
+							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
+						}
+
+						methodOrFieldOrType = klass.getNestedType(methodOrFieldNameOrTypeName);
+						if (methodOrFieldOrType != null) {
+							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
 						}
 					}
 				} else {

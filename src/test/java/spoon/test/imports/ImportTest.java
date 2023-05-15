@@ -1864,7 +1864,7 @@ public class ImportTest {
 	}
 
 	@Test
-	@GitHubIssue(issueNumber = 5210, fixed = false)
+	@GitHubIssue(issueNumber = 5210, fixed = true)
 	void staticImports_ofNestedTypes_shouldBeRecorded() {
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(11);
