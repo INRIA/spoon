@@ -100,10 +100,13 @@ class JDTImportBuilder {
 							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
 						}
 
-						List<CtMethod<?>> methods = klass.getMethodsByName(methodOrFieldNameOrTypeName);
-						if (methods.size() > 0) {
-							methodOrFieldOrType = methods.get(0);
-							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
+						// if the field is not found, try to find a method
+						if (methodOrFieldOrType == null ) {
+							List<CtMethod<?>> methods = klass.getMethodsByName(methodOrFieldNameOrTypeName);
+							if (methods.size() > 0) {
+								methodOrFieldOrType = methods.get(0);
+								this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
+							}
 						}
 
 						methodOrFieldOrType = klass.getNestedType(methodOrFieldNameOrTypeName);
