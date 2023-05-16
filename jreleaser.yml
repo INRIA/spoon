@@ -5,7 +5,12 @@ project:
                    It parses source files to build a well-designed AST with powerful analysis and transformation API. 
                    It supports modern Java versions up to Java 20.
   authors:
-    - MartinWitt
+    - slarse
+    - monperrus
+    - nharrand
+    - martinwitt
+    - sirywell
+    - I-Al-Istannen
   license: (MIT OR CECILL-C)
   links:
     homepage: https://github.com/chains-project/maven-lockfile
