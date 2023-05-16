@@ -39,15 +39,24 @@ jobs:
         run: echo "CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//')" >> $GITHUB_ENV
       - name: Get version with snapshot
         run: echo "CURRENT_VERSION_WITH_SNAPSHOT=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-# Calculate next version: 
-# - if version is patch, we just increment the patch version
-# - if version is minor or major, we increment the minor or major version and set the patch version to 0
-# As we are using a snapshot version, we need to run semver next twice to get the next version for major and minor releases. Reason: Any X.Y.Z-SNAPSHOT version will be released as X.Y.Z if we run semver next major X.Y.Z-SNAPSHOT
-      - name: Set next version
+# Calculate release version:
+# - if `version` is patch, we just increment drop the `-SNAPSHOT` suffix
+#   (e.g. 10.0.1-SNAPSHOT -> 10.0.1)
+# - if `version` is minor or major, we increment the minor or major version and
+#   set the patch version to `0` (e.g. 10.0.1-SNAPSHOT -> 11.0.0 or 10.1.0)
+#
+# As we are using a snapshot version, the first call to `semver next` slices
+# off only the `-SNAPSHOT` suffix. We therefore run `semver next` on the
+# version *without* the `-SNAPSHOT` prefix for major and minor bumps.
+#
+# After release, we run `semver next` once again and append the `-SNAPSHOT`
+# suffix. This results in our patch version from above becoming
+# `10.0.2-SNAPSHOT`. The major/minor just get the patch set to `1` and
+# `-SNAPSHOT` appended.
+      - name: Set next version for patch
         if: ${{ github.event.inputs.version == 'patch' }}
         run: echo "NEXT_VERSION=$(semver next ${{ github.event.inputs.version }} $CURRENT_VERSION_WITH_SNAPSHOT)" >> $GITHUB_ENV
-      - name: Set next version
-        # semver next for a snapshot only releases the snapshot version, so we need to run without the snapshot suffix
+      - name: Set next version for major/minor
         if: ${{ github.event.inputs.version == 'major'  || github.event.inputs.version == 'minor' }}
         run: echo "NEXT_VERSION=$(semver next ${{ github.event.inputs.version }} $CURRENT_VERSION)" >> $GITHUB_ENV
       - name: set branchname to next version
