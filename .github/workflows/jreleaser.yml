@@ -42,7 +42,7 @@ jobs:
 # Calculate next version: 
 # - if version is patch, we just increment the patch version
 # - if version is minor or major, we increment the minor or major version and set the patch version to 0
-# As we are using a snapshot version, we need to run semver next twice to get the next version for mahor and minor releases. Reason: Any X.Y.Z-SNAPSHOT version will be released as X.Y.Z if we run semver next major X.Y.Z-SNAPSHOT
+# As we are using a snapshot version, we need to run semver next twice to get the next version for major and minor releases. Reason: Any X.Y.Z-SNAPSHOT version will be released as X.Y.Z if we run semver next major X.Y.Z-SNAPSHOT
       - name: Set next version
         if: ${{ github.event.inputs.version == 'patch' }}
         run: echo "NEXT_VERSION=$(semver next ${{ github.event.inputs.version }} $CURRENT_VERSION_WITH_SNAPSHOT)" >> $GITHUB_ENV
