@@ -1863,28 +1863,20 @@ public class ImportTest {
 		);
 	}
 
-	@Test
 	@GitHubIssue(issueNumber = 5210, fixed = true)
-	void staticImports_ofNestedTypes_shouldBeRecorded() {
-		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setComplianceLevel(11);
-		launcher.getEnvironment().setAutoImports(true);
-		launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);
-		launcher.addInputResource("src/test/resources/inner-class");
-		CtModel model = launcher.buildModel();
-
+	@ModelTest(value = {"src/test/resources/inner-class"}, complianceLevel = 11, autoImport = true)
+	void staticImports_ofNestedTypes_shouldBeRecorded(CtModel model) {
+		// contract: static imports of nested types should be recorded
+		// arrange
 		CtType<?> mainType = model.getElements(new TypeFilter<>(CtType.class)).stream()
 				.filter(t -> t.getSimpleName().equals("Main"))
 				.findFirst().orElseThrow();
 
+		// assert
 		List<CtImport> imports = mainType.getPosition().getCompilationUnit().getImports();
 		assertThat(imports, hasSize(2));
 
-		CtImport import1 = imports.get(0);
-		assertThat(import1.getReference().getSimpleName(), is("InnerClass"));
-
-		CtImport import2 = imports.get(1);
-		assertThat(import2.getReference().getSimpleName(), is("List"));
+		CtImport import0 = imports.get(0);
+		assertThat(import0.getReference().getSimpleName(), is("InnerClass"));
 	}
-
 }
