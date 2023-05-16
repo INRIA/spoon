@@ -56,7 +56,8 @@ jobs:
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
-          message: 🔖 Releasing version ${{ env.NEXT_VERSION }}
+          message: "release: Releasing version ${{ env.NEXT_VERSION }}"
+          branch: master
 
 # Now we can run the release
       - name: Stage release
@@ -89,7 +90,8 @@ jobs:
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
-          message: 🔖 Setting SNAPSHOT version ${{ env.NEXT_VERSION }}
+          message: "release: Setting SNAPSHOT version ${{ env.NEXT_VERSION }}"
+          branch: master
 
 # Log failure:
       - name: JReleaser release output
