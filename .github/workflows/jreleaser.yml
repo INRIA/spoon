@@ -47,7 +47,7 @@ jobs:
         if: ${{ github.event.inputs.version == 'patch' }}
         run: echo "NEXT_VERSION=$(semver next ${{ github.event.inputs.version }} $CURRENT_VERSION_WITH_SNAPSHOT)" >> $GITHUB_ENV
       - name: Set next version
-        # semver next for a snapshot only releases the snapshot version, so we need to run it 2 times
+        # semver next for a snapshot only releases the snapshot version, so we need to run without the snapshot suffix
         if: ${{ github.event.inputs.version == 'major'  || github.event.inputs.version == 'minor' }}
         run: echo "NEXT_VERSION=$(semver next ${{ github.event.inputs.version }} $CURRENT_VERSION)" >> $GITHUB_ENV
       - name: set branchname to next version
