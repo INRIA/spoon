@@ -13,7 +13,7 @@ project:
     - I-Al-Istannen
   license: (MIT OR CECILL-C)
   links:
-    homepage: https://github.com/INRIA/spoon
+    homepage: https://spoon.gforge.inria.fr/
   java:
     groupId: fr.inria.gforge.spoon
     version: 11
