@@ -50,6 +50,8 @@ jobs:
         # semver next for a snapshot only releases the snapshot version, so we need to run it 2 times
         if: ${{ github.event.inputs.version == 'major'  || github.event.inputs.version == 'minor' }}
         run: echo "NEXT_VERSION=$(semver next ${{ github.event.inputs.version }} $CURRENT_VERSION)" >> $GITHUB_ENV
+      - name: set branchname to next version
+        run: echo "BRANCH_NAME=release/$NEXT_VERSION" >> $GITHUB_ENV
       - name: Set release version
         run: mvn --no-transfer-progress --batch-mode versions:set -DnewVersion=$NEXT_VERSION -DprocessAllModules
       - name: Commit & Push changes
@@ -57,7 +59,7 @@ jobs:
         with:
           github_token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
           message: "release: Releasing version ${{ env.NEXT_VERSION }}"
-          branch: master
+          branch: ${{ env.BRANCH_NAME }}
 
 # Now we can run the release
       - name: Stage release
@@ -91,7 +93,16 @@ jobs:
         with:
           github_token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
           message: "release: Setting SNAPSHOT version ${{ env.NEXT_VERSION }}"
+          branch: ${{ env.BRANCH_NAME }}
+      - name: Merge Fast Forward
+        uses: MaximeHeckel/github-action-merge-fast-forward@v1.1.0
+        with:
+          # Branch to merge
+          branchtomerge: ${{ env.BRANCH_NAME }}
+          # Branch that will be updated
           branch: master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 # Log failure:
       - name: JReleaser release output
