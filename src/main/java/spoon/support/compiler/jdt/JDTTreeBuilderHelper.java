@@ -1,17 +1,19 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.compiler.jdt;
 
+import java.util.Arrays;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.ExportsStatement;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
+import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
 import org.eclipse.jdt.internal.compiler.ast.OpensStatement;
@@ -283,8 +285,9 @@ public class JDTTreeBuilderHelper {
 			sourceStart = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32);
 			for (FieldBinding b : qualifiedNameReference.otherBindings) {
 				isOtherBinding = qualifiedNameReference.otherBindings.length == i + 1;
+				TypeBinding type = ((VariableBinding) qualifiedNameReference.binding).type;
 				CtFieldAccess<T> other = createFieldAccess(
-						jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
+						jdtTreeBuilder.getReferencesBuilder().getVariableReference(type, b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
 				//set source position of fa
 				if (i + qualifiedNameReference.indexOfFirstFieldBinding >= qualifiedNameReference.otherBindings.length) {
 					sourceEnd = qualifiedNameReference.sourceEnd();
@@ -299,8 +302,9 @@ public class JDTTreeBuilderHelper {
 			sourceStart = (int) (positions[0] >>> 32);
 			for (int i = 1; i < qualifiedNameReference.tokens.length; i++) {
 				isOtherBinding = qualifiedNameReference.tokens.length == i + 1;
+				TypeBinding type = ((VariableBinding) qualifiedNameReference.binding).type;
 				CtFieldAccess<T> other = createFieldAccess(//
-						jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(null, qualifiedNameReference.tokens[i]), va, isOtherBinding && fromAssignment);
+						jdtTreeBuilder.getReferencesBuilder().getVariableReference(type, null, qualifiedNameReference.tokens[i]), va, isOtherBinding && fromAssignment);
 				//set source position of va;
 				sourceEnd = (int) (positions[i]);
 				va.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
@@ -392,6 +396,60 @@ public class JDTTreeBuilderHelper {
 		return va;
 	}
 
+	boolean isProblemNameRefProbablyTypeRef(QualifiedNameReference qualifiedNameReference) {
+		ContextBuilder contextBuilder = jdtTreeBuilder.getContextBuilder();
+		if (contextBuilder.compilationunitdeclaration == null) {
+			return false;
+		}
+		if (contextBuilder.compilationunitdeclaration.imports == null) {
+			return false;
+		}
+		char[][] ourName = qualifiedNameReference.tokens;
+		for (ImportReference anImport : contextBuilder.compilationunitdeclaration.imports) {
+			char[][] importName = anImport.getImportName();
+			int i = indexOfSubList(importName, ourName);
+			if (i > 0) {
+				boolean extendsToEndOfImport = i + ourName.length == importName.length;
+				boolean isStaticImport = anImport.isStatic();
+				if (!isStaticImport) {
+					// import foo.bar.baz.A; => "A" is probably a type
+					// import foo.bar.baz.A; => "baz" is probably a type
+					return true;
+				}
+				// import static foo.Bar.bar; => bar is probably a method/field
+				// import static foo.Bar;     => Bar is probably a type
+				char[] simpleName = qualifiedNameReference.tokens[qualifiedNameReference.tokens.length - 1];
+				return !extendsToEndOfImport || !Character.isLowerCase(simpleName[0]);
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Finds the lowest index where {@code needle} appears in {@code haystack}. This is akin to a
+	 * substring search, but JDT uses a String[] to omit separators and a char[] to represent strings.
+	 * If we want to find out where "String" appears in "java.lang.String", we would call
+	 * {@code indexOfSubList(["java", "lang", "String"], ["lang", "String"])} and receive {@code 1}.
+	 *
+	 * @param haystack the haystack to search in
+	 * @param needle the needle to search
+	 * @return the first index where needle appears in haystack
+	 * @see java.util.Collections#indexOfSubList(List, List) Collections#indexOfSubList for a more
+	 *     general version that does not correctly handle array equality
+	 */
+	private static int indexOfSubList(char[][] haystack, char[][] needle) {
+		outer:
+		for (int i = 0; i < haystack.length - needle.length; i++) {
+			for (int j = 0; j < needle.length; j++) {
+				if (!Arrays.equals(haystack[i + j], needle[j])) {
+					continue outer;
+				}
+			}
+			return i;
+		}
+		return -1;
+	}
+
 	/**
 	 * In no classpath mode, when we build a field access, we have a binding typed by ProblemBinding.
 	 * We try to get all information we can get from this binding.
@@ -430,7 +488,7 @@ public class JDTTreeBuilderHelper {
 		} else {
 			fieldAccess = jdtTreeBuilder.getFactory().Core().createFieldRead();
 		}
-		fieldAccess.setVariable(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(fieldReference.binding, fieldReference.token));
+		fieldAccess.setVariable(jdtTreeBuilder.getReferencesBuilder().getVariableReference(fieldReference.actualReceiverType, fieldReference.binding, fieldReference.token));
 		fieldAccess.setType(jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(fieldReference.resolvedType));
 		return fieldAccess;
 	}
