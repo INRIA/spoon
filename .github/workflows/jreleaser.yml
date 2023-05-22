@@ -1,0 +1,124 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Next release version'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+# Setups the environment
+      - name: Checkout
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3
+        with:
+          fetch-depth: 0
+      - name: Set up JDK 11
+        uses: actions/setup-java@5ffc13f4174014e2d4d4572b3d74c3fa61aeb2c2 # v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+          
+      - name: install go
+        uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4
+      - name: install semversion
+        run: go install github.com/ffurrer2/semver/cmd/semver@latest
+# Get current version from pom and remove snapshot if present.
+      - name: Get current version from pom and remove snapshot if present.
+        run: echo "CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//')" >> $GITHUB_ENV
+      - name: Get version with snapshot
+        run: echo "CURRENT_VERSION_WITH_SNAPSHOT=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+# Calculate release version:
+# - if `version` is patch, we just increment drop the `-SNAPSHOT` suffix
+#   (e.g. 10.0.1-SNAPSHOT -> 10.0.1)
+# - if `version` is minor or major, we increment the minor or major version and
+#   set the patch version to `0` (e.g. 10.0.1-SNAPSHOT -> 11.0.0 or 10.1.0)
+#
+# As we are using a snapshot version, the first call to `semver next` slices
+# off only the `-SNAPSHOT` suffix. We therefore run `semver next` on the
+# version *without* the `-SNAPSHOT` prefix for major and minor bumps.
+#
+# After release, we run `semver next` once again and append the `-SNAPSHOT`
+# suffix. This results in our patch version from above becoming
+# `10.0.2-SNAPSHOT`. The major/minor just get the patch set to `1` and
+# `-SNAPSHOT` appended.
+      - name: Set next version for patch
+        if: ${{ github.event.inputs.version == 'patch' }}
+        run: echo "NEXT_VERSION=$(semver next ${{ github.event.inputs.version }} $CURRENT_VERSION_WITH_SNAPSHOT)" >> $GITHUB_ENV
+      - name: Set next version for major/minor
+        if: ${{ github.event.inputs.version == 'major'  || github.event.inputs.version == 'minor' }}
+        run: echo "NEXT_VERSION=$(semver next ${{ github.event.inputs.version }} $CURRENT_VERSION)" >> $GITHUB_ENV
+      - name: set branchname to next version
+        run: echo "BRANCH_NAME=release/$NEXT_VERSION" >> $GITHUB_ENV
+      - name: Set release version
+        run: mvn --no-transfer-progress --batch-mode versions:set -DnewVersion=$NEXT_VERSION -DprocessAllModules
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
+          message: "release: Releasing version ${{ env.NEXT_VERSION }}"
+          branch: ${{ env.BRANCH_NAME }}
+
+# Now we can run the release
+      - name: Stage release
+        run:  mvn --no-transfer-progress --batch-mode -Prelease clean deploy -DaltDeploymentRepository=local::default::file://`pwd`/target/staging-deploy
+      - name: Print next version
+        run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//'
+      - name: Run JReleaser
+        uses: jreleaser/release-action@v2
+        with:
+          setup-java: false
+          version: 1.4.0
+          arguments: full-release 
+        env:
+          JRELEASER_PROJECT_VERSION: ${{ env.NEXT_VERSION }}
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.JRELEASER_GPG_PUBLIC_KEY }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
+          JRELEASER_NEXUS2_MAVEN_CENTRAL_USERNAME: ${{ secrets.JRELEASER_NEXUS2_MAVEN_CENTRAL_USERNAME }}
+          JRELEASER_NEXUS2_MAVEN_CENTRAL_PASSWORD: ${{ secrets.JRELEASER_NEXUS2_MAVEN_CENTRAL_PASSWORD }}
+# Time to set the next version: The next version of any Release is a snapshot version of the next patch version
+      - name : Set next version (patch of release version) with -SNAPSHOT suffix
+        run: |
+         echo "NEXT_RELEASE_VERSION=$(semver next patch $NEXT_VERSION)-SNAPSHOT" >> $GITHUB_ENV
+         echo "NEXT_RELEASE_VERSION_WITHOUT_SNAPSHOT=$(semver next patch $NEXT_VERSION)" >> $GITHUB_ENV
+      - name: Set release version
+        run: mvn --no-transfer-progress --batch-mode versions:set -DnewVersion=$NEXT_RELEASE_VERSION -DprocessAllModules
+# Commit and push changes
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
+          message: "release: Setting SNAPSHOT version ${{ env.NEXT_VERSION }}"
+          branch: ${{ env.BRANCH_NAME }}
+      - name: Merge Fast Forward
+        uses: MaximeHeckel/github-action-merge-fast-forward@9710f422198dd92989b8c076096d03c3bd61e6f4 # v1.1.1
+        with:
+          # Branch to merge
+          branchtomerge: ${{ env.BRANCH_NAME }}
+          # Branch that will be updated
+          branch: master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# Log failure:
+      - name: JReleaser release output
+        if: always()
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3
+        with:
+          name: jreleaser-release
+          path: |
+            out/jreleaser/trace.log
+            out/jreleaser/output.properties
