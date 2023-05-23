@@ -84,35 +84,42 @@ class JDTImportBuilder {
 					}
 				}
 			} else {
+				// A static import can be either a static field, a static method or a static type
+				// Static keyword in import statement is redundant for a type.
+				// `import <type_name>` can import both static and non-static types.
 				int lastDot = importName.lastIndexOf('.');
 				String className = importName.substring(0, lastDot);
-				String methodOrFieldNameOrTypeName = importName.substring(lastDot + 1);
+				String methodOrFieldOrTypeName = importName.substring(lastDot + 1);
 
 				CtType<?> klass = this.getOrLoadClass(className);
 				if (klass != null) {
-					if (Objects.equals(methodOrFieldNameOrTypeName, "*")) {
+					if (Objects.equals(methodOrFieldOrTypeName, "*")) {
 						this.imports.add(createImportWithPosition(factory.Type().createTypeMemberWildcardImportReference(klass.getReference()), importRef));
 					} else {
 						CtNamedElement methodOrFieldOrType;
 
-						methodOrFieldOrType = klass.getField(methodOrFieldNameOrTypeName);
-
+						// we prioritize fields and methods over types because static keyword for the former must be present in the import statement
+						// first try to find a field
+						methodOrFieldOrType = klass.getField(methodOrFieldOrTypeName);
 						if (methodOrFieldOrType != null) {
 							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
 						}
 
 						// if the field is not found, try to find a method
 						if (methodOrFieldOrType == null) {
-							List<CtMethod<?>> methods = klass.getMethodsByName(methodOrFieldNameOrTypeName);
+							List<CtMethod<?>> methods = klass.getMethodsByName(methodOrFieldOrTypeName);
 							if (methods.size() > 0) {
 								methodOrFieldOrType = methods.get(0);
 								this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
 							}
 						}
 
-						methodOrFieldOrType = klass.getNestedType(methodOrFieldNameOrTypeName);
-						if (methodOrFieldOrType != null) {
-							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
+						// if the method is also not found, try to find a nested type
+						if (methodOrFieldOrType == null) {
+							methodOrFieldOrType = klass.getNestedType(methodOrFieldOrTypeName);
+							if (methodOrFieldOrType != null) {
+								this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
+							}
 						}
 					}
 				} else {

@@ -1879,4 +1879,21 @@ public class ImportTest {
 		CtImport import0 = imports.get(0);
 		assertThat(import0.getReference().getSimpleName(), is("InnerClass"));
 	}
+
+	@ModelTest(value = {"src/test/resources/static-method-and-type"}, autoImport = true)
+	void staticTypeAndMethodImport_importShouldAppearOnlyOnceIfTheirSimpleNamesAreEqual(CtModel model) {
+		// contract: static type and method import should appear only once if their simple names are equal
+		// arrange
+		CtType<?> mainType = model.getElements(new TypeFilter<>(CtType.class)).stream()
+				.filter(t -> t.getSimpleName().equals("Main"))
+				.findFirst().orElseThrow();
+
+		// assert
+		List<CtImport> imports = mainType.getPosition().getCompilationUnit().getImports();
+		assertThat(imports, hasSize(1));
+
+		CtImport import0 = imports.get(0);
+		assertThat(import0.getImportKind(), is(CtImportKind.METHOD));
+		assertThat(import0.getReference().getSimpleName(), is("foo"));
+	}
 }
