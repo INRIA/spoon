@@ -28,9 +28,11 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
+import spoon.processing.AbstractProcessor;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -240,6 +242,20 @@ public class FieldTest {
 
 		assertEquals(arrayType, elements.get(0).getDeclaringType());
 		assertEquals(arrayType, elements.get(1).getDeclaringType());
+
+
+		ctModel.processWith(new AbstractProcessor<CtVariableAccess<?>>() {
+			@Override
+			public void process(CtVariableAccess<?> element) {
+				if (!(element.getVariable() instanceof CtFieldReference<?>)) {
+					return;
+				}
+				CtFieldReference<?> ctFieldReference = (CtFieldReference<?>) element.getVariable();
+
+				ctFieldReference.getModifiers();
+				ctFieldReference.getActualField(); // <- this crashes
+			}
+		});
 	}
 
 
