@@ -564,6 +564,11 @@ public class TypeAdaptor {
 		CtType<?> endType = findDeclaringType(end);
 		Map<CtTypeReference<?>, DeclarationNode> declarationNodes = new HashMap<>();
 
+		if (needToMoveStartTypeToEnclosingClass(end, endType)) {
+			startType = moveStartTypeToEnclosingClass(hierarchyStart, endType.getReference());
+			startReference = startType.getReference();
+		}
+
 		DeclarationNode root = buildDeclarationHierarchyFrom(
 			startType.getReference(),
 			endType,
@@ -583,6 +588,38 @@ public class TypeAdaptor {
 			.orElse(null);
 	}
 
+	private boolean needToMoveStartTypeToEnclosingClass(CtTypeReference<?> end, CtType<?> endType) {
+		if (!(end instanceof CtTypeParameterReference)) {
+			return false;
+		}
+		// Declaring type is not the same as the inner type (i.e. the type parameter was declared on an
+		// enclosing type)
+		CtType<?> parentType = end.getParent(CtType.class);
+		if (parentType instanceof CtTypeParameter) {
+			CtFormalTypeDeclarer declarer = ((CtTypeParameter) parentType).getTypeParameterDeclarer();
+			if (declarer instanceof CtType) {
+				parentType = (CtType<?>) declarer;
+			} else {
+				parentType = declarer.getDeclaringType();
+			}
+		}
+
+		return !parentType.getQualifiedName().equals(endType.getQualifiedName());
+	}
+
+	private CtType<?> moveStartTypeToEnclosingClass(CtType<?> start, CtTypeReference<?> endRef) {
+		CtType<?> current = start;
+		while (current != null) {
+			if (isSubtype(current, endRef)) {
+				return current;
+			}
+			current = current.getDeclaringType();
+		}
+		throw new SpoonException(
+				"Did not find a suitable enclosing type to start parameter type adaption from"
+		);
+	}
+
 	/**
 	 * This method attempts to find a suitable end type for building our hierarchy.
 	 * <br>
@@ -598,12 +635,18 @@ public class TypeAdaptor {
 	 */
 	private CtType<?> findDeclaringType(CtTypeReference<?> reference) {
 		CtType<?> type = null;
-		if (reference.isParentInitialized()) {
+		// Prefer declaration to parent. This will be different if the type parameter is declared on an
+		// enclosing class.
+		if (reference instanceof CtTypeParameterReference) {
+			type = reference.getTypeDeclaration();
+		}
+		if (type == null && reference.isParentInitialized()) {
 			type = reference.getParent(CtType.class);
 		}
 		if (type == null) {
 			type = reference.getTypeDeclaration();
 		}
+
 		if (type instanceof CtTypeParameter) {
 			CtFormalTypeDeclarer declarer = ((CtTypeParameter) type).getTypeParameterDeclarer();
 			if (declarer instanceof CtType) {
