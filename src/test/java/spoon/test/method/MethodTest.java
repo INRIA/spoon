@@ -247,12 +247,15 @@ public class MethodTest {
 		assertThat(m1.getTopDefinitions().size(), equalTo(0));
 	}
 
-	@ModelTest("src/test/java/spoon/test/method/testclasses/SignaturePolymorphicMethods.java")
+	@ModelTest("src/test/resources/signature-polymorphic-methods/SignaturePolymorphicMethods.java")
 	void testSignaturePolymorphicMethodInvocations(Factory factory) {
-		CtType<?> type = factory.Type().get("spoon.test.method.testclasses.SignaturePolymorphicMethods");
-		for (CtMethod<?> method : type.getMethods()) {
+		// contract: calls to signature-polymorphic methods should be equal to their declaration signature
+		CtType<?> type = factory.Type().get("SignaturePolymorphicMethods");
+		Set<CtMethod<?>> methods = type.getMethods();
+		assertThat(methods.size(), equalTo(4));
+		for (CtMethod<?> method : methods) {
+			// MethodHandle#invoke and MethodHandle#invokeExact have the declaration signature (Object[])Object
 			CtInvocation<?> invocation = method.getBody().getElements(new TypeFilter<>(CtInvocation.class)).get(0);
-			assertThat(invocation, instanceOf(CtInvocation.class));
 			assertThat(invocation.getType(), equalTo(factory.Type().objectType()));
 			List<CtTypeReference<?>> parameters = invocation.getExecutable().getParameters();
 			assertThat(parameters.size(), equalTo(1));
