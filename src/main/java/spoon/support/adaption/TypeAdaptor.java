@@ -596,14 +596,7 @@ public class TypeAdaptor {
 		// Declaring type is not the same as the inner type (i.e. the type parameter was declared on an
 		// enclosing type)
 		CtType<?> parentType = end.getParent(CtType.class);
-		if (parentType instanceof CtTypeParameter) {
-			CtFormalTypeDeclarer declarer = ((CtTypeParameter) parentType).getTypeParameterDeclarer();
-			if (declarer instanceof CtType) {
-				parentType = (CtType<?>) declarer;
-			} else {
-				parentType = declarer.getDeclaringType();
-			}
-		}
+		parentType = resolveTypeParameterToDeclarer(parentType);
 
 		return !parentType.getQualifiedName().equals(endType.getQualifiedName());
 	}
@@ -648,14 +641,21 @@ public class TypeAdaptor {
 			type = reference.getTypeDeclaration();
 		}
 
-		if (type instanceof CtTypeParameter) {
-			CtFormalTypeDeclarer declarer = ((CtTypeParameter) type).getTypeParameterDeclarer();
+		return resolveTypeParameterToDeclarer(type);
+	}
+
+	private static CtType<?> resolveTypeParameterToDeclarer(CtType<?> parentType) {
+		if (parentType instanceof CtTypeParameter) {
+			CtFormalTypeDeclarer declarer = ((CtTypeParameter) parentType).getTypeParameterDeclarer();
 			if (declarer instanceof CtType) {
 				return (CtType<?>) declarer;
+			} else {
+				return declarer.getDeclaringType();
 			}
-			return declarer.getDeclaringType();
 		}
-		return type;
+		// Could not resolve type parameter declarer (no class path mode?).
+		// Type adaption results will not be accurate, this is just a wild (and probably wrong) guess.
+		return parentType;
 	}
 
 	private DeclarationNode buildDeclarationHierarchyFrom(
