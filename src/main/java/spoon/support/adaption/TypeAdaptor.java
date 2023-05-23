@@ -559,6 +559,7 @@ public class TypeAdaptor {
 		return Optional.of((CtExecutable<?>) parent);
 	}
 
+	@SuppressWarnings("AssignmentToMethodParameter")
 	private DeclarationNode buildHierarchyFrom(CtTypeReference<?> startReference, CtType<?> startType,
 		CtTypeReference<?> end) {
 		CtType<?> endType = findDeclaringType(end);
