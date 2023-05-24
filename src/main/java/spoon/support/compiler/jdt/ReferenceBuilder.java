@@ -457,7 +457,7 @@ public class ReferenceBuilder {
 			//  therefore we use the original one here
 			//  see https://github.com/INRIA/spoon/issues/4863
 			if (exec.isPolymorphic()) {
-				ref.setType(getTypeReference(exec.original().returnType, true));
+				ref.setType(getTypeReference(exec.original().returnType));
 			}
 			final List<CtTypeReference<?>> parameters = new ArrayList<>(exec.original().parameters.length);
 			for (TypeBinding b : exec.original().parameters) {
