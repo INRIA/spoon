@@ -120,7 +120,7 @@ If we can not find any hierarchy we currently return the input type unchanged.
 Java allows classes to use generics of their enclosing class, e.g.
 ```java
 public class Outer<A> {
-  public static class Inner<B> {
+  public class Inner<B> {
     public void bar(A a, B b) {}
   }
 }
@@ -128,7 +128,7 @@ public class Outer<A> {
 If you now additionally introduce a dual inheritance relationship
 ```java
 public class OuterSub<A1> extends Outer<A1> {
-  public static class InnerSub<B1> extends Outer.Inner<B1> {
+  public class InnerSub<B1> extends Outer.Inner<B1> {
     public void bar(A1 a, B1 b) {}
   }
 }
