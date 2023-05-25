@@ -453,6 +453,12 @@ public class ReferenceBuilder {
 
 		// original() method returns a result not null when the current method is generic.
 		if (exec.original() != null) {
+			// if polymorphic, the original return type differs from the actual return type
+			//  therefore we use the original one here
+			//  see https://github.com/INRIA/spoon/issues/4863
+			if (exec.isPolymorphic()) {
+				ref.setType(getTypeReference(exec.original().returnType));
+			}
 			final List<CtTypeReference<?>> parameters = new ArrayList<>(exec.original().parameters.length);
 			for (TypeBinding b : exec.original().parameters) {
 				parameters.add(getTypeReference(b, true));

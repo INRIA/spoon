@@ -16,9 +16,10 @@
  */
 package spoon.test.method;
 
-import org.hamcrest.CoreMatchers;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.method.testclasses.Hierarchy;
 import spoon.test.method.testclasses.Tacos;
 import spoon.reflect.reference.CtTypeReference;
@@ -34,7 +35,6 @@ import spoon.test.method.testclasses.Methods;
 import org.junit.jupiter.api.Test;
 import spoon.testing.utils.ModelTest;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.ConcurrentModificationException;
@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -244,5 +245,21 @@ public class MethodTest {
 		// top-level definitions don't have top-level definitions
 		assertThat(m0.getTopDefinitions().size(), equalTo(0));
 		assertThat(m1.getTopDefinitions().size(), equalTo(0));
+	}
+
+	@ModelTest("src/test/resources/signature-polymorphic-methods/SignaturePolymorphicMethods.java")
+	void testSignaturePolymorphicMethodInvocations(Factory factory) {
+		// contract: calls to signature-polymorphic methods should be equal to their declaration signature
+		CtType<?> type = factory.Type().get("SignaturePolymorphicMethods");
+		Set<CtMethod<?>> methods = type.getMethods();
+		assertThat(methods.size(), equalTo(4));
+		for (CtMethod<?> method : methods) {
+			// MethodHandle#invoke and MethodHandle#invokeExact have the declaration signature (Object[])Object
+			CtInvocation<?> invocation = method.getBody().getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+			assertThat(invocation.getType(), equalTo(factory.Type().objectType()));
+			List<CtTypeReference<?>> parameters = invocation.getExecutable().getParameters();
+			assertThat(parameters.size(), equalTo(1));
+			assertThat(parameters.get(0), equalTo(factory.Type().createArrayReference(factory.Type().objectType())));
+		}
 	}
 }
