@@ -43,13 +43,13 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtExtendedModifier;
-import spoon.test.GitHubIssue;
 import spoon.test.SpoonTestHelpers;
 import spoon.test.annotation.AnnotationTest;
 import spoon.test.enums.testclasses.Burritos;
 import spoon.test.enums.testclasses.EnumWithMembers;
 import spoon.test.enums.testclasses.NestedEnums;
 import spoon.test.enums.testclasses.Regular;
+import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -286,6 +286,7 @@ public class EnumsTest {
 		));
 	}
 
+	@Test
 	@GitHubIssue(issueNumber = 4758, fixed = true)
 	@DisplayName("Implicit enum constructors do not contain a super call")
 	void testImplicitEnumConstructorSuperCall() {

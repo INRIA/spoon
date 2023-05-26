@@ -29,8 +29,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.util.compilation.JavacFacade;
-import spoon.test.GitHubIssue;
-
+import spoon.testing.utils.GitHubIssue;
 import java.util.List;
 import java.util.Map;
 
@@ -66,8 +65,9 @@ public class CodeFactoryTest {
 		assertEquals(f.getReference(), ((CtVariableWrite) va.getAssigned()).getVariable());
 	}
 	
+	@Test
 	@GitHubIssue(issueNumber= 4956, fixed = true)
-	void createCtCatcVariablehWithoutModifiers() {
+	void createCtCatchVariablehWithoutModifiers() {
 		// contract: CtCatchVariable without modifiers is created. This a test for the regression of #4940
 		Factory factory = createFactory();
 		CtTypeReference<Exception> exceptionType = factory.Type().createReference(Exception.class);
