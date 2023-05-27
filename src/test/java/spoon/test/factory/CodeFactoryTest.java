@@ -67,7 +67,7 @@ public class CodeFactoryTest {
 	
 	@Test
 	@GitHubIssue(issueNumber= 4956, fixed = true)
-	void createCtCatchVariablehWithoutModifiers() {
+	void createCtCatchVariableWithoutModifiers() {
 		// contract: CtCatchVariable without modifiers is created. This a test for the regression of #4940
 		Factory factory = createFactory();
 		CtTypeReference<Exception> exceptionType = factory.Type().createReference(Exception.class);
