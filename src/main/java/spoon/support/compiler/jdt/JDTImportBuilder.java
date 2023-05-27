@@ -85,8 +85,6 @@ class JDTImportBuilder {
 				}
 			} else {
 				// A static import can be either a static field, a static method or a static type
-				// Static keyword in import statement is redundant for a type.
-				// `import <type_name>` can import both static and non-static types.
 				int lastDot = importName.lastIndexOf('.');
 				String className = importName.substring(0, lastDot);
 				String methodOrFieldOrTypeName = importName.substring(lastDot + 1);
@@ -114,12 +112,10 @@ class JDTImportBuilder {
 							}
 						}
 
-						// if the method is also not found, try to find a nested type
-						if (methodOrFieldOrType == null) {
-							methodOrFieldOrType = klass.getNestedType(methodOrFieldOrTypeName);
-							if (methodOrFieldOrType != null) {
-								this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
-							}
+						// if a static type with the given name exists, we import it explicitly
+						methodOrFieldOrType = klass.getNestedType(methodOrFieldOrTypeName);
+						if (methodOrFieldOrType != null) {
+							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
 						}
 					}
 				} else {

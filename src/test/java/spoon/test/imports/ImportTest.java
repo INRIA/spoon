@@ -1890,10 +1890,14 @@ public class ImportTest {
 
 		// assert
 		List<CtImport> imports = mainType.getPosition().getCompilationUnit().getImports();
-		assertThat(imports, hasSize(1));
+		assertThat(imports, hasSize(2));
 
 		CtImport import0 = imports.get(0);
 		assertThat(import0.getImportKind(), is(CtImportKind.METHOD));
 		assertThat(import0.getReference().getSimpleName(), is("foo"));
+
+		CtImport import1 = imports.get(1);
+		assertThat(import1.getImportKind(), is(CtImportKind.TYPE));
+		assertThat(import1.getReference().getSimpleName(), is("foo"));
 	}
 }
