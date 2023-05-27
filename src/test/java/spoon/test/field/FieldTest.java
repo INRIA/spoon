@@ -23,16 +23,15 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
-import spoon.processing.AbstractProcessor;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -221,7 +220,8 @@ public class FieldTest {
 	}
 
 	@Test
-	void test() {
+	void testArrayLengthDeclaringType() {
+		// contract: the "length" field of arrays has a proper declaring type
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(new VirtualFile("public class Example {\n" +
 																							"    static final String[] field;\n" +
@@ -242,21 +242,21 @@ public class FieldTest {
 
 		assertEquals(arrayType, elements.get(0).getDeclaringType());
 		assertEquals(arrayType, elements.get(1).getDeclaringType());
-
-
-		ctModel.processWith(new AbstractProcessor<CtVariableAccess<?>>() {
-			@Override
-			public void process(CtVariableAccess<?> element) {
-				if (!(element.getVariable() instanceof CtFieldReference<?>)) {
-					return;
-				}
-				CtFieldReference<?> ctFieldReference = (CtFieldReference<?>) element.getVariable();
-
-				ctFieldReference.getModifiers();
-				ctFieldReference.getActualField(); // <- this crashes
-			}
-		});
 	}
 
+	@Test
+	void testArrayLengthModifiers() {
+		// contract: the "length" field in arrays has exactly the modifiers "public" and "final"
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile("public class Example {\n" +
+						"    public static void main(String[] args) {\n" +
+						"        int i = args.length;\n" +
+						"    }\n" +
+						"}\n"));
+		CtModel ctModel = launcher.buildModel();
+		List<CtFieldReference<?>> elements = ctModel.getElements(new TypeFilter<>(CtFieldReference.class));
+		assertEquals(1, elements.size());
+		assertEquals(Set.of(ModifierKind.PUBLIC, ModifierKind.FINAL), elements.get(0).getModifiers());
+	}
 
 }
