@@ -819,7 +819,7 @@ public class Launcher implements SpoonAPI {
 						final Path relativePath = dirInputSourceAsPath.relativize(resourcePath);
 						final Path targetPath = outputPath.resolve(relativePath).getParent();
 						try {
-							FileUtils.copyFileToDirectory((File) resource, targetPath.toFile());
+							FileUtils.copyFileToDirectory(resource, targetPath.toFile());
 						} catch (IOException e) {
 							throw new SpoonException(e);
 						}
