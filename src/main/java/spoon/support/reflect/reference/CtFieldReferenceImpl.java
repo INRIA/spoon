@@ -69,13 +69,13 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 			throw e;
 		}
 		try {
-			if (clazz.isAnnotation()) {
+			if (clazz.isAnnotation() && !isStatic()) {
 				return clazz.getDeclaredMethod(getSimpleName());
 			} else {
 				return clazz.getDeclaredField(getSimpleName());
 			}
 		} catch (NoSuchMethodException | NoSuchFieldException e) {
-			throw new SpoonException("The field " + getQualifiedName() + " not found", e);
+			throw new SpoonException("The field " + getQualifiedName() + " was not found", e);
 		}
 	}
 

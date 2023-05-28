@@ -218,6 +218,19 @@ public class FieldTest {
 
 	}
 
+	@ModelTest(
+					"./src/test/java/spoon/test/field/testclasses/AnnoWithConst.java"
+	)
+	void testGetActualFieldForConstantInAnnotation(CtModel ctModel) {
+		// contract: CtFieldReference#getActualField() returns the field for constants in annotations
+		CtFieldReference<?> access = ctModel.getElements(new TypeFilter<CtFieldReference<?>>(CtFieldReference.class))
+						.stream()
+						.filter(field -> field.getSimpleName().equals("VALUE"))
+						.findFirst()
+						.orElseGet(() -> fail("No reference to VALUE found"));
+		assertNotNull(assertDoesNotThrow(access::getActualField));
+	}
+
 	@Test
 	void test() {
 		Launcher launcher = new Launcher();
