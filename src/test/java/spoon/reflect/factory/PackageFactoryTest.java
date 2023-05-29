@@ -8,10 +8,11 @@ import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
-import spoon.test.GitHubIssue;
+import spoon.testing.utils.GitHubIssue;
 
 class PackageFactoryTest {
 
+	@Test
 	@GitHubIssue(issueNumber = 4764, fixed = true)
 	void getOrCreate_returnsNestedPackageStructure_whenQualifiedNameRepeatsSimpleName() {
 		// contract: A qualified name that is simply repetitions of a single simple name results in the expected

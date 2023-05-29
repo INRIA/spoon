@@ -15,7 +15,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.adaption.TypeAdaptor;
-import spoon.test.GitHubIssue;
+import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelTest;
 
 import java.util.List;
@@ -444,6 +444,7 @@ class TypeAdaptorTest {
 		public <T extends String> void overriden(T t) {}
 	}
 
+	@Test
 	@GitHubIssue(issueNumber = 5226, fixed = true)
 	void testAdaptingTypeFromEnclosingClass() {
 		Launcher launcher = new Launcher();
