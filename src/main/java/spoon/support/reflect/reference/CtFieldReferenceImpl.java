@@ -172,6 +172,12 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 
 	@Override
 	public Set<ModifierKind> getModifiers() {
+		// special-case the length field of array, as it doesn't have a declaration
+		// as arrays only have one field, we do not need to check the name additionally
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType != null && declaringType.isArray()) {
+			return Set.of(ModifierKind.PUBLIC, ModifierKind.FINAL);
+		}
 		CtVariable<?> v = getDeclaration();
 		if (v != null) {
 			return v.getModifiers();

@@ -23,6 +23,7 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -219,7 +220,8 @@ public class FieldTest {
 	}
 
 	@Test
-	void test() {
+	void testArrayLengthDeclaringType() {
+		// contract: the "length" field of arrays has a proper declaring type
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(new VirtualFile("public class Example {\n" +
 																							"    static final String[] field;\n" +
@@ -242,5 +244,19 @@ public class FieldTest {
 		assertEquals(arrayType, elements.get(1).getDeclaringType());
 	}
 
+	@Test
+	void testArrayLengthModifiers() {
+		// contract: the "length" field in arrays has exactly the modifiers "public" and "final"
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile("public class Example {\n" +
+						"    public static void main(String[] args) {\n" +
+						"        int i = args.length;\n" +
+						"    }\n" +
+						"}\n"));
+		CtModel ctModel = launcher.buildModel();
+		List<CtFieldReference<?>> elements = ctModel.getElements(new TypeFilter<>(CtFieldReference.class));
+		assertEquals(1, elements.size());
+		assertEquals(Set.of(ModifierKind.PUBLIC, ModifierKind.FINAL), elements.get(0).getModifiers());
+	}
 
 }
