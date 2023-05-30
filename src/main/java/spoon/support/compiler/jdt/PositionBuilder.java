@@ -465,7 +465,7 @@ public class PositionBuilder {
 	}
 
 	private int getParentsSourceStart() {
-		Iterator<ASTPair> iter = this.jdtTreeBuilder.getContextBuilder().stack.iterator();
+		Iterator<ASTPair> iter = this.jdtTreeBuilder.getContextBuilder().getAllContexts().iterator();
 		if (iter.hasNext()) {
 			iter.next();
 			if (iter.hasNext()) {
