@@ -439,8 +439,7 @@ private transient  ClassLoader inputClassloader;
 				for (URL url : urls) {
 					try {
 						classpath.add(Path.of(url.toURI()).toAbsolutePath().toString());
-					} catch (URISyntaxException | FileSystemNotFoundException
-							| IllegalArgumentException ignored) {
+					} catch (URISyntaxException | FileSystemNotFoundException | IllegalArgumentException ignored) {
 						classpath.add(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8));
 					}
 				}
