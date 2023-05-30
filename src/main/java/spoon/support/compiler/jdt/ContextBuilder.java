@@ -75,7 +75,7 @@ public class ContextBuilder {
 	/**
 	 * Stack of all parents elements
 	 */
-	private Deque<ASTPair> stack = new ArrayDeque<>();
+	private final Deque<ASTPair> stack = new ArrayDeque<>();
 
 	private final JDTTreeBuilder jdtTreeBuilder;
 
