@@ -435,15 +435,16 @@ private transient  ClassLoader inputClassloader;
 						throw new SpoonException("Spoon does not support a URLClassLoader containing other resources than local file.");
 					}
 				}
-					List<String> classpath = new ArrayList<>();
-					for (URL url : urls) {
-						try {
-							classpath.add(Path.of(url.toURI()).toAbsolutePath().toString());
-						} catch (URISyntaxException | FileSystemNotFoundException | IllegalArgumentException ignored) {
-							classpath.add(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8));
-						}
+				List<String> classpath = new ArrayList<>();
+				for (URL url : urls) {
+					try {
+						classpath.add(Path.of(url.toURI()).toAbsolutePath().toString());
+					} catch (URISyntaxException | FileSystemNotFoundException
+							| IllegalArgumentException ignored) {
+						classpath.add(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8));
 					}
-					setSourceClasspath(classpath.toArray(new String[0]));
+				}
+				setSourceClasspath(classpath.toArray(new String[0]));
 			}
 		}
 		this.classloader = aClassLoader;
