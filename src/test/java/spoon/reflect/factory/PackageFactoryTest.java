@@ -32,20 +32,19 @@ class PackageFactoryTest {
 		assertThat(packageWithDuplicatedSimpleNames.getParent(), sameInstance(topLevelPackage));
 	}
 	
-		@Test
-		@GitHubIssue(issueNumber = 5140, fixed = true)
-    void testGetPackageWithNameContainingDollarSign() {
-			// contract: A package with a name containing a dollar sign can be retrieved using the PackageFactory
+	@Test
+	@GitHubIssue(issueNumber = 5140, fixed = true)
+	void testGetPackageWithNameContainingDollarSign() {
+		// contract: A package with a name containing a dollar sign can be retrieved using the PackageFactory
+		// Create a package with a name containing a dollar sign
+		String packageName = "com.example.package$with$dollar$sign";
+		CtClass<?> clazz = Launcher.parseClass("package " + packageName + ";" + "\n" + "enum Foo { }");
 
-        // Create a package with a name containing a dollar sign
-				String packageName = "com.example.package$with$dollar$sign";
-				CtClass<?> clazz = Launcher.parseClass("package " + packageName + ";" + "\n" + "enum Foo { }");
+		// Get the package using the PackageFactory
+		CtPackage ctPackage = clazz.getFactory().Package().get(packageName);
 
-				// Get the package using the PackageFactory
-        CtPackage ctPackage = clazz.getFactory().Package().get(packageName);
-
-        // Verify that the package was found
-        assertNotNull(ctPackage);
-        assertEquals(packageName, ctPackage.getQualifiedName());
-    }
+		// Verify that the package was found
+		assertNotNull(ctPackage);
+		assertEquals(packageName, ctPackage.getQualifiedName());
+	}
 }
