@@ -654,14 +654,13 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtForEach(CtForEach foreach) {
-		if (foreach.getVariable() == null && child instanceof CtVariable) {
+		if (foreach.getVariable() == null && child instanceof CtLocalVariable<?>) {
 			foreach.setVariable((CtLocalVariable<?>) child);
-			return;
 		} else if (foreach.getExpression() == null && child instanceof CtExpression) {
 			foreach.setExpression((CtExpression<?>) child);
-			return;
+		} else {
+			super.visitCtForEach(foreach);
 		}
-		super.visitCtForEach(foreach);
 	}
 
 	@Override
