@@ -69,13 +69,9 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 			throw e;
 		}
 		try {
-			if (clazz.isAnnotation()) {
-				return clazz.getDeclaredMethod(getSimpleName());
-			} else {
-				return clazz.getDeclaredField(getSimpleName());
-			}
-		} catch (NoSuchMethodException | NoSuchFieldException e) {
-			throw new SpoonException("The field " + getQualifiedName() + " not found", e);
+			return clazz.getDeclaredField(getSimpleName());
+		} catch (NoSuchFieldException e) {
+			throw new SpoonException("The field " + getQualifiedName() + " was not found", e);
 		}
 	}
 
@@ -172,6 +168,12 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 
 	@Override
 	public Set<ModifierKind> getModifiers() {
+		// special-case the length field of array, as it doesn't have a declaration
+		// as arrays only have one field, we do not need to check the name additionally
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType != null && declaringType.isArray()) {
+			return Set.of(ModifierKind.PUBLIC, ModifierKind.FINAL);
+		}
 		CtVariable<?> v = getDeclaration();
 		if (v != null) {
 			return v.getModifiers();
