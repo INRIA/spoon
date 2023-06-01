@@ -90,7 +90,6 @@ import spoon.support.reflect.CtExtendedModifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -673,14 +672,14 @@ public class ReferenceBuilder {
 	 * See #3360 for details.
 	 */
 	private void tryRecoverTypeArguments(CtTypeReference<?> type) {
-		final Deque<ASTPair> stack = jdtTreeBuilder.getContextBuilder().stack;
-		if (stack.peek() == null || !(stack.peek().node instanceof AllocationExpression)) {
+		ContextBuilder contextBuilder = jdtTreeBuilder.getContextBuilder();
+		if (!contextBuilder.hasCurrentContext() || !(contextBuilder.getCurrentNode() instanceof AllocationExpression)) {
 			// have thus far only ended up here with a generic array type,
 			// don't know if we want or need to deal with those
 			return;
 		}
 
-		AllocationExpression alloc = (AllocationExpression) stack.peek().node;
+		AllocationExpression alloc = (AllocationExpression) contextBuilder.getCurrentNode();
 		if (alloc.expectedType() instanceof ParameterizedTypeBinding) {
 			ParameterizedTypeBinding expectedType = (ParameterizedTypeBinding) alloc.expectedType();
 			if (expectedType.typeArguments() != null) {
@@ -1313,7 +1312,7 @@ public class ReferenceBuilder {
 	 */
 	public CtExecutableReference<?> getLambdaExecutableReference(SingleNameReference singleNameReference) {
 		ASTPair potentialLambda = null;
-		for (ASTPair astPair : jdtTreeBuilder.getContextBuilder().stack) {
+		for (ASTPair astPair : jdtTreeBuilder.getContextBuilder().getAllContexts()) {
 			if (astPair.node instanceof LambdaExpression) {
 				potentialLambda = astPair;
 				// stop at innermost lambda, fixes #1100
