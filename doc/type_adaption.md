@@ -116,6 +116,43 @@ we need to go from any other node in the tree.
 #### Finding no hierarchy
 If we can not find any hierarchy we currently return the input type unchanged.
 
+#### Adapting generics of enclosing classes
+Java allows classes to use generics of their enclosing class, e.g.
+```java
+public class Outer<A> {
+  public class Inner<B> {
+    public void bar(A a, B b) {}
+  }
+}
+```
+If you now additionally introduce a dual inheritance relationship
+```java
+public class OuterSub<A1> extends Outer<A1> {
+  public class InnerSub<B1> extends Outer.Inner<B1> {
+    public void bar(A1 a, B1 b) {}
+  }
+}
+```
+Adapting the method from `Outer.Inner#bar` to `OuterSub.InnerSub#bar` involves
+building the hierarchy from `InnerSub` to `Outer.Inner` and then adapting `A1`
+and `B1`.
+While this hierarchy can be used to resolve `B` to `B1`, it will not be helpful
+for adapting `A` to `A1`: This generic type is passed down through a completely
+different inheritance chain.
+
+To solve this, we check whether a type parameter is declared by the class
+containing the type reference.
+For example, when translating `A1` we notice that even though the usage is in
+`InnerSub#bar`, the declaration of the type parameter was in `OuterSub`.
+Therefore, we adjust the end of our hierarchy to `Outer` instead of `Inner` and
+the start to the innermost enclosing class inheriting from that, which is
+`OuterSub` in our example.  
+Notice that there could be *multiple* matching enclosing classes, but we
+have no way to decide which one to use, and just arbitrarily resolve the
+ambiguity by picking the first one.
+
+After this adjustment of the start and end types, the rest of the translation
+continues normally.
 
 ## Adapting a method to a subclass
 Closely related to type adaption (but not exactly the same!) is translating

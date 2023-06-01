@@ -1,5 +1,6 @@
 package spoon.support;
 
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -12,7 +13,9 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.adaption.TypeAdaptor;
+import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelTest;
 
 import java.util.List;
@@ -439,5 +442,55 @@ class TypeAdaptorTest {
 		public <T extends CharSequence> void overloaded(T t) {}
 
 		public <T extends String> void overriden(T t) {}
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 5226, fixed = true)
+	void testAdaptingTypeFromEnclosingClass() {
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(11);
+		launcher.addInputResource("src/test/java/spoon/support/TypeAdaptorTest.java");
+		CtType<?> type = launcher.getFactory()
+				.Type()
+				.get(UseGenericFromEnclosingType.class);
+		@SuppressWarnings("rawtypes")
+		List<CtMethod> methods = type.getElements(new TypeFilter<>(CtMethod.class))
+				.stream()
+				.filter(it -> it.getSimpleName().equals("someMethod"))
+				.collect(Collectors.toList());
+		CtMethod<?> test1Method = methods.stream()
+				.filter(it -> !it.getDeclaringType().getSimpleName().startsWith("Extends"))
+				.findAny()
+				.orElseThrow();
+		CtMethod<?> test2Method = methods.stream()
+				.filter(it -> it.getDeclaringType().getSimpleName().startsWith("Extends"))
+				.findAny()
+				.orElseThrow();
+
+		assertTrue(test2Method.isOverriding(test1Method));
+		assertFalse(test1Method.isOverriding(test2Method));
+	}
+
+	public static class UseGenericFromEnclosingType {
+
+		public static class Enclosing<T> {
+
+			public class Enclosed<S> {
+
+				void someMethod(S s, T t) {
+				}
+			}
+		}
+
+		public static class ExtendsEnclosing extends Enclosing<String> {
+
+			public class ExtendsEnclosed extends Enclosed<Integer> {
+
+				@Override
+				void someMethod(Integer s, String t) {
+					throw new UnsupportedOperationException();
+				}
+			}
+		}
 	}
 }

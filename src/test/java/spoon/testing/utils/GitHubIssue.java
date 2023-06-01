@@ -5,7 +5,7 @@
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
-package spoon.test;
+package spoon.testing.utils;
 
 import static org.junit.jupiter.api.Assertions.fail;
 import java.lang.annotation.ElementType;
@@ -14,7 +14,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Objects;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -23,13 +22,21 @@ import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@Test
 @ExtendWith(GitHubIssue.UnresolvedBugExtension.class)
 /**
  * This meta annotation is used to mark a test method as a test that should fail if {@link #fixed} is false.
  * The test will be executed and the result will be checked. If the test fails, the test will be marked as success.
- * As this is a meta annotation you can simple only add this to a test method and omit the {@link Test} aonntation.
- * Mark {@link #fixed} as true if you want to signal that the test should succed and the issue is fixed.
+ * Mark {@link #fixed} as true if you want to signal that the test should succeed and the issue is fixed.
+ *
+ * Example usage:
+ * <pre>
+ * {@literal @}Test
+ * {@literal @}GitHubIssue(issueNumber = 123, fixed = false)
+ * public void testSomething() {
+ *     // Perform some test that should fail if issue #123 is not fixed
+ *     Assertions.fail("This test should fail if issue #123 is not fixed");
+ * }
+ * </pre>
  */
 public @interface GitHubIssue {
 

@@ -49,12 +49,11 @@ import spoon.support.adaption.TypeAdaptor;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
-import spoon.test.GitHubIssue;
 import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
 import spoon.test.prettyprinter.testclasses.Throw;
 import spoon.test.prettyprinter.testclasses.InvocationReplacement;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
-
+import spoon.testing.utils.GitHubIssue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -785,6 +784,7 @@ public class TestSniperPrinter {
 		testSniper("ForLoop", deleteForUpdate, assertNotStaticFindFirstIsEmpty);
 	}
 
+	@Test
 	@GitHubIssue(issueNumber = 4021, fixed = true)
 	void testSniperRespectsSuperWithUnaryOperator() {
 		// Combining CtSuperAccess and CtUnaryOperator leads to SpoonException with Sniper
@@ -798,6 +798,7 @@ public class TestSniperPrinter {
 		testSniper("superCall.SuperCallSniperTestClass", deleteForUpdate, assertContainsSuperWithUnaryOperator);
 	}
 
+	@Test
 	@GitHubIssue(issueNumber = 3911, fixed = false)
 	void testRoundBracketPrintingInComplexArithmeticExpression() {
 		Consumer<CtType<?>> noOpModifyFieldAssignment = type ->
@@ -812,6 +813,7 @@ public class TestSniperPrinter {
 		testSniper("ArithmeticExpression", noOpModifyFieldAssignment, assertPrintsRoundBracketsCorrectly);
 	}
 
+	@Test
 	@GitHubIssue(issueNumber = 4218, fixed = true)
 	void testSniperDoesNotPrintTheDeletedAnnotation() {
 		Consumer<CtType<?>> deleteAnnotation = type -> {
@@ -824,6 +826,7 @@ public class TestSniperPrinter {
 		testSniper("sniperPrinter.DeleteAnnotation", deleteAnnotation, assertDoesNotContainAnnotation);
 	}
 
+	@Test
 	@GitHubIssue(issueNumber = 4220, fixed = true)
 	void testSniperAddsSpaceAfterFinal() {
 		Consumer<CtType<?>> modifyField = type -> {
@@ -907,6 +910,7 @@ public class TestSniperPrinter {
 					assertThat(result, containsString(arrayDeclaration));
 		}
 
+		@Test
 		@GitHubIssue(issueNumber = 4315, fixed = true)
 		void test_bracketShouldBePrintedWhenArrayIsNull() {
 			testSniper(
@@ -915,6 +919,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("int array[];"));
 		}
 
+		@Test
 		@GitHubIssue(issueNumber = 4315, fixed = true)
 		void test_bracketShouldBePrintedWhenArrayIsInitialisedToIntegers() {
 			testSniper(
@@ -923,6 +928,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("int array[] = {1, 2, 3, 4, 5};"));
 		}
 
+		@Test
 		@GitHubIssue(issueNumber = 4315, fixed = true)
 		void test_bracketShouldBePrintedWhenArrayIsInitialisedToNullElements() {
 			testSniper(
@@ -931,6 +937,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("String array[] = new String[42];"));
 		}
 
+		@Test
 		@GitHubIssue(issueNumber = 4315, fixed = true)
 		void test_bracketsShouldBePrintedForMultiDimensionalArray() {
 			testSniper(
@@ -939,6 +946,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("String array[][][] = new String[1][2][3];"));
 		}
 
+		@Test
 		@GitHubIssue(issueNumber = 4315, fixed = true)
 		void test_bracketsShouldBePrintedForArrayInitialisedInLocalVariable() {
 			Consumer<CtType<?>> noOpModifyLocalVariable = type -> {
@@ -952,6 +960,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("int array[] = new int[]{ };"));
 		}
 
+		@Test
 		@GitHubIssue(issueNumber = 4421, fixed = true)
 		void test_bracketsShouldBePrintedForGenericTypeOfArray() {
 			testSniper(
@@ -1098,32 +1107,38 @@ public class TestSniperPrinter {
 	public void testToStringWithSniperOnElementScan() throws Exception {
 		testToStringWithSniperPrinter("src/test/java/spoon/test/prettyprinter/testclasses/ElementScan.java");
 	}
+	@Test
 	@GitHubIssue(issueNumber = 3811, fixed = true)
 	void noChangeDiffBrackets() throws IOException {
 			testNoChangeDiffFailing(
 					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/Brackets").toFile());
 	}
+	@Test
 	@GitHubIssue(issueNumber = 3811, fixed = true)
 	void noChangeDiffConditionalComment() throws IOException {
 			testNoChangeDiffFailing(
 					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/ConditionalComment").toFile());
 	}
 
+	@Test
 	@GitHubIssue(issueNumber = 3811, fixed = true)
 	void noChangeDiffEnumComment() throws IOException {
 			testNoChangeDiffFailing(
 					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/EnumComment").toFile());
 	}
+	@Test
 	@GitHubIssue(issueNumber = 3811, fixed = true)
 	void noChangeDiffEnumTest() throws IOException {
 			testNoChangeDiffFailing(
 					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/EnumTest").toFile());
 	}
+	@Test
 	@GitHubIssue(issueNumber = 3811, fixed = true)
 	void noChangeDiffExceptionTest() throws IOException {
 			testNoChangeDiffFailing(
 					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/ExceptionTest").toFile());
 	}
+	@Test
 	@GitHubIssue(issueNumber = 3811, fixed = true)
 	void noChangeDiffMethodComment() throws IOException {
 			testNoChangeDiffFailing(

@@ -22,7 +22,6 @@ import spoon.support.comparator.DeepRepresentationComparator;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.factory.CodeFactory;
-import spoon.test.GitHubIssue;
 import spoon.test.literal.testclasses.Tacos;
 import spoon.Launcher;
 import spoon.reflect.code.LiteralBase;
@@ -30,6 +29,7 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.declaration.CtClass;
 import org.junit.jupiter.api.Test;
+import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelTest;
 import java.util.List;
 import java.util.TreeSet;
@@ -260,6 +260,7 @@ public class LiteralTest {
 		assertEquals("\"hello\"", ctClass.getField("s1").getDefaultExpression().toString());
 	}
 
+	@Test
 	@GitHubIssue(issueNumber = 5070, fixed = true)
 	void tooStrictEscaping() {
 		// contract: inside a string without a position ' are not escaped.
@@ -272,6 +273,7 @@ public class LiteralTest {
 		assertEquals("\"'\"", ctLiteral.toString());
 	}
 
+	@Test
 	@GitHubIssue(issueNumber = 5070, fixed = true)
 	void tooStrictEscapingCharTest() {
 		// contract: inside a string with a position ' are escaped.
