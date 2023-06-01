@@ -65,7 +65,7 @@ import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.util.SortedList;
-import spoon.test.GitHubIssue;
+import spoon.testing.utils.GitHubIssue;
 import spoon.test.imports.testclasses.A;
 import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.Pozole;
