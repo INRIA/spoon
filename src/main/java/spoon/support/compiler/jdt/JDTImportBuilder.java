@@ -85,6 +85,9 @@ class JDTImportBuilder {
 				}
 			} else {
 				// A static import can be either a static field, a static method or a static type
+				// It is possible that this method will add duplicate imports
+				// Logically, if `foo` is a static method and `foo` is also a static field, then both should be
+				// imported with `import static example.Foo.foo;` repeated twice.
 				int lastDot = importName.lastIndexOf('.');
 				String className = importName.substring(0, lastDot);
 				String methodOrFieldOrTypeName = importName.substring(lastDot + 1);
@@ -96,22 +99,17 @@ class JDTImportBuilder {
 					} else {
 						CtNamedElement methodOrFieldOrType;
 
-						// we prioritize fields and methods over types because static keyword for the former must be present in the import statement
-						// first try to find a field
 						methodOrFieldOrType = klass.getField(methodOrFieldOrTypeName);
 						if (methodOrFieldOrType != null) {
 							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
 						}
 
-						// if the field is not found, try to find a method
-							List<CtMethod<?>> methods = klass.getMethodsByName(methodOrFieldOrTypeName);
-							if (methods.size() > 0) {
-								methodOrFieldOrType = methods.get(0);
-								this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
-							}
+						List<CtMethod<?>> methods = klass.getMethodsByName(methodOrFieldOrTypeName);
+						if (methods.size() > 0) {
+							methodOrFieldOrType = methods.get(0);
+							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
 						}
 
-						// if a static type with the given name exists, we import it explicitly
 						methodOrFieldOrType = klass.getNestedType(methodOrFieldOrTypeName);
 						if (methodOrFieldOrType != null) {
 							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
