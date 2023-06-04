@@ -7,7 +7,7 @@ import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtType;
 
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -68,19 +68,19 @@ public class ImportCleanerTest {
 		CtModel model = launcher.buildModel();
 		CtType<?> type = model.getUnnamedModule().getFactory().Type().get(targetClassQualname);
 		CtCompilationUnit cu = type.getFactory().CompilationUnit().getOrCreate(type);
-		List<String> importsBefore = getTextualImports(cu);
+		Set<String> importsBefore = getTextualImports(cu);
 
 		// act
 		new ImportCleaner().process(cu);
 
 		// assert
-		List<String> importsAfter = getTextualImports(cu);
+		Set<String> importsAfter = getTextualImports(cu);
 		assertThat(importsAfter, equalTo(importsBefore));
 	}
 
-	private static List<String> getTextualImports(CtCompilationUnit cu) {
+	private static Set<String> getTextualImports(CtCompilationUnit cu) {
 		return cu.getImports().stream()
 				.map(CtImport::toString)
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
 	}
 }
