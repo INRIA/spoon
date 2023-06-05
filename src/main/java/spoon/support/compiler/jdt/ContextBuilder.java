@@ -288,7 +288,11 @@ public class ContextBuilder {
 						if (name.equals(new String(fieldBinding.readableName()))) {
 							final String qualifiedNameOfParent = getNormalQualifiedName(referenceBinding);
 
-							final CtType parentOfField = referenceBinding.isClass()
+							CtType<?> parentOfField = typeFactory.get(qualifiedNameOfParent);
+							if (parentOfField != null) {
+								return (U) parentOfField.getField(name);
+							}
+							parentOfField = referenceBinding.isClass()
 									? classFactory.create(qualifiedNameOfParent)
 									: interfaceFactory.create(qualifiedNameOfParent);
 
