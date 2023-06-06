@@ -51,7 +51,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import org.apache.maven.api.annotations.Nullable;
 
 /**
  * The {@link CtType} sub-factory.
@@ -756,8 +755,7 @@ public class TypeFactory extends SubFactory {
 	}
 
 	public CtImport createUnresolvedImport(String reference, boolean isStatic) {
-		CtUnresolvedImport ctUnresolvedImport =
-				(CtUnresolvedImport) factory.Core().createUnresolvedImport();
+		CtUnresolvedImport ctUnresolvedImport = (CtUnresolvedImport) factory.Core().createUnresolvedImport();
 		ctUnresolvedImport.setUnresolvedReference(reference);
 		ctUnresolvedImport.setStatic(isStatic);
 		return ctUnresolvedImport;
