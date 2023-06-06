@@ -101,24 +101,15 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			if (contexts.isEmpty()) {
 				enter(new PackageRuntimeBuilderContext(ctPackage));
 			}
-			boolean visited = false;
 			if (clazz.isAnnotation()) {
-				visited = true;
 				visitAnnotationClass((Class<Annotation>) clazz);
-			}
-			if (clazz.isInterface() && !visited) {
-				visited = true;
+			} else if (clazz.isInterface()) {
 				visitInterface(clazz);
-			}
-			if (clazz.isEnum() && !visited) {
-				visited = true;
+			} else if (clazz.isEnum()) {
 				visitEnum(clazz);
-			}
-			if (MethodHandleUtils.isRecord(clazz) && !visited) {
-				visited = true;
+			} else if (MethodHandleUtils.isRecord(clazz)) {
 				visitRecord(clazz);
-			}
-			if (!visited) {
+			} else {
 				visitClass(clazz);
 			}
 			exit();
