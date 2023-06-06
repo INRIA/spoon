@@ -756,9 +756,12 @@ public class TypeFactory extends SubFactory {
 	}
 
 	public CtImport createUnresolvedImport(String reference, boolean isStatic) {
-		CtUnresolvedImport ctUnresolvedImport = (CtUnresolvedImport) factory.Core().createUnresolvedImport();
+		CtUnresolvedImport ctUnresolvedImport =
+				(CtUnresolvedImport) factory.Core().createUnresolvedImport();
 		ctUnresolvedImport.setUnresolvedReference(reference);
 		ctUnresolvedImport.setStatic(isStatic);
 		return ctUnresolvedImport;
 	}
+
+
 }
