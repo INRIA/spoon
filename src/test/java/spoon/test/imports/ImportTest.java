@@ -73,6 +73,7 @@ import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.ToBeModified;
 import spoon.test.imports.testclasses.badimportissue3320.source.TestSource;
+import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
@@ -99,6 +100,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -1861,4 +1863,41 @@ public class ImportTest {
 		);
 	}
 
+	@GitHubIssue(issueNumber = 5210, fixed = true)
+	@ModelTest(value = {"src/test/resources/inner-class"}, complianceLevel = 11, autoImport = true)
+	void staticImports_ofNestedTypes_shouldBeRecorded(CtModel model) {
+		// contract: static imports of nested types should be recorded
+		// arrange
+		CtType<?> mainType = model.getElements(new TypeFilter<>(CtType.class)).stream()
+				.filter(t -> t.getSimpleName().equals("Main"))
+				.findFirst().orElseThrow();
+
+		// assert
+		List<CtImport> imports = mainType.getPosition().getCompilationUnit().getImports();
+		assertThat(imports, hasSize(2));
+
+		CtImport import0 = imports.get(0);
+		assertThat(import0.getReference().getSimpleName(), is("InnerClass"));
+	}
+
+	@ModelTest(value = {"src/test/resources/static-method-and-type"}, autoImport = true)
+	void staticTypeAndMethodImport_importShouldAppearOnlyOnceIfTheirSimpleNamesAreEqual(CtModel model) {
+		// contract: static type and method import should appear only once if their simple names are equal
+		// arrange
+		CtType<?> mainType = model.getElements(new TypeFilter<>(CtType.class)).stream()
+				.filter(t -> t.getSimpleName().equals("Main"))
+				.findFirst().orElseThrow();
+
+		// assert
+		List<CtImport> imports = mainType.getPosition().getCompilationUnit().getImports();
+		assertThat(imports, hasSize(2));
+
+		CtImport import0 = imports.get(0);
+		assertThat(import0.getImportKind(), is(CtImportKind.METHOD));
+		assertThat(import0.getReference().getSimpleName(), is("foo"));
+
+		CtImport import1 = imports.get(1);
+		assertThat(import1.getImportKind(), is(CtImportKind.TYPE));
+		assertThat(import1.getReference().getSimpleName(), is("foo"));
+	}
 }

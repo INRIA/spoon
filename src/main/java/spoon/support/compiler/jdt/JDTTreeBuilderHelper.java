@@ -126,7 +126,7 @@ public class JDTTreeBuilderHelper {
 	 * @return a catch variable.
 	 */
 	CtCatchVariable<Throwable> createCatchVariable(TypeReference typeReference, Scope scope) {
-		final Argument jdtCatch = (Argument) jdtTreeBuilder.getContextBuilder().stack.peekFirst().node;
+		final Argument jdtCatch = (Argument) jdtTreeBuilder.getContextBuilder().getCurrentNode();
 		final Set<CtExtendedModifier> modifiers = getModifiers(jdtCatch.modifiers, false, ModifierTarget.LOCAL_VARIABLE);
 
 		CtCatchVariable<Throwable> result = jdtTreeBuilder.getFactory().Core().createCatchVariable();
@@ -215,7 +215,7 @@ public class JDTTreeBuilderHelper {
 
 				// find executable's corresponding jdt element
 				AbstractMethodDeclaration executableJDT = null;
-				for (final ASTPair astPair : contextBuilder.stack) {
+				for (final ASTPair astPair : contextBuilder.getAllContexts()) {
 					if (astPair.element == executable) {
 						executableJDT = (AbstractMethodDeclaration) astPair.node;
 					}

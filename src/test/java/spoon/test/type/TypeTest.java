@@ -37,6 +37,7 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -56,6 +57,7 @@ import spoon.testing.utils.ModelUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -416,5 +418,16 @@ public class TypeTest {
 		CtModel model = launcher.buildModel();
 		List<CtBinaryOperator> concats = model.getElements(new TypeFilter<>(CtBinaryOperator.class));
 		concats.forEach(c -> assertEquals("java.lang.String", c.getType().toString()));
+	}
+
+	@ModelTest(
+					value = {"./src/test/resources/noclasspath/issue5208/"},
+					noClasspath = true
+	)
+	void testClassNotReplacedInNoClasspathMode(Factory factory) {
+		// contract: ClassT1 is not replaced once present when looking up the ClassT1#classT3 field from ClassT2
+		CtType<?> type = factory.Type().get("p20.ClassT1");
+		assertNotNull(type);
+		assertNotEquals(SourcePosition.NOPOSITION, type.getPosition());
 	}
 }
