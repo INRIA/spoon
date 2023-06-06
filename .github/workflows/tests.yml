@@ -45,7 +45,7 @@ jobs:
       - name: Disable Git's autocrlf
         run: git config --global core.autocrlf false
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
-      - uses: oracle-actions/setup-java@v1
+      - uses: oracle-actions/setup-java@2c4df2930e35870536667f383d87f1246fbe613f # v1
         with:
           website: jdk.java.net
           java-version: ${{ matrix.java }}
