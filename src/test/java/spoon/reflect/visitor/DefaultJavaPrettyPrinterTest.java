@@ -32,8 +32,8 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
-import spoon.test.GitHubIssue;
 import spoon.test.SpoonTestHelpers;
+import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelTest;
 
 import java.io.FileNotFoundException;
@@ -271,6 +271,7 @@ public class DefaultJavaPrettyPrinterTest {
 
     @Nested
     class SquareBracketsForArrayInitialization_ArrayIsBuiltUsingFactoryMethods {
+        @Test
         @GitHubIssue(issueNumber = 4887, fixed = true)
         void bracketsShouldBeAttachedToTypeByDefault() {
             // contract: the square brackets should be attached to type by default when array is built using factory methods
@@ -333,6 +334,7 @@ public class DefaultJavaPrettyPrinterTest {
         assertThat(printed, containsRegexMatch("List<.*List<\\? super T>>"));
     }
 
+    @Test
     @GitHubIssue(issueNumber = 4881, fixed = true)
     void bracketsShouldBeMinimallyPrintedForTypeCastOnFieldRead() throws FileNotFoundException {
         // contract: the brackets should be minimally printed for type cast on field read

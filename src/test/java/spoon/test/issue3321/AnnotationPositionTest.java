@@ -1,20 +1,21 @@
 package spoon.test.issue3321;
 
-import spoon.test.GitHubIssue;
 import spoon.reflect.cu.SourcePosition;
 import spoon.Launcher;
 import spoon.reflect.factory.Factory;
 import spoon.test.issue3321.testclasses.AnnoUser;
+import spoon.testing.utils.GitHubIssue;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class AnnotationPositionTest {
 
-	
+	@Test
 	@GitHubIssue(issueNumber = 3358, fixed = false)
 	public void testUsageOfTypeAnnotationOnParameterInMethod() {
 		final Launcher launcher = new Launcher();
@@ -68,6 +69,7 @@ public class AnnotationPositionTest {
 	}
 
 
+	@Test
 	@GitHubIssue(issueNumber = 3358, fixed = false)
 	public void testSneakyAnnotationsOnParameters() {
 		final Launcher launcher = new Launcher();

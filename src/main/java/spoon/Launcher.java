@@ -813,13 +813,13 @@ public class Launcher implements SpoonAPI {
 			for (File dirInputSource : modelBuilder.getInputSources()) {
 				if (dirInputSource.isDirectory()) {
 					final Path dirInputSourceAsPath = dirInputSource.toPath();
-					final Collection<?> resources = FileUtils.listFiles(dirInputSource, RESOURCES_FILE_FILTER, ALL_DIR_FILTER);
-					for (Object resource : resources) {
-						final Path resourcePath = ((File) resource).toPath();
+					final Collection<File> resources = FileUtils.listFiles(dirInputSource, RESOURCES_FILE_FILTER, ALL_DIR_FILTER);
+					for (File resource : resources) {
+						final Path resourcePath = resource.toPath();
 						final Path relativePath = dirInputSourceAsPath.relativize(resourcePath);
 						final Path targetPath = outputPath.resolve(relativePath).getParent();
 						try {
-							FileUtils.copyFileToDirectory((File) resource, targetPath.toFile());
+							FileUtils.copyFileToDirectory(resource, targetPath.toFile());
 						} catch (IOException e) {
 							throw new SpoonException(e);
 						}

@@ -51,7 +51,7 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
-import spoon.test.GitHubIssue;
+import spoon.testing.utils.GitHubIssue;
 
 @DisplayName("Switchcase Tests")
 public class SwitchCaseTest {
@@ -233,6 +233,7 @@ public class SwitchCaseTest {
 			);
 		}
 
+		@Test
 		@GitHubIssue(issueNumber = 4696, fixed = true)
 		void testVariableScopeInSwitch() {
 			// contract: different cases do not introduce different scopes in colon-switches

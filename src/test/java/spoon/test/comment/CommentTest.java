@@ -74,7 +74,6 @@ import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.reflect.code.CtCommentImpl;
-import spoon.test.GitHubIssue;
 import spoon.test.comment.testclasses.BlockComment;
 import spoon.test.comment.testclasses.Comment1;
 import spoon.test.comment.testclasses.Comment2;
@@ -87,6 +86,7 @@ import spoon.test.comment.testclasses.OtherJavaDoc;
 import spoon.test.comment.testclasses.TestClassWithComments;
 import spoon.test.comment.testclasses.WildComments;
 import spoon.test.comment.testclasses.WindowsEOL;
+import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelTest;
 

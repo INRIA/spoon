@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeAll;
-
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
@@ -18,7 +18,7 @@ import spoon.reflect.code.CtComment.CommentType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
-import spoon.test.GitHubIssue;
+import spoon.testing.utils.GitHubIssue;
 
 public class SniperAnnotatedEnumTest {
   private static final Path INPUT_PATH = Paths.get("src/test/java/");
@@ -29,6 +29,7 @@ public class SniperAnnotatedEnumTest {
     FileUtils.deleteDirectory(OUTPUT_PATH.toFile());
   }
 
+  @Test
   @GitHubIssue(issueNumber = 4779, fixed = true)
   public void annotatedEnumTest() throws IOException {
     runSniperJavaPrettyPrinter("spoon/test/prettyprinter/testclasses/AnnotatedEnum.java");
