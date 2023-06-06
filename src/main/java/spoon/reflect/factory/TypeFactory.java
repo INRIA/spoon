@@ -762,6 +762,4 @@ public class TypeFactory extends SubFactory {
 		ctUnresolvedImport.setStatic(isStatic);
 		return ctUnresolvedImport;
 	}
-
-
 }

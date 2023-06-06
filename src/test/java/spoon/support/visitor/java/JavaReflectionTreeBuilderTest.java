@@ -929,20 +929,9 @@ public class JavaReflectionTreeBuilderTest {
 	void testInnerClassesAreNotAddedToPackage(String collider) throws ClassNotFoundException {
 		// contract: Inner classes are not added to their package
 		ClassLoader loader = JavacFacade.compileFiles(
-			Map.of(
-				"First.java",
-				"class First {\n"
-					+ collider +
-					"}\n",
-				"Victim.java",
-				"class Victim {\n" +
-					"  class Inner {\n" +
-					"    int bar;\n" +
-					"  }\n" +
-					"}\n"
-			),
-			List.of()
-		);
+				Map.of("First.java", "class First {\n" + collider + "}\n", "Victim.java",
+						"class Victim {\n" + "  class Inner {\n" + "    int bar;\n" + "  }\n" + "}\n"),
+				List.of());
 		Factory factory = createFactory();
 		// Load the victim
 		factory.Type().get(loader.loadClass("Victim"));
@@ -950,10 +939,13 @@ public class JavaReflectionTreeBuilderTest {
 		factory.Type().get(loader.loadClass("First"));
 
 		// This will throw if the replacement was successful
-		CtType<?> victim = assertDoesNotThrow(() -> factory.Type().get(loader.loadClass("Victim$Inner")));
+		CtType<?> victim =
+				assertDoesNotThrow(() -> factory.Type().get(loader.loadClass("Victim$Inner")));
 
 		// Make sure we got the right class, but this should be fine now in any case
 		assertNotNull(victim.getField("bar"));
 		assertNull(victim.getField("foo"));
 	}
+
+
 }
