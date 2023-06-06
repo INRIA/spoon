@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.CtModel;
@@ -152,13 +153,12 @@ public class VariableTest {
 
     @Test
     @DisabledForJreRange(max = JRE.JAVA_9)
-    public void testInferredVariableArePrintedWithVar() throws IOException {
+    public void testInferredVariableArePrintedWithVar(@TempDir File outputDir) throws IOException {
         // contract: if a variable is marked as inferred in the model, it must be pretty-printed with a 'var' keyword 
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setComplianceLevel(10);
         launcher.addInputResource("./src/test/resources/spoon/test/var/Main.java");
 
-        File outputDir = Files.createTempDir();
         launcher.setSourceOutputDirectory(outputDir);
 
         launcher.run();
