@@ -52,6 +52,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import com.mysema.query.support.ProjectableQuery;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -957,5 +958,13 @@ public class JavaReflectionTreeBuilderTest {
 		assertNull(victim.getField("foo"));
 	}
 
-
+	@Test
+	void rename() {
+	Launcher launcher = new Launcher();
+	launcher.getEnvironment().setComplianceLevel(11);
+	launcher.getEnvironment().setAutoImports(true);
+	launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);
+	launcher.addInputResource("./deleteMe/spring-boot");
+	Assertions.assertDoesNotThrow(() -> launcher.buildModel());
+	}
 }
