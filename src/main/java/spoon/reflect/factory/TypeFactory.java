@@ -567,8 +567,7 @@ public class TypeFactory extends SubFactory {
 					newShadowClass = getShadowFactory().Core().createClass();
 					newShadowClass.setSimpleName(cl.getSimpleName());
 					newShadowClass.setShadow(true);
-					getShadowFactory().Package().getOrCreate(cl.getPackage().getName())
-							.addType(newShadowClass);
+					getShadowFactory().Package().getOrCreate(cl.getPackage().getName()).addType(newShadowClass);
 				}
 				if (newShadowClass == null) {
 					newShadowClass = getShadowFactory().Core().createClass();
