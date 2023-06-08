@@ -59,3 +59,5 @@ gradle-app.setting
 .mvn/.gradle-enterprise/gradle-enterprise-workspace-id
 # Jreleaser files
 out/
+# Mvn release plugin creates this during version update
+pom.xml.versionsBackup
