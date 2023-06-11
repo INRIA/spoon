@@ -16,7 +16,6 @@ import spoon.SpoonException;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtPackageReference;
 
 
@@ -155,9 +154,6 @@ public class PackageFactory extends SubFactory {
 	 * @return a found package or null
 	 */
 	public CtPackage get(String qualifiedName) {
-		if (qualifiedName.contains(CtType.INNERTTYPE_SEPARATOR)) {
-			throw new RuntimeException("Invalid package name " + qualifiedName);
-		}
 
 		// Find package with the most contained types. If a module exports package "foo.bar" and the
 		// other "foo.bar.baz", *both modules* will contain a "foo.bar" package in spoon. As
