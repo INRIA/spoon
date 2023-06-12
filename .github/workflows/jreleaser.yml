@@ -29,6 +29,8 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
+          gpg-private-key: ${{ secrets.JRELEASER_GPG_SECRET_KEY }} # Value of the GPG private key to import
+          gpg-passphrase: ${{ secrets.JRELEASER_GPG_PASSPHRASE }} # env variable for GPG private key passphrase
           
       - name: install go
         uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4
