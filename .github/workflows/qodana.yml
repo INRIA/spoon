@@ -14,13 +14,13 @@ jobs:
       runs-on: ubuntu-latest
       name: code-quality qodana
       steps:
-        - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+        - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
           with:
             fetch-depth: 0
         - name: 'Qodana Scan'
-          uses: JetBrains/qodana-action@61b94e7e3a716dcb9e2030cfd79cd46149d56c26 # v2023.1.0
+          uses: JetBrains/qodana-action@47c262ae41cc8c13cbc5d349cce1ffb2578ed25c # v2023.1.4
           with:
             args: --source-directory,./src/main/java , --fail-threshold, 0
-        - uses: github/codeql-action/upload-sarif@83f0fe6c4988d98a455712a27f0255212bba9bd4 # v2
+        - uses: github/codeql-action/upload-sarif@6c089f53dd51dc3fc7e599c3cb5356453a52ca9e # v2
           with:
             sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json

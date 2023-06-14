@@ -20,9 +20,10 @@ jobs:
     steps:
 # Setups the environment
       - name: Checkout
-        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
         with:
           fetch-depth: 0
+          token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
       - name: Set up JDK 11
         uses: actions/setup-java@5ffc13f4174014e2d4d4572b3d74c3fa61aeb2c2 # v3
         with:
@@ -64,15 +65,13 @@ jobs:
       - name: Set release version
         run: mvn --no-transfer-progress --batch-mode versions:set -DnewVersion=$NEXT_VERSION -DprocessAllModules
       - name: Commit & Push changes
-        uses: actions-js/push@156f2b10c3aa000c44dbe75ea7018f32ae999772 # master
-        with:
-          github_token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
-          message: "release: Releasing version ${{ env.NEXT_VERSION }}"
-          branch: ${{ env.BRANCH_NAME }}
+        run: |
+          git checkout -b ${{env.BRANCH_NAME}}
+          git commit -am "release: Releasing version ${{ env.NEXT_VERSION }}"
 
 # Now we can run the release
       - name: Stage release
-        run:  mvn --no-transfer-progress --batch-mode -Prelease clean deploy -DaltDeploymentRepository=local::default::file://`pwd`/target/staging-deploy
+        run:  mvn --no-transfer-progress --batch-mode -Prelease clean deploy -DaltDeploymentRepository=local::default::file://`pwd`/target/staging-deploy -Djacoco.skip=true -Dgpg.skip=true
       - name: Print next version
         run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//'
       - name: Run JReleaser
@@ -98,20 +97,13 @@ jobs:
         run: mvn --no-transfer-progress --batch-mode versions:set -DnewVersion=$NEXT_RELEASE_VERSION -DprocessAllModules
 # Commit and push changes
       - name: Commit & Push changes
-        uses: actions-js/push@156f2b10c3aa000c44dbe75ea7018f32ae999772 # master
-        with:
-          github_token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
-          message: "release: Setting SNAPSHOT version ${{ env.NEXT_VERSION }}"
-          branch: ${{ env.BRANCH_NAME }}
+        run: |
+          git commit -am "release: Setting SNAPSHOT version $NEXT_RELEASE_VERSION"
       - name: Merge Fast Forward
-        uses: MaximeHeckel/github-action-merge-fast-forward@9710f422198dd92989b8c076096d03c3bd61e6f4 # v1.1.1
-        with:
-          # Branch to merge
-          branchtomerge: ${{ env.BRANCH_NAME }}
-          # Branch that will be updated
-          branch: master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git checkout master
+          git merge --ff-only ${{ env.BRANCH_NAME }}
+          git push origin master
 
 # Log failure:
       - name: JReleaser release output
