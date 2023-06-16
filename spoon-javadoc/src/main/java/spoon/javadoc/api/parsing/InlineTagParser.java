@@ -44,7 +44,7 @@ class InlineTagParser {
 	public JavadocInlineTag parse(StringReader reader, JavadocTagType type) {
 		if (!(type instanceof StandardJavadocTagType)) {
 			String content = reader.readRemaining();
-			return new JavadocInlineTag(List.of(new JavadocText(content)), type);
+			return new JavadocInlineTag(makeTextIfNotEmpty(content), type);
 		}
 
 		return parseStandardTag(reader, (StandardJavadocTagType) type);
@@ -100,9 +100,7 @@ class InlineTagParser {
 		);
 
 		String label = reader.readRemaining().strip();
-		if (!label.isEmpty()) {
-			elements.add(new JavadocText(label));
-		}
+		elements.addAll(makeTextIfNotEmpty(label));
 
 		return new JavadocInlineTag(elements, type);
 	}
@@ -133,21 +131,20 @@ class InlineTagParser {
 	}
 
 	private JavadocInlineTag parseStandardTagNoArgument(StringReader reader, StandardJavadocTagType type) {
-		JavadocText content = new JavadocText(reader.readRemaining());
+		String content = reader.readRemaining();
 
-		return new JavadocInlineTag(List.of(content), type);
+		return new JavadocInlineTag(makeTextIfNotEmpty(content), type);
 	}
 
 	private JavadocInlineTag parseStandardTagWithArgument(StringReader reader, StandardJavadocTagType type) {
-		JavadocText firstArgument = new JavadocText(reader.readWhile(it -> !Character.isWhitespace(it)));
+		String firstArgument = reader.readWhile(it -> !Character.isWhitespace(it));
 
 		// Swallow one space after it
 		if (reader.canRead()) {
 			reader.read(1);
 		}
 
-		List<JavadocElement> elements = new ArrayList<>();
-		elements.add(firstArgument);
+		List<JavadocElement> elements = new ArrayList<>(makeTextIfNotEmpty(firstArgument));
 
 		// Read the rest if there is any
 		if (reader.canRead()) {
@@ -189,5 +186,9 @@ class InlineTagParser {
 		}
 
 		return attributes;
+	}
+
+	private static List<JavadocElement> makeTextIfNotEmpty(String text) {
+		return text.isEmpty() ? List.of() : List.of(new JavadocText(text));
 	}
 }
