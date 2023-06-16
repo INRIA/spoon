@@ -7,6 +7,8 @@
  */
 package spoon.javadoc.api.elements;
 
+import java.util.Objects;
+
 /**
  * Normal text appearing in a javadoc comment.
  */
@@ -30,6 +32,23 @@ public class JavadocText implements JavadocElement {
 	@Override
 	public <T> T accept(JavadocVisitor<T> visitor) {
 		return visitor.visitText(this);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		JavadocText that = (JavadocText) o;
+		return Objects.equals(text, that.text);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(text);
 	}
 
 	@Override

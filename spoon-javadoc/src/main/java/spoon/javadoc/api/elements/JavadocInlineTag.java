@@ -7,6 +7,7 @@
  */
 package spoon.javadoc.api.elements;
 
+import java.util.Objects;
 import spoon.javadoc.api.JavadocTagType;
 
 import java.util.List;
@@ -63,6 +64,24 @@ public class JavadocInlineTag implements JavadocElement {
 	@Override
 	public <T> T accept(JavadocVisitor<T> visitor) {
 		return visitor.visitInlineTag(this);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		JavadocInlineTag that = (JavadocInlineTag) o;
+		return Objects.equals(elements, that.elements) && Objects.equals(tagType,
+				that.tagType);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(elements, tagType);
 	}
 
 	@Override

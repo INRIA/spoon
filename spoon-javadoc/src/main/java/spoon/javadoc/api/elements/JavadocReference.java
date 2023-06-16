@@ -7,6 +7,7 @@
  */
 package spoon.javadoc.api.elements;
 
+import java.util.Objects;
 import spoon.reflect.reference.CtReference;
 
 /**
@@ -35,6 +36,23 @@ public class JavadocReference implements JavadocElement {
 	@Override
 	public <T> T accept(JavadocVisitor<T> visitor) {
 		return visitor.visitReference(this);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		JavadocReference that = (JavadocReference) o;
+		return Objects.equals(reference, that.reference);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(reference);
 	}
 
 	@Override

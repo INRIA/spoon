@@ -7,6 +7,7 @@
  */
 package spoon.javadoc.api.elements;
 
+import java.util.Objects;
 import spoon.javadoc.api.JavadocTagType;
 
 import java.util.Collections;
@@ -64,6 +65,24 @@ public class JavadocBlockTag implements JavadocElement {
 	@Override
 	public <T> T accept(JavadocVisitor<T> visitor) {
 		return visitor.visitBlockTag(this);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		JavadocBlockTag that = (JavadocBlockTag) o;
+		return Objects.equals(tagType, that.tagType) && Objects.equals(elements,
+				that.elements);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(tagType, elements);
 	}
 
 	@Override
