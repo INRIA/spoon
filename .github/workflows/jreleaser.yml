@@ -78,7 +78,7 @@ jobs:
 
 # Now we can run the release
       - name: Stage release
-        run:  mvn --no-transfer-progress --batch-mode -Prelease clean deploy -DaltDeploymentRepository=local::default::file://`pwd`/target/staging-deploy -Djacoco.skip=true -Dgpg.skip=true
+        run:  mvn --no-transfer-progress --batch-mode -Pjreleaser clean deploy -DaltDeploymentRepository=local::default::file:./target/staging-deploy
       - name: Print next version
         run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//'
       - name: Run JReleaser
