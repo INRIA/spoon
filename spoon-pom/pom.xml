@@ -29,7 +29,6 @@
         <runtime.log>target/velocity.log</runtime.log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.outputTimestamp>1</project.build.outputTimestamp>
-        <spoon-version>10.3.0-SNAPSHOT</spoon-version>
     </properties>
 
     <dependencies>
