@@ -7,6 +7,7 @@
  */
 package spoon.javadoc.api.elements.snippets;
 
+import java.util.Objects;
 import spoon.javadoc.api.StandardJavadocTagType;
 import spoon.javadoc.api.elements.JavadocInlineTag;
 import spoon.javadoc.api.elements.JavadocText;
@@ -43,6 +44,26 @@ public class JavadocSnippetTag extends JavadocInlineTag {
 	 */
 	public Map<String, String> getAttributes() {
 		return Collections.unmodifiableMap(attributes);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		if (!super.equals(o)) {
+			return false;
+		}
+		JavadocSnippetTag that = (JavadocSnippetTag) o;
+		return Objects.equals(attributes, that.attributes);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), attributes);
 	}
 
 	@Override
