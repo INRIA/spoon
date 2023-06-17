@@ -64,6 +64,7 @@ class BlockTagParser {
 			case RETURN:
 			case SERIAL_DATA:
 			case SINCE:
+			case SERIAL:
 			case VERSION:
 				return parseTagOneArgument(reader, type);
 			case THROWS:
@@ -71,7 +72,6 @@ class BlockTagParser {
 				return parseException(reader, type);
 			case PARAM:
 			case PROVIDES:
-			case SERIAL:
 			case USES:
 				return parseTagTwoArgument(reader, type);
 			case SEE:
@@ -94,10 +94,7 @@ class BlockTagParser {
 
 		elements.add(new JavadocText(reader.readWhile(it -> !Character.isWhitespace(it))));
 
-		if (reader.canRead()) {
-			// skip one space
-			reader.read(1);
-		}
+		swallowOneChar(reader);
 
 		if (reader.canRead()) {
 			elements.addAll(parseRestFromScratch(reader));
@@ -114,9 +111,7 @@ class BlockTagParser {
 				.<JavadocElement>map(JavadocReference::new)
 				.orElse(new JavadocText(referenceString)));
 
-		if (reader.canRead()) {
-			reader.read(1); // skip first whitespace
-		}
+		swallowOneChar(reader);
 
 		if (reader.canRead()) {
 			elements.add(new JavadocText(reader.readRemaining()));
@@ -150,9 +145,7 @@ class BlockTagParser {
 			);
 
 			// label
-			if (reader.canRead()) {
-				reader.read(1); // swallow one whitespace
-			}
+			swallowOneChar(reader);
 			if (reader.canRead()) {
 				elements.add(new JavadocText(reader.readRemaining()));
 			}
@@ -161,10 +154,18 @@ class BlockTagParser {
 		return new JavadocBlockTag(elements, StandardJavadocTagType.SEE);
 	}
 
+	private static void swallowOneChar(StringReader reader) {
+		if (reader.canRead()) {
+			reader.read(1);
+		}
+	}
+
 	private JavadocBlockTag parseTagSerialField(StringReader reader) {
 		List<JavadocElement> elements = new ArrayList<>();
 		elements.add(new JavadocText(reader.readWhile(it -> !Character.isWhitespace(it))));
+		swallowOneChar(reader);
 		elements.add(new JavadocText(reader.readWhile(it -> !Character.isWhitespace(it))));
+		swallowOneChar(reader);
 
 		elements.addAll(parseRestFromScratch(reader));
 
