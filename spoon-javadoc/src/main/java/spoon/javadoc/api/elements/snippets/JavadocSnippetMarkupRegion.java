@@ -9,6 +9,7 @@ package spoon.javadoc.api.elements.snippets;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public class JavadocSnippetMarkupRegion {
@@ -74,8 +75,26 @@ public class JavadocSnippetMarkupRegion {
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		JavadocSnippetMarkupRegion that = (JavadocSnippetMarkupRegion) o;
+		return startLine == that.startLine && endLine == that.endLine && Objects.equals(
+				attributes, that.attributes) && type == that.type;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(startLine, endLine, attributes, type);
+	}
+
+	@Override
 	public String toString() {
-		return "SnippetTag{"
+		return "SnippetMarkupRegion{"
 			+ "name='" + getName() + '\''
 			+ ", startLine=" + startLine
 			+ ", endLine=" + endLine
