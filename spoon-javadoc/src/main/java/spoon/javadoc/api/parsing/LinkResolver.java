@@ -8,6 +8,7 @@
 package spoon.javadoc.api.parsing;
 
 import java.util.Locale;
+import spoon.JLSViolation;
 import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
@@ -140,12 +141,18 @@ class LinkResolver {
 		if (!name.toLowerCase(Locale.ROOT).equals(name)) {
 			return Optional.empty();
 		}
-		if (name.contains("/")) {
-			return Optional.of(
+
+		try {
+			if (name.contains("/")) {
+				return Optional.of(
 					factory.Core().createModuleReference().setSimpleName(name.replace("/", ""))
-			);
+				);
+			}
+			return Optional.of(factory.Package().createReference(name));
+		} catch (JLSViolation ignored) {
+			// Looks like that name wasn't quite valid...
+			return Optional.empty();
 		}
-		return Optional.of(factory.Package().createReference(name));
 	}
 
 	private Optional<CtReference> qualifyName(
