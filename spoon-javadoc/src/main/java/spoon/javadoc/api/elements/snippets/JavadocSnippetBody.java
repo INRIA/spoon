@@ -7,25 +7,26 @@
  */
 package spoon.javadoc.api.elements.snippets;
 
-import spoon.javadoc.api.parsing.SnippetFileParser;
-
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import spoon.javadoc.api.parsing.SnippetFileParser;
 
 /**
  * A representation of a {@code @snippet} tag body (or a file referenced by it).
  * <p>
- * Snippet bodies consist of normal code with a list of (potentially overlapping) regions.
- * This class contains lines, regions, and is able to answer "what regions apply here" queries.
+ * Snippet bodies consist of normal code with a list of (potentially overlapping) regions. This
+ * class contains lines, regions, and is able to answer "what regions apply here" queries.
  */
 public class JavadocSnippetBody {
 
-	private final List<JavadocSnippetMarkupRegion> tags;
+	private final Set<JavadocSnippetMarkupRegion> regions;
 	private final List<String> lines;
 
-	private JavadocSnippetBody(List<String> lines, List<JavadocSnippetMarkupRegion> tags) {
-		this.tags = tags;
+	private JavadocSnippetBody(List<String> lines, Set<JavadocSnippetMarkupRegion> regions) {
+		this.regions = regions;
 		this.lines = lines;
 	}
 
@@ -33,10 +34,10 @@ public class JavadocSnippetBody {
 	 * @param line the line to check
 	 * @return all markup regions that overlap with the given line
 	 */
-	public List<JavadocSnippetMarkupRegion> getActiveTagsAtLine(int line) {
-		return tags.stream()
-			.filter(it -> line >= it.getStartLine() && line <= it.getEndLine())
-			.collect(Collectors.toList());
+	public Collection<JavadocSnippetMarkupRegion> getActiveRegionsAtLine(int line) {
+		return regions.stream()
+				.filter(it -> line >= it.getStartLine() && line <= it.getEndLine())
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -49,8 +50,8 @@ public class JavadocSnippetBody {
 	/**
 	 * @return all markup regions in this snippet
 	 */
-	public List<JavadocSnippetMarkupRegion> getMarkupRegions() {
-		return Collections.unmodifiableList(tags);
+	public Set<JavadocSnippetMarkupRegion> getMarkupRegions() {
+		return Collections.unmodifiableSet(regions);
 	}
 
 	/**
@@ -61,7 +62,7 @@ public class JavadocSnippetBody {
 	 */
 	public static JavadocSnippetBody fromString(String text) {
 		List<String> lines = text.lines().collect(Collectors.toList());
-		List<JavadocSnippetMarkupRegion> tags = new SnippetFileParser(lines).parse();
+		Set<JavadocSnippetMarkupRegion> tags = new SnippetFileParser(lines).parse();
 
 		return new JavadocSnippetBody(lines, tags);
 	}
