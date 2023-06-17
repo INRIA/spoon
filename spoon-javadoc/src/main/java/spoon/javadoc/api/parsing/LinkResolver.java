@@ -7,6 +7,7 @@
  */
 package spoon.javadoc.api.parsing;
 
+import java.util.Locale;
 import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
@@ -18,7 +19,6 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -113,10 +113,12 @@ class LinkResolver {
 			int moduleEndIndex = name.indexOf('/');
 			String rest = name.substring(moduleEndIndex + 1);
 
+			// TODO: This currently throws away module information when resolving the rest. This is likely
+			//       fine for now, but not correct.
 			return resolveTypePackageModuleAsIs(rest);
 		}
 		if (name.endsWith("/")) {
-			// Format: "module/?"
+			// Format: "module/"
 			CtModule module = factory.Module().getModule(name.replace("/", ""));
 			if (module != null) {
 				return Optional.of(module.getReference());
@@ -129,7 +131,21 @@ class LinkResolver {
 	private Optional<CtReference> resolveTypePackageModuleAsIs(String name) {
 		return qualifyTypeName(name).map(it -> (CtReference) it)
 			.or(() -> Optional.ofNullable(factory.Package().get(name)).map(CtPackage::getReference))
-			.or(() -> Optional.ofNullable(factory.Module().getModule(name)).map(CtModule::getReference));
+			.or(() -> Optional.ofNullable(factory.Module().getModule(name)).map(CtModule::getReference))
+			.or(() -> guessPackageOrModuleReferenceFromName(name));
+	}
+
+	private Optional<CtReference> guessPackageOrModuleReferenceFromName(String name) {
+		// Upper case letters indicate this is no package or module and we just don't understand it
+		if (!name.toLowerCase(Locale.ROOT).equals(name)) {
+			return Optional.empty();
+		}
+		if (name.contains("/")) {
+			return Optional.of(
+					factory.Core().createModuleReference().setSimpleName(name.replace("/", ""))
+			);
+		}
+		return Optional.of(factory.Package().createReference(name));
 	}
 
 	private Optional<CtReference> qualifyName(
