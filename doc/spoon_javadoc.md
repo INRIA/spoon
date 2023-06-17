@@ -4,12 +4,11 @@ tags: [javadoc, javadoc-parsing]
 keywords: javadoc, javadoc-parsing, comments, spoon
 ---
 
-The spoon-javadoc
-submodule provides a parser for javadoc comments, producing a structured syntax
-tree representing the comment. Each tag is parsed and tokenized according to
-the rules in the javadoc specification. Additionally, references in e.g.
-`@link` or `@see` tags are resolved to `CtReference`s, allowing you to easily
-analyze them.
+The spoon-javadoc submodule provides a parser for javadoc comments, producing a
+structured syntax tree representing the comment. Each tag is parsed and
+tokenized according to the rules in the javadoc specification. Additionally,
+references in e.g. `@link` or `@see` tags are resolved to `CtReference`s,
+allowing you to easily analyze them.
 
 A visitor infrastructure is also provided, which eases analyzing comments or
 converting them into your own format.
@@ -21,12 +20,9 @@ getting spoon-javadoc up and running from scratch.
 
 ```
 $ git clone https://github.com/INRIA/spoon.git
-$ cd spoon/spoon-javadoc
+$ cd spoon/spoon-pom
 $ mvn install
 ```
-
-Alternatively, you can also obtain spoon-javadoc using a git-to-maven wrapper
-like jitpack.io.
 
 ### Basic usage
 
@@ -40,6 +36,9 @@ In the following example, javadoc is parsed and then printed out again -- but
 this time with some ANSI color highlighting applied. Note that references are
 pretty-printed according to `CtReference#toString()`.
 
+<details>
+
+<summary>Expand me for the code </summary>
 
 ```java
 void example() {
@@ -141,5 +140,24 @@ private static class ExampleVisitor implements JavadocVisitor<String> {
 }
 ```
 
+</details>
+<br>
 This will print a version with a bit more colours:
 ![ANSI colored javadoc]({{ "/images/spoon_javadoc_ansi_print.png" | prepend: site.baseurl }})
+
+### Snippets
+Spoon-javadoc provides the `JavadocSnippetBody` class to help parse javadoc
+snippets:
+```java
+JavadocSnippetBody body = JavadocSnippetBody.fromString(
+    "class Foo { // @start region=\"foo\"\n" +
+    "  int p0 = 0; // @start region=\"bar\"\n" +
+    "  int p1 = 1;\n" +
+    "  int p2 = 2; // @end\n" +
+    "  int p3 = 3; // @end\n" +
+    "}\n"
+);
+body.getLines(); // returns all lines of the original snippet
+body.getRegions(); // returns all start/highlight/link regions
+body.getActiveRegionsAtLine(0); // returns all regions active in the given line
+```
