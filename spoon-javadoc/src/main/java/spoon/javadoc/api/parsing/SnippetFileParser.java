@@ -72,13 +72,15 @@ public class SnippetFileParser {
 				new StringReader(line.readRemaining())
 			);
 			boolean forNextLine = line.getUnderlying().stripTrailing().endsWith(":");
-			closeOnNext = forNextLine && regionType.get() != JavadocSnippetRegionType.START;
+			boolean shouldClose =
+					!attributes.containsKey("region") && regionType.get() != JavadocSnippetRegionType.START;
+			closeOnNext = forNextLine && shouldClose;
 
 			int startLine = forNextLine ? lineNumber + 1 : lineNumber;
 			openRegions.push(new OpenRegion(startLine, attributes, regionType.get()));
 
 			// A one-line region
-			if (!attributes.containsKey("region") && regionType.get() != JavadocSnippetRegionType.START && !closeOnNext) {
+			if (shouldClose && !closeOnNext) {
 				endRegion(line, lineNumber).ifPresent(regions::add);
 			}
 		}
