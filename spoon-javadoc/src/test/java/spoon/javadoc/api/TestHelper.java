@@ -5,7 +5,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import spoon.Launcher;
+import spoon.javadoc.api.elements.snippets.JavadocSnippetMarkupRegion;
+import spoon.javadoc.api.elements.snippets.JavadocSnippetRegionType;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -47,4 +50,9 @@ public class TestHelper {
 		}
 	}
 
+	public static JavadocSnippetMarkupRegion region(
+			int startLine, int endLine, Map<String, String> attributes, JavadocSnippetRegionType type
+	) {
+		return new JavadocSnippetMarkupRegion(startLine, endLine, attributes, type);
+	}
 }
