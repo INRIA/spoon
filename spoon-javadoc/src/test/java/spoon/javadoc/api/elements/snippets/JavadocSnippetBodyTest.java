@@ -12,12 +12,12 @@ class JavadocSnippetBodyTest {
 	@Test
 	void testOverlap() {
 		JavadocSnippetBody body = JavadocSnippetBody.fromString(
-				"class Foo { // @start region=\"foo\"\n" +
-				"  int p0 = 0; // @start region=\"bar\"\n" +
-				"  int p1 = 1;\n" +
-				"  int p2 = 2; // @end\n" +
-				"  int p3 = 3; // @end\n" +
-				"}\n"
+			"class Foo { // @start region=\"foo\"\n" +
+			"  int p0 = 0; // @start region=\"bar\"\n" +
+			"  int p1 = 1;\n" +
+			"  int p2 = 2; // @end\n" +
+			"  int p3 = 3; // @end\n" +
+			"}\n"
 		);
 		assertThat(body.getLines()).hasSize(6);
 

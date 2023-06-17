@@ -53,41 +53,41 @@ class JavadocParserTest {
 	@TestFactory
 	Stream<DynamicTest> testFactoryForSamples() {
 		return TestHelper.parseType(getClass())
-				.getMethods()
-				.stream()
-				.filter(it -> it.getSimpleName().startsWith("sample"))
-				.map(JavadocParserTest::buildDynamicTest);
+			.getMethods()
+			.stream()
+			.filter(it -> it.getSimpleName().startsWith("sample"))
+			.map(JavadocParserTest::buildDynamicTest);
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static DynamicTest buildDynamicTest(CtMethod<?> method) {
 		return DynamicTest.dynamicTest(
-				method.getSimpleName(),
-				() -> assertThat(JavadocParser.forElement(method))
-						.containsExactlyElementsOf((Iterable) TestHelper.invokeMethod(method))
+			method.getSimpleName(),
+			() -> assertThat(JavadocParser.forElement(method))
+				.containsExactlyElementsOf((Iterable) TestHelper.invokeMethod(method))
 		);
 	}
 
 	// @formatter:off
-  /**
-   * This is a small comment. And now a second sentence.
-   * This part can also contain {@literal inline tags}, or <strong>html</strong>.
-   *
-   * @since 1.0
-   * @return The expected AST
-   *
-   * This return tag has a linebreak...
-   */
-  // @formatter:on
+	/**
+	 * This is a small comment. And now a second sentence.
+	 * This part can also contain {@literal inline tags}, or <strong>html</strong>.
+	 *
+	 * @since 1.0
+	 * @return The expected AST
+	 *
+	 * This return tag has a linebreak...
+	 */
+	// @formatter:on
 	private static List<JavadocElement> sampleWithoutReferences() {
 		return List.of(
-				text(
-						"This is a small comment. And now a second sentence.\nThis part can also contain "
-				),
-				inline(LITERAL, text("inline tags")),
-				text(", or <strong>html</strong>.\n\n"),
-				block(SINCE, text("1.0")),
-				block(RETURN, text("The expected AST\n\nThis return tag has a linebreak..."))
+			text(
+				"This is a small comment. And now a second sentence.\nThis part can also contain "
+			),
+			inline(LITERAL, text("inline tags")),
+			text(", or <strong>html</strong>.\n\n"),
+			block(SINCE, text("1.0")),
+			block(RETURN, text("The expected AST\n\nThis return tag has a linebreak..."))
 		);
 	}
 
@@ -109,38 +109,38 @@ class JavadocParserTest {
 	 */
 	private static List<JavadocElement> sampleManyInlineTags() {
 		return List.of(
-				text("Some people use "),
-				inline(CODE, text("to write code")),
-				text(". Sometimes, you also find an "),
-				inline(CODE, text("{@docRoot}")),
-				text(", normally\nused to set image urls: "),
-				inline(DOC_ROOT),
-				text("/foo.html.\n\nJavadoc can also build an\n"),
+			text("Some people use "),
+			inline(CODE, text("to write code")),
+			text(". Sometimes, you also find an "),
+			inline(CODE, text("{@docRoot}")),
+			text(", normally\nused to set image urls: "),
+			inline(DOC_ROOT),
+			text("/foo.html.\n\nJavadoc can also build an\n"),
 
-				inline(
-						INDEX,
-						text("index"),
-						text(
-								"Something that serves to guide, point out, or otherwise "
-								+ "facilitate reference,\nespecially."
-						)
-				),
-				text(" for you. These indices can also span\n"),
-				inline(INDEX, text("multiple words"), text("more than a single word")),
-				text(".\n\n"),
+			inline(
+				INDEX,
+				text("index"),
+				text(
+					"Something that serves to guide, point out, or otherwise "
+					+ "facilitate reference,\nespecially."
+				)
+			),
+			text(" for you. These indices can also span\n"),
+			inline(INDEX, text("multiple words"), text("more than a single word")),
+			text(".\n\n"),
 
-				inline(
-						SUMMARY,
-						text(
-								"This is a cool summary. Not sure people use this tag. It is mostly ignored here, as\n"
-								+ "it is not at the beginning")
-				),
-				text(".\n\nYour JVM vendor can be found in "),
+			inline(
+				SUMMARY,
+				text(
+					"This is a cool summary. Not sure people use this tag. It is mostly ignored here, as\n"
+					+ "it is not at the beginning")
+			),
+			text(".\n\nYour JVM vendor can be found in "),
 
-				inline(SYSTEM_PROPERTY, text("java.vendor")),
-				text(".\n\nLiterals, like "),
-				inline(LITERAL, text("{@literal}")),
-				text(" can be wrapped in literal tags.")
+			inline(SYSTEM_PROPERTY, text("java.vendor")),
+			text(".\n\nLiterals, like "),
+			inline(LITERAL, text("{@literal}")),
+			text(" can be wrapped in literal tags.")
 		);
 	}
 
@@ -151,9 +151,9 @@ class JavadocParserTest {
 	 */
 	private static List<JavadocElement> sampleReturnInline() {
 		return List.of(
-				inline(INHERIT_DOC),
-				text(" Please inherit the description.\n\n"),
-				inline(RETURN, text("hello, I am an inline return tag!"))
+			inline(INHERIT_DOC),
+			text(" Please inherit the description.\n\n"),
+			inline(RETURN, text("hello, I am an inline return tag!"))
 		);
 	}
 
@@ -168,13 +168,13 @@ class JavadocParserTest {
 	 */
 	private static List<JavadocElement> sampleBlockTags(int aParam) {
 		return List.of(
-				block(PARAM, text("aParam"), text("A parameter!")),
-				block(RETURN, text("some value")),
-				block(AUTHOR, text("I was authored by me")),
-				block(HIDDEN),
-				block(SERIAL_DATA, text("Nothing is serialized")),
-				block(SINCE, text("The day I wrote this")),
-				block(DEPRECATED, text("No worries, you can always use me"))
+			block(PARAM, text("aParam"), text("A parameter!")),
+			block(RETURN, text("some value")),
+			block(AUTHOR, text("I was authored by me")),
+			block(HIDDEN),
+			block(SERIAL_DATA, text("Nothing is serialized")),
+			block(SINCE, text("The day I wrote this")),
+			block(DEPRECATED, text("No worries, you can always use me"))
 		);
 	}
 
@@ -192,87 +192,87 @@ class JavadocParserTest {
 	 */
 	private static List<JavadocElement> sampleReferencedInlineTags(Factory factory) {
 		return List.of(
-				text("This method makes no use of "),
-				inline(LINK, ref(factory, String.class)),
-				text(", "),
-				inline(LINK, ref(factory, String.class, "contains", CharSequence.class)),
-				text(",\n"),
-				inline(LINK, refField(factory, String.class, "CASE_INSENSITIVE_ORDER")),
-				text(", or "),
-				inline(LINK, refPackage(factory, "java.time")),
+			text("This method makes no use of "),
+			inline(LINK, ref(factory, String.class)),
+			text(", "),
+			inline(LINK, ref(factory, String.class, "contains", CharSequence.class)),
+			text(",\n"),
+			inline(LINK, refField(factory, String.class, "CASE_INSENSITIVE_ORDER")),
+			text(", or "),
+			inline(LINK, refPackage(factory, "java.time")),
 
-				text(".\n\nTo make things nicer, we can "),
-				inline(LINK, ref(factory, String.class), text("label")),
-				text(", "),
-				inline(LINK, ref(factory, String.class, "substring", int.class, int.class), text("label")),
-				text(",\n"),
-				inline(LINK, refField(factory, String.class, "CASE_INSENSITIVE_ORDER"), text("label")),
-				text(" "),
-				inline(LINK, refPackage(factory, "java.lang.invoke"), text("them")),
-				text(" all.\n\nAdditionally, "),
+			text(".\n\nTo make things nicer, we can "),
+			inline(LINK, ref(factory, String.class), text("label")),
+			text(", "),
+			inline(LINK, ref(factory, String.class, "substring", int.class, int.class), text("label")),
+			text(",\n"),
+			inline(LINK, refField(factory, String.class, "CASE_INSENSITIVE_ORDER"), text("label")),
+			text(" "),
+			inline(LINK, refPackage(factory, "java.lang.invoke"), text("them")),
+			text(" all.\n\nAdditionally, "),
 
-				inline(LINKPLAIN, ref(factory, String.class), text("this works")),
-				text(" "),
-				inline(LINKPLAIN, ref(factory, String.class, "substring", int.class), text("with")),
-				text("\n"),
-				inline(LINKPLAIN, refField(factory, String.class, "CASE_INSENSITIVE_ORDER"), text("plain")),
-				text(" "),
-				inline(LINKPLAIN, refPackage(factory, "java.lang"), text("links")),
-				text(" too.\n\nPeople can also embed values: "),
+			inline(LINKPLAIN, ref(factory, String.class), text("this works")),
+			text(" "),
+			inline(LINKPLAIN, ref(factory, String.class, "substring", int.class), text("with")),
+			text("\n"),
+			inline(LINKPLAIN, refField(factory, String.class, "CASE_INSENSITIVE_ORDER"), text("plain")),
+			text(" "),
+			inline(LINKPLAIN, refPackage(factory, "java.lang"), text("links")),
+			text(" too.\n\nPeople can also embed values: "),
 
-				inline(VALUE, refField(factory, JavadocParserTest.class, "I_AM_A_VAR")),
-				text(".")
+			inline(VALUE, refField(factory, JavadocParserTest.class, "I_AM_A_VAR")),
+			text(".")
 		);
 	}
 
 	// @formatter:off
-  /**
-   * @exception  RuntimeException If something happens
-   * @throws IllegalArgumentException If something else happens
-   * @see Character#codePointAt(char[], int) for more information
-   * @see "somewhere else"
-   * @see <a href="url">label me</a>
-   * @see spoon.javadoc
-   * @see java.base/
-   * @see java.base
-   * @see java.base/java.lang.String
-   */
-  // @formatter:on
+	/**
+	 * @exception  RuntimeException If something happens
+	 * @throws IllegalArgumentException If something else happens
+	 * @see Character#codePointAt(char[], int) for more information
+	 * @see "somewhere else"
+	 * @see <a href="url">label me</a>
+	 * @see spoon.javadoc
+	 * @see java.base/
+	 * @see java.base
+	 * @see java.base/java.lang.String
+	 */
+	// @formatter:on
 	private static List<JavadocElement> sampleReferencedBlockTags(Factory factory) {
 		return List.of(
-				block(EXCEPTION, ref(factory, RuntimeException.class), text("If something happens")),
-				block(
-						THROWS,
-						ref(factory, IllegalArgumentException.class),
-						text("If something else happens")
-				),
-				block(
-						SEE,
-						ref(factory, Character.class, "codePointAt", char[].class, int.class),
-						text("for more information")
-				),
-				block(SEE, text("somewhere else")),
-				block(SEE, text("<a href=\"url\">label me</a>")),
-				block(SEE, refPackage(factory, "spoon.javadoc")),
-				block(SEE, refModule(factory, "java.base")),
-				// This is wrong, but we currently live with it.
-				block(SEE, refPackage(factory, "java.base")),
-				block(SEE, ref(factory, String.class))
+			block(EXCEPTION, ref(factory, RuntimeException.class), text("If something happens")),
+			block(
+				THROWS,
+				ref(factory, IllegalArgumentException.class),
+				text("If something else happens")
+			),
+			block(
+				SEE,
+				ref(factory, Character.class, "codePointAt", char[].class, int.class),
+				text("for more information")
+			),
+			block(SEE, text("somewhere else")),
+			block(SEE, text("<a href=\"url\">label me</a>")),
+			block(SEE, refPackage(factory, "spoon.javadoc")),
+			block(SEE, refModule(factory, "java.base")),
+			// This is wrong, but we currently live with it.
+			block(SEE, refPackage(factory, "java.base")),
+			block(SEE, ref(factory, String.class))
 		);
 	}
 
 	// @formatter:off
-  /**
-   * <pre>
+	/**
+	 * <pre>
     class Foo {
       int foo = 0;
     }
-   * </pre>
-   */
-  // @formatter:on
+	 * </pre>
+	 */
+	// @formatter:on
 	private static List<JavadocElement> sampleNoLeadingAsterisks() {
 		return List.of(
-				text("<pre>\n    class Foo {\n      int foo = 0;\n    }\n</pre>")
+			text("<pre>\n    class Foo {\n      int foo = 0;\n    }\n</pre>")
 		);
 	}
 
@@ -281,7 +281,7 @@ class JavadocParserTest {
 	 */
 	private static <T> List<JavadocElement> sampleTypeParam() {
 		return List.of(
-				block(PARAM, text("<T>"), text("a type param"))
+			block(PARAM, text("<T>"), text("a type param"))
 		);
 	}
 
@@ -291,31 +291,31 @@ class JavadocParserTest {
 	 */
 	private static List<JavadocElement> sampleModuleStuff() {
 		return List.of(
-				block(PROVIDES, text("foo.bar.Baz"), text("hello world")),
-				block(USES, text("foo.bar.Foo"), text("hello there"))
+			block(PROVIDES, text("foo.bar.Baz"), text("hello world")),
+			block(USES, text("foo.bar.Foo"), text("hello there"))
 		);
 	}
 
 	// @formatter:off
-  /**
-   * @provides foo.bar.Baz hello world
-   * @uses foo.bar.Foo hello there
-   * @serialData some data
-   * @serial include
-   * @serial exclude
-   * @serial Some docs
-   * @serialField name type some description
-   */
-  // @formatter:on
+	/**
+	 * @provides foo.bar.Baz hello world
+	 * @uses foo.bar.Foo hello there
+	 * @serialData some data
+	 * @serial include
+	 * @serial exclude
+	 * @serial Some docs
+	 * @serialField name type some description
+	 */
+	// @formatter:on
 	private static List<JavadocElement> sampleSerializableStuff() {
 		return List.of(
-				block(PROVIDES, text("foo.bar.Baz"), text("hello world")),
-				block(USES, text("foo.bar.Foo"), text("hello there")),
-				block(SERIAL_DATA, text("some data")),
-				block(SERIAL, text("include")),
-				block(SERIAL, text("exclude")),
-				block(SERIAL, text("Some docs")),
-				block(SERIAL_FIELD, text("name"), text("type"), text("some description"))
+			block(PROVIDES, text("foo.bar.Baz"), text("hello world")),
+			block(USES, text("foo.bar.Foo"), text("hello there")),
+			block(SERIAL_DATA, text("some data")),
+			block(SERIAL, text("include")),
+			block(SERIAL, text("exclude")),
+			block(SERIAL, text("Some docs")),
+			block(SERIAL_FIELD, text("name"), text("type"), text("some description"))
 		);
 	}
 
@@ -326,62 +326,62 @@ class JavadocParserTest {
 	 */
 	private static List<JavadocElement> sampleSnippet() {
 		return List.of(
-				new JavadocSnippetTag(text("\n  class Foo {}\n"), Map.of("id", "bar", "lang", "java"))
+			new JavadocSnippetTag(text("\n  class Foo {}\n"), Map.of("id", "bar", "lang", "java"))
 		);
 	}
 
 	// @formatter:off
-  /**
-   * {@link #I_AM_A_VAR}
-   * {@link JavadocParserTest#I_AM_A_VAR}
-   * {@link spoon.javadoc.api.parsing.JavadocParserTest#I_AM_A_VAR}
-   * {@link #text(String)}
-   * {@link #text}
-   * {@link JavadocParserTest#text( String)}
-   * {@link JavadocParserTest#text}
-   * {@link spoon.javadoc.api.parsing.JavadocParserTest#text(String)}
-   * {@link spoon.javadoc.api.parsing.JavadocParserTest#text}
-   */
-  // @formatter:on
+	/**
+	 * {@link #I_AM_A_VAR}
+	 * {@link JavadocParserTest#I_AM_A_VAR}
+	 * {@link spoon.javadoc.api.parsing.JavadocParserTest#I_AM_A_VAR}
+	 * {@link #text(String)}
+	 * {@link #text}
+	 * {@link JavadocParserTest#text( String)}
+	 * {@link JavadocParserTest#text}
+	 * {@link spoon.javadoc.api.parsing.JavadocParserTest#text(String)}
+	 * {@link spoon.javadoc.api.parsing.JavadocParserTest#text}
+ 	 */
+	// @formatter:on
 	private static List<JavadocElement> sampleLinkFormats(Factory factory) {
 		return List.of(
-				inline(LINK, refField(factory, JavadocParserTest.class, "I_AM_A_VAR")),
-				text("\n"),
-				inline(LINK, refField(factory, JavadocParserTest.class, "I_AM_A_VAR")),
-				text("\n"),
-				inline(LINK, refField(factory, JavadocParserTest.class, "I_AM_A_VAR")),
-				text("\n"),
-				inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
-				text("\n"),
-				inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
-				text("\n"),
-				inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
-				text("\n"),
-				inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
-				text("\n"),
-				inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
-				text("\n"),
-				inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class))
+			inline(LINK, refField(factory, JavadocParserTest.class, "I_AM_A_VAR")),
+			text("\n"),
+			inline(LINK, refField(factory, JavadocParserTest.class, "I_AM_A_VAR")),
+			text("\n"),
+			inline(LINK, refField(factory, JavadocParserTest.class, "I_AM_A_VAR")),
+			text("\n"),
+			inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
+			text("\n"),
+			inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
+			text("\n"),
+			inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
+			text("\n"),
+			inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
+			text("\n"),
+			inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
+			text("\n"),
+			inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class))
 		);
 	}
 
 	// @formatter:off
-  /**
-   * {@link #text()}
-   * {@link #text(int)}
-   * {@link #text(String}
-   * {@link #text(}
-   */
-  // @formatter:on
+	/**
+	 * {@link #text()}
+	 * {@link #text(int)}
+	 * {@link #text(String}
+	 * {@link #text(}
+	 */
+	// @formatter:on
 	private static List<JavadocElement> sampleBrokenLinks(Factory factory) {
 		return List.of(
-				inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
-				text("\n"),
-				inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
-				text("\n"),
-				inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
-				text("\n"),
-				inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class))
+			inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
+			text("\n"),
+			inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
+			text("\n"),
+			inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class)),
+			text("\n"),
+			inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class))
 		);
 	}
 
@@ -402,7 +402,7 @@ class JavadocParserTest {
 	}
 
 	private static JavadocReference ref(
-			Factory factory, Class<?> clazz, String name, Class<?>... params
+		Factory factory, Class<?> clazz, String name, Class<?>... params
 	) {
 		CtType<?> ctClass = factory.Type().get(clazz);
 		for (CtMethod<?> candidate : ctClass.getMethodsByName(name)) {
@@ -412,7 +412,7 @@ class JavadocParserTest {
 		}
 
 		throw new RuntimeException(
-				"Not found: " + clazz + "#" + name + "(" + Arrays.toString(params) + ")"
+			"Not found: " + clazz + "#" + name + "(" + Arrays.toString(params) + ")"
 		);
 	}
 

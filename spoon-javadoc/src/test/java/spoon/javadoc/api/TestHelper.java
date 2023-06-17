@@ -29,9 +29,9 @@ public class TestHelper {
 		}
 		Class<?> actualClass = method.getDeclaringType().getActualClass();
 		Method actualMethod = Arrays.stream(actualClass.getDeclaredMethods())
-				.filter(it -> it.getName().equals(method.getSimpleName()))
-				.findAny()
-				.orElseThrow();
+			.filter(it -> it.getName().equals(method.getSimpleName()))
+			.findAny()
+			.orElseThrow();
 
 		try {
 			List<Object> parameters = new ArrayList<>();
@@ -51,7 +51,7 @@ public class TestHelper {
 	}
 
 	public static JavadocSnippetMarkupRegion region(
-			int startLine, int endLine, Map<String, String> attributes, JavadocSnippetRegionType type
+		int startLine, int endLine, Map<String, String> attributes, JavadocSnippetRegionType type
 	) {
 		return new JavadocSnippetMarkupRegion(startLine, endLine, attributes, type);
 	}
