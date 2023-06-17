@@ -59,11 +59,12 @@ class JavadocParserTest {
 				.map(JavadocParserTest::buildDynamicTest);
 	}
 
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static DynamicTest buildDynamicTest(CtMethod<?> method) {
 		return DynamicTest.dynamicTest(
 				method.getSimpleName(),
 				() -> assertThat(JavadocParser.forElement(method))
-						.isEqualTo(TestHelper.invokeMethod(method))
+						.containsExactlyElementsOf((Iterable) TestHelper.invokeMethod(method))
 		);
 	}
 
