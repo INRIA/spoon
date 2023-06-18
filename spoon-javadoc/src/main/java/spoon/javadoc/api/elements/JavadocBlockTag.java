@@ -31,14 +31,15 @@ public class JavadocBlockTag implements JavadocElement {
 	}
 
 	/**
-	 * @return the tag type (e.g. {@code @version}
+	 * {@return the tag type (e.g. {@code @version}}
 	 */
 	public JavadocTagType getTagType() {
 		return tagType;
 	}
 
 	/**
-	 * @return the content of the tag. Potential arguments are the first element, content is the rest.
+	 * {@return an unmodifiable view of the content of the tag. Potential arguments are the first
+	 * element(s), content is the rest.}
 	 */
 	public List<JavadocElement> getElements() {
 		return Collections.unmodifiableList(elements);
