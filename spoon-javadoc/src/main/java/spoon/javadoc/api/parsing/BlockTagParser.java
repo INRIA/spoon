@@ -7,6 +7,8 @@
  */
 package spoon.javadoc.api.parsing;
 
+import java.util.ArrayList;
+import java.util.List;
 import spoon.javadoc.api.JavadocTagType;
 import spoon.javadoc.api.StandardJavadocTagType;
 import spoon.javadoc.api.elements.JavadocBlockTag;
@@ -15,9 +17,6 @@ import spoon.javadoc.api.elements.JavadocInlineTag;
 import spoon.javadoc.api.elements.JavadocReference;
 import spoon.javadoc.api.elements.JavadocText;
 import spoon.reflect.declaration.CtElement;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A parser for javadoc block tags.
@@ -108,8 +107,8 @@ class BlockTagParser {
 
 		String referenceString = reader.readWhile(it -> !Character.isWhitespace(it));
 		elements.add(linkResolver.resolve(referenceString)
-				.<JavadocElement>map(JavadocReference::new)
-				.orElse(new JavadocText(referenceString)));
+			.<JavadocElement>map(JavadocReference::new)
+			.orElse(new JavadocText(referenceString)));
 
 		swallowOneChar(reader);
 

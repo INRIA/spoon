@@ -7,17 +7,17 @@
  */
 package spoon.javadoc.api.elements;
 
-import java.util.Objects;
-import spoon.javadoc.api.JavadocTagType;
-
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import spoon.javadoc.api.JavadocTagType;
 
 /**
  * A javadoc block tag (like {@code @author} or {@code @see}.
  */
 public class JavadocBlockTag implements JavadocElement {
+
 	private final JavadocTagType tagType;
 	private final List<JavadocElement> elements;
 
@@ -38,8 +38,8 @@ public class JavadocBlockTag implements JavadocElement {
 	}
 
 	/**
-	 * {@return an unmodifiable view of the content of the tag. Potential arguments are the first
-	 * element(s), content is the rest.}
+	 * {@return an unmodifiable view of the content of the tag. Potential arguments are the first element(s), content is
+	 * the rest.}
 	 */
 	public List<JavadocElement> getElements() {
 		return Collections.unmodifiableList(elements);
@@ -78,7 +78,7 @@ public class JavadocBlockTag implements JavadocElement {
 		}
 		JavadocBlockTag that = (JavadocBlockTag) o;
 		return Objects.equals(tagType, that.tagType) && Objects.equals(elements,
-				that.elements);
+			that.elements);
 	}
 
 	@Override
@@ -89,8 +89,8 @@ public class JavadocBlockTag implements JavadocElement {
 	@Override
 	public String toString() {
 		return "JavadocBlockTag{"
-			+ "tagType=" + tagType.getName()
-			+ ", elements=" + elements
-			+ '}';
+		       + "tagType=" + tagType.getName()
+		       + ", elements=" + elements
+		       + '}';
 	}
 }

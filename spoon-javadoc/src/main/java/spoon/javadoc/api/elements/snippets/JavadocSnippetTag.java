@@ -7,21 +7,20 @@
  */
 package spoon.javadoc.api.elements.snippets;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import spoon.javadoc.api.StandardJavadocTagType;
 import spoon.javadoc.api.elements.JavadocInlineTag;
 import spoon.javadoc.api.elements.JavadocText;
 import spoon.javadoc.api.elements.JavadocVisitor;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 /**
  * An {@code @snippet} inline tag.
  * <p>
- * This class also contains the attributes of the tag and the body as its first element.
- * The body can be parsed using the {@link spoon.javadoc.api.parsing.SnippetFileParser}.
+ * This class also contains the attributes of the tag and the body as its first element. The body can be parsed using
+ * the {@link spoon.javadoc.api.parsing.SnippetFileParser}.
  */
 public class JavadocSnippetTag extends JavadocInlineTag {
 

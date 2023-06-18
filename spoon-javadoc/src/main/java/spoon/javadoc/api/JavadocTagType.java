@@ -13,7 +13,8 @@ import java.util.List;
 /**
  * The type of a javadoc tag (e.g. {@code @link} or {@code @author}).
  * <p>
- * The standard tags are provided by {@link StandardJavadocTagType}, but non-standard tags are often found in real code.
+ * The standard tags are provided by {@link StandardJavadocTagType}, but non-standard tags are often found in real
+ * code.
  */
 public interface JavadocTagType {
 

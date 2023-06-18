@@ -92,16 +92,15 @@ class JavadocParserTest {
 	}
 
 	/**
-	 * Some people use {@code to write code}. Sometimes, you also find an {@code {@docRoot}}, normally
-	 * used to set image urls: {@docRoot}/foo.html.
+	 * Some people use {@code to write code}. Sometimes, you also find an {@code {@docRoot}}, normally used to set image
+	 * urls: {@docRoot}/foo.html.
 	 *
 	 * Javadoc can also build an
-	 * {@index index Something that serves to guide, point out, or otherwise facilitate reference,
-	 * especially.} for you. These indices can also span
-	 * {@index "multiple words" more than a single word}.
+	 * {@index index Something that serves to guide, point out, or otherwise facilitate reference, especially.} for you.
+	 * These indices can also span {@index "multiple words" more than a single word}.
 	 *
-	 * {@summary This is a cool summary. Not sure people use this tag. It is mostly ignored here, as
-	 * it is not at the beginning}.
+	 * {@summary This is a cool summary. Not sure people use this tag. It is mostly ignored here, as it is not at the
+	 * beginning}.
 	 *
 	 * Your JVM vendor can be found in {@systemProperty java.vendor}.
 	 *

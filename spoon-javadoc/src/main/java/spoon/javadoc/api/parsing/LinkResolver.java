@@ -7,7 +7,11 @@
  */
 package spoon.javadoc.api.parsing;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import spoon.JLSViolation;
 import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.declaration.CtCompilationUnit;
@@ -23,15 +27,11 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 /**
  * Resolves a string to a {@link CtReference}.
  */
 class LinkResolver {
+
 	private final CtElement context;
 	private final Factory factory;
 

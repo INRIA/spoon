@@ -1,14 +1,14 @@
 package spoon.javadoc.api.elements;
 
-import spoon.javadoc.api.JavadocTagType;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import spoon.javadoc.api.JavadocTagType;
 
 /**
  * A slightly more expressive view of a {@code List<JavadocElement>}.
  */
 public class JavadocCommentView {
+
 	private final List<JavadocElement> elements;
 
 	public JavadocCommentView(List<JavadocElement> elements) {

@@ -7,16 +7,16 @@
  */
 package spoon.javadoc.api.elements;
 
-import java.util.Objects;
-import spoon.javadoc.api.JavadocTagType;
-
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import spoon.javadoc.api.JavadocTagType;
 
 /**
  * A javadoc inline tag (e.g. {@code @literal} or {@code @link}).
  */
 public class JavadocInlineTag implements JavadocElement {
+
 	private final List<JavadocElement> elements;
 	private final JavadocTagType tagType;
 
@@ -76,7 +76,7 @@ public class JavadocInlineTag implements JavadocElement {
 		}
 		JavadocInlineTag that = (JavadocInlineTag) o;
 		return Objects.equals(elements, that.elements) && Objects.equals(tagType,
-				that.tagType);
+			that.tagType);
 	}
 
 	@Override
@@ -87,8 +87,8 @@ public class JavadocInlineTag implements JavadocElement {
 	@Override
 	public String toString() {
 		return "JavadocInlineTag{"
-			+ "elements=" + elements
-			+ ", tagType=" + tagType.getName()
-			+ '}';
+		       + "elements=" + elements
+		       + ", tagType=" + tagType.getName()
+		       + '}';
 	}
 }

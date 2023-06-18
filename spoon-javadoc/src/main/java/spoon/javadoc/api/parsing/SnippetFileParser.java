@@ -23,8 +23,8 @@ import spoon.support.Internal;
  * A parser for snippet files and bodies.
  * <p>
  * <em><strong>You want to use
- * {@link spoon.javadoc.api.elements.snippets.JavadocSnippetBody JavadocSnippetBody}
- * instead of directly using this classs.</strong></em>
+ * {@link spoon.javadoc.api.elements.snippets.JavadocSnippetBody JavadocSnippetBody} instead of directly using this
+ * classs.</strong></em>
  */
 @Internal
 public class SnippetFileParser {
@@ -69,18 +69,18 @@ public class SnippetFileParser {
 			}
 
 			Optional<JavadocSnippetRegionType> regionType = JavadocSnippetRegionType.fromString(
-					tag.strip().toLowerCase(Locale.ROOT)
+				tag.strip().toLowerCase(Locale.ROOT)
 			);
 			if (regionType.isEmpty()) {
 				continue;
 			}
 
 			Map<String, String> attributes = InlineTagParser.parseSnippetAttributes(
-					new StringReader(line.readRemaining())
+				new StringReader(line.readRemaining())
 			);
 			boolean forNextLine = line.getUnderlying().stripTrailing().endsWith(":");
 			boolean shouldClose =
-					!attributes.containsKey("region") && regionType.get() != JavadocSnippetRegionType.START;
+				!attributes.containsKey("region") && regionType.get() != JavadocSnippetRegionType.START;
 			closeOnNext = forNextLine && shouldClose;
 
 			int startLine = forNextLine ? lineNumber + 1 : lineNumber;
@@ -110,17 +110,17 @@ public class SnippetFileParser {
 		}
 
 		Map<String, String> attributes = InlineTagParser.parseSnippetAttributes(
-				new StringReader(reader.readWhile(it -> it != '\n'))
+			new StringReader(reader.readWhile(it -> it != '\n'))
 		);
 		String regionName = attributes.get("region");
 
 		return openRegions.stream()
-				.filter(it -> it.name.equals(regionName))
-				.findFirst()
-				.stream()
-				.peek(openRegions::remove)
-				.findFirst()
-				.map(it -> it.close(line));
+			.filter(it -> it.name.equals(regionName))
+			.findFirst()
+			.stream()
+			.peek(openRegions::remove)
+			.findFirst()
+			.map(it -> it.close(line));
 	}
 
 	private Optional<JavadocSnippetMarkupRegion> endClosestRegion(int endLine) {
@@ -137,7 +137,7 @@ public class SnippetFileParser {
 		private final JavadocSnippetRegionType type;
 
 		private OpenRegion(
-				int startLine, Map<String, String> attributes, JavadocSnippetRegionType type
+			int startLine, Map<String, String> attributes, JavadocSnippetRegionType type
 		) {
 			this.startLine = startLine;
 			this.name = attributes.getOrDefault("region", "");

@@ -1,5 +1,17 @@
 package spoon.javadoc.api.parsing;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import spoon.javadoc.api.JavadocTagType;
 import spoon.javadoc.api.StandardJavadocTagType;
 import spoon.javadoc.api.elements.JavadocBlockTag;
@@ -18,19 +30,6 @@ import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /**
  * Javadoc specifies comment inheritance for methods. This class provides utilities to look up inherited elements.
  */
@@ -38,7 +37,8 @@ public class InheritanceResolver {
 
 	/**
 	 * Returns a list with all super methods in
-	 * <a href="https://docs.oracle.com/en/java/javase/19/docs/specs/javadoc/doc-comment-spec.html#method-comments-algorithm">
+	 * <a
+	 * href="https://docs.oracle.com/en/java/javase/19/docs/specs/javadoc/doc-comment-spec.html#method-comments-algorithm">
 	 * inheritance order</a>
 	 *
 	 * @param startType the type to search upwards from
@@ -213,6 +213,7 @@ public class InheritanceResolver {
 	}
 
 	private static class InheritedJavadoc {
+
 		private final List<JavadocElement> body;
 		private final JavadocBlockTag returnTag;
 		private final Map<String, JavadocBlockTag> params;
@@ -248,6 +249,7 @@ public class InheritanceResolver {
 	}
 
 	private static class JavadocInheritanceCollectionVisitor implements JavadocVisitor<Void> {
+
 		private final Set<String> missingParameters;
 		private final Set<String> missingThrowsClauses;
 		private final Map<String, JavadocBlockTag> params;

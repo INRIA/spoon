@@ -7,6 +7,11 @@
  */
 package spoon.javadoc.api.parsing;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import spoon.javadoc.api.JavadocTagCategory;
 import spoon.javadoc.api.JavadocTagType;
 import spoon.javadoc.api.StandardJavadocTagType;
@@ -16,12 +21,6 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A javadoc parser.

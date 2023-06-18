@@ -58,7 +58,7 @@ public class JavadocReference implements JavadocElement {
 	@Override
 	public String toString() {
 		return "JavadocReference{"
-			+ ", reference=" + reference
-			+ '}';
+		       + ", reference=" + reference
+		       + '}';
 	}
 }

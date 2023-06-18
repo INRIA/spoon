@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class JavadocSnippetMarkupRegion {
+
 	private final int startLine;
 	private final int endLine;
 	private final Map<String, String> attributes;
@@ -84,7 +85,7 @@ public class JavadocSnippetMarkupRegion {
 		}
 		JavadocSnippetMarkupRegion that = (JavadocSnippetMarkupRegion) o;
 		return startLine == that.startLine && endLine == that.endLine && Objects.equals(
-				attributes, that.attributes) && type == that.type;
+			attributes, that.attributes) && type == that.type;
 	}
 
 	@Override
@@ -95,11 +96,11 @@ public class JavadocSnippetMarkupRegion {
 	@Override
 	public String toString() {
 		return "SnippetMarkupRegion{"
-			+ "name='" + getName() + '\''
-			+ ", startLine=" + startLine
-			+ ", endLine=" + endLine
-			+ ", attributes=" + attributes
-			+ ", type=" + type
-			+ '}';
+		       + "name='" + getName() + '\''
+		       + ", startLine=" + startLine
+		       + ", endLine=" + endLine
+		       + ", attributes=" + attributes
+		       + ", type=" + type
+		       + '}';
 	}
 }

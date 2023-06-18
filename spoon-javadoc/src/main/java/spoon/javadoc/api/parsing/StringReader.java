@@ -13,6 +13,7 @@ import java.util.function.IntPredicate;
  * A string reader to help with building hand-written parsers.
  */
 class StringReader {
+
 	private final String underlying;
 	private int position;
 

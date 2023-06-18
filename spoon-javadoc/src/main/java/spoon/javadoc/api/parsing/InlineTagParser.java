@@ -7,6 +7,10 @@
  */
 package spoon.javadoc.api.parsing;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import spoon.javadoc.api.JavadocTagType;
 import spoon.javadoc.api.StandardJavadocTagType;
 import spoon.javadoc.api.elements.JavadocElement;
@@ -14,11 +18,6 @@ import spoon.javadoc.api.elements.JavadocInlineTag;
 import spoon.javadoc.api.elements.JavadocReference;
 import spoon.javadoc.api.elements.JavadocText;
 import spoon.javadoc.api.elements.snippets.JavadocSnippetTag;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A parser for inline tags

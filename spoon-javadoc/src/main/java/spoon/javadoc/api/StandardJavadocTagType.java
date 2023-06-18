@@ -7,13 +7,13 @@
  */
 package spoon.javadoc.api;
 
+import static spoon.javadoc.api.JavadocTagCategory.BLOCK;
+import static spoon.javadoc.api.JavadocTagCategory.INLINE;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
-
-import static spoon.javadoc.api.JavadocTagCategory.BLOCK;
-import static spoon.javadoc.api.JavadocTagCategory.INLINE;
 
 /**
  * Contains all standard javadoc tag types.

@@ -13,6 +13,7 @@ import java.util.Objects;
  * Normal text appearing in a javadoc comment.
  */
 public class JavadocText implements JavadocElement {
+
 	private final String text;
 
 	/**
@@ -54,7 +55,7 @@ public class JavadocText implements JavadocElement {
 	@Override
 	public String toString() {
 		return "JavadocText{"
-			+ "text='" + text + '\''
-			+ '}';
+		       + "text='" + text + '\''
+		       + '}';
 	}
 }

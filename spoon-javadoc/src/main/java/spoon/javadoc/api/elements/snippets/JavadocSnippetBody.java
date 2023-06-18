@@ -17,8 +17,8 @@ import spoon.javadoc.api.parsing.SnippetFileParser;
 /**
  * A representation of a {@code @snippet} tag body (or a file referenced by it).
  * <p>
- * Snippet bodies consist of normal code with a list of (potentially overlapping) regions. This
- * class contains lines, regions, and is able to answer "what regions apply here" queries.
+ * Snippet bodies consist of normal code with a list of (potentially overlapping) regions. This class contains lines,
+ * regions, and is able to answer "what regions apply here" queries.
  */
 public class JavadocSnippetBody {
 
@@ -36,8 +36,8 @@ public class JavadocSnippetBody {
 	 */
 	public Collection<JavadocSnippetMarkupRegion> getActiveRegionsAtLine(int line) {
 		return regions.stream()
-				.filter(it -> line >= it.getStartLine() && line <= it.getEndLine())
-				.collect(Collectors.toList());
+			.filter(it -> line >= it.getStartLine() && line <= it.getEndLine())
+			.collect(Collectors.toList());
 	}
 
 	/**
