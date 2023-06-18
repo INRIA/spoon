@@ -91,6 +91,7 @@ class JavadocParserTest {
 		);
 	}
 
+	// @formatter:off
 	/**
 	 * Some people use {@code to write code}. Sometimes, you also find an {@code {@docRoot}}, normally used to set image
 	 * urls: {@docRoot}/foo.html.
@@ -106,13 +107,14 @@ class JavadocParserTest {
 	 *
 	 * Literals, like {@literal {@literal}} can be wrapped in literal tags.
 	 */
+	// @formatter:on
 	private static List<JavadocElement> sampleManyInlineTags() {
 		return List.of(
 			text("Some people use "),
 			inline(CODE, text("to write code")),
 			text(". Sometimes, you also find an "),
 			inline(CODE, text("{@docRoot}")),
-			text(", normally\nused to set image urls: "),
+			text(", normally used to set image\nurls: "),
 			inline(DOC_ROOT),
 			text("/foo.html.\n\nJavadoc can also build an\n"),
 
@@ -121,18 +123,18 @@ class JavadocParserTest {
 				text("index"),
 				text(
 					"Something that serves to guide, point out, or otherwise "
-					+ "facilitate reference,\nespecially."
+					+ "facilitate reference, especially."
 				)
 			),
-			text(" for you. These indices can also span\n"),
+			text(" for you.\nThese indices can also span "),
 			inline(INDEX, text("multiple words"), text("more than a single word")),
 			text(".\n\n"),
 
 			inline(
 				SUMMARY,
 				text(
-					"This is a cool summary. Not sure people use this tag. It is mostly ignored here, as\n"
-					+ "it is not at the beginning")
+					"This is a cool summary. Not sure people use this tag. "
+					+ "It is mostly ignored here, as it is not at the\nbeginning")
 			),
 			text(".\n\nYour JVM vendor can be found in "),
 
@@ -143,11 +145,13 @@ class JavadocParserTest {
 		);
 	}
 
+	// @formatter:off
 	/**
 	 * {@inheritDoc} Please inherit the description.
 	 *
 	 * {@return hello, I am an inline return tag!}
 	 */
+	// @formatter:on
 	private static List<JavadocElement> sampleReturnInline() {
 		return List.of(
 			inline(INHERIT_DOC),
@@ -156,6 +160,7 @@ class JavadocParserTest {
 		);
 	}
 
+	// @formatter:off
 	/**
 	 * @param aParam A parameter!
 	 * @return some value
@@ -165,6 +170,7 @@ class JavadocParserTest {
 	 * @since The day I wrote this
 	 * @deprecated No worries, you can always use me
 	 */
+	// @formatter:on
 	private static List<JavadocElement> sampleBlockTags(int aParam) {
 		return List.of(
 			block(PARAM, text("aParam"), text("A parameter!")),
@@ -177,6 +183,7 @@ class JavadocParserTest {
 		);
 	}
 
+	// @formatter:off
 	/**
 	 * This method makes no use of {@link String}, {@link String#contains(CharSequence)},
 	 * {@link String#CASE_INSENSITIVE_ORDER}, or {@link java.time}.
@@ -189,6 +196,7 @@ class JavadocParserTest {
 	 *
 	 * People can also embed values: {@value #I_AM_A_VAR}.
 	 */
+	// @formatter:on
 	private static List<JavadocElement> sampleReferencedInlineTags(Factory factory) {
 		return List.of(
 			text("This method makes no use of "),
@@ -275,19 +283,23 @@ class JavadocParserTest {
 		);
 	}
 
+	// @formatter:off
 	/**
 	 * @param <T> a type param
 	 */
+	// @formatter:on
 	private static <T> List<JavadocElement> sampleTypeParam() {
 		return List.of(
 			block(PARAM, text("<T>"), text("a type param"))
 		);
 	}
 
+	// @formatter:off
 	/**
 	 * @provides foo.bar.Baz hello world
 	 * @uses foo.bar.Foo hello there
 	 */
+	// @formatter:on
 	private static List<JavadocElement> sampleModuleStuff() {
 		return List.of(
 			block(PROVIDES, text("foo.bar.Baz"), text("hello world")),
@@ -318,11 +330,13 @@ class JavadocParserTest {
 		);
 	}
 
+	// @formatter:off
 	/**
 	 * {@snippet id = "bar" lang = "java":
 	 *   class Foo {}
 	 *}
 	 */
+	// @formatter:on
 	private static List<JavadocElement> sampleSnippet() {
 		return List.of(
 			new JavadocSnippetTag(text("\n  class Foo {}\n"), Map.of("id", "bar", "lang", "java"))
