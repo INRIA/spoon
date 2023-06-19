@@ -34,7 +34,7 @@ public interface CtRecordComponent extends CtTypedElement<Object>, CtNamedElemen
 	 * Also this element <strong>is not</strong> part of the model. A record already has the field corresponding to its components.
 	 * Use {@link CtRecord#getFields()} to get the fields of a record.
 	 *
-	 * @return  the field corresponding to the component as a view.
+	 * @return the field corresponding to the component as a view.
 	 */
 	CtField<?> toField();
 
