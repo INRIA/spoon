@@ -11,18 +11,20 @@ import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
 import spoon.Launcher;
 import spoon.compiler.Environment;
+import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.support.modelobs.FineModelChangeListener;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
-
+import spoon.testing.utils.GitHubIssue;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.google.common.primitives.Primitives.allPrimitiveTypes;
 import static com.google.common.primitives.Primitives.wrap;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 import static spoon.testing.utils.Check.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
@@ -121,4 +123,19 @@ public class CtTypeReferenceTest {
         );
     }
 
+    
+    @GitHubIssue(fixed = true, issueNumber = 5290)
+    @Test
+    void javaLangClassAsInputDoesNotCrashSpoon() {
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setComplianceLevel(17);
+        launcher.getEnvironment().setIgnoreSyntaxErrors(true);
+        launcher.addInputResource("src/test/resources/jdk/Class.java");
+        CtModel model = launcher.buildModel();
+        String className = "java.lang.Class";
+        CtType<?> type = assertDoesNotThrow(() -> model.getAllTypes().stream()
+                .filter(it -> it.getQualifiedName().equals(className)).findFirst().orElseThrow());
+        assertEquals("java.lang.Class", type.getQualifiedName(),
+                "Class name should be java.lang.Class");
+    }
 }

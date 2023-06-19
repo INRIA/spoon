@@ -60,6 +60,7 @@ import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
+import org.eclipse.jdt.internal.compiler.lookup.UnresolvedReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VoidTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
@@ -867,12 +868,32 @@ public class ReferenceBuilder {
 			ref = getTypeReferenceFromProblemReferenceBinding((ProblemReferenceBinding) binding);
 		} else if (binding instanceof IntersectionTypeBinding18) {
 			ref = getTypeReferenceFromIntersectionTypeBinding((IntersectionTypeBinding18) binding);
+		} else if (binding instanceof UnresolvedReferenceBinding) {
+			ref = getTypeReferenceFromUnresolvedReferenceBinding((UnresolvedReferenceBinding) binding);
 		} else {
 			throw new RuntimeException("Unknown TypeBinding: " + binding.getClass() + " " + binding);
 		}
 		bindingCache.remove(binding);
 		this.exploringParameterizedBindings.remove(binding);
 		return (CtTypeReference<T>) ref;
+	}
+	
+	/**
+	 * Resolves a {@link UnresolvedReferenceBinding} to their closest match.
+	 * For this we use the {@link UnresolvedReferenceBinding#closestMatch()} method. This is a best effort approach and can fail.
+	 *
+	 * @param binding the binding to resolve to a type reference.
+	 * @return a type reference or null if the binding has no closest match
+	 */
+	private CtTypeReference<?> getTypeReferenceFromUnresolvedReferenceBinding(UnresolvedReferenceBinding binding) {
+		TypeBinding closestMatch = binding.closestMatch();
+		if (closestMatch != null) {
+			CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+			ref.setSimpleName(new String(binding.sourceName()));
+			ref.setPackage(getPackageReference(binding.getPackage()));
+			return ref;
+		}
+		return null;
 	}
 
 	private static boolean isParameterizedProblemReferenceBinding(TypeBinding binding) {
