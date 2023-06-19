@@ -21,7 +21,7 @@ public interface CtRecordComponent extends CtTypedElement<Object>, CtNamedElemen
 	/**
 	 * Converts the component to an implicit method. The returned method is a view and has no parent.
 	 * This means that any modification on the returned method will not be reflected on the component.
-	 * Also this element <b> is not </b> part of the model. A record already has the methods corresponding to its components.
+	 * Also this element <strong>is not</strong> part of the model. A record already has the methods corresponding to its components.
 	 * Use {@link CtRecord#getMethods()} to get the getter methods of a record.
 	 *
 	 * @return the method corresponding to the component (a getter) as a view.
