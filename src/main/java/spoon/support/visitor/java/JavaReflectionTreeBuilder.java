@@ -90,6 +90,9 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T, R extends CtType<T>> R scan(Class<T> clazz) {
 		// We modify and query our modified model in this part. If another thread were to do the same
 		// on the same model, things will explode (e.g. with a ParentNotInitialized exception).
+		// We only synchronize in the main entrypoint, as that should be enough for normal consumers.
+		// The shadow factory should not be modified in other places and nobody should be directly calling
+		// the visit methods.
 		synchronized (factory) {
 			CtPackage ctPackage;
 			CtType<?> ctEnclosingClass;
