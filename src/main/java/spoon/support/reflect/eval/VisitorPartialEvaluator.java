@@ -120,91 +120,99 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
 		CtExpression<?> left = evaluate(operator.getLeftHandOperand());
 		CtExpression<?> right = evaluate(operator.getRightHandOperand());
+
 		if ((left instanceof CtLiteral) && (right instanceof CtLiteral)) {
 			Object leftObject = ((CtLiteral<?>) left).getValue();
 			Object rightObject = ((CtLiteral<?>) right).getValue();
-			CtLiteral<Object> res = operator.getFactory().Core().createLiteral();
+			Object value;
 			switch (operator.getKind()) {
 			case AND:
-				res.setValue((Boolean) leftObject && (Boolean) rightObject);
+				value = (Boolean) leftObject && (Boolean) rightObject;
 				break;
 			case OR:
-				res.setValue((Boolean) leftObject || (Boolean) rightObject);
+				value = (Boolean) leftObject || (Boolean) rightObject;
 				break;
 			case EQ:
 				if (leftObject == null) {
-					res.setValue(leftObject == rightObject);
+					value = leftObject == rightObject;
 				} else {
-					res.setValue(leftObject.equals(rightObject));
+					value = leftObject.equals(rightObject);
 				}
 				break;
 			case NE:
 				if (leftObject == null) {
-					res.setValue(leftObject != rightObject);
+					value = leftObject != rightObject;
 				} else {
-					res.setValue(!leftObject.equals(rightObject));
+					value = !leftObject.equals(rightObject);
 				}
 				break;
 			case GE:
-				res.setValue(((Number) leftObject).doubleValue() >= ((Number) rightObject).doubleValue());
+				value = ((Number) leftObject).doubleValue() >= ((Number) rightObject).doubleValue();
 				break;
 			case LE:
-				res.setValue(((Number) leftObject).doubleValue() <= ((Number) rightObject).doubleValue());
+				value = ((Number) leftObject).doubleValue() <= ((Number) rightObject).doubleValue();
 				break;
 			case GT:
-				res.setValue(((Number) leftObject).doubleValue() > ((Number) rightObject).doubleValue());
+				value = ((Number) leftObject).doubleValue() > ((Number) rightObject).doubleValue();
 				break;
 			case LT:
-				res.setValue(((Number) leftObject).doubleValue() < ((Number) rightObject).doubleValue());
+				value = ((Number) leftObject).doubleValue() < ((Number) rightObject).doubleValue();
 				break;
 			case MINUS:
-				res.setValue(convert(operator.getType(),
-								((Number) leftObject).doubleValue() - ((Number) rightObject).doubleValue()));
+				value = convert(operator.getType(),
+					((Number) leftObject).doubleValue() - ((Number) rightObject).doubleValue());
 				break;
 			case MUL:
-				res.setValue(convert(operator.getType(),
-								((Number) leftObject).doubleValue() * ((Number) rightObject).doubleValue()));
+				value = convert(operator.getType(),
+					((Number) leftObject).doubleValue() * ((Number) rightObject).doubleValue());
 				break;
 			case DIV:
-				res.setValue(convert(operator.getType(),
-								((Number) leftObject).doubleValue() / ((Number) rightObject).doubleValue()));
+				value = convert(operator.getType(),
+					((Number) leftObject).doubleValue() / ((Number) rightObject).doubleValue());
 				break;
 			case PLUS:
 				if ((leftObject instanceof String) || (rightObject instanceof String)) {
-					res.setValue("" + leftObject + rightObject);
+					value = "" + leftObject + rightObject;
 				} else {
-					res.setValue(convert(operator.getType(),
-									((Number) leftObject).doubleValue() + ((Number) rightObject).doubleValue()));
+					value = convert(operator.getType(),
+						((Number) leftObject).doubleValue() + ((Number) rightObject).doubleValue());
 				}
+				break;
+			case MOD:
+				value = convert(operator.getType(),
+					((Number) leftObject).doubleValue() % ((Number) rightObject).doubleValue());
 				break;
 			case BITAND:
 				if (leftObject instanceof Boolean) {
-					res.setValue((Boolean) leftObject & (Boolean) rightObject);
+					value = (Boolean) leftObject & (Boolean) rightObject;
 				} else {
-					res.setValue(((Number) leftObject).intValue() & ((Number) rightObject).intValue());
+					value = convert(operator.getType(),
+						((Number) leftObject).longValue() & ((Number) rightObject).longValue());
 				}
 				break;
 			case BITOR:
 				if (leftObject instanceof Boolean) {
-					res.setValue((Boolean) leftObject | (Boolean) rightObject);
+					value = (Boolean) leftObject | (Boolean) rightObject;
 				} else {
-					res.setValue(((Number) leftObject).intValue() | ((Number) rightObject).intValue());
+					value = convert(operator.getType(),
+						((Number) leftObject).longValue() | ((Number) rightObject).longValue());
 				}
 				break;
 			case BITXOR:
 				if (leftObject instanceof Boolean) {
-					res.setValue((Boolean) leftObject ^ (Boolean) rightObject);
+					value = (Boolean) leftObject ^ (Boolean) rightObject;
 				} else {
-					res.setValue(((Number) leftObject).intValue() ^ ((Number) rightObject).intValue());
+					value = convert(operator.getType(),
+						((Number) leftObject).longValue() ^ ((Number) rightObject).longValue());
 				}
 				break;
 			case SL:
 				if (isIntegralType(leftObject) && isIntegralType(rightObject)) {
 					long rightObjectValue = ((Number) rightObject).longValue();
 					if (leftObject instanceof Long) {
-						res.setValue((long) leftObject << rightObjectValue);
+						value = (long) leftObject << rightObjectValue;
 					} else {
-						res.setValue(((Number) leftObject).intValue() << rightObjectValue);
+						value = ((Number) leftObject).intValue() << rightObjectValue;
 					}
 					break;
 				}
@@ -213,9 +221,20 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				if (isIntegralType(leftObject) && isIntegralType(rightObject)) {
 					long rightObjectValue = ((Number) rightObject).longValue();
 					if (leftObject instanceof Long) {
-						res.setValue((long) leftObject >> rightObjectValue);
+						value = (long) leftObject >> rightObjectValue;
 					} else {
-						res.setValue(((Number) leftObject).intValue() >> rightObjectValue);
+						value = ((Number) leftObject).intValue() >> rightObjectValue;
+					}
+					break;
+				}
+				throw new RuntimeException(operator.getKind() + " is only supported for integral types on both sides");
+			case USR:
+				if (isIntegralType(leftObject) && isIntegralType(rightObject)) {
+					long rightObjectValue = ((Number) rightObject).longValue();
+					if (leftObject instanceof Long) {
+						value = (long) leftObject >>> rightObjectValue;
+					} else {
+						value = ((Number) leftObject).intValue() >>> rightObjectValue;
 					}
 					break;
 				}
@@ -223,6 +242,8 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 			default:
 				throw new RuntimeException("unsupported operator " + operator.getKind());
 			}
+
+			CtLiteral<Object> res = operator.getFactory().createLiteral(value);
 			setResult(res);
 		} else if ((left instanceof CtLiteral) || (right instanceof CtLiteral)) {
 			CtLiteral<?> literal;
@@ -235,28 +256,25 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				expr = left;
 			}
 			Object o = literal.getValue();
-			CtLiteral<Object> res = operator.getFactory().Core().createLiteral();
+
 			switch (operator.getKind()) {
 			case AND:
 				if ((Boolean) o) {
 					setResult(expr);
 				} else {
-					res.setValue(false);
-					setResult(res);
+					setResult(operator.getFactory().createLiteral(false));
 				}
 				return;
 			case OR:
 				if ((Boolean) o) {
-					res.setValue(true);
-					setResult(res);
+					setResult(operator.getFactory().createLiteral(true));
 				} else {
 					setResult(expr);
 				}
 				return;
 			case BITOR:
 				if ((o instanceof Boolean) && (Boolean) o) {
-					res.setValue(true);
-					setResult(res);
+					setResult(operator.getFactory().createLiteral(true));
 				}
 				return;
 			default:
@@ -308,8 +326,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		if ("class".equals(fieldAccess.getVariable().getSimpleName())) {
 			Class<?> actualClass = fieldAccess.getVariable().getDeclaringType().getActualClass();
 			if (actualClass != null) {
-				CtLiteral<Class<?>> literal = fieldAccess.getFactory().Core().createLiteral();
-				literal.setValue(actualClass);
+				CtLiteral<Class<?>> literal = fieldAccess.getFactory().createLiteral(actualClass);
 				setResult(literal);
 				return;
 			}
@@ -463,8 +480,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				try {
 					r = RtHelper.invoke(i);
 					if (isLiteralType(r)) {
-						CtLiteral<T> l = invocation.getFactory().Core().createLiteral();
-						l.setValue(r);
+						CtLiteral<T> l = invocation.getFactory().createLiteral(r);
 						setResult(l);
 						return;
 					}
@@ -551,21 +567,22 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		CtExpression<?> operand = evaluate(operator.getOperand());
 		if (operand instanceof CtLiteral) {
 			Object object = ((CtLiteral<?>) operand).getValue();
-			CtLiteral<Object> res = operator.getFactory().Core().createLiteral();
+			Object value;
 			switch (operator.getKind()) {
 			case NOT:
-				res.setValue(!(Boolean) object);
+				value = !(Boolean) object;
 				break;
 			case NEG:
 				if (isFloatingType(operator.getType())) {
-					res.setValue(convert(operator.getType(), -1 * ((Number) object).doubleValue()));
+					value = convert(operator.getType(), -1 * ((Number) object).doubleValue());
 				} else {
-					res.setValue(convert(operator.getType(), -1 * ((Number) object).longValue()));
+					value = convert(operator.getType(), -1 * ((Number) object).longValue());
 				}
-			break;
+				break;
 			default:
 				throw new RuntimeException("unsupported operator " + operator.getKind());
 			}
+			CtLiteral<Object> res = operator.getFactory().createLiteral(value);
 			setResult(res);
 			return;
 		}

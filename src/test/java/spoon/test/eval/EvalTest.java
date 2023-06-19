@@ -18,11 +18,17 @@ package spoon.test.eval;
 
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -30,10 +36,13 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -50,6 +59,7 @@ import spoon.test.eval.testclasses.Foo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -165,7 +175,7 @@ public class EvalTest {
 	@Test
 	public void testVisitorPartialEvaluator_binary() {
 		Launcher launcher = new Launcher();
-		
+
 		{ // binary operator
 			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("0+1").compile();
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
@@ -318,15 +328,15 @@ public class EvalTest {
 	private CtBinaryOperator<?> createBinaryOperatorOnLiterals(Factory factory, Object leftLiteral, Object rightLiteral, BinaryOperatorKind opKind) {
 		return factory.createBinaryOperator(factory.createLiteral(leftLiteral), factory.createLiteral(rightLiteral), opKind);
 	}
-	
+
 	@ParameterizedTest
 	@CsvSource(
 		delimiter = '|',
 		useHeadersInDisplayName = true,
 		value = {
-			" Literal  | Expected  ",	
+			" Literal  | Expected  ",
 			"-1.234567 | -1.234567 ",
-			"-2.345F   | -2.345F   ", 
+			"-2.345F   | -2.345F   ",
 			"-3        | -3        ",
 			"-4L       | -4L       "
 		}
@@ -342,5 +352,262 @@ public class EvalTest {
 		CtInvocation<?> parameter = method.getElements(new TypeFilter<>(CtInvocation.class)).get(0);
 		method.setBody(method.getBody().partiallyEvaluate());
 		assertEquals(expected, parameter.getArguments().get(0).toString());
+	}
+
+	private static <T> Set<T> concat(Set<? extends T> left, Set<? extends T> right) {
+		Set<T> result = new HashSet<>(left);
+		result.addAll(right);
+		return result;
+	}
+
+	private static <T> Set<T> concat(Set<? extends T> left) {
+		return new HashSet<>(left);
+	}
+
+	private static Stream<Arguments> provideBinaryOperatorsForAllLiterals() {
+		Set<Class<?>> wholeNumbers = Set.of(
+			byte.class,
+			short.class,
+			int.class,
+			long.class
+		);
+		// all primitive types where the boxed type implements Number
+		Set<Class<?>> numericalTypes = concat(wholeNumbers, Set.of(double.class, float.class));
+		// ^ here boolean.class and char.class are missing
+
+		Set<Class<?>> truePrimitives = concat(numericalTypes, Set.of(boolean.class /*, char.class */));
+
+		// additionally, there exist: String literals, class literals, null literals, and arrays
+
+		Map<BinaryOperatorKind, Set<Class<?>>> supportedTypes = Map.ofEntries(
+			// arithmetic operators:
+			Map.entry(BinaryOperatorKind.MUL, concat(numericalTypes /*, Set.of(char.class) */)),
+			Map.entry(BinaryOperatorKind.DIV, concat(numericalTypes /*, Set.of(char.class) */)),
+			Map.entry(BinaryOperatorKind.MOD, concat(numericalTypes /*, Set.of(char.class) */)),
+			Map.entry(BinaryOperatorKind.PLUS, concat(numericalTypes, Set.of(/*char.class,*/ String.class))),
+			Map.entry(BinaryOperatorKind.MINUS, concat(numericalTypes /*, Set.of(char.class) */)),
+			// relational operators:
+			Map.entry(BinaryOperatorKind.EQ, concat(truePrimitives, Set.of(String.class))),
+			Map.entry(BinaryOperatorKind.NE, concat(truePrimitives, Set.of(String.class))),
+			Map.entry(BinaryOperatorKind.LE, concat(numericalTypes /*, Set.of(char.class) */)),
+			Map.entry(BinaryOperatorKind.LT, concat(numericalTypes /*, Set.of(char.class) */)),
+			Map.entry(BinaryOperatorKind.GE, concat(numericalTypes /*, Set.of(char.class) */)),
+			Map.entry(BinaryOperatorKind.GT, concat(numericalTypes /*, Set.of(char.class) */)),
+			// logical operators:
+			Map.entry(BinaryOperatorKind.AND, Set.of(boolean.class)),
+			Map.entry(BinaryOperatorKind.OR, Set.of(boolean.class)),
+			// bitwise operators:
+			Map.entry(BinaryOperatorKind.BITAND, concat(wholeNumbers, Set.of(boolean.class /*, Set.of(char.class) */))),
+			Map.entry(BinaryOperatorKind.BITOR, concat(wholeNumbers, Set.of(boolean.class /*, Set.of(char.class) */))),
+			Map.entry(BinaryOperatorKind.BITXOR, concat(wholeNumbers, Set.of(boolean.class /*, Set.of(char.class) */))),
+			// boolean is not supported by the following operators:
+			Map.entry(BinaryOperatorKind.SL, concat(wholeNumbers /*, Set.of(char.class) */)),
+			Map.entry(BinaryOperatorKind.SR, concat(wholeNumbers /*, Set.of(char.class) */)),
+			Map.entry(BinaryOperatorKind.USR, concat(wholeNumbers /*, Set.of(char.class) */)),
+			// other operators:
+			// TODO: what kind does this support? Object.class?
+			Map.entry(BinaryOperatorKind.INSTANCEOF, Set.of())
+		);
+
+		return Stream.of(
+			Map.entry(byte.class, List.of("((byte) 1)", "((byte) 2)")),
+			Map.entry(short.class, List.of("((short) 1)", "((short) 2)")),
+			Map.entry(int.class, List.of("1", "2")),
+			Map.entry(long.class, List.of("1l", "2l")),
+			Map.entry(float.class, List.of("1.0f", "2.0f")),
+			Map.entry(double.class, List.of("1.0d", "2.0d")),
+			Map.entry(boolean.class, List.of("true", "false")),
+			Map.entry(char.class, List.of("1.0d", "2.0d")),
+			Map.entry(String.class, List.of("\"a\"", "\"b\""))
+		).flatMap(entry -> {
+			Class<?> type = entry.getKey();
+			String left = entry.getValue().get(0);
+			String right = entry.getValue().get(1);
+
+			return supportedTypes.entrySet()
+				.stream()
+				.filter(e -> e.getValue().contains(type))
+				.map(Map.Entry::getKey)
+				.map(operator -> Arguments.of(operator, left, right));
+		});
+	}
+
+	// TODO: those are from spoon.reflect.visitor.OperatorHelper, make this public or is this copy okay?
+	private static String getOperatorText(BinaryOperatorKind o) {
+		switch (o) {
+			case OR:
+				return "||";
+			case AND:
+				return "&&";
+			case BITOR:
+				return "|";
+			case BITXOR:
+				return "^";
+			case BITAND:
+				return "&";
+			case EQ:
+				return "==";
+			case NE:
+				return "!=";
+			case LT:
+				return "<";
+			case GT:
+				return ">";
+			case LE:
+				return "<=";
+			case GE:
+				return ">=";
+			case SL:
+				return "<<";
+			case SR:
+				return ">>";
+			case USR:
+				return ">>>";
+			case PLUS:
+				return "+";
+			case MINUS:
+				return "-";
+			case MUL:
+				return "*";
+			case DIV:
+				return "/";
+			case MOD:
+				return "%";
+			case INSTANCEOF:
+				return "instanceof";
+			default:
+				throw new SpoonException("Unsupported operator " + o.name());
+		}
+	}
+	private static String getOperatorText(UnaryOperatorKind o) {
+		switch (o) {
+			case POS:
+				return "+";
+			case NEG:
+				return "-";
+			case NOT:
+				return "!";
+			case COMPL:
+				return "~";
+			case PREINC:
+				return "++";
+			case PREDEC:
+				return "--";
+			case POSTINC:
+				return "++";
+			case POSTDEC:
+				return "--";
+			default:
+				throw new SpoonException("Unsupported operator " + o.name());
+		}
+	}
+
+
+	@ParameterizedTest
+	@MethodSource("provideBinaryOperatorsForAllLiterals")
+	void testVisitCtBinaryOperatorLiteralType(BinaryOperatorKind operator, String left, String right) {
+		// TODO: what happens with assignment operators?
+		// contract: the type is preserved during partial evaluation
+		String code = "public class Test {\n"
+			+ "	void test() {\n"
+			+ "		System.out.println(%s);\n"
+			+ "	}\n"
+			+ "}\n";
+		CtBinaryOperator<?> ctBinaryOperator =  Launcher.parseClass(String.format(
+				code,
+				String.format("(%s) %s (%s)", left, getOperatorText(operator), right)
+			))
+			.getElements(new TypeFilter<>(CtBinaryOperator.class))
+			.get(0);
+		CtType<?> currentType = ctBinaryOperator.getType().getTypeDeclaration();
+		CtExpression<?> evaluated = ctBinaryOperator.partiallyEvaluate();
+		assertNotNull(
+			evaluated.getType(),
+			"type of '%s' is null after evaluation".formatted(ctBinaryOperator)
+		);
+		assertEquals(currentType, evaluated.getType().getTypeDeclaration());
+	}
+
+	private static Stream<Arguments> provideUnaryOperatorsForAllLiterals() {
+		Set<Class<?>> wholeNumbers = Set.of(
+			byte.class,
+			short.class,
+			int.class,
+			long.class
+		);
+		// all primitive types where the boxed type implements Number
+		Set<Class<?>> numericalTypes = concat(wholeNumbers, Set.of(double.class, float.class));
+		// ^ here boolean.class and char.class are missing
+
+		Map<UnaryOperatorKind, Set<Class<?>>> supportedTypes = Map.ofEntries(
+			// Map.entry(UnaryOperatorKind.COMPL, concat(numericalTypes, Set.of(char.class))),
+			Map.entry(UnaryOperatorKind.NEG, concat(numericalTypes /*, Set.of(char.class) */)),
+			Map.entry(UnaryOperatorKind.NOT, Set.of(boolean.class))
+			// Map.entry(UnaryOperatorKind.POS, concat(numericalTypes, Set.of(char.class))),
+		);
+
+		return Stream.of(
+			Map.entry(byte.class, "((byte) 1)"),
+			Map.entry(short.class, "((short) 1)"),
+			Map.entry(int.class, "1"),
+			Map.entry(long.class, "1l"),
+			Map.entry(float.class, "1.0f"),
+			Map.entry(double.class, "1.0d"),
+			Map.entry(boolean.class, "true"),
+			Map.entry(char.class, "1.0d")
+		).flatMap(entry -> {
+			Class<?> type = entry.getKey();
+			String value = entry.getValue();
+
+			return supportedTypes.entrySet()
+				.stream()
+				.filter(e -> e.getValue().contains(type))
+				.map(Map.Entry::getKey)
+				.map(operator -> Arguments.of(operator, value));
+		});
+	}
+
+	@ParameterizedTest
+	@MethodSource("provideUnaryOperatorsForAllLiterals")
+	void testVisitCtUnaryOperatorLiteralType(UnaryOperatorKind operator, String value) {
+		// contract: the type is preserved during partial evaluation
+		String code = "public class Test {\n"
+			+ "	void test() {\n"
+			+ "		System.out.println(%s);\n"
+			+ "	}\n"
+			+ "}\n";
+		CtUnaryOperator<?> ctUnaryOperator =  Launcher.parseClass(String.format(
+				code,
+				String.format("%s(%s)", getOperatorText(operator), value)
+			))
+			.getElements(new TypeFilter<>(CtUnaryOperator.class))
+			.get(0);
+		CtType<?> currentType = ctUnaryOperator.getType().getTypeDeclaration();
+		CtExpression<?> evaluated = ctUnaryOperator.partiallyEvaluate();
+		assertNotNull(
+			evaluated.getType(),
+			"type of '%s' is null after evaluation".formatted(ctUnaryOperator)
+		);
+		assertEquals(currentType, evaluated.getType().getTypeDeclaration());
+	}
+
+	@Test
+	void testVisitCtFieldAccessLiteralType() {
+		// contract: the type is preserved during partial evaluation
+		String code = "public class Test {\n"
+			+ "	void test() {\n"
+			+ "		System.out.println(String.class);\n"
+			+ "	}\n"
+			+ "}\n";
+		CtFieldAccess<?> ctFieldAccess =  Launcher.parseClass(code)
+			.getElements(new TypeFilter<>(CtFieldAccess.class))
+			.get(0);
+		CtType<?> currentType = ctFieldAccess.getType().getTypeDeclaration();
+		CtExpression<?> evaluated = ctFieldAccess.partiallyEvaluate();
+		assertNotNull(
+			evaluated.getType(),
+			"type of '%s' is null after evaluation".formatted(ctFieldAccess)
+		);
+		assertEquals(currentType, evaluated.getType().getTypeDeclaration());
 	}
 }
