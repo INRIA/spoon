@@ -877,7 +877,7 @@ public class ReferenceBuilder {
 		this.exploringParameterizedBindings.remove(binding);
 		return (CtTypeReference<T>) ref;
 	}
-	
+
 	/**
 	 * Resolves a {@link UnresolvedReferenceBinding} to their closest match.
 	 * For this we use the {@link UnresolvedReferenceBinding#closestMatch()} method. This is a best effort approach and can fail.
