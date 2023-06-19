@@ -31,7 +31,7 @@ public interface CtRecordComponent extends CtTypedElement<Object>, CtNamedElemen
 	/**
 	 * Converts the component to an implicit field.The returned field is a view and has <b>no</b> parent.
 	 * This means that any modification on the returned field will not be reflected on the component.
-	 * Also this element <b> is not </b> part of the model. A record already has the field corresponding to its components.
+	 * Also this element <strong>is not</strong> part of the model. A record already has the field corresponding to its components.
 	 * Use {@link CtRecord#getFields()} to get the fields of a record.
 	 *
 	 * @return  the field corresponding to the component as a view.
