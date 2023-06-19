@@ -23,20 +23,6 @@
   <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
   <url>http://spoon.gforge.inria.fr/</url>
 
-  <licenses>
-      <license>
-          <name>CeCILL-C</name>
-          <comments>French equivalent to LGPL</comments>
-          <url>https://cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
-          <distribution>repo</distribution>
-      </license>
-      <license>
-          <name>MIT</name>
-          <url>https://opensource.org/licenses/MIT</url>
-          <distribution>repo</distribution>
-      </license>
-  </licenses>
-
   <properties>
     <sonar.coverage.exclusions>
         **/support/gui/*
@@ -178,7 +164,6 @@
         <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.10</version>
             <executions>
                 <execution>
                     <goals>
