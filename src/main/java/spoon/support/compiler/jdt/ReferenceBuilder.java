@@ -885,6 +885,7 @@ public class ReferenceBuilder {
 	 * @param binding the binding to resolve to a type reference.
 	 * @return a type reference or null if the binding has no closest match
 	 */
+	@SuppressWarnings("ReturnOfNull")
 	private CtTypeReference<?> getTypeReferenceFromUnresolvedReferenceBinding(UnresolvedReferenceBinding binding) {
 		TypeBinding closestMatch = binding.closestMatch();
 		if (closestMatch != null) {
