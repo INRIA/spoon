@@ -523,7 +523,7 @@ public class EvalTest {
 		CtExpression<?> evaluated = ctBinaryOperator.partiallyEvaluate();
 		assertNotNull(
 			evaluated.getType(),
-			"type of '%s' is null after evaluation".formatted(ctBinaryOperator)
+			String.format("type of '%s' is null after evaluation", ctBinaryOperator)
 		);
 		assertEquals(currentType, evaluated.getType().getTypeDeclaration());
 	}
@@ -586,7 +586,7 @@ public class EvalTest {
 		CtExpression<?> evaluated = ctUnaryOperator.partiallyEvaluate();
 		assertNotNull(
 			evaluated.getType(),
-			"type of '%s' is null after evaluation".formatted(ctUnaryOperator)
+				String.format("type of '%s' is null after evaluation", ctUnaryOperator)
 		);
 		assertEquals(currentType, evaluated.getType().getTypeDeclaration());
 	}
@@ -606,7 +606,7 @@ public class EvalTest {
 		CtExpression<?> evaluated = ctFieldAccess.partiallyEvaluate();
 		assertNotNull(
 			evaluated.getType(),
-			"type of '%s' is null after evaluation".formatted(ctFieldAccess)
+			String.format("type of '%s' is null after evaluation", ctFieldAccess)
 		);
 		assertEquals(currentType, evaluated.getType().getTypeDeclaration());
 	}
