@@ -51,6 +51,7 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.AccessibleVariablesFinder;
+import spoon.reflect.visitor.OperatorHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.eval.EvalHelper;
 import spoon.support.reflect.eval.InlinePartialEvaluator;
@@ -432,77 +433,6 @@ public class EvalTest {
 		});
 	}
 
-	// TODO: those are from spoon.reflect.visitor.OperatorHelper, make this public or is this copy okay?
-	private static String getOperatorText(BinaryOperatorKind o) {
-		switch (o) {
-			case OR:
-				return "||";
-			case AND:
-				return "&&";
-			case BITOR:
-				return "|";
-			case BITXOR:
-				return "^";
-			case BITAND:
-				return "&";
-			case EQ:
-				return "==";
-			case NE:
-				return "!=";
-			case LT:
-				return "<";
-			case GT:
-				return ">";
-			case LE:
-				return "<=";
-			case GE:
-				return ">=";
-			case SL:
-				return "<<";
-			case SR:
-				return ">>";
-			case USR:
-				return ">>>";
-			case PLUS:
-				return "+";
-			case MINUS:
-				return "-";
-			case MUL:
-				return "*";
-			case DIV:
-				return "/";
-			case MOD:
-				return "%";
-			case INSTANCEOF:
-				return "instanceof";
-			default:
-				throw new SpoonException("Unsupported operator " + o.name());
-		}
-	}
-	private static String getOperatorText(UnaryOperatorKind o) {
-		switch (o) {
-			case POS:
-				return "+";
-			case NEG:
-				return "-";
-			case NOT:
-				return "!";
-			case COMPL:
-				return "~";
-			case PREINC:
-				return "++";
-			case PREDEC:
-				return "--";
-			case POSTINC:
-				return "++";
-			case POSTDEC:
-				return "--";
-			default:
-				throw new SpoonException("Unsupported operator " + o.name());
-		}
-	}
-
-
 	@ParameterizedTest
 	@MethodSource("provideBinaryOperatorsForAllLiterals")
 	void testVisitCtBinaryOperatorLiteralType(BinaryOperatorKind operator, String left, String right) {
@@ -515,7 +445,7 @@ public class EvalTest {
 			+ "}\n";
 		CtBinaryOperator<?> ctBinaryOperator =  Launcher.parseClass(String.format(
 				code,
-				String.format("(%s) %s (%s)", left, getOperatorText(operator), right)
+				String.format("(%s) %s (%s)", left, OperatorHelper.getOperatorText(operator), right)
 			))
 			.getElements(new TypeFilter<>(CtBinaryOperator.class))
 			.get(0);
@@ -578,7 +508,7 @@ public class EvalTest {
 			+ "}\n";
 		CtUnaryOperator<?> ctUnaryOperator =  Launcher.parseClass(String.format(
 				code,
-				String.format("%s(%s)", getOperatorText(operator), value)
+				String.format("%s(%s)", OperatorHelper.getOperatorText(operator), value)
 			))
 			.getElements(new TypeFilter<>(CtUnaryOperator.class))
 			.get(0);
