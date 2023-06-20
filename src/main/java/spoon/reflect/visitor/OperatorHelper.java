@@ -10,11 +10,13 @@ package spoon.reflect.visitor;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.UnaryOperatorKind;
+import spoon.support.Internal;
 
 /**
  * Computes source code representation of the operator
  */
-class OperatorHelper {
+@Internal
+public final class OperatorHelper {
 
 	public enum OperatorAssociativity {
 		LEFT, RIGHT, NONE
