@@ -16,14 +16,15 @@ project:
     homepage: https://spoon.gforge.inria.fr/
   java:
     groupId: fr.inria.gforge.spoon
-    version: 11
-  inceptionYear: 2015
+    version: "11"
+  inceptionYear: "2015"
 
 release:
   github:
     owner: INRIA
     changelog:
       formatted: ALWAYS
+      preset: conventional-commits
       format: '- {{commitShortHash}} {{commitTitle}}'
       contributors:
         format: '- {{contributorName}} ({{contributorUsernameAsLink}})'
