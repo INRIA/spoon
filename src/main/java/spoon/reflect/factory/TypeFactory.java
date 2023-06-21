@@ -92,7 +92,9 @@ public class TypeFactory extends SubFactory {
 	public final CtTypeReference<Enum> ENUM = createReference(Enum.class);
 	public final CtTypeReference<?> OMITTED_TYPE_ARG_TYPE = createReference(CtTypeReference.OMITTED_TYPE_ARG_NAME);
 
-	private final Map<Class<?>, CtType<?>> shadowCache = new ConcurrentHashMap<>();
+	// This map MUST provide a useful computeIfAbsent method in the face of concurrency.
+	// Therefore, we declare it as a ConcurrentHashMap directly.
+	private final ConcurrentHashMap<Class<?>, CtType<?>> shadowCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Returns a reference on the null type (type of null).
@@ -555,35 +557,33 @@ public class TypeFactory extends SubFactory {
 	public <T> CtType<T> get(Class<?> cl) {
 		final CtType<T> aType = get(cl.getName());
 		if (aType == null) {
-			final CtType<T> shadowClass = (CtType<T>) this.shadowCache.get(cl);
-			if (shadowClass == null) {
-				CtType<T> newShadowClass;
-				try {
-					newShadowClass = new JavaReflectionTreeBuilder(getShadowFactory()).scan((Class<T>) cl);
-				} catch (Throwable e) {
-					Launcher.LOGGER.warn("cannot create shadow class: {}", cl.getName(), e);
-
-					newShadowClass = getShadowFactory().Core().createClass();
-					newShadowClass.setSimpleName(cl.getSimpleName());
-					newShadowClass.setShadow(true);
-					getShadowFactory().Package().getOrCreate(cl.getPackage().getName()).addType(newShadowClass);
-				}
-				newShadowClass.setFactory(factory);
-				newShadowClass.accept(new CtScanner() {
-					@Override
-					public void scan(CtElement element) {
-						if (element != null) {
-							element.setFactory(factory);
-						}
-					}
-				});
-				this.shadowCache.put(cl, newShadowClass);
-				return newShadowClass;
-			} else {
-				return shadowClass;
-			}
+			return (CtType<T>) this.shadowCache.computeIfAbsent(cl, this::buildNewShadowClass);
 		}
 		return aType;
+	}
+
+	private CtType<?> buildNewShadowClass(Class<?> cl) {
+		CtType<?> newShadowClass;
+		try {
+			newShadowClass = new JavaReflectionTreeBuilder(getShadowFactory()).scan(cl);
+		} catch (Throwable e) {
+			Launcher.LOGGER.warn("cannot create shadow class: {}", cl.getName(), e);
+
+			newShadowClass = getShadowFactory().Core().createClass();
+			newShadowClass.setSimpleName(cl.getSimpleName());
+			newShadowClass.setShadow(true);
+			getShadowFactory().Package().getOrCreate(cl.getPackage().getName()).addType(newShadowClass);
+		}
+		newShadowClass.setFactory(factory);
+		newShadowClass.accept(new CtScanner() {
+			@Override
+			public void scan(CtElement element) {
+				if (element != null) {
+					element.setFactory(factory);
+				}
+			}
+		});
+		return newShadowClass;
 	}
 
 	private transient Factory shadowFactory;
