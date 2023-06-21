@@ -9,6 +9,7 @@ on:
   pull_request:
     branches:
       - master
+      - java17
   push:
     branches:
       - master
