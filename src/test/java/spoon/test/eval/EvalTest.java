@@ -465,6 +465,7 @@ public class EvalTest {
 		if (expectedType.isEmpty()) {
 			return;
 		}
+
 		String code = "public class Test {\n"
 			+ "	void test() {\n"
 			+ "		System.out.println(%s);\n"

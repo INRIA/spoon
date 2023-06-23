@@ -554,7 +554,8 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 	}
 
 	private boolean isIntegralType(Object object) {
-		return object instanceof Byte || object instanceof Short || object instanceof Integer || object instanceof Long;
+		// see https://docs.oracle.com/javase/specs/jls/se7/html/jls-4.html#jls-4.2.1
+		return object instanceof Byte || object instanceof Short || object instanceof Integer || object instanceof Long || object instanceof Character;
 	}
 
 	private boolean isLiteralType(Object object) {
@@ -628,7 +629,16 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
 		CtExpression<?> operand = evaluate(operator.getOperand());
 		if (operand instanceof CtLiteral) {
-			Object object = ((CtLiteral<?>) operand).getValue();
+			CtLiteral<?> literal = (CtLiteral<?>) operand;
+			CtTypeReference<?> promotedType = OperatorHelper.getPromotedType(operator.getKind(), literal)
+				.orElse(null);
+
+			if (promotedType == null) {
+				return;
+			}
+
+			literal = promoteLiteral(promotedType, literal);
+			Object object = literal.getValue();
 			Object value;
 			switch (operator.getKind()) {
 			case NOT:
@@ -640,6 +650,20 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				} else {
 					value = convert(operator.getType(), -1 * ((Number) object).longValue());
 				}
+				break;
+			case POS:
+				if (isFloatingType(literal.getType())) {
+					value = convert(operator.getType(), +((Number) object).doubleValue());
+				} else {
+					value = convert(operator.getType(), +((Number) object).longValue());
+				}
+				break;
+			case COMPL:
+				if (!isIntegralType(object)) {
+					return;
+				}
+
+				value = convert(operator.getType(), ~((Number) object).longValue());
 				break;
 			default:
 				throw new RuntimeException("unsupported operator " + operator.getKind());

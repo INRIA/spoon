@@ -480,7 +480,8 @@ public final class OperatorHelper {
 			case PREDEC:
 			case POSTINC:
 			case POSTDEC:
-				throw new IllegalStateException("Increment and decrement operators are not yet implemented");
+				// Not yet implemented, because it is not necessary for the current use case.
+				return Optional.empty();
 			default:
 				throw new IllegalArgumentException("Unknown operator: " + operator);
 		}
