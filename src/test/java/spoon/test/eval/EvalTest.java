@@ -382,10 +382,12 @@ public class EvalTest {
 		// This generates all combinations of binary operators and literals:
 		//
 		// There are 9 types, so 9 * 9 = 81 pairs
-		// For each pair, all operators are tested: 81 * 20 = 1620 tests ._.
+		// For each pair, all operators are tested: 81 * 19 = 1539 tests
 		return cartesianProduct(LITERAL_PROVIDER.entrySet(), LITERAL_PROVIDER.entrySet())
 			.flatMap(tuple -> Arrays.stream(BinaryOperatorKind.values())
-			.map(operator -> Arguments.of(operator, tuple.getKey().getKey(), tuple.getKey().getValue(), tuple.getValue().getKey(), tuple.getValue().getValue())));
+				// not yet implemented and does not make sense on literals
+				.filter(operator -> operator != BinaryOperatorKind.INSTANCEOF)
+				.map(operator -> Arguments.of(operator, tuple.getKey().getKey(), tuple.getKey().getValue(), tuple.getValue().getKey(), tuple.getValue().getValue())));
 	}
 
 	@ParameterizedTest(name = "{0}({1}, {3})")
@@ -398,9 +400,6 @@ public class EvalTest {
 		Function<Factory, CtLiteral<?>> rightLiteralProvider
 	) {
 		// contract: the type is preserved during partial evaluation
-
-		// not yet implemented and does not make sense on literals
-		if (operator == BinaryOperatorKind.INSTANCEOF) return;
 
 		Launcher launcher = new Launcher();
 

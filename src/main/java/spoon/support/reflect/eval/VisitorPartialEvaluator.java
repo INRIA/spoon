@@ -45,10 +45,12 @@ import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.OperatorHelper;
 import spoon.support.util.RtHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -62,7 +64,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 
 	CtElement result;
 
-	Number convert(CtTypeReference<?> type, Number n) {
+	static Number convert(CtTypeReference<?> type, Number n) {
 		if ((type.getActualClass() == int.class) || (type.getActualClass() == Integer.class)) {
 			return n.intValue();
 		}
@@ -115,15 +117,72 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		result = element;
 	}
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	private static <T, R> CtLiteral<R> promoteLiteral(CtTypeReference<R> type, CtLiteral<T> literal) {
+		CtLiteral result = literal.clone();
+		result.setType(type.clone());
+
+		// check if there is no need to cast
+		if (literal.getType().unbox().equals(type.unbox())) {
+			result.setValue(literal.getValue());
+			return result;
+		}
+
+		// casting a primitive to a string:
+		if (type.equals(type.getFactory().Type().createReference(java.lang.String.class)) && literal.getType().isPrimitive()) {
+			result.setValue(literal.getValue().toString());
+			return result;
+		}
+
+		// It is not possible to cast an Integer to a Double directly, which is a problem.
+		if (type.unbox().isPrimitive()) {
+			// for instances of Number, one can use the convert method:
+			if (literal.getValue() instanceof Number) {
+				result.setValue(convert(type, (Number) literal.getValue()));
+			} else {
+				// primitive types that do not implement Number are:
+				// boolean, char
+
+				// NOTE: it does not make sense to cast a boolean to any other primitive type
+				if (literal.getValue() instanceof Boolean) {
+					throw new IllegalStateException("Cannot cast Boolean to " + type.getQualifiedName());
+				}
+
+				if (literal.getValue() instanceof Character) {
+					result.setValue(convert(type, (int) ((char) literal.getValue())));
+				}
+			}
+		} else {
+			result.setValue(type.getActualClass().cast(literal.getValue()));
+		}
+
+		return result;
+	}
+
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
 		CtExpression<?> left = evaluate(operator.getLeftHandOperand());
 		CtExpression<?> right = evaluate(operator.getRightHandOperand());
 
 		if ((left instanceof CtLiteral) && (right instanceof CtLiteral)) {
-			Object leftObject = ((CtLiteral<?>) left).getValue();
-			Object rightObject = ((CtLiteral<?>) right).getValue();
+			CtLiteral<?> leftLiteral = (CtLiteral<?>) left;
+			CtLiteral<?> rightLiteral = (CtLiteral<?>) right;
+
+			CtTypeReference<?> promotedType = OperatorHelper.getPromotedType(
+				operator.getKind(),
+				leftLiteral,
+				rightLiteral
+			).orElse(null);
+
+			if (promotedType == null) {
+				return;
+			}
+
+			leftLiteral = promoteLiteral(promotedType, leftLiteral);
+			rightLiteral = promoteLiteral(promotedType, rightLiteral);
+			Object leftObject = leftLiteral.getValue();
+			Object rightObject = rightLiteral.getValue();
+
 			Object value;
 			switch (operator.getKind()) {
 			case AND:
@@ -244,6 +303,9 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 			}
 
 			CtLiteral<Object> res = operator.getFactory().createLiteral(value);
+			// the type of the result should not change
+			res.setType(operator.getType().clone());
+
 			setResult(res);
 		} else if ((left instanceof CtLiteral) || (right instanceof CtLiteral)) {
 			CtLiteral<?> literal;

@@ -235,6 +235,12 @@ public final class OperatorHelper {
 		long.class
 	);
 
+	private static boolean isIntegralType(CtTypeReference<?> ctTypeReference) {
+		return ctTypeReference.isPrimitive()
+			// see https://docs.oracle.com/javase/specs/jls/se7/html/jls-4.html#jls-4.2.1
+			&& (WHOLE_NUMBERS.contains(ctTypeReference.getActualClass()) || ctTypeReference.getActualClass().equals(char.class));
+	}
+
 	/**
 	 * When using an unary-operator on an operand, the operand type might be changed before the operator is applied.
 	 * For example, the result of {@code ~((short) 1)} will be of type {@code int} and not {@code short}.
@@ -334,6 +340,11 @@ public final class OperatorHelper {
 					return Optional.empty();
 				}
 
+				// after promotion, both operands have to be an integral type:
+				if (!isIntegralType(promotedLeft) || !isIntegralType(promotedRight)) {
+					return Optional.empty();
+				}
+
 				// The type of the shift expression is the promoted type of the left-hand operand.
 				return Optional.of(promotedLeft);
 			}
@@ -346,26 +357,47 @@ public final class OperatorHelper {
 			case NE: {
 				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.21
 				CtTypeReference<?> leftType = left.getType().unbox();
-				CtTypeReference<?> rightType = left.getType().unbox();
+				CtTypeReference<?> rightType = right.getType().unbox();
 
 				// The equality operators may be used to compare two operands that are convertible (§5.1.8)
 				// to numeric type, or two operands of type boolean or Boolean, or two operands that are each
 				// of either reference type or the null type. All other cases result in a compile-time error.
 				CtTypeReference<?> booleanType = typeFactory.BOOLEAN_PRIMITIVE;
-				if (binaryNumericPromotion(left, right).isPresent()
-					|| (leftType.equals(rightType) && leftType.equals(booleanType))
-					|| (!leftType.isPrimitive() && !rightType.isPrimitive())) {
-					return Optional.of(booleanType);
-				}
+				return binaryNumericPromotion(left, right).or(() -> {
+					// check if both operands are of type boolean or Boolean
+					// if so they will be promoted to the primitive type boolean
+					if (leftType.equals(rightType) && leftType.equals(booleanType)) {
+						return Optional.of(booleanType);
+					}
 
-				return Optional.empty();
+					// if both operands are of a reference type
+					if (!leftType.isPrimitive() && !rightType.isPrimitive()) {
+						// It is a compile-time error if it is impossible to convert the type of
+						// either operand to the type of the other by a casting conversion (§5.5).
+						// The run-time values of the two operands would necessarily be unequal
+						// (ignoring the case where both values are null).
+						Class<?> leftClass = leftType.getActualClass();
+						Class<?> rightClass = rightType.getActualClass();
+						if (leftClass.isAssignableFrom(rightClass)) {
+							return Optional.of(leftType);
+						}
+
+						if (rightClass.isAssignableFrom(leftClass)) {
+							return Optional.of(rightType);
+						}
+
+						return Optional.empty();
+					}
+
+					return Optional.empty();
+				});
 			}
 			case LT:
 			case LE:
 			case GT:
 			case GE:
 				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.20
-				return binaryNumericPromotion(left, right).map(v -> typeFactory.BOOLEAN_PRIMITIVE);
+				return binaryNumericPromotion(left, right);
 			case PLUS:
 				return binaryNumericPromotion(left, right).or(() -> {
 					// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.18.1
