@@ -50,7 +50,6 @@ import spoon.support.util.RtHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  *
@@ -129,7 +128,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		}
 
 		// casting a primitive to a string:
-		if (type.equals(type.getFactory().Type().createReference(java.lang.String.class)) && literal.getType().isPrimitive()) {
+		if (type.equals(type.getFactory().Type().createReference(String.class)) && literal.getType().isPrimitive()) {
 			result.setValue(literal.getValue().toString());
 			return result;
 		}
@@ -243,7 +242,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				break;
 			case BITAND:
 				if (leftObject instanceof Boolean) {
-					value = (Boolean) leftObject & (Boolean) rightObject;
+					value = (Boolean) leftObject && (Boolean) rightObject;
 				} else {
 					value = convert(operator.getType(),
 						((Number) leftObject).longValue() & ((Number) rightObject).longValue());
@@ -251,7 +250,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				break;
 			case BITOR:
 				if (leftObject instanceof Boolean) {
-					value = (Boolean) leftObject | (Boolean) rightObject;
+					value = (Boolean) leftObject || (Boolean) rightObject;
 				} else {
 					value = convert(operator.getType(),
 						((Number) leftObject).longValue() | ((Number) rightObject).longValue());

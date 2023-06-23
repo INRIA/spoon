@@ -405,6 +405,10 @@ public final class OperatorHelper {
 			case LE:
 			case GT:
 			case GE:
+			case MUL:
+			case DIV:
+			case MOD:
+			case MINUS:
 				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.20
 				return binaryNumericPromotion(left, right);
 			case PLUS:
@@ -420,11 +424,6 @@ public final class OperatorHelper {
 
 					return Optional.empty();
 				});
-			case MUL:
-			case DIV:
-			case MOD:
-			case MINUS:
-				return binaryNumericPromotion(left, right);
 			case BITAND:
 			case BITXOR:
 			case BITOR: {
