@@ -580,17 +580,17 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 	@Override
 	public <T> void visitCtField(CtField<T> f) {
 		CtField<T> r = f.clone();
-		r.setDefaultExpression(evaluate(f.getDefaultExpression()));
+		try {
+			r.setDefaultExpression(evaluate(f.getDefaultExpression()));
+		} catch (ClassCastException e) {
+			throw e;
+		}
 		setResult(r);
 	}
 
 	@Override
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public <T> void visitCtLiteral(CtLiteral<T> ctLiteral) {
-		if (ctLiteral.getTypeCasts().isEmpty()) {
-			return;
-		}
-
 		CtLiteral result = ctLiteral.clone();
 
 		List<CtTypeReference<?>> casts = new ArrayList<>(ctLiteral.getTypeCasts());
