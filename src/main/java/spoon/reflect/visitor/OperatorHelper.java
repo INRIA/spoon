@@ -9,8 +9,14 @@ package spoon.reflect.visitor;
 
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.factory.TypeFactory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.support.Internal;
+
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Computes source code representation of the operator
@@ -219,6 +225,223 @@ public final class OperatorHelper {
 				return OperatorAssociativity.NONE;
 			default:
 				return OperatorAssociativity.RIGHT;
+		}
+	}
+
+	private static final Set<Class<?>> WHOLE_NUMBERS = Set.of(
+		byte.class,
+		short.class,
+		int.class,
+		long.class
+	);
+
+	/**
+	 * When using an unary-operator on an operand, the operand type might be changed before the operator is applied.
+	 * For example, the result of {@code ~((short) 1)} will be of type {@code int} and not {@code short}.
+	 *
+	 * @param operand the operand to apply the operator on
+	 * @return the type after applying the operator or {@link Optional#empty()} if promotion does not apply
+	 * @param <T> the type of the operand
+	 */
+	private static <T> Optional<CtTypeReference<?>> unaryNumericPromotion(CtExpression<T> operand) {
+		// if the operand is of type Byte, Short, Character, Integer, Long, Float, or Double it is subject
+		// to unboxing (§5.1.8)
+		CtTypeReference<?> operandType = operand.getType().unbox();
+		// check if unary numeric promotion applies
+		if (!operandType.isPrimitive()
+			// unary promotion obviously does not apply to boolean
+			|| operandType.getActualClass().equals(boolean.class)) {
+			return Optional.empty();
+		}
+
+		// if the operand is of type byte, short, or char, it is promoted to a value of type int by a widening
+		// primitive conversion (§5.1.2).
+		if (Set.of(byte.class, short.class, char.class).contains(operandType.getActualClass())) {
+			return Optional.of(operandType.getFactory().Type().INTEGER_PRIMITIVE);
+		}
+
+		// otherwise, the operand is not converted at all.
+		return Optional.of(operandType);
+	}
+
+	private static <L, R> Optional<CtTypeReference<?>> binaryNumericPromotion(
+		CtExpression<L> left,
+		CtExpression<R> right
+	) {
+		// If any operand is of a reference type, it is subjected to unboxing conversion (§5.1.8).
+		CtTypeReference<?> leftType = left.getType().unbox();
+		CtTypeReference<?> rightType = right.getType().unbox();
+		TypeFactory typeFactory = leftType.getFactory().Type();
+
+		// each of which must denote a value that is convertible to a numeric type
+		CtTypeReference<?> booleanType = typeFactory.BOOLEAN_PRIMITIVE;
+		if (!leftType.isPrimitive()
+			|| !rightType.isPrimitive()
+			|| leftType.equals(booleanType)
+			|| rightType.equals(booleanType)) {
+			return Optional.empty();
+		}
+
+		CtTypeReference<?> doubleType = typeFactory.DOUBLE_PRIMITIVE;
+		// If either operand is of type double, the other is converted to double.
+		if (leftType.equals(doubleType) || rightType.equals(doubleType)) {
+			return Optional.of(doubleType);
+		}
+
+		// Otherwise, if either operand is of type float, the other is converted to float.
+		CtTypeReference<?> floatType = typeFactory.FLOAT_PRIMITIVE;
+		if (leftType.equals(floatType) || rightType.equals(floatType)) {
+			return Optional.of(floatType);
+		}
+
+		// Otherwise, if either operand is of type long, the other is converted to long.
+		CtTypeReference<?> longType = typeFactory.LONG_PRIMITIVE;
+		if (leftType.equals(longType) || rightType.equals(longType)) {
+			return Optional.of(longType);
+		}
+
+		// Otherwise, both operands are converted to type int.
+		return Optional.of(typeFactory.INTEGER_PRIMITIVE);
+	}
+
+	public static Optional<CtTypeReference<?>> getPromotedType(
+		BinaryOperatorKind operator,
+		CtExpression<?> left,
+		CtExpression<?> right
+	) {
+		TypeFactory typeFactory = left.getFactory().Type();
+		switch (operator) {
+			// logical operators
+			case AND:
+			case OR: {
+				CtTypeReference<?> booleanType = typeFactory.BOOLEAN_PRIMITIVE;
+				if (!left.getType().equals(booleanType) || !right.getType().equals(booleanType)) {
+					return Optional.empty();
+				}
+
+				return Optional.of(booleanType);
+			}
+			// shift operators are special:
+			case SL:
+			case SR:
+			case USR: {
+				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.19
+				// on each operand unary numeric promotion is performed
+				CtTypeReference<?> promotedLeft = unaryNumericPromotion(left).orElse(null);
+				CtTypeReference<?> promotedRight = unaryNumericPromotion(right).orElse(null);
+
+				if (promotedLeft == null || promotedRight == null) {
+					return Optional.empty();
+				}
+
+				// The type of the shift expression is the promoted type of the left-hand operand.
+				return Optional.of(promotedLeft);
+			}
+			case INSTANCEOF:
+				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.20.2
+				// Not implemented, because it is not necessary for the current use case.
+				throw new IllegalStateException("instanceof is not yet implemented");
+			// on the following operators binary numeric promotion is performed:
+			case EQ:
+			case NE: {
+				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.21
+				CtTypeReference<?> leftType = left.getType().unbox();
+				CtTypeReference<?> rightType = left.getType().unbox();
+
+				// The equality operators may be used to compare two operands that are convertible (§5.1.8)
+				// to numeric type, or two operands of type boolean or Boolean, or two operands that are each
+				// of either reference type or the null type. All other cases result in a compile-time error.
+				CtTypeReference<?> booleanType = typeFactory.BOOLEAN_PRIMITIVE;
+				if (binaryNumericPromotion(left, right).isPresent()
+					|| (leftType.equals(rightType) && leftType.equals(booleanType))
+					|| (!leftType.isPrimitive() && !rightType.isPrimitive())) {
+					return Optional.of(booleanType);
+				}
+
+				return Optional.empty();
+			}
+			case LT:
+			case LE:
+			case GT:
+			case GE:
+				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.20
+				return binaryNumericPromotion(left, right).map(v -> typeFactory.BOOLEAN_PRIMITIVE);
+			case PLUS:
+				return binaryNumericPromotion(left, right).or(() -> {
+					// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.18.1
+					//
+					// If the type of either operand of a + operator is String, then the operation is
+					// string concatenation.
+					CtTypeReference<?> stringType = typeFactory.STRING;
+					if (left.getType().equals(stringType) || right.getType().equals(stringType)) {
+						return Optional.of(stringType);
+					}
+
+					return Optional.empty();
+				});
+			case MUL:
+			case DIV:
+			case MOD:
+			case MINUS:
+				return binaryNumericPromotion(left, right);
+			case BITAND:
+			case BITXOR:
+			case BITOR: {
+				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.22
+				CtTypeReference<?> leftType = left.getType().unbox();
+				CtTypeReference<?> rightType = right.getType().unbox();
+
+				Set<CtTypeReference<?>> floatingPointNumbers = Set.of(
+					typeFactory.FLOAT_PRIMITIVE,
+					typeFactory.DOUBLE_PRIMITIVE
+				);
+				if (floatingPointNumbers.contains(leftType) || floatingPointNumbers.contains(rightType)) {
+					return Optional.empty();
+				}
+
+				if (leftType.equals(rightType) && leftType.equals(typeFactory.BOOLEAN_PRIMITIVE)) {
+					return Optional.of(leftType);
+				}
+
+				return binaryNumericPromotion(left, right);
+			}
+			default:
+				throw new IllegalArgumentException("Unknown operator: " + operator);
+		}
+	}
+
+	public static Optional<CtTypeReference<?>> getPromotedType(
+		UnaryOperatorKind operator,
+		CtExpression<?> operand
+	) {
+		TypeFactory typeFactory = operand.getFactory().Type();
+		CtTypeReference<?> operandType = operand.getType();
+		switch (operator) {
+			case COMPL:
+				if (operandType.unbox().isPrimitive()
+					&& (WHOLE_NUMBERS.contains(operandType.unbox().getActualClass())
+					|| operandType.unbox().equals(typeFactory.CHARACTER_PRIMITIVE))) {
+					return unaryNumericPromotion(operand);
+				}
+
+				return Optional.empty();
+			case POS:
+			case NEG:
+				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.15.3
+				return unaryNumericPromotion(operand);
+			case NOT:
+				if (operand.getType().unbox().equals(typeFactory.BOOLEAN_PRIMITIVE)) {
+					return Optional.of(typeFactory.BOOLEAN_PRIMITIVE);
+				}
+
+				return Optional.empty();
+			case PREINC:
+			case PREDEC:
+			case POSTINC:
+			case POSTDEC:
+				throw new IllegalStateException("Increment and decrement operators are not yet implemented");
+			default:
+				throw new IllegalArgumentException("Unknown operator: " + operator);
 		}
 	}
 }

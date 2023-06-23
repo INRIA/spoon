@@ -18,10 +18,12 @@ package spoon.test.eval;
 
 
 import java.io.File;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -39,6 +41,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtUnaryOperator;
@@ -50,9 +53,11 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.AccessibleVariablesFinder;
 import spoon.reflect.visitor.OperatorHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.eval.EvalHelper;
 import spoon.support.reflect.eval.InlinePartialEvaluator;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
@@ -355,101 +360,78 @@ public class EvalTest {
 		assertEquals(expected, parameter.getArguments().get(0).toString());
 	}
 
-	private static <T> Set<T> concat(Set<? extends T> left, Set<? extends T> right) {
-		Set<T> result = new HashSet<>(left);
-		result.addAll(right);
-		return result;
-	}
+	private static final Map<Class<?>, Function<Factory, CtLiteral<?>>> LITERAL_PROVIDER = Map.ofEntries(
+		Map.entry(byte.class, factory -> factory.createLiteral((byte) 1)),
+		Map.entry(short.class, factory -> factory.createLiteral((short) 1)),
+		Map.entry(int.class, factory -> factory.createLiteral((int) 1)),
+		Map.entry(long.class, factory -> factory.createLiteral(1L)),
+		Map.entry(float.class, factory -> factory.createLiteral(1.0f)),
+		Map.entry(double.class, factory -> factory.createLiteral(1.0d)),
+		Map.entry(boolean.class, factory -> factory.createLiteral(true)),
+		Map.entry(char.class, factory -> factory.createLiteral('a')),
+		Map.entry(String.class, factory -> factory.createLiteral("a"))
+	);
 
-	private static <T> Set<T> concat(Set<? extends T> left) {
-		return new HashSet<>(left);
+	// Returns a stream of all ordered pairs. For example, cartesianProduct([1, 2], [a, b])
+	// returns [(1, a), (1, b), (2, a), (2, b)]
+	private static <A, B> Stream<Map.Entry<A, B>> cartesianProduct(Collection<? extends A> left, Collection<? extends B> right) {
+		return left.stream().flatMap(l -> right.stream().map(r -> Map.entry(l, r)));
 	}
 
 	private static Stream<Arguments> provideBinaryOperatorsForAllLiterals() {
-		Set<Class<?>> wholeNumbers = Set.of(
-			byte.class,
-			short.class,
-			int.class,
-			long.class
-		);
-		// all primitive types where the boxed type implements Number
-		Set<Class<?>> numericalTypes = concat(wholeNumbers, Set.of(double.class, float.class));
-		// ^ here boolean.class and char.class are missing
-
-		Set<Class<?>> truePrimitives = concat(numericalTypes, Set.of(boolean.class /*, char.class */));
-
-		// additionally, there exist: String literals, class literals, null literals, and arrays
-
-		Map<BinaryOperatorKind, Set<Class<?>>> supportedTypes = Map.ofEntries(
-			// arithmetic operators:
-			Map.entry(BinaryOperatorKind.MUL, concat(numericalTypes /*, Set.of(char.class) */)),
-			Map.entry(BinaryOperatorKind.DIV, concat(numericalTypes /*, Set.of(char.class) */)),
-			Map.entry(BinaryOperatorKind.MOD, concat(numericalTypes /*, Set.of(char.class) */)),
-			Map.entry(BinaryOperatorKind.PLUS, concat(numericalTypes, Set.of(/*char.class,*/ String.class))),
-			Map.entry(BinaryOperatorKind.MINUS, concat(numericalTypes /*, Set.of(char.class) */)),
-			// relational operators:
-			Map.entry(BinaryOperatorKind.EQ, concat(truePrimitives, Set.of(String.class))),
-			Map.entry(BinaryOperatorKind.NE, concat(truePrimitives, Set.of(String.class))),
-			Map.entry(BinaryOperatorKind.LE, concat(numericalTypes /*, Set.of(char.class) */)),
-			Map.entry(BinaryOperatorKind.LT, concat(numericalTypes /*, Set.of(char.class) */)),
-			Map.entry(BinaryOperatorKind.GE, concat(numericalTypes /*, Set.of(char.class) */)),
-			Map.entry(BinaryOperatorKind.GT, concat(numericalTypes /*, Set.of(char.class) */)),
-			// logical operators:
-			Map.entry(BinaryOperatorKind.AND, Set.of(boolean.class)),
-			Map.entry(BinaryOperatorKind.OR, Set.of(boolean.class)),
-			// bitwise operators:
-			Map.entry(BinaryOperatorKind.BITAND, concat(wholeNumbers, Set.of(boolean.class /*, Set.of(char.class) */))),
-			Map.entry(BinaryOperatorKind.BITOR, concat(wholeNumbers, Set.of(boolean.class /*, Set.of(char.class) */))),
-			Map.entry(BinaryOperatorKind.BITXOR, concat(wholeNumbers, Set.of(boolean.class /*, Set.of(char.class) */))),
-			// boolean is not supported by the following operators:
-			Map.entry(BinaryOperatorKind.SL, concat(wholeNumbers /*, Set.of(char.class) */)),
-			Map.entry(BinaryOperatorKind.SR, concat(wholeNumbers /*, Set.of(char.class) */)),
-			Map.entry(BinaryOperatorKind.USR, concat(wholeNumbers /*, Set.of(char.class) */)),
-			// other operators:
-			// TODO: what kind does this support? Object.class?
-			Map.entry(BinaryOperatorKind.INSTANCEOF, Set.of())
-		);
-
-		return Stream.of(
-			Map.entry(byte.class, List.of("((byte) 1)", "((byte) 2)")),
-			Map.entry(short.class, List.of("((short) 1)", "((short) 2)")),
-			Map.entry(int.class, List.of("1", "2")),
-			Map.entry(long.class, List.of("1l", "2l")),
-			Map.entry(float.class, List.of("1.0f", "2.0f")),
-			Map.entry(double.class, List.of("1.0d", "2.0d")),
-			Map.entry(boolean.class, List.of("true", "false")),
-			Map.entry(char.class, List.of("1.0d", "2.0d")),
-			Map.entry(String.class, List.of("\"a\"", "\"b\""))
-		).flatMap(entry -> {
-			Class<?> type = entry.getKey();
-			String left = entry.getValue().get(0);
-			String right = entry.getValue().get(1);
-
-			return supportedTypes.entrySet()
-				.stream()
-				.filter(e -> e.getValue().contains(type))
-				.map(Map.Entry::getKey)
-				.map(operator -> Arguments.of(operator, left, right));
-		});
+		// This generates all combinations of binary operators and literals:
+		//
+		// There are 9 types, so 9 * 9 = 81 pairs
+		// For each pair, all operators are tested: 81 * 20 = 1620 tests ._.
+		return cartesianProduct(LITERAL_PROVIDER.entrySet(), LITERAL_PROVIDER.entrySet())
+			.flatMap(tuple -> Arrays.stream(BinaryOperatorKind.values())
+			.map(operator -> Arguments.of(operator, tuple.getKey().getKey(), tuple.getKey().getValue(), tuple.getValue().getKey(), tuple.getValue().getValue())));
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{0}({1}, {3})")
 	@MethodSource("provideBinaryOperatorsForAllLiterals")
-	void testVisitCtBinaryOperatorLiteralType(BinaryOperatorKind operator, String left, String right) {
-		// TODO: what happens with assignment operators?
+	void testVisitCtBinaryOperatorLiteralType(
+		BinaryOperatorKind operator,
+		Class<?> leftType,
+		Function<Factory, CtLiteral<?>> leftLiteralProvider,
+		Class<?> rightType,
+		Function<Factory, CtLiteral<?>> rightLiteralProvider
+	) {
 		// contract: the type is preserved during partial evaluation
+
+		// not yet implemented and does not make sense on literals
+		if (operator == BinaryOperatorKind.INSTANCEOF) return;
+
+		Launcher launcher = new Launcher();
+
+		CtLiteral<?> leftLiteral = leftLiteralProvider.apply(launcher.getFactory());
+		CtLiteral<?> rightLiteral = rightLiteralProvider.apply(launcher.getFactory());
+
+		Optional<CtTypeReference<?>> expectedType = OperatorHelper.getPromotedType(operator, leftLiteral, rightLiteral);
+
+		if (expectedType.isEmpty()) {
+			return;
+		}
 		String code = "public class Test {\n"
 			+ "	void test() {\n"
 			+ "		System.out.println(%s);\n"
 			+ "	}\n"
 			+ "}\n";
-		CtBinaryOperator<?> ctBinaryOperator =  Launcher.parseClass(String.format(
-				code,
-				String.format("(%s) %s (%s)", left, OperatorHelper.getOperatorText(operator), right)
-			))
+
+		launcher.addInputResource(new VirtualFile(String.format(
+			code,
+			String.format("(%s) %s (%s)", leftLiteral, OperatorHelper.getOperatorText(operator), rightLiteral)
+		)));
+
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setAutoImports(true);
+
+		CtClass<?> ctClass = (CtClass<?>) launcher.buildModel().getAllTypes().stream().findFirst().get();
+		CtBinaryOperator<?> ctBinaryOperator = ctClass
 			.getElements(new TypeFilter<>(CtBinaryOperator.class))
 			.get(0);
-		CtType<?> currentType = ctBinaryOperator.getType().getTypeDeclaration();
+
+		CtType<?> currentType = ctBinaryOperator.getType().getTypeDeclaration().clone();
 		CtExpression<?> evaluated = ctBinaryOperator.partiallyEvaluate();
 		assertNotNull(
 			evaluated.getType(),
@@ -459,64 +441,52 @@ public class EvalTest {
 	}
 
 	private static Stream<Arguments> provideUnaryOperatorsForAllLiterals() {
-		Set<Class<?>> wholeNumbers = Set.of(
-			byte.class,
-			short.class,
-			int.class,
-			long.class
-		);
-		// all primitive types where the boxed type implements Number
-		Set<Class<?>> numericalTypes = concat(wholeNumbers, Set.of(double.class, float.class));
-		// ^ here boolean.class and char.class are missing
-
-		Map<UnaryOperatorKind, Set<Class<?>>> supportedTypes = Map.ofEntries(
-			// Map.entry(UnaryOperatorKind.COMPL, concat(numericalTypes, Set.of(char.class))),
-			Map.entry(UnaryOperatorKind.NEG, concat(numericalTypes /*, Set.of(char.class) */)),
-			Map.entry(UnaryOperatorKind.NOT, Set.of(boolean.class))
-			// Map.entry(UnaryOperatorKind.POS, concat(numericalTypes, Set.of(char.class))),
-		);
-
-		return Stream.of(
-			Map.entry(byte.class, "((byte) 1)"),
-			Map.entry(short.class, "((short) 1)"),
-			Map.entry(int.class, "1"),
-			Map.entry(long.class, "1l"),
-			Map.entry(float.class, "1.0f"),
-			Map.entry(double.class, "1.0d"),
-			Map.entry(boolean.class, "true"),
-			Map.entry(char.class, "1.0d")
-		).flatMap(entry -> {
-			Class<?> type = entry.getKey();
-			String value = entry.getValue();
-
-			return supportedTypes.entrySet()
-				.stream()
-				.filter(e -> e.getValue().contains(type))
-				.map(Map.Entry::getKey)
-				.map(operator -> Arguments.of(operator, value));
-		});
+		// This generates all combinations of unary operators and literals:
+		return LITERAL_PROVIDER.entrySet()
+			.stream()
+			// String cannot be used with unary operators
+			.filter(entry -> !entry.getKey().equals(String.class))
+			.flatMap(entry -> Arrays.stream(UnaryOperatorKind.values())
+				.map(operator -> Arguments.of(operator, entry.getKey(), entry.getValue()))
+			);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{0}({1})")
 	@MethodSource("provideUnaryOperatorsForAllLiterals")
-	void testVisitCtUnaryOperatorLiteralType(UnaryOperatorKind operator, String value) {
+	void testVisitCtUnaryOperatorLiteralType(UnaryOperatorKind operator, Class<?> type, Function<Factory, CtLiteral<?>> provider) {
 		// contract: the type is preserved during partial evaluation
+		Launcher launcher = new Launcher();
+
+		CtLiteral<?> literal = provider.apply(launcher.getFactory());
+
+		Optional<CtTypeReference<?>> expectedType = OperatorHelper.getPromotedType(operator, literal);
+
+		if (expectedType.isEmpty()) {
+			return;
+		}
 		String code = "public class Test {\n"
 			+ "	void test() {\n"
 			+ "		System.out.println(%s);\n"
 			+ "	}\n"
 			+ "}\n";
-		CtUnaryOperator<?> ctUnaryOperator =  Launcher.parseClass(String.format(
-				code,
-				String.format("%s(%s)", OperatorHelper.getOperatorText(operator), value)
-			))
+
+		launcher.addInputResource(new VirtualFile(String.format(
+			code,
+			String.format("%s(%s)", OperatorHelper.getOperatorText(operator), literal)
+		)));
+
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setAutoImports(true);
+
+		CtClass<?> ctClass = (CtClass<?>) launcher.buildModel().getAllTypes().stream().findFirst().get();
+		CtUnaryOperator<?> ctUnaryOperator =  ctClass
 			.getElements(new TypeFilter<>(CtUnaryOperator.class))
 			.get(0);
-		CtType<?> currentType = ctUnaryOperator.getType().getTypeDeclaration();
+		CtType<?> currentType = ctUnaryOperator.getType().getTypeDeclaration().clone();
 		CtExpression<?> evaluated = ctUnaryOperator.partiallyEvaluate();
 		assertNotNull(
 			evaluated.getType(),
-				String.format("type of '%s' is null after evaluation", ctUnaryOperator)
+			String.format("type of '%s' is null after evaluation", ctUnaryOperator)
 		);
 		assertEquals(currentType, evaluated.getType().getTypeDeclaration());
 	}
