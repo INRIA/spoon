@@ -44,7 +44,7 @@ jobs:
     steps:
       - name: Disable Git's autocrlf
         run: git config --global core.autocrlf false
-      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - uses: oracle-actions/setup-java@2c4df2930e35870536667f383d87f1246fbe613f # v1
         with:
           website: jdk.java.net
@@ -65,14 +65,14 @@ jobs:
         run: mv chore/logback.xml src/test/resources/
       - name: Build
         run: |
-          mvn -B test-compile
+          mvn -f spoon-pom -B test-compile
       - name: Fetch final dependencies
         # this is a hack to download the final test dependencies required to actually run the tests
-        run: timeout 20 mvn -B test || echo "Done fetching dependencies"
+        run: timeout 20 mvn -f spoon-pom -B test || echo "Done fetching dependencies"
         shell: bash
       - name: Test
-        run: 
-          mvn test
+        run:
+          mvn -f spoon-pom test
       - name: print run tests
         run: cat testResults.spoon
   coverage:
@@ -100,9 +100,9 @@ jobs:
         run: mv chore/logback.xml src/test/resources/
       - name: Build
         run: |
-          mvn -B test-compile
+          mvn -f spoon-pom -B test-compile
       - name: Test with coverage
-        run: mvn -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
+        run: mvn -f spoon-pom -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
@@ -168,4 +168,4 @@ jobs:
           maven-version: 3.9.0
       # we dont enforce that the version must be non snapshot as this is not possible for SNAPSHOT versions in our workflow.
       - name: Check maven pom quality
-        run: mvn org.kordamp.maven:pomchecker-maven-plugin:1.9.0:check-maven-central -D"checker.release=false"
+        run: mvn -f spoon-pom org.kordamp.maven:pomchecker-maven-plugin:1.9.0:check-maven-central -D"checker.release=false"
