@@ -31,14 +31,28 @@ public final class OperatorHelper {
 	private OperatorHelper() {
 	}
 
+	/**
+	 * Checks if the operator is a prefix operator.
+	 * @param o the operator
+	 * @return true if it is a prefix operator, false otherwise
+	 */
 	public static boolean isPrefixOperator(UnaryOperatorKind o) {
 		return !isSufixOperator(o);
 	}
+
+	/**
+	 * Checks if the operator is a suffix operator.
+	 * @param o the operator
+	 * @return true if it is a suffix operator, false otherwise
+	 */
 	public static boolean isSufixOperator(UnaryOperatorKind o) {
 		return o.name().startsWith("POST");
 	}
 
 	/**
+	 * Gets the representation of the operator in the source code. For example, POS will return "+".
+	 *
+	 * @param o the operator
 	 * @return java source code representation of a pre or post unary operator.
 	 */
 	public static String getOperatorText(UnaryOperatorKind o) {
@@ -65,6 +79,9 @@ public final class OperatorHelper {
 	}
 
 	/**
+	 * Gets the representation of the operator in the source code. For example, OR will return "||".
+	 *
+	 * @param o the operator
 	 * @return java source code representation of a binary operator.
 	 */
 	public static String getOperatorText(BinaryOperatorKind o) {
@@ -310,6 +327,14 @@ public final class OperatorHelper {
 		return Optional.of(typeFactory.INTEGER_PRIMITIVE);
 	}
 
+	/**
+	 * Get the promoted type of a binary operator, as defined by the Java Language Specification.
+	 *
+	 * @param operator the operator
+	 * @param left the left operand
+	 * @param right the right operand
+	 * @return the promoted type or {@link Optional#empty()} if promotion does not apply or the operation is invalid
+	 */
 	public static Optional<CtTypeReference<?>> getPromotedType(
 		BinaryOperatorKind operator,
 		CtExpression<?> left,
@@ -450,6 +475,13 @@ public final class OperatorHelper {
 		}
 	}
 
+	/**
+	 * Get the promoted type of an unary operator, as defined by the Java Language Specification.
+	 *
+	 * @param operator the operator
+	 * @param operand the operand
+	 * @return the promoted type or {@link Optional#empty()} if promotion does not apply or the operation is invalid
+	 */
 	public static Optional<CtTypeReference<?>> getPromotedType(
 		UnaryOperatorKind operator,
 		CtExpression<?> operand

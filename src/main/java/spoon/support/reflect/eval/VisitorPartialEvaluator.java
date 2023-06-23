@@ -49,6 +49,7 @@ import spoon.reflect.visitor.OperatorHelper;
 import spoon.support.util.RtHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -581,6 +582,26 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		CtField<T> r = f.clone();
 		r.setDefaultExpression(evaluate(f.getDefaultExpression()));
 		setResult(r);
+	}
+
+	@Override
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public <T> void visitCtLiteral(CtLiteral<T> ctLiteral) {
+		if (ctLiteral.getTypeCasts().isEmpty()) {
+			return;
+		}
+
+		CtLiteral result = ctLiteral.clone();
+
+		List<CtTypeReference<?>> casts = new ArrayList<>(ctLiteral.getTypeCasts());
+		Collections.reverse(casts);
+		result.setTypeCasts(new ArrayList<>());
+
+		for (CtTypeReference<?> cast : casts) {
+			result = promoteLiteral(cast, result);
+		}
+
+		setResult(result);
 	}
 
 

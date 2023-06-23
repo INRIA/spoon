@@ -331,8 +331,45 @@ public class EvalTest {
 
 	}
 
+	private static <T> CtTypeReference<?> inferType(CtBinaryOperator<T> ctBinaryOperator) {
+		switch (ctBinaryOperator.getKind()) {
+			case AND:
+			case OR:
+			case INSTANCEOF:
+			case EQ:
+			case NE:
+			case LT:
+			case LE:
+			case GT:
+			case GE:
+				return ctBinaryOperator.getFactory().Type().BOOLEAN_PRIMITIVE;
+			case SL:
+			case SR:
+			case USR:
+			case MUL:
+			case DIV:
+			case MOD:
+			case MINUS:
+			case PLUS:
+			case BITAND:
+			case BITXOR:
+			case BITOR:
+				return OperatorHelper.getPromotedType(
+					ctBinaryOperator.getKind(),
+					ctBinaryOperator.getLeftHandOperand(),
+					ctBinaryOperator.getRightHandOperand()
+				).orElseThrow();
+			default:
+				throw new IllegalArgumentException("Unknown operator: " + ctBinaryOperator.getKind());
+		}
+	}
+
 	private CtBinaryOperator<?> createBinaryOperatorOnLiterals(Factory factory, Object leftLiteral, Object rightLiteral, BinaryOperatorKind opKind) {
-		return factory.createBinaryOperator(factory.createLiteral(leftLiteral), factory.createLiteral(rightLiteral), opKind);
+		CtBinaryOperator<?> result = factory.createBinaryOperator(factory.createLiteral(leftLiteral), factory.createLiteral(rightLiteral), opKind);
+		if (result.getType() == null) {
+			result.setType(inferType(result));
+		}
+		return result;
 	}
 
 	@ParameterizedTest
@@ -439,6 +476,31 @@ public class EvalTest {
 			String.format("type of '%s' is null after evaluation", ctBinaryOperator)
 		);
 		assertEquals(currentType, evaluated.getType().getTypeDeclaration());
+	}
+
+	@Test
+	void testEvaluateLiteralTypeCasts() {
+		String code = "public class Test {\n"
+			+ "	void test() {\n"
+			+ "		System.out.println((byte) 400 + 20);\n"
+			+ "	}\n"
+			+ "}\n";
+		CtBinaryOperator<?> ctBinaryOperator =  Launcher.parseClass(code)
+			.getElements(new TypeFilter<>(CtBinaryOperator.class))
+			.get(0);
+		CtLiteral<?> evaluated = ctBinaryOperator.partiallyEvaluate();
+		assertNotNull(
+			evaluated.getType(),
+			String.format("type of '%s' is null after evaluation", ctBinaryOperator)
+		);
+		assertEquals(
+			ctBinaryOperator.getFactory().Type().INTEGER_PRIMITIVE,
+			evaluated.getType()
+		);
+		assertEquals(
+			-92,
+			evaluated.getValue()
+		);
 	}
 
 	private static Stream<Arguments> provideUnaryOperatorsForAllLiterals() {
