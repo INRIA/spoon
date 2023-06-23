@@ -376,6 +376,15 @@ public final class OperatorHelper {
 						// either operand to the type of the other by a casting conversion (§5.5).
 						// The run-time values of the two operands would necessarily be unequal
 						// (ignoring the case where both values are null).
+						CtTypeReference<?> nullType = typeFactory.NULL_TYPE;
+						if (leftType.equals(nullType)) {
+							return Optional.of(rightType);
+						}
+
+						if (rightType.equals(nullType)) {
+							return Optional.of(leftType);
+						}
+
 						Class<?> leftClass = leftType.getActualClass();
 						Class<?> rightClass = rightType.getActualClass();
 						if (leftClass.isAssignableFrom(rightClass)) {

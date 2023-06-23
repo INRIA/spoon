@@ -369,7 +369,9 @@ public class EvalTest {
 		Map.entry(double.class, factory -> factory.createLiteral(1.0d)),
 		Map.entry(boolean.class, factory -> factory.createLiteral(true)),
 		Map.entry(char.class, factory -> factory.createLiteral('a')),
-		Map.entry(String.class, factory -> factory.createLiteral("a"))
+		Map.entry(String.class, factory -> factory.createLiteral("a")),
+		// not sure what type to use for null, so use Optional
+		Map.entry(Optional.class, factory -> factory.createLiteral(null))
 	);
 
 	// Returns a stream of all ordered pairs. For example, cartesianProduct([1, 2], [a, b])
@@ -381,8 +383,8 @@ public class EvalTest {
 	private static Stream<Arguments> provideBinaryOperatorsForAllLiterals() {
 		// This generates all combinations of binary operators and literals:
 		//
-		// There are 9 types, so 9 * 9 = 81 pairs
-		// For each pair, all operators are tested: 81 * 19 = 1539 tests
+		// There are 10 types, so 10 * 10 = 100 pairs
+		// For each pair, all operators are tested: 100 * 19 = 1900 tests
 		return cartesianProduct(LITERAL_PROVIDER.entrySet(), LITERAL_PROVIDER.entrySet())
 			.flatMap(tuple -> Arrays.stream(BinaryOperatorKind.values())
 				// not yet implemented and does not make sense on literals
