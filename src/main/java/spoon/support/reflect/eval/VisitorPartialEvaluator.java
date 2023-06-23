@@ -580,11 +580,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 	@Override
 	public <T> void visitCtField(CtField<T> f) {
 		CtField<T> r = f.clone();
-		try {
-			r.setDefaultExpression(evaluate(f.getDefaultExpression()));
-		} catch (ClassCastException e) {
-			throw e;
-		}
+		r.setDefaultExpression(evaluate(f.getDefaultExpression()));
 		setResult(r);
 	}
 
