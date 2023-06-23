@@ -571,6 +571,9 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		if (object instanceof Character) {
 			return true;
 		}
+		if (object instanceof Boolean) {
+			return true;
+		}
 		return object instanceof Class;
 	}
 
