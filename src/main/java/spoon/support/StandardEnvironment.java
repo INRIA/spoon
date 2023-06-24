@@ -316,7 +316,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	 */
 	@Override
 	public void reportEnd() {
-		print("end of processing: ", Level.INFO);
+		print("End of processing: ", Level.DEBUG);
 		if (warningCount > 0) {
 			print(warningCount + " warning", Level.INFO);
 			if (warningCount > 1) {
@@ -335,7 +335,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		if ((errorCount + warningCount) > 0) {
 			print("\n", Level.INFO);
 		} else {
-			print("no errors, no warnings", Level.INFO);
+			print("No errors, no warnings", Level.DEBUG);
 		}
 	}
 
