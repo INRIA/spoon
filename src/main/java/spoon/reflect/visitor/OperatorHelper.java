@@ -346,7 +346,7 @@ public final class OperatorHelper {
 	 *         Not every operator is defined for every combination of operands.
 	 *         For example {@code 1 << 1.0} is invalid.
 	 *         In this case, {@link Optional#empty()} is returned.
-	 * @throws IllegalArgumentException if the operator is {@link BinaryOperatorKind#INSTANCEOF} or an unknown operator.
+	 * @throws UnsupportedOperationException if the operator is {@link BinaryOperatorKind#INSTANCEOF} or an unknown operator.
 	 * @see <a href="https://docs.oracle.com/javase/specs/jls/se11/html/jls-5.html#jls-5.6.2">JLS 5.6.2</a>
 	 */
 	public static Optional<CtTypeReference<?>> getPromotedType(
@@ -483,7 +483,7 @@ public final class OperatorHelper {
 				return binaryNumericPromotion(left, right);
 			}
 			default:
-				throw new IllegalArgumentException("Unknown operator: " + operator);
+				throw new UnsupportedOperationException("Unknown operator: " + operator);
 		}
 	}
 
@@ -501,7 +501,7 @@ public final class OperatorHelper {
 	 *         Not every operator is defined for every combination of operands.
 	 *         For example {@code !1} is invalid.
 	 *         In this case, {@link Optional#empty()} is returned.
-	 * @throws IllegalArgumentException if the operator is an unknown operator.
+	 * @throws UnsupportedOperationException if the operator is an unknown operator.
 	 * @see <a href="https://docs.oracle.com/javase/specs/jls/se11/html/jls-5.html#jls-5.6.1">JLS 5.6.1</a>
 	 */
 	public static Optional<CtTypeReference<?>> getPromotedType(
@@ -542,7 +542,7 @@ public final class OperatorHelper {
 				// The type of the expression is the type of the variable.
 				return Optional.of(operandType);
 			default:
-				throw new IllegalArgumentException("Unknown operator: " + operator);
+				throw new UnsupportedOperationException("Unknown operator: " + operator);
 		}
 	}
 }

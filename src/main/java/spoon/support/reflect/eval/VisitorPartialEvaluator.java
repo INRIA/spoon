@@ -146,7 +146,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 
 				// NOTE: it does not make sense to cast a boolean to any other primitive type
 				if (literal.getValue() instanceof Boolean) {
-					throw new IllegalStateException("Cannot cast Boolean to " + type.getQualifiedName());
+					throw new UnsupportedOperationException("Cannot cast Boolean to " + type.getQualifiedName());
 				}
 
 				if (literal.getValue() instanceof Character) {
