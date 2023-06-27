@@ -424,13 +424,11 @@ public final class OperatorHelper {
 							return Optional.of(leftType);
 						}
 
-						Class<?> leftClass = leftType.getActualClass();
-						Class<?> rightClass = rightType.getActualClass();
-						if (leftClass.isAssignableFrom(rightClass)) {
-							return Optional.of(leftType);
+						if (leftType.isSubtypeOf(rightType)) {
+							return Optional.of(rightType);
 						}
 
-						if (rightClass.isAssignableFrom(leftClass)) {
+						if (rightType.isSubtypeOf(leftType)) {
 							return Optional.of(rightType);
 						}
 
