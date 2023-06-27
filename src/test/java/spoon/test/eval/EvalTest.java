@@ -407,8 +407,8 @@ public class EvalTest {
 		Map.entry(boolean.class, factory -> factory.createLiteral(true)),
 		Map.entry(char.class, factory -> factory.createLiteral('a')),
 		Map.entry(String.class, factory -> factory.createLiteral("a")),
-		// not sure what type to use for null, so use Optional
-		Map.entry(Optional.class, factory -> factory.createLiteral(null))
+		// null can be any type, so use Object.class
+		Map.entry(Object.class, factory -> factory.createLiteral(null))
 	);
 
 	// Returns a stream of all ordered pairs. For example, cartesianProduct([1, 2], [a, b])
