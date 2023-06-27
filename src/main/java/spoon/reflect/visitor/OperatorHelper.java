@@ -10,6 +10,7 @@ package spoon.reflect.visitor;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
@@ -264,6 +265,10 @@ public final class OperatorHelper {
 			&& (WHOLE_NUMBERS.contains(ctTypeReference.getActualClass()) || ctTypeReference.getActualClass().equals(char.class));
 	}
 
+	private static boolean isNumericType(CtTypeReference<?> ctTypeReference) {
+		return ctTypeReference.isPrimitive() && !ctTypeReference.getActualClass().equals(boolean.class);
+	}
+
 	/**
 	 * When using an unary-operator on an operand, the operand type might be changed before the operator is applied.
 	 * For example, the result of {@code ~((short) 1)} will be of type {@code int} and not {@code short}.
@@ -276,9 +281,7 @@ public final class OperatorHelper {
 		// to unboxing (§5.1.8)
 		CtTypeReference<?> operandType = operand.getType().unbox();
 		// check if unary numeric promotion applies
-		if (!operandType.isPrimitive()
-			// unary promotion obviously does not apply to boolean
-			|| operandType.getActualClass().equals(boolean.class)) {
+		if (!isNumericType(operandType)) {
 			return Optional.empty();
 		}
 
@@ -302,11 +305,7 @@ public final class OperatorHelper {
 		TypeFactory typeFactory = leftType.getFactory().Type();
 
 		// each of which must denote a value that is convertible to a numeric type
-		CtTypeReference<?> booleanType = typeFactory.BOOLEAN_PRIMITIVE;
-		if (!leftType.isPrimitive()
-			|| !rightType.isPrimitive()
-			|| leftType.equals(booleanType)
-			|| rightType.equals(booleanType)) {
+		if (!isNumericType(leftType) || !isNumericType(rightType)) {
 			return Optional.empty();
 		}
 
@@ -513,9 +512,7 @@ public final class OperatorHelper {
 		CtTypeReference<?> operandType = operand.getType();
 		switch (operator) {
 			case COMPL:
-				if (operandType.unbox().isPrimitive()
-					&& (WHOLE_NUMBERS.contains(operandType.unbox().getActualClass())
-					|| operandType.unbox().equals(typeFactory.CHARACTER_PRIMITIVE))) {
+				if (isIntegralType(operandType.unbox())) {
 					return unaryNumericPromotion(operand);
 				}
 
@@ -534,8 +531,16 @@ public final class OperatorHelper {
 			case PREDEC:
 			case POSTINC:
 			case POSTDEC:
-				// Not yet implemented, because it is not necessary for the current use case.
-				return Optional.empty();
+				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.15.2
+				// (documentation is very similar for all four operators)
+
+				// The type of the operand must be a variable that is convertible to a numeric type.
+				if (!(operand instanceof CtVariableRead<?>) || !isNumericType(operandType.unbox())) {
+					return Optional.empty();
+				}
+
+				// The type of the expression is the type of the variable.
+				return Optional.of(operandType);
 			default:
 				throw new IllegalArgumentException("Unknown operator: " + operator);
 		}
