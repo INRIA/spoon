@@ -390,7 +390,7 @@ public final class OperatorHelper {
 			case INSTANCEOF:
 				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.20.2
 				// Not implemented, because it is not necessary for the current use case.
-				throw new IllegalArgumentException("instanceof is not yet implemented");
+				throw new UnsupportedOperationException("instanceof is not yet implemented");
 			// on the following operators binary numeric promotion is performed:
 			case EQ:
 			case NE: {
