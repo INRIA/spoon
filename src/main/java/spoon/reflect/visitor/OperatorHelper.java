@@ -328,12 +328,21 @@ public final class OperatorHelper {
 	}
 
 	/**
-	 * Get the promoted type of a binary operator, as defined by the Java Language Specification.
+	 * Get the promoted type of the binary operator, as defined by the Java Language Specification.
+	 * <p>
+	 * Before an operator is applied, the type of the operands might be changed.
+	 * This is called <i>promotion</i>.
+	 * For example {@code 1 + 1.0} has an int and a double as operands.
+	 * The left operand is promoted to a double, so that the left and right operand have the same type.
 	 *
 	 * @param operator the operator
-	 * @param left the left operand
+	 * @param left the left operand, {@link CtExpression#getFactory()} must not return {@code null}.
 	 * @param right the right operand
-	 * @return the promoted type or {@link Optional#empty()} if promotion does not apply or the operation is invalid
+	 * @return the promoted type or {@link Optional#empty()} if promotion does not apply or the operation is invalid.
+	 *         Not every operator is defined for every combination of operands.
+	 *         For example {@code 1 << 1.0} is invalid.
+	 *         In this case, {@link Optional#empty()} is returned.
+	 * @see <a href="https://docs.oracle.com/javase/specs/jls/se11/html/jls-5.html#jls-5.6.2">JLS 5.6.2</a>
 	 */
 	public static Optional<CtTypeReference<?>> getPromotedType(
 		BinaryOperatorKind operator,
@@ -476,11 +485,20 @@ public final class OperatorHelper {
 	}
 
 	/**
-	 * Get the promoted type of an unary operator, as defined by the Java Language Specification.
+	 * Gets the promoted type of the unary operator, as defined by the Java Language Specification.
+	 * <p>
+	 * Before an operator is applied, the type of the operand might be changed.
+	 * This is called <i>promotion</i>.
+	 * For example {@code -((short) 1)} has an operand of type short.
+	 * The operand is promoted to an int, before the operator is applied.
 	 *
 	 * @param operator the operator
-	 * @param operand the operand
-	 * @return the promoted type or {@link Optional#empty()} if promotion does not apply or the operation is invalid
+	 * @param operand the operand, {@link CtExpression#getFactory()} must not return {@code null}.
+	 * @return the promoted type or {@link Optional#empty()} if promotion does not apply or the operation is invalid.
+	 *         Not every operator is defined for every combination of operands.
+	 *         For example {@code !1} is invalid.
+	 *         In this case, {@link Optional#empty()} is returned.
+	 * @see <a href="https://docs.oracle.com/javase/specs/jls/se11/html/jls-5.html#jls-5.6.1">JLS 5.6.1</a>
 	 */
 	public static Optional<CtTypeReference<?>> getPromotedType(
 		UnaryOperatorKind operator,
