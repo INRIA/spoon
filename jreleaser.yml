@@ -40,6 +40,8 @@ deploy:
     nexus2:
       maven-central:
         active: ALWAYS
+        # Spoon is hosted on the legacy sonatype instance, see
+        # https://central.sonatype.org/publish/publish-guide/#releasing-to-central
         url: https://oss.sonatype.org/service/local
         closeRepository: true
         releaseRepository: true
