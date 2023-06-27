@@ -270,9 +270,8 @@ public final class OperatorHelper {
 	 *
 	 * @param operand the operand to apply the operator on
 	 * @return the type after applying the operator or {@link Optional#empty()} if promotion does not apply
-	 * @param <T> the type of the operand
 	 */
-	private static <T> Optional<CtTypeReference<?>> unaryNumericPromotion(CtExpression<T> operand) {
+	private static Optional<CtTypeReference<?>> unaryNumericPromotion(CtExpression<?> operand) {
 		// if the operand is of type Byte, Short, Character, Integer, Long, Float, or Double it is subject
 		// to unboxing (§5.1.8)
 		CtTypeReference<?> operandType = operand.getType().unbox();
@@ -293,9 +292,9 @@ public final class OperatorHelper {
 		return Optional.of(operandType);
 	}
 
-	private static <L, R> Optional<CtTypeReference<?>> binaryNumericPromotion(
-		CtExpression<L> left,
-		CtExpression<R> right
+	private static Optional<CtTypeReference<?>> binaryNumericPromotion(
+		CtExpression<?> left,
+		CtExpression<?> right
 	) {
 		// If any operand is of a reference type, it is subjected to unboxing conversion (§5.1.8).
 		CtTypeReference<?> leftType = left.getType().unbox();
