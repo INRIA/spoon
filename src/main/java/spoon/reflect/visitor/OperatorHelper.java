@@ -346,6 +346,7 @@ public final class OperatorHelper {
 	 *         Not every operator is defined for every combination of operands.
 	 *         For example {@code 1 << 1.0} is invalid.
 	 *         In this case, {@link Optional#empty()} is returned.
+	 * @throws IllegalArgumentException if the operator is {@link BinaryOperatorKind#INSTANCEOF} or an unknown operator.
 	 * @see <a href="https://docs.oracle.com/javase/specs/jls/se11/html/jls-5.html#jls-5.6.2">JLS 5.6.2</a>
 	 */
 	public static Optional<CtTypeReference<?>> getPromotedType(
@@ -389,7 +390,7 @@ public final class OperatorHelper {
 			case INSTANCEOF:
 				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.20.2
 				// Not implemented, because it is not necessary for the current use case.
-				throw new IllegalStateException("instanceof is not yet implemented");
+				throw new IllegalArgumentException("instanceof is not yet implemented");
 			// on the following operators binary numeric promotion is performed:
 			case EQ:
 			case NE: {
@@ -502,6 +503,7 @@ public final class OperatorHelper {
 	 *         Not every operator is defined for every combination of operands.
 	 *         For example {@code !1} is invalid.
 	 *         In this case, {@link Optional#empty()} is returned.
+	 * @throws IllegalArgumentException if the operator is an unknown operator.
 	 * @see <a href="https://docs.oracle.com/javase/specs/jls/se11/html/jls-5.html#jls-5.6.1">JLS 5.6.1</a>
 	 */
 	public static Optional<CtTypeReference<?>> getPromotedType(
