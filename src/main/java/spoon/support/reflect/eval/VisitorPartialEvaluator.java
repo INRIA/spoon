@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.eval;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -226,8 +227,29 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 					((Number) leftObject).doubleValue() * ((Number) rightObject).doubleValue());
 				break;
 			case DIV:
-				value = convert(operator.getType(),
-					((Number) leftObject).doubleValue() / ((Number) rightObject).doubleValue());
+				try {
+					// handle floating point division differently than integer division, because
+					// dividing by 0 is not an error for floating point numbers.
+					if (isFloatingType(operator.getType())) {
+						value = convert(operator.getType(),
+							((Number) leftObject).doubleValue() / ((Number) rightObject).doubleValue());
+					} else {
+						value = convert(operator.getType(),
+							((Number) leftObject).longValue() / ((Number) rightObject).longValue());
+					}
+				} catch (ArithmeticException exception) {
+					// division by 0
+					throw new SpoonException(
+						String.format(
+							"Expression '%s' evaluates to '%s %s %s' which can not be evaluated",
+							operator,
+							leftObject,
+							OperatorHelper.getOperatorText(operator.getKind()),
+							rightObject
+						),
+						exception
+					);
+				}
 				break;
 			case PLUS:
 				if ((leftObject instanceof String) || (rightObject instanceof String)) {

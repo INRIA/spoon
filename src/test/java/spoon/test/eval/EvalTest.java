@@ -63,11 +63,7 @@ import spoon.support.reflect.eval.InlinePartialEvaluator;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.eval.testclasses.Foo;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class EvalTest {
@@ -573,5 +569,44 @@ public class EvalTest {
 			String.format("type of '%s' is null after evaluation", ctFieldAccess)
 		);
 		assertEquals(currentType, evaluated.getType().getTypeDeclaration());
+	}
+
+	@Test
+	void testVisitCtBinaryOperatorIntegerDivision() {
+		String code = "public class Test {\n"
+			+ "	void test() {\n"
+			+ "		System.out.println(1 / 0);\n"
+			+ "	}\n"
+			+ "}\n";
+		CtBinaryOperator<?> ctBinaryOperator =  Launcher.parseClass(code)
+			.getElements(new TypeFilter<>(CtBinaryOperator.class))
+			.get(0);
+		SpoonException exception = assertThrows(
+			SpoonException.class,
+			ctBinaryOperator::partiallyEvaluate
+		);
+
+		assertEquals(
+			"Expression '1 / 0' evaluates to '1 / 0' which can not be evaluated",
+			exception.getMessage()
+		);
+	}
+
+	@Test
+	void testVisitCtBinaryOperatorFloatingDivision() {
+		String code = "public class Test {\n"
+			+ "	void test() {\n"
+			+ "		System.out.println(1.0 / 0);\n"
+			+ "	}\n"
+			+ "}\n";
+		CtBinaryOperator<?> ctBinaryOperator =  Launcher.parseClass(code)
+			.getElements(new TypeFilter<>(CtBinaryOperator.class))
+			.get(0);
+		CtLiteral<?> ctLiteral = ctBinaryOperator.partiallyEvaluate();
+
+		assertEquals(
+			ctBinaryOperator.getFactory().createLiteral(Double.POSITIVE_INFINITY),
+			ctLiteral
+		);
 	}
 }
