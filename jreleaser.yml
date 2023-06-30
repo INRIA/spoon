@@ -1,5 +1,5 @@
 project:
-  name: spoon-core
+  name: spoon
   description: Spoon is an open-source library to analyze, rewrite, transform, transpile Java source code. 
   longDescription: Spoon is an open-source library to analyze, rewrite, transform, transpile Java source code. 
                    It parses source files to build a well-designed AST with powerful analysis and transformation API. 
@@ -16,14 +16,15 @@ project:
     homepage: https://spoon.gforge.inria.fr/
   java:
     groupId: fr.inria.gforge.spoon
-    version: 11
-  inceptionYear: 2015
+    version: "11"
+  inceptionYear: "2015"
 
 release:
   github:
     owner: INRIA
     changelog:
       formatted: ALWAYS
+      preset: conventional-commits
       format: '- {{commitShortHash}} {{commitTitle}}'
       contributors:
         format: '- {{contributorName}} ({{contributorUsernameAsLink}})'
@@ -39,7 +40,9 @@ deploy:
     nexus2:
       maven-central:
         active: ALWAYS
-        url: https://s01.oss.sonatype.org/service/local
+        # Spoon is hosted on the legacy sonatype instance, see
+        # https://central.sonatype.org/publish/publish-guide/#releasing-to-central
+        url: https://oss.sonatype.org/service/local
         closeRepository: true
         releaseRepository: true
         stagingRepositories:

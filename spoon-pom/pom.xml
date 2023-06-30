@@ -147,7 +147,7 @@
                         <annotationProcessorPath>
                             <groupId>org.kohsuke.metainf-services</groupId>
                             <artifactId>metainf-services</artifactId>
-                            <version>1.9</version>
+                            <version>1.11</version>
                         </annotationProcessorPath>
                     </annotationProcessorPaths>
                 </configuration>
@@ -220,7 +220,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.1</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
