@@ -18,7 +18,9 @@ public class ClasspathOptions<T extends ClasspathOptions<T>> extends Options<T> 
 		if (classpath == null) {
 			return myself;
 		}
-		args.add("-cp");
+		// to scan for module-info.class files in jars
+		args.add("--module-path");
+		// args.add("-cp");
 		args.add(classpath);
 		return myself;
 	}
