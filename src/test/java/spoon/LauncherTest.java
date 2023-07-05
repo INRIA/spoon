@@ -168,7 +168,7 @@ public class LauncherTest {
 	void testModulesInJars() {
 		Launcher spoon = new Launcher();
 		Environment environment = spoon.getEnvironment();
-		environment.setSourceClasspath(new String[]{ "src/test/resources/modules/error-reporting-java-1.0.1.jar" });
+		environment.setSourceModulePath(List.of("src/test/resources/modules/error-reporting-java-1.0.1.jar"));
 		environment.setNoClasspath(false);
 		environment.setComplianceLevel(11);
 		spoon.addInputResource(Path.of("src/test/resources/modules/5324").toString());

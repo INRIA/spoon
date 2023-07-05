@@ -242,6 +242,10 @@ public interface SpoonModelBuilder {
 	 */
 	void setSourceClasspath(String... classpath);
 
+	List<String> getSourceModulePath();
+
+	void setSourceModulePath(List<String> sourceModulePath);
+
 	/**
 	 * Gets the classpath that is used to build the template sources.
 	 *

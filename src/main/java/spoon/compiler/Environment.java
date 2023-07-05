@@ -25,6 +25,7 @@ import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
@@ -307,6 +308,10 @@ public interface Environment {
 	 * @param sourceClasspath classpath to set
 	 */
 	void setSourceClasspath(String[] sourceClasspath);
+
+	List<String> getSourceModulePath();
+
+	void setSourceModulePath(List<String> sourceModulePath);
 
 	/**
 	 * Sets the option "noclasspath", use with caution (see explanation below).
