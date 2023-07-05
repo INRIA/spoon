@@ -2014,7 +2014,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				}
 			}
 			// You don't want to include annotations in import of an annotated object
-			if (ref.isParentInitialized() && !(ref.getParent() instanceof CtImport)) {
+			if (!ref.isParentInitialized() || !(ref.getParent() instanceof CtImport)) {
 				elementPrinterHelper.writeAnnotations(ref);
 			}
 			printer.writeIdentifier(ref.getSimpleName());
