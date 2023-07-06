@@ -15,7 +15,7 @@
     <version>10.4.0-SNAPSHOT</version>
     <name>Spoon Javadoc</name>
     <description>A javadoc parser for the java source code analysis tool spoon.</description>
-
+    <url>http://spoon.gforge.inria.fr/</url>
     <build>
         <plugins>
             <plugin>
