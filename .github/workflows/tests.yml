@@ -121,7 +121,6 @@ jobs:
       - uses: actions/setup-python@bd6b4b6205c4dbad673328db7b31b7fab9e241c0 # v4.6.1
         with:
           python-version: 3.11
-
       - name: Get date for cache # see https://github.com/actions/cache README
         id: get-date
         run: echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
@@ -132,11 +131,77 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
-
       - name: Use silent log config
         run: mv chore/logback.xml src/test/resources/
-      - name: Run extra checks
-        run: ./chore/ci-extra.sh
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        with:
+          fetch-depth: 0
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install --user CommonMark==0.9.1 requests pygithub
+
+      - name: Verify and Site Maven goals
+        run: |
+          mvn verify license:check site install -DskipTests -DadditionalJOption=-Xdoclint:syntax,-missing -Dscan
+          cd spoon-pom && mvn install -DskipTests && cd ..
+
+      - name: Checkstyle in src/tests
+        run: mvn -q checkstyle:checkstyle -Pcheckstyle-test
+
+      - name: Check documentation links
+        run: python3 ./chore/check-links-in-doc.py
+
+      - name: Analyze dependencies through DepClean in spoon-core
+        run: mvn -q depclean:depclean
+
+      - name: Spoon-decompiler
+        run: |
+          cd spoon-decompiler
+          mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
+          mvn -q mvn versions:update-parent -DallowSnapshots=true
+          git diff
+          mvn -q test
+          mvn -q checkstyle:checkstyle license:check
+          mvn -q depclean:depclean
+
+      - name: Spoon-control-flow
+        run: |
+          cd spoon-control-flow
+          mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
+          git diff
+          mvn -q test
+          mvn -q checkstyle:checkstyle license:check
+
+      - name: Spoon-dataflow
+        run: |
+          cd spoon-dataflow
+          wget https://projects.ow2.org/download/spoon/WebHome/z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
+          unzip z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
+          export LD_LIBRARY_PATH=./z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04/bin
+          ./gradlew build
+
+      - name: Spoon-visualisation
+        run: |
+          cd spoon-visualisation
+          mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
+          git diff
+          mvn -q -Djava.src.version=11 test
+          mvn -q depclean:depclean
+
+      - name: Spoon-smpl
+        run: |
+          cd spoon-smpl
+          mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
+          git diff
+          mvn -q -Djava.src.version=11 test
+          mvn -q checkstyle:checkstyle license:check
+          mvn -q depclean:depclean
+      - name: Trigger extra tasks
+        if: github.repository == 'INRIA/spoon' && github.event_name == 'pull_request'
+        run: |
+          curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-pull-request.sh | bash
       - name: Run Javadoc quality check
         run: ./chore/check-javadoc-regressions.py COMPARE_WITH_MASTER
   reproducible-builds:
