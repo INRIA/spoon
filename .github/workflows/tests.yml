@@ -170,6 +170,7 @@ jobs:
         run: |
           cd spoon-control-flow
           mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
+          mvn -q versions:update-parent -DallowSnapshots=true
           git diff
           mvn -q test
           mvn -q checkstyle:checkstyle license:check
