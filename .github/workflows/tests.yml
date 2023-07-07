@@ -160,7 +160,7 @@ jobs:
         run: |
           cd spoon-decompiler
           mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
-          mvn -q mvn versions:update-parent -DallowSnapshots=true
+          mvn -q versions:update-parent -DallowSnapshots=true
           git diff
           mvn -q test
           mvn -q checkstyle:checkstyle license:check
