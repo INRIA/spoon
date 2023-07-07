@@ -17,7 +17,7 @@ mvn -version
 # javadoc check is included in goal "site"
 # it's better to have the doclint here because the pom.xml config of javadoc is a nightmare
 mvn verify license:check site install -DskipTests  -DadditionalJOption=-Xdoclint:syntax,-missing -Dscan
-
+cd spoon-pom && mvn install && cd ..
 # checkstyle in src/tests
 mvn -q  checkstyle:checkstyle -Pcheckstyle-test
 
@@ -34,6 +34,7 @@ cd spoon-decompiler
 
 # always depends on the latest snapshot, just installed with "mvn install" above
 mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
+mvn -q mvn versions:update-parent -DallowSnapshots=true
 git diff
 
 mvn -q test

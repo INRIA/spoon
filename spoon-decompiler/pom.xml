@@ -20,15 +20,15 @@
     <parent>
         <groupId>fr.inria.gforge.spoon</groupId>
         <artifactId>spoon-pom</artifactId>
-        <version>1.0</version>
         <relativePath>../spoon-pom/pom.xml</relativePath>
+        <version>10.4.0</version>
     </parent>
     
     <dependencies>
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>10.3.0</version>
+            <version>10.4.1-SNAPSHOT</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jboss.windup.decompiler.fernflower/fernflower -->
         <dependency>
