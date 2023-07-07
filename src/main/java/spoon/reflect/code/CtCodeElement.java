@@ -17,9 +17,10 @@ public interface CtCodeElement extends CtElement {
 	/**
 	 * Partially evaluates an element and all its sub-elements.
 	 *
-	 * @param <R>
-	 * 		the returned element
-	 * @return the result of the partial evaluation
+	 * @param <R> the type of the returned element
+	 * @return the result of the partial evaluation.
+	 *         The element is always cloned, even if nothing has been evaluated.
+	 * @see spoon.support.reflect.eval.VisitorPartialEvaluator
 	 */
 	<R extends CtCodeElement> R partiallyEvaluate();
 
