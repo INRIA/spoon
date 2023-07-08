@@ -49,6 +49,7 @@ jobs:
         with:
           website: jdk.java.net
           version: ${{ matrix.java }}
+          release: ${{ matrix.java }}
 
       - name: Get date for cache # see https://github.com/actions/cache README
         id: get-date
