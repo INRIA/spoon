@@ -143,9 +143,10 @@ jobs:
           pip3 install --user CommonMark==0.9.1 requests pygithub
 
       - name: Verify and Site Maven goals
-        run: |
-          mvn verify license:check site install -DskipTests -DadditionalJOption=-Xdoclint:syntax,-missing -Dscan
-          cd spoon-pom && mvn install -DskipTests && cd ..
+        run: mvn verify license:check site -DskipTests -DadditionalJOption=-Xdoclint:syntax,-missing -Dscan
+      - name: Install spoon-pom
+        working-directory: spoon-pom
+        run: mvn install -DskipTests
 
       - name: Checkstyle in src/tests
         run: mvn -q checkstyle:checkstyle -Pcheckstyle-test
@@ -157,8 +158,8 @@ jobs:
         run: mvn -q depclean:depclean
 
       - name: Spoon-decompiler
+        working-directory: spoon-decompiler
         run: |
-          cd spoon-decompiler
           mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
           mvn -q versions:update-parent -DallowSnapshots=true
           git diff
@@ -167,8 +168,8 @@ jobs:
           mvn -q depclean:depclean
 
       - name: Spoon-control-flow
+        working-directory: spoon-control-flow
         run: |
-          cd spoon-control-flow
           mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
           mvn -q versions:update-parent -DallowSnapshots=true
           git diff
@@ -176,16 +177,16 @@ jobs:
           mvn -q checkstyle:checkstyle license:check
 
       - name: Spoon-dataflow
+        working-directory: spoon-dataflow
         run: |
-          cd spoon-dataflow
           wget https://projects.ow2.org/download/spoon/WebHome/z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
           unzip z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
           export LD_LIBRARY_PATH=./z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04/bin
           ./gradlew build
 
       - name: Spoon-visualisation
+        working-directory: spoon-visualisation
         run: |
-          cd spoon-visualisation
           mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
           mvn -q versions:update-parent -DallowSnapshots=true
           git diff
@@ -193,8 +194,8 @@ jobs:
           mvn -q depclean:depclean
 
       - name: Spoon-smpl
+        working-directory: spoon-smpl
         run: |
-          cd spoon-smpl
           mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
           mvn -q versions:update-parent -DallowSnapshots=true
           git diff
