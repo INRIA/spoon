@@ -48,7 +48,7 @@ jobs:
       - uses: oracle-actions/setup-java@2c4df2930e35870536667f383d87f1246fbe613f # v1
         with:
           website: jdk.java.net
-          release: ${{ matrix.java }}
+          java-version: ${{ matrix.java }}
 
       - name: Get date for cache # see https://github.com/actions/cache README
         id: get-date
