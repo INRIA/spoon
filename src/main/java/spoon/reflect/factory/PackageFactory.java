@@ -8,15 +8,17 @@
 package spoon.reflect.factory;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.StringTokenizer;
-import spoon.SpoonException;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.reference.CtPackageReference;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 
 /**
@@ -169,7 +171,7 @@ public class PackageFactory extends SubFactory {
 		//
 		// To solve this we look for the package with at least one contained type, effectively
 		// filtering out any synthetic packages.
-		int foundPackageCount = 0;
+		ArrayList<CtPackage> packages = new ArrayList<>();
 		CtPackage packageWithTypes = null;
 		CtPackage lastNonNullPackage = null;
 		for (CtModule module : factory.getModel().getAllModules()) {
@@ -180,22 +182,55 @@ public class PackageFactory extends SubFactory {
 			lastNonNullPackage = aPackage;
 			if (aPackage.hasTypes()) {
 				packageWithTypes = aPackage;
-				foundPackageCount++;
+				packages.add(aPackage);
 			}
 		}
 
-		if (foundPackageCount > 1) {
-			throw new SpoonException(
-					"Ambiguous package name detected. If you believe the code you analyzed is correct, please"
-							+ " file an issue and reference https://github.com/INRIA/spoon/issues/4051. "
-							+ "Error details: Found " + foundPackageCount + " non-empty packages with name "
-							+ "'" + qualifiedName + "'"
-			);
-		}
+		CtPackage probablePackage = packageWithTypes != null ? packageWithTypes : lastNonNullPackage;
 
 		// Return a non synthetic package but if *no* package had any types we return the last one.
 		// This ensures that you can also retrieve empty packages with this API
-		return packageWithTypes != null ? packageWithTypes : lastNonNullPackage;
+		return mergeAmbiguousPackages(packages, probablePackage);
+	}
+
+	/**
+	 * Merges ambiguous packagesToMerge together to fix inconsistent heirarchies.
+	 * @param packagesToMerge - The list of ambiguous packagesToMerge
+	 * @param mergingPackage - The package to merge everything into.
+	 * @return
+	 */
+	private CtPackage mergeAmbiguousPackages(ArrayList<CtPackage> packagesToMerge, CtPackage mergingPackage) {
+
+		if (mergingPackage == null) return null;
+
+		HashSet<CtType<?>> types = new HashSet<>(mergingPackage.getTypes());
+		HashSet<CtPackage> subpacks = new HashSet<>(mergingPackage.getPackages());
+
+		for (CtPackage pack : packagesToMerge) {
+			if (pack == mergingPackage) continue;
+
+
+            Set<CtType<?>> oldTypes = pack.getTypes();
+            Set<CtPackage> oldPacks = pack.getPackages();
+
+            for (CtType<?> type : oldTypes) {
+				// If we don't disconnect the type from its old package, spoon will get mad.
+				((CtPackage)type.getParent()).removeType(type);
+				type.setParent(null);
+			}
+			types.addAll(oldTypes);
+
+            for (CtPackage oldPack : oldPacks) {
+				// Applies to packagesToMerge too.
+				((CtPackage)oldPack.getParent()).removePackage(oldPack);
+                oldPack.setParent(null);
+            }
+            subpacks.addAll(oldPacks);
+			pack.delete();
+		}
+		mergingPackage.setTypes(types);
+		mergingPackage.setPackages(subpacks);
+		return mergingPackage;
 	}
 
 	/**
