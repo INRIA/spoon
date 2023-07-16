@@ -22,7 +22,7 @@ jobs:
           with:
             args: --source-directory,./src/main/java , --fail-threshold, 0
             post-pr-comment: "false"
-        - uses: github/codeql-action/upload-sarif@f6e388ebf0efc915c6c5b165b019ee61a6746a38 # v2
+        - uses: github/codeql-action/upload-sarif@489225d82a57396c6f426a40e66d461b16b3461d # v2
           with:
             sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
     code-quality-spoon-javadoc:
@@ -37,6 +37,6 @@ jobs:
           with:
             args: --source-directory,./spoon-javadoc/src/main/java , --fail-threshold, 0
             post-pr-comment: "false"
-        - uses: github/codeql-action/upload-sarif@f6e388ebf0efc915c6c5b165b019ee61a6746a38 # v2
+        - uses: github/codeql-action/upload-sarif@489225d82a57396c6f426a40e66d461b16b3461d # v2
           with:
             sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json

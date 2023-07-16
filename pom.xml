@@ -12,13 +12,13 @@
   <parent>
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-pom</artifactId>
-    <version>1.0</version>
+    <version>10.4.1-SNAPSHOT</version>
     <relativePath>spoon-pom</relativePath>
   </parent>
 
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>10.4.0-SNAPSHOT</version>
+  <version>10.4.1-SNAPSHOT</version>
   <name>Spoon Core</name>
   <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
   <url>http://spoon.gforge.inria.fr/</url>
@@ -71,9 +71,10 @@
       <version>2.13.0</version>
     </dependency>
     <dependency>
+	<!-- We use this old version for maximum compatibility, as we use the system maven installation for all commands anyways. -->
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
-      <version>3.9.2</version>
+      <version>3.6.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -102,7 +103,7 @@
       <!-- to reproduce JTD error with nullable annotation -->
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>32.0.1-jre</version>
+      <version>32.1.1-jre</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -154,7 +155,7 @@
     <dependency>
       <groupId>org.kohsuke.metainf-services</groupId>
       <artifactId>metainf-services</artifactId>
-      <version>1.9</version>
+      <version>1.11</version>
       <optional>true</optional>
       <scope>test</scope>
     </dependency>
