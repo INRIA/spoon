@@ -145,7 +145,7 @@ public interface CtTypeInformation {
 	 * To get the {@link CtType} of the super class, use {@link CtTypeReference#getDeclaration()}
 	 * or {@link CtTypeReference#getTypeDeclaration()} on the {@link CtTypeReference} returned by this method.
 	 *
-	 * @return the type explicitly extended by this class, or {@code null} if there
+	 * @return the type explicitly extended by this type, or {@code null} if there
 	 *         is none or if the super type is not in the classpath (in noclasspath mode).
 	 *         If a class does not explicitly extend another class, {@link Object} is <b>not</b> returned.
 	 *         For types like enums that implicitly extend a superclass like {@link Enum}, this method returns
