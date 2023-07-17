@@ -143,7 +143,7 @@ public interface CtTypeInformation {
 	 * Returns a reference to the type directly extended by this type.
 	 * <p>
 	 * To get the {@link CtType} of the super class, use {@link CtTypeReference#getDeclaration()}
-	 * or {@link CtTypeReference#getTypeDeclaration()} on the {@link CtTypeReference} by this method.
+	 * or {@link CtTypeReference#getTypeDeclaration()} on the {@link CtTypeReference} returned by this method.
 	 *
 	 * @return the type explicitly extended by this class, or {@code null} if there
 	 *         is none or if the super type is not in the classpath (in noclasspath mode).
