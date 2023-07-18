@@ -77,10 +77,18 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 		return this.getEnvironment().getSourceOutputDirectory();
 	}
 
+	/**
+	 * Gets the charset.
+	 * @return the charset used for processed source code.
+	 */
 	public Charset getCharset() {
 		return this.charset;
 	}
 
+	/**
+	 * Sets the charset.
+	 * @param charset the charset used for processed source code.
+	 */
 	public void setCharset(Charset charset) {
 		this.charset = charset;
 	}
