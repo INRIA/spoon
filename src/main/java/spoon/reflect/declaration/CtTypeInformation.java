@@ -147,7 +147,7 @@ public interface CtTypeInformation {
 	 *
 	 * @return the type explicitly extended by this type, or {@code null} if there
 	 *         is none or if the super type is not in the classpath (in noclasspath mode).
-	 *         If a class does not explicitly extend another class, {@link Object} is <b>not</b> returned.
+	 *         If a class does not explicitly extend another class {@code null} is returned (<b>not</b> {@link Object}).
 	 *         For types like enums that implicitly extend a superclass like {@link Enum}, this method returns
 	 *         that class.
 	 */
@@ -203,8 +203,12 @@ public interface CtTypeInformation {
 	Collection<CtExecutableReference<?>> getAllExecutables();
 
 	/**
-	 * @return the type erasure, which is computed by the java compiler to ensure that no new classes are created
-	 *         for parametrized types so that generics incur no runtime overhead.
+	 * This method returns a reference to the type with generic parameters removed.
+	 * <p>
+	 * For example the generic type {@code String} of {@code List<String>} is not known at
+	 * runtime, therefore it will be erased to {@code List}.
+	 *
+	 * @return the type erasure is returned
 	 * @see <a href="https://docs.oracle.com/javase/tutorial/java/generics/erasure.html">Type Erasure</a>
 	 */
 	@DerivedProperty
