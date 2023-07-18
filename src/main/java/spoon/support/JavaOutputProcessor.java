@@ -39,7 +39,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 	List<File> printedFiles = new ArrayList<>();
 
-	Charset charset = Charset.defaultCharset();
+	private Charset charset = Charset.defaultCharset();
 
 	/**
 	 * @param printer  the PrettyPrinter to use for written the files
