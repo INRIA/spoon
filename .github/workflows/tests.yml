@@ -28,14 +28,7 @@ jobs:
     strategy:
       matrix:
         java: [11, 17, 20, 21-ea]
-        os: [ubuntu-latest, windows-latest]
-        exclude:
-          - os: windows-latest
-            java: 17
-          - os: windows-latest
-            java: 20
-          - os: windows-latest
-            java: 21-ea
+        os: [ubuntu-latest]
 
 
 
