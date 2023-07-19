@@ -72,7 +72,7 @@ jobs:
         shell: bash
       - name: Test
         run:
-          mvn -f spoon-pom test -Dtest=spoon.MavenLauncherTest
+          mvn -f spoon-pom test
       - name: print run tests
         run: cat testResults.spoon
   coverage:
