@@ -296,11 +296,11 @@ public class MavenLauncherTest {
 
 	@Test
 	void buildClassPath_fromATestResourceInSorald() throws IOException {
+		// contract: classpath should be built
 		MavenLauncher launcher = new MavenLauncher(
 			copyResourceToFolder(TEMPDIR, "src/test/resources/maven-launcher/sorald-failure"),
 			MavenLauncher.SOURCE_TYPE.ALL_SOURCE
 		);
-		System.out.println(Arrays.toString(launcher.getEnvironment().getSourceClasspath()));
 
         assertNotEquals(0, launcher.getEnvironment().getSourceClasspath().length);
 	}
