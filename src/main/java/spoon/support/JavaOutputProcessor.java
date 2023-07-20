@@ -22,9 +22,9 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.compiler.SpoonProgress;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +38,8 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	PrettyPrinter printer;
 
 	List<File> printedFiles = new ArrayList<>();
+
+	private Charset charset = Charset.defaultCharset();
 
 	/**
 	 * @param printer  the PrettyPrinter to use for written the files
@@ -73,6 +75,22 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	@Override
 	public File getOutputDirectory() {
 		return this.getEnvironment().getSourceOutputDirectory();
+	}
+
+	/**
+	 * Gets the charset.
+	 * @return the charset used for processed source code.
+	 */
+	public Charset getCharset() {
+		return this.charset;
+	}
+
+	/**
+	 * Sets the charset.
+	 * @param charset the charset used for processed source code.
+	 */
+	public void setCharset(Charset charset) {
+		this.charset = charset;
 	}
 
 	@Override
@@ -123,7 +141,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 				printedFiles.add(file);
 			}
 			// print type
-			try (PrintStream stream = new PrintStream(file)) {
+			try (PrintStream stream = new PrintStream(file, charset)) {
 				stream.print(printer.getResult());
 				for (CtType<?> t : toBePrinted) {
 					lineNumberMappings.put(t.getQualifiedName(), printer.getLineNumberMapping());
@@ -161,9 +179,9 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 		if (!printedFiles.contains(packageAnnot)) {
 			printedFiles.add(packageAnnot);
 		}
-		try (PrintStream stream = new PrintStream(packageAnnot)) {
+		try (PrintStream stream = new PrintStream(packageAnnot, charset)) {
 			stream.println(getPrinter().printPackageInfo(pack));
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			Launcher.LOGGER.error(e.getMessage(), e);
 		}
 	}
@@ -174,9 +192,9 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 			if (!printedFiles.contains(moduleFile)) {
 				printedFiles.add(moduleFile);
 			}
-			try (PrintStream stream = new PrintStream(moduleFile)) {
+			try (PrintStream stream = new PrintStream(moduleFile, charset)) {
 				stream.println(getPrinter().printModuleInfo(module));
-			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
 				Launcher.LOGGER.error(e.getMessage(), e);
 			}
 		}
