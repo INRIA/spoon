@@ -154,7 +154,7 @@ public class ConstructorFactory extends ExecutableFactory {
 	 * @param <T> Infered type of the constructor.
 	 * @return CtExecutablereference if a constructor.
 	 */
-	public <T> CtExecutableReference<T> createReference(CtTypeReference<T> type, CtExpression<?>...parameters) {
+	public <T> CtExecutableReference<T> createReference(CtTypeReference<T> type, CtExpression<?>... parameters) {
 		final CtExecutableReference<T> executableReference = factory.Core().createExecutableReference();
 		executableReference.setType(type);
 		executableReference.setDeclaringType(type == null ? null : type.clone());
