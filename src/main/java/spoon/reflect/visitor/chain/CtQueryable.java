@@ -20,6 +20,8 @@ import spoon.reflect.visitor.Filter;
  * </ol>
  *
  * The main methods are documented in CtQuery
+ * <p>
+ * You might want to use {@link Filter} with {@link CtElement#getElements(Filter)} instead.
  */
 public interface CtQueryable {
 

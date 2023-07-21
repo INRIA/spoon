@@ -9,9 +9,9 @@ package spoon.reflect.code;
 
 /**
  * This code element defines a write to a variable.
- *
- * In Java, it is a usage of a variable inside an assignment.
- *
+ * <p>
+ * A variable-write is an assignment to a variable.
+ * <p>
  * For example:
  * <pre>
  *     String variable = "";
@@ -23,8 +23,9 @@ package spoon.reflect.code;
  * </pre>
  *
  *
- * @param <T>
- * 		type of the variable
+ * @param <T> type of the variable
+ * @see CtAssignment#getAssigned()
+ * @see CtArrayWrite
  */
 public interface CtVariableWrite<T> extends CtVariableAccess<T> {
 	@Override
