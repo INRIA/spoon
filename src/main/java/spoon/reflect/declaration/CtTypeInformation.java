@@ -212,7 +212,6 @@ public interface CtTypeInformation {
 	 * @return a reference to the erased type
 	 * @see <a href="https://docs.oracle.com/javase/specs/jls/se20/html/jls-4.html#jls-4.6">Type Erasure</a>
 	 */
-	 */
 	@DerivedProperty
 	CtTypeReference<?> getTypeErasure();
 
