@@ -203,13 +203,15 @@ public interface CtTypeInformation {
 	Collection<CtExecutableReference<?>> getAllExecutables();
 
 	/**
-	 * This method returns a reference to the type with generic parameters removed.
+	 * This method returns a reference to the erased type.
 	 * <p>
-	 * For example the generic type {@code String} of {@code List<String>} is not known at
-	 * runtime, therefore it will be erased to {@code List}.
+	 * For example, this will return {@code List} for {@code List<String>},
+	 * or {@code Enum} for the type parameter {@code E} in the enum
+	 * declaration.
 	 *
-	 * @return the type erasure is returned
-	 * @see <a href="https://docs.oracle.com/javase/tutorial/java/generics/erasure.html">Type Erasure</a>
+	 * @return a reference to the erased type
+	 * @see <a href="https://docs.oracle.com/javase/specs/jls/se20/html/jls-4.html#jls-4.6">Type Erasure</a>
+	 */
 	 */
 	@DerivedProperty
 	CtTypeReference<?> getTypeErasure();
