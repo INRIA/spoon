@@ -217,6 +217,8 @@ public interface CtTypeInformation {
 
 
 	/**
+	 * Returns true if this type represents an array like {@code Object[]} or {@code int[]}.
+	 *
 	 * @return true if this type represents an array like {@code Object[]} or {@code int[]}
 	 */
 	boolean isArray();
