@@ -176,7 +176,7 @@ public class CodeFactory extends SubFactory {
 	 * @param <T> the actual type of the decelerating type of the constructor if available
 	 * @return the constructor call
 	 */
-	public <T> CtConstructorCall<T> createConstructorCall(CtTypeReference<T> type, CtExpression<?>...parameters) {
+	public <T> CtConstructorCall<T> createConstructorCall(CtTypeReference<T> type, CtExpression<?>... parameters) {
 		CtConstructorCall<T> constructorCall = factory.Core()
 				.createConstructorCall();
 		CtExecutableReference<T> executableReference = factory.Core()
@@ -197,7 +197,7 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a new anonymous class.
 	 */
-	public <T> CtNewClass<T> createNewClass(CtType<T> superClass, CtExpression<?>...parameters) {
+	public <T> CtNewClass<T> createNewClass(CtType<T> superClass, CtExpression<?>... parameters) {
 		CtNewClass<T> ctNewClass = factory.Core().createNewClass();
 		CtConstructor<T> constructor = ((CtClass) superClass).getConstructor(Arrays.stream(parameters).map(x -> x.getType()).toArray(CtTypeReference[]::new));
 		if (constructor == null) {

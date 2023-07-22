@@ -220,7 +220,7 @@ public class SourcePositionImpl implements SourcePosition {
 	 * fails when `values` are not sorted ascending
 	 * It is used to check whether start/end values of SourcePosition are consistent
 	 */
-	protected static void checkArgsAreAscending(int...values) {
+	protected static void checkArgsAreAscending(int... values) {
 		int last = -1;
 		for (int value : values) {
 			if (value < 0) {
