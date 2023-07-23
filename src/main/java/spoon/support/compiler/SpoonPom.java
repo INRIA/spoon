@@ -483,19 +483,27 @@ public class SpoonPom implements SpoonResource {
 			}
 
 			if (LOGGER != null) {
-				request.getOutputHandler(s -> LOGGER.debug(s));
-				request.getErrorHandler(s -> LOGGER.debug(s));
+				request.getOutputHandler(System.out::println);
+				request.getErrorHandler(System.out::println);
 			}
+
+			System.out.println("Invoking " + pomFile + " " + request.getGoals() + " " + properties + " " + request.getShellEnvironments() + " " + request.getMavenExecutable() + " " + request.getMavenHome());
 
 			Invoker invoker = new DefaultInvoker();
 			invoker.setMavenHome(mvnHome);
 			invoker.setWorkingDirectory(directory);
-			invoker.setErrorHandler(s -> LOGGER.debug(s));
-			invoker.setOutputHandler(s -> LOGGER.debug(s));
+			invoker.setErrorHandler(System.out::println);
+			invoker.setOutputHandler(System.out::println);
 			try {
-				invoker.execute(request);
+				System.out.println(invoker.execute(request));
 			} catch (MavenInvocationException e) {
+				System.out.println(e);
+				e.printStackTrace();
 				throw new SpoonException("Maven invocation failed to build a classpath.");
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println(e);
+				throw e;
 			}
 			classpathFile.setLastModified(time);
 		}
