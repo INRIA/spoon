@@ -43,6 +43,7 @@ deploy:
         # Spoon is hosted on the legacy sonatype instance, see
         # https://central.sonatype.org/publish/publish-guide/#releasing-to-central
         url: https://oss.sonatype.org/service/local
+        snapshotUrl: https://oss.sonatype.org/content/repositories/snapshots
         closeRepository: true
         releaseRepository: true
         stagingRepositories:

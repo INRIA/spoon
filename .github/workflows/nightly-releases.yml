@@ -1,0 +1,62 @@
+name: Nightly-Release
+
+on:
+    schedule:
+      - cron: '0 0 * * *' # Run every day at 00:00
+# This workflow runs every day at 00:00 UTC and releases a new snapshot version of Spoon.
+# It clones the repo, builds the project, and runs JReleaser deploy the snapshot.
+# The 
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+# Setups the environment
+      - name: Checkout
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
+      - name: Set up JDK 11
+        uses: actions/setup-java@cd89f46ac9d01407894225f350157564c9c7cee2 # v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+      - name: Get version with snapshot
+        run: echo "CURRENT_VERSION_WITH_SNAPSHOT=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+      # this is a safeguard if the version is not a snapshot version
+      - name: Cancel if not a snapshot
+        run: |
+          if [[ ! $CURRENT_VERSION_WITH_SNAPSHOT =~ .*-SNAPSHOT ]]; then
+            echo "Not a snapshot version, skipping"
+            exit 78
+          fi
+# Now we can run the release
+      - name: Stage release
+        run:  |
+          mvn -f spoon-pom --no-transfer-progress --batch-mode -Pjreleaser clean deploy -DaltDeploymentRepository=local::default::file:./target/staging-deploy
+          mvn --no-transfer-progress --batch-mode -Pjreleaser deploy:deploy-file -Dfile="./spoon-pom/pom.xml" -DpomFile="./spoon-pom/pom.xml" -Durl=file://$(mvn help:evaluate -D"expression=project.basedir" -q -DforceStdout)/target/staging-deploy
+      - name: Run JReleaser
+        uses: jreleaser/release-action@0b198089c53ad2aef0d2bff6b5e6061ead2bbb90 # v2
+        with:
+          setup-java: false
+          version: 1.4.0
+          arguments: deploy
+        env:
+          JRELEASER_PROJECT_VERSION: ${{ env.CURRENT_VERSION_WITH_SNAPSHOT }}
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.JRELEASER_GPG_PUBLIC_KEY }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
+          JRELEASER_NEXUS2_MAVEN_CENTRAL_USERNAME: ${{ secrets.JRELEASER_NEXUS2_MAVEN_CENTRAL_USERNAME }}
+          JRELEASER_NEXUS2_MAVEN_CENTRAL_PASSWORD: ${{ secrets.JRELEASER_NEXUS2_MAVEN_CENTRAL_PASSWORD }}
+# Log failure:
+      - name: JReleaser release output
+        if: always()
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3
+        with:
+          name: jreleaser-release
+          path: |
+            out/jreleaser/trace.log
+            out/jreleaser/output.properties
