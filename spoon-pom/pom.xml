@@ -138,7 +138,8 @@
                         <arg>-Xlint:deprecation,unchecked</arg>
                         <!-- always generate class files for package-info -->
                         <arg>-Xpkginfo:always</arg>
-                        <arg>-Xplugin:ErrorProne -Xep:NullAway:WARN -XepOpt:NullAway:AnnotatedPackages=spoon</arg>
+                        <arg>-Xplugin:ErrorProne -XepDisableAllChecks -Xep:NullAway:WARN
+                            -XepOpt:NullAway:AnnotatedPackages=spoon</arg>
                         <arg>-XDcompilePolicy=simple</arg>
                     </compilerArgs>
                     <!-- incremental compilation is broken in maven, see https://issues.apache.org/jira/browse/MCOMPILER-205  -->
