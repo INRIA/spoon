@@ -138,6 +138,8 @@
                         <arg>-Xlint:deprecation,unchecked</arg>
                         <!-- always generate class files for package-info -->
                         <arg>-Xpkginfo:always</arg>
+                        <arg>-Xplugin:ErrorProne -Xep:NullAway:WARN -XepOpt:NullAway:AnnotatedPackages=spoon</arg>
+                        <arg>-XDcompilePolicy=simple</arg>
                     </compilerArgs>
                     <!-- incremental compilation is broken in maven, see https://issues.apache.org/jira/browse/MCOMPILER-205  -->
                     <!-- useIncrementalCompilation=false actually means that we won't recompile everything each time -->
@@ -148,6 +150,16 @@
                             <groupId>org.kohsuke.metainf-services</groupId>
                             <artifactId>metainf-services</artifactId>
                             <version>1.11</version>
+                        </annotationProcessorPath>
+                        <annotationProcessorPath>
+                            <groupId>com.google.errorprone</groupId>
+                            <artifactId>error_prone_core</artifactId>
+                            <version>2.20.0</version>
+                        </annotationProcessorPath>
+                        <annotationProcessorPath>
+                            <groupId>com.uber.nullaway</groupId>
+                            <artifactId>nullaway</artifactId>
+                            <version>0.10.11</version>
                         </annotationProcessorPath>
                     </annotationProcessorPaths>
                 </configuration>
