@@ -314,7 +314,7 @@ public interface Environment {
 	 * classpath are handled with the reference mechanism. The "simplename" of
 	 * the reference object refers to the unbound identifier.
 	 *
-	 * This option facilitates the use of Spoon when is is hard to have the
+	 * This option facilitates the use of Spoon when it is hard to have the
 	 * complete and correct classpath, for example for mining software
 	 * repositories.
 	 *
