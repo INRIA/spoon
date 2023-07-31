@@ -32,12 +32,13 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 /**
  * Visitor that generates factory calls to recreate the AST visited.
@@ -47,8 +48,8 @@ public class SpoonifierVisitor extends CtScanner {
 //public class SpoonifierVisitor extends CtInheritanceScanner {
 	StringBuilder result = new StringBuilder();
 	Map<String, Integer> variableCount = new HashMap<>();
-	Stack<String> parentName = new Stack<>();
-	Stack<Map<CtRole, String>> roleContainer = new Stack<>();
+	Deque<String> parentName = new ArrayDeque<>();
+	Deque<Map<CtRole, String>> roleContainer = new ArrayDeque<>();
 
 	PropertyScanner propertyScanner = new PropertyScanner();
 
