@@ -155,12 +155,12 @@ public class SpoonifierVisitor extends CtScanner {
 			} else if (o instanceof Set) {
 				handleContainer(element, parent, elementRoleInParent, variableName, "Set");
 			} else {
-				result.append(printTabs() + parentName.peek() + ".setValueByRole(CtRole." + elementRoleInParent.name() + ", " + variableName + ");\n");
+				result.append(printTabs() + parentName.getFirst() + ".setValueByRole(CtRole." + elementRoleInParent.name() + ", " + variableName + ");\n");
 			}
 		}
 
-		parentName.push(variableName);
-		roleContainer.push(new HashMap<>());
+		parentName.addFirst(variableName);
+		roleContainer.addFirst(new HashMap<>());
 	}
 
 	private String getVariableName(String className) {
@@ -189,12 +189,12 @@ public class SpoonifierVisitor extends CtScanner {
 		}
 
 		String containerName;
-		if (!roleContainer.peek().containsKey(elementRoleInParent)) {
-			containerName = parentName.peek() + elementRoleInParent.toString().substring(0, 1).toUpperCase() + elementRoleInParent.toString().substring(1) + "s";
-			roleContainer.peek().put(elementRoleInParent, containerName);
+		if (!roleContainer.getFirst().containsKey(elementRoleInParent)) {
+			containerName = parentName.getFirst() + elementRoleInParent.toString().substring(0, 1).toUpperCase() + elementRoleInParent.toString().substring(1) + "s";
+			roleContainer.getFirst().put(elementRoleInParent, containerName);
 			result.append(printTabs() + container + " " + containerName + " = new " + concreteClass + "();\n");
 		} else {
-			containerName = roleContainer.peek().get(elementRoleInParent);
+			containerName = roleContainer.getFirst().get(elementRoleInParent);
 		}
 
 		if (container.equals("Map")) {
@@ -223,11 +223,11 @@ public class SpoonifierVisitor extends CtScanner {
 				&& isLeafTypeReference(element.getParent())) {
 			return;
 		}
-		if (!roleContainer.peek().isEmpty()) {
-			for (CtRole role: roleContainer.peek().keySet()) {
-				String variableName = roleContainer.peek().get(role);
+		if (!roleContainer.getFirst().isEmpty()) {
+			for (CtRole role: roleContainer.getFirst().keySet()) {
+				String variableName = roleContainer.getFirst().get(role);
 				result.append(printTabs())
-						.append(parentName.peek())
+						.append(parentName.getFirst())
 						.append(".setValueByRole(CtRole.")
 						.append(role.name())
 						.append(", ")
@@ -235,8 +235,8 @@ public class SpoonifierVisitor extends CtScanner {
 						.append(");\n");
 			}
 		}
-		parentName.pop();
-		roleContainer.pop();
+		parentName.removeFirst();
+		roleContainer.removeFirst();
 		tabs--;
 	}
 
