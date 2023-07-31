@@ -159,8 +159,8 @@ public class SpoonifierVisitor extends CtScanner {
 			}
 		}
 
-		parentName.addFirst(variableName);
-		roleContainer.addFirst(new HashMap<>());
+		parentName.push(variableName);
+		roleContainer.push(new HashMap<>());
 	}
 
 	private String getVariableName(String className) {
@@ -235,8 +235,8 @@ public class SpoonifierVisitor extends CtScanner {
 						.append(");\n");
 			}
 		}
-		parentName.removeFirst();
-		roleContainer.removeFirst();
+		parentName.pop();
+		roleContainer.pop();
 		tabs--;
 	}
 
