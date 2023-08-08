@@ -36,7 +36,7 @@ jobs:
           cache: maven
           
       - name: install go
-        uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4
+        uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4
       - name: install semversion
         run: go install github.com/ffurrer2/semver/cmd/semver@latest
 # Get current version from pom and remove snapshot if present.
