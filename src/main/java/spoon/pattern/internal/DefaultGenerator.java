@@ -34,6 +34,8 @@ import spoon.support.util.ImmutableMapImpl;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Drives generation process
  */
@@ -55,7 +57,7 @@ public class DefaultGenerator implements Generator {
 	 *
 	 * @return a generate value or null
 	 */
-	public <T> T generateSingleTarget(RootNode node, ImmutableMap parameters, Class<T> expectedType) {
+	public <T> @Nullable T generateSingleTarget(RootNode node, ImmutableMap parameters, Class<T> expectedType) {
 		ResultHolder.Single<T> result = new ResultHolder.Single<>(expectedType);
 		generateTargets(node, result, parameters);
 		return result.getResult();
