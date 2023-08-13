@@ -32,7 +32,7 @@ jobs:
     name: Tests with Java ${{ matrix.java }} on ${{ matrix.os }}
     strategy:
       matrix:
-        java: [11, 17, 21]
+        java: [17, 21]
         os: [ubuntu-latest]
     steps:
       - name: Checkout
