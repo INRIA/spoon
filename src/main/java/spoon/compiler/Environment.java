@@ -27,6 +27,8 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * This interface represents the environment in which Spoon is launched -
  * accessible through {@link spoon.reflect.factory.Factory#getEnvironment()}. Its
@@ -103,7 +105,7 @@ public interface Environment {
 	 * @param processorName fully qualified name of a processor
 	 * @return properties for the processor, or {@code null} if there is no processor by that name
 	 */
-	ProcessorProperties getProcessorProperties(String processorName);
+	 @Nullable ProcessorProperties getProcessorProperties(String processorName);
 
 	/**
 	 * Sets the properties for a given processor.

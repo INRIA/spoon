@@ -18,6 +18,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.jspecify.annotations.Nullable;
+
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.annotations.PropertyGetter;
@@ -346,7 +349,7 @@ public class Metamodel {
 	 * @param iface the interface of spoon model element
 	 * @return {@link CtClass} of Spoon model which implements the spoon model interface. null if there is no implementation.
 	 */
-	public static CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
+	public static @Nullable CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
 		String impl = replaceApiToImplPackage(iface.getQualifiedName()) + CLASS_SUFFIX;
 		return (CtClass<?>) getType(impl, iface);
 	}
@@ -355,7 +358,7 @@ public class Metamodel {
 	 * @param impl the implementation class of a Spoon element
 	 * @return {@link CtInterface} of Spoon model which represents API of the spoon model class. null if there is no implementation.
 	 */
-	public static CtInterface<?> getInterfaceOfImplementation(CtClass<?> impl) {
+	public static @Nullable CtInterface<?> getInterfaceOfImplementation(CtClass<?> impl) {
 		String iface = impl.getQualifiedName();
 		if (!iface.endsWith(CLASS_SUFFIX) || !iface.startsWith("spoon.support.reflect.")) {
 			throw new SpoonException("Unexpected spoon model implementation class: " + impl.getQualifiedName());
