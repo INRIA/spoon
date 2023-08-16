@@ -11,7 +11,8 @@ include:
   - name: DoubleBraceInitialization
   - name: EqualsAndHashcode
   - name: JavaLangImport
-  - name: MissortedModifiers
+  # Disabled for annotations applied to type
+  #- name: MissortedModifiers
   - name: NestedAssignment
   - name: NonShortCircuitBoolean
   - name: RedundantFieldInitialization
