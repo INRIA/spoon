@@ -12,11 +12,11 @@ on:
   push:
     branches:
       - master
+      - chore/flakey-flakey-rise-and-shine
   schedule:
   - cron: "0 0 * * *"
 
 env:
-  JAVA_DISTRIBUTION: temurin
   MAVEN_OPTS: >-
     -Dmaven.resolver.transport=native
     -Daether.connector.connectTimeout=300000
@@ -27,82 +27,45 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        java: [11, 17, 20, 21-ea]
-        os: [ubuntu-latest, windows-latest]
-        exclude:
-          - os: windows-latest
-            java: 17
-          - os: windows-latest
-            java: 20
-          - os: windows-latest
-            java: 21-ea
-
-
-
+        java: [11, 17, 20]
+        os: [ubuntu-latest]
 
     name: Tests with Java ${{ matrix.java }} on ${{ matrix.os }}
     steps:
-      - name: Disable Git's autocrlf
-        run: git config --global core.autocrlf false
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
-      - uses: oracle-actions/setup-java@2c4df2930e35870536667f383d87f1246fbe613f # v1
+      - name: git checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
-          website: jdk.java.net
-          java-version: ${{ matrix.java }}
-
-      - name: Get date for cache # see https://github.com/actions/cache README
-        id: get-date
-        run: echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
-        shell: bash
-      - name: Use Maven dependency cache
-        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+          fetch-depth: 0
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v4
+      - uses: DeterminateSystems/magic-nix-cache-action@v2
+      - name: Check Nixpkgs inputs
+        uses: DeterminateSystems/flake-checker-action@v5
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven-
+          fail-mode: true
 
-      - name: Use silent log config
-        run: mv chore/logback.xml src/test/resources/
-      - name: Build
-        run: |
-          mvn -f spoon-pom -B test-compile
-      - name: Fetch final dependencies
-        # this is a hack to download the final test dependencies required to actually run the tests
-        run: timeout 20 mvn -f spoon-pom -B test || echo "Done fetching dependencies"
-        shell: bash
+      - name: Time nix setup
+        run: nix develop .#jdk${{ matrix.java }} --command true
       - name: Test
-        run:
-          mvn -f spoon-pom test
-      - name: print run tests
-        run: cat testResults.spoon
+        run: nix develop .#jdk${{ matrix.java }} --command test
   coverage:
     runs-on: ubuntu-latest
     name: Test with coverage
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
-      - uses: actions/setup-java@cd89f46ac9d01407894225f350157564c9c7cee2 # v3.12.0
+      - name: git checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
-          java-version: 17
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-
-      - name: Get date for cache # see https://github.com/actions/cache README
-        id: get-date
-        run: echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
-        shell: bash
-      - name: Use Maven dependency cache
-        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+          fetch-depth: 0
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v4
+      - uses: DeterminateSystems/magic-nix-cache-action@v2
+      - name: Check Nixpkgs inputs
+        uses: DeterminateSystems/flake-checker-action@v5
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven-
+          fail-mode: true
 
-      - name: Use silent log config
-        run: mv chore/logback.xml src/test/resources/
-      - name: Build
-        run: |
-          mvn -f spoon-pom -B test-compile
-      - name: Test with coverage
-        run: mvn -f spoon-pom -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
+      - name: Run tests with coverage
+        run: nix develop --command coverage
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
@@ -111,136 +74,57 @@ jobs:
     runs-on: ubuntu-latest
     name: Extra checks
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - name: git checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@cd89f46ac9d01407894225f350157564c9c7cee2 # v3.12.0
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v4
+      - uses: DeterminateSystems/magic-nix-cache-action@v2
+      - name: Check Nixpkgs inputs
+        uses: DeterminateSystems/flake-checker-action@v5
         with:
-          java-version: 11
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-      - uses: actions/setup-python@61a6322f88396a6271a6ee3565807d608ecaddd1 # v4.7.0
-        with:
-          python-version: 3.11
-      - name: Get date for cache # see https://github.com/actions/cache README
-        id: get-date
-        run: echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
-        shell: bash
-      - name: Use Maven dependency cache
-        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven-
-      - name: Use silent log config
-        run: mv chore/logback.xml src/test/resources/
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
-        with:
-          fetch-depth: 0
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-pip
-          pip3 install --user CommonMark==0.9.1 requests pygithub
+          fail-mode: true
 
-      - name: Verify and Site Maven goals
-        run: mvn verify license:check site -DskipTests -DadditionalJOption=-Xdoclint:syntax,-missing -Dscan
-      - name: Install spoon-pom
-        working-directory: spoon-pom
-        run: mvn install -DskipTests
-
-      - name: Checkstyle in src/tests
-        run: mvn -q checkstyle:checkstyle -Pcheckstyle-test
-
-      - name: Check documentation links
-        run: python3 ./chore/check-links-in-doc.py
-
-      - name: Analyze dependencies through DepClean in spoon-core
-        run: mvn -q depclean:depclean
-
-      - name: Spoon-decompiler
-        working-directory: spoon-decompiler
-        run: |
-          mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
-          mvn -q versions:update-parent -DallowSnapshots=true
-          git diff
-          mvn -q test
-          mvn -q checkstyle:checkstyle license:check
-          mvn -q depclean:depclean
-
-      - name: Spoon-control-flow
-        working-directory: spoon-control-flow
-        run: |
-          mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
-          mvn -q versions:update-parent -DallowSnapshots=true
-          git diff
-          mvn -q test
-          mvn -q checkstyle:checkstyle license:check
-      # spoon dataflow
-      - name: Cache downloaded file
-        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3
-        with:
-          path: spoon-dataflow/z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
-          key: ${{ runner.os }}-z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
-          restore-keys: |
-            ${{ runner.os }}-z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
-      - name: Spoon-dataflow
-        working-directory: spoon-dataflow
-        run: |
-          wget https://projects.ow2.org/download/spoon/WebHome/z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
-          unzip z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
-          export LD_LIBRARY_PATH=./z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04/bin
-          ./gradlew build
-      - name: Spoon-visualisation
-        working-directory: spoon-visualisation
-        run: |
-          mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
-          mvn -q versions:update-parent -DallowSnapshots=true
-          git diff
-          mvn -q test
-          mvn -q depclean:depclean
-
-      - name: Spoon-smpl
-        working-directory: spoon-smpl
-        run: |
-          mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
-          mvn -q versions:update-parent -DallowSnapshots=true
-          git diff
-          mvn -q -Djava.src.version=11 test
-          mvn -q checkstyle:checkstyle license:check
-          mvn -q depclean:depclean
-      - name: Trigger extra tasks
+      - name: Run extra checks
+        run: nix develop --command extra
+      - name: Trigger extra remote tasks
         if: github.repository == 'INRIA/spoon' && github.event_name == 'pull_request'
-        run: |
-          curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-pull-request.sh | bash
+        run: nix develop --command extra-remote
       - name: Run Javadoc quality check
-        run: ./chore/check-javadoc-regressions.py COMPARE_WITH_MASTER
+        run: nix develop --command javadoc-quality
+
   reproducible-builds:
     runs-on: ubuntu-latest
     name: reproducible-builds
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - name: git checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@cd89f46ac9d01407894225f350157564c9c7cee2 # v3.12.0
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v4
+      - uses: DeterminateSystems/magic-nix-cache-action@v2
+      - name: Check Nixpkgs inputs
+        uses: DeterminateSystems/flake-checker-action@v5
         with:
-          java-version: 17
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          fail-mode: true
       - name: Check status
-        run: chore/check-reproducible-builds.sh
+        run: nix develop --command reproducible-builds
+
   maven-central-requirements:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
-      - name: Set up JDK 11
-        uses: actions/setup-java@cd89f46ac9d01407894225f350157564c9c7cee2 # v3
+      - name: git checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
-          java-version: '11'
-          distribution: 'temurin'
-        # the pom checker needs maven 3.9.0
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@07fbbe97d97ef44336b7382563d66743297e442f # v4.5
+          fetch-depth: 0
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v4
+      - uses: DeterminateSystems/magic-nix-cache-action@v2
+      - name: Check Nixpkgs inputs
+        uses: DeterminateSystems/flake-checker-action@v5
         with:
-          maven-version: 3.9.0
-      # we dont enforce that the version must be non snapshot as this is not possible for SNAPSHOT versions in our workflow.
+          fail-mode: true
       - name: Check maven pom quality
-        run: mvn -f spoon-pom org.kordamp.maven:pomchecker-maven-plugin:1.9.0:check-maven-central -D"checker.release=false"
+        run: nix develop --command maven-pom-quality
