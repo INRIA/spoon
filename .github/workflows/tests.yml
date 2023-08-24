@@ -74,6 +74,8 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven
 
+      - name: Time nix setup
+        run: nix develop --command true
       - name: Run tests with coverage
         run: nix develop --command coverage
         env:
@@ -101,6 +103,8 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven
 
+      - name: Time nix setup
+        run: nix develop --command true
       - name: Run extra checks
         run: nix develop --command extra
       - name: Trigger extra remote tasks
@@ -130,6 +134,8 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven
 
+      - name: Time nix setup
+        run: nix develop --command true
       - name: Check status
         run: nix develop --command reproducible-builds
 
@@ -153,5 +159,7 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven
 
+      - name: Time nix setup
+        run: nix develop --command true
       - name: Check maven pom quality
         run: nix develop --command maven-pom-quality

@@ -32,7 +32,7 @@
               test = pkgs.writeScriptBin "test" ''
                 set -eu
                 # Use silent log config
-                mv chore/logback.xml src/test/resources/
+                cp chore/logback.xml src/test/resources/
                 mvn -f spoon-pom -B test-compile
 
                 # this is a hack to download the final test dependencies required to actually run the tests
@@ -47,20 +47,21 @@
               coverage = pkgs.writeScriptBin "coverage" ''
                 set -eu
                 # Use silent log config
-                mv chore/logback.xml src/test/resources/
+                cp chore/logback.xml src/test/resources/
                 mvn -f spoon-pom -B test-compile
                 mvn -f spoon-pom -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
               '';
               extra = pkgs.writeScriptBin "extra" ''
                 set -eu
                 # Use silent log config
-                mv chore/logback.xml src/test/resources/
+                cp chore/logback.xml src/test/resources/
                 # Verify and Site Maven goals
                 mvn verify license:check site -DskipTests -DadditionalJOption=-Xdoclint:syntax,-missing -Dscan
                 # Install spoon-pom
                 pushd spoon-pom || exit 1
                 mvn install -DskipTests
-                popd spoon-pom || exit 1
+                popd || exit 1
+
                 # Checkstyle in src/tests
                 mvn -q checkstyle:checkstyle -Pcheckstyle-test
                 # Check documentation links
@@ -75,7 +76,7 @@
                 mvn -q test
                 mvn -q checkstyle:checkstyle license:check
                 mvn -q depclean:depclean
-                popd spoon-decompiler || exit 1
+                popd || exit 1
 
                 pushd spoon-control-flow || exit 1
                 mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
@@ -83,12 +84,12 @@
                 git diff
                 mvn -q test
                 mvn -q checkstyle:checkstyle license:check
-                popd spoon-control-flow || exit 1
+                popd || exit 1
 
                 # Requires z3
                 pushd spoon-dataflow || exit 1
                 ./gradlew build
-                popd spoon-dataflow || exit 1
+                popd || exit 1
 
                 pushd spoon-visualisation || exit 1
                 mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
@@ -96,7 +97,7 @@
                 git diff
                 mvn -q test
                 mvn -q depclean:depclean
-                popd spoon-visualisatio || exit 1
+                popd || exit 1
 
                 pushd spoon-smpl || exit 1
                 mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
@@ -105,7 +106,7 @@
                 mvn -q -Djava.src.version=11 test
                 mvn -q checkstyle:checkstyle license:check
                 mvn -q depclean:depclean
-                popd spoon-smp || exit 1
+                popd || exit 1
               '';
               extraRemote = pkgs.writeScriptBin "extra-remote" ''
                 curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-pull-request.sh | bash
@@ -120,9 +121,13 @@
               javadocQuality = pkgs.writeScriptBin "javadoc-quality" ''
                 ./chore/check-javadoc-regressions.py COMPARE_WITH_MASTER
               '';
+              pythonEnv = with pkgs; python311.withPackages (ps: [
+                ps.requests
+                ps.pygithub
+                ps.commonmark
+              ]);
               packages = with pkgs;
-                [ jdk maven gradle python311 z3 test coverage extra extraRemote mavenPomQuality javadocQuality reproducibleBuilds ] ++
-                (with pkgs.python311Packages; [ requests pygithub commonmark ]);
+                [ jdk maven gradle pythonEnv z3 test coverage extra extraRemote mavenPomQuality javadocQuality reproducibleBuilds ];
             };
         in
         rec {
