@@ -15,7 +15,7 @@
       # Provide some binary packages for selected system types.
       devShells = forAllSystems (system:
         let
-          mkShell = javaVersion:
+          mkShell = extraCheckPackages: javaVersion:
             let
               pkgs = import nixpkgs {
                 inherit system;
@@ -121,20 +121,25 @@
               javadocQuality = pkgs.writeScriptBin "javadoc-quality" ''
                 ./chore/check-javadoc-regressions.py COMPARE_WITH_MASTER
               '';
-              pythonEnv = with pkgs; python311.withPackages (ps: [
-                ps.requests
-                ps.pygithub
-                ps.commonmark
-              ]);
+              pythonEnv =
+                if extraCheckPackages then
+                  with pkgs; python311.withPackages (ps: [
+                    ps.requests
+                    ps.pygithub
+                    ps.commonmark
+                  ])
+                else [];
               packages = with pkgs;
-                [ jdk maven gradle pythonEnv z3 test coverage extra extraRemote mavenPomQuality javadocQuality reproducibleBuilds ];
+                [ jdk maven test coverage mavenPomQuality javadocQuality reproducibleBuilds ]
+                ++ (if extraCheckPackages then [ gradle pythonEnv z3 extra extraRemote ] else [ ]);
             };
         in
         rec {
           default = jdk20;
-          jdk20 = mkShell 20;
-          jdk17 = mkShell 17;
-          jdk11 = mkShell 11;
+          jdk20 = mkShell false 20;
+          jdk17 = mkShell false 17;
+          jdk11 = mkShell false 11;
+          extraChecks = mkShell true 11;
         });
     };
 }

@@ -104,14 +104,14 @@ jobs:
           key: ${{ runner.os }}-maven
 
       - name: Time nix setup
-        run: nix develop --command true
+        run: nix develop .#extraChecks --command true
       - name: Run extra checks
-        run: nix develop --command extra
+        run: nix develop .#extraChecks --command extra
       - name: Trigger extra remote tasks
         if: github.repository == 'INRIA/spoon' && github.event_name == 'pull_request'
-        run: nix develop --command extra-remote
+        run: nix develop .#extraChecks --command extra-remote
       - name: Run Javadoc quality check
-        run: nix develop --command javadoc-quality
+        run: nix develop .#extraChecks --command javadoc-quality
 
   reproducible-builds:
     runs-on: ubuntu-latest
