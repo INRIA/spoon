@@ -43,6 +43,11 @@ jobs:
         uses: DeterminateSystems/flake-checker-action@v5
         with:
           fail-mode: true
+      - name: Use Maven dependency cache
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven
 
       - name: Time nix setup
         run: nix develop .#jdk${{ matrix.java }} --command true
@@ -63,6 +68,11 @@ jobs:
         uses: DeterminateSystems/flake-checker-action@v5
         with:
           fail-mode: true
+      - name: Use Maven dependency cache
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven
 
       - name: Run tests with coverage
         run: nix develop --command coverage
@@ -85,6 +95,11 @@ jobs:
         uses: DeterminateSystems/flake-checker-action@v5
         with:
           fail-mode: true
+      - name: Use Maven dependency cache
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven
 
       - name: Run extra checks
         run: nix develop --command extra
@@ -109,6 +124,12 @@ jobs:
         uses: DeterminateSystems/flake-checker-action@v5
         with:
           fail-mode: true
+      - name: Use Maven dependency cache
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven
+
       - name: Check status
         run: nix develop --command reproducible-builds
 
@@ -126,5 +147,11 @@ jobs:
         uses: DeterminateSystems/flake-checker-action@v5
         with:
           fail-mode: true
+      - name: Use Maven dependency cache
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven
+
       - name: Check maven pom quality
         run: nix develop --command maven-pom-quality
