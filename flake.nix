@@ -20,11 +20,18 @@
               pkgs = import nixpkgs {
                 inherit system;
                 overlays = [
-                  (final: prev: rec {
-                    jdk = prev."jdk${toString javaVersion}";
-                    gradle = prev.gradle.override { java = jdk; };
-                    maven = prev.maven.override { inherit jdk; };
-                  })
+                  (final: prev:
+                    let
+                      base = rec {
+                        jdk = prev."jdk${toString javaVersion}";
+                        maven = prev.maven.override { inherit jdk; };
+                      };
+                      extra = with base; {
+                        gradle = prev.gradle.override { java = jdk; };
+                        z3 = prev.z3.override { inherit jdk; javaBindings = true; };
+                      };
+                    in
+                    (if extraCheckPackages then base // extra else base))
                 ];
               };
             in
@@ -51,7 +58,7 @@
                 mvn -f spoon-pom -B test-compile
                 mvn -f spoon-pom -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
               '';
-              extra = pkgs.writeScriptBin "extra" ''
+              extra = pkgs.writeScriptBin "extra" (if !extraCheckPackages then "exit 2" else ''
                 set -eu
                 # Use silent log config
                 cp chore/logback.xml src/test/resources/
@@ -88,7 +95,7 @@
 
                 # Requires z3
                 pushd spoon-dataflow || exit 1
-                ./gradlew build
+                env LD_LIBRARY_PATH="${pkgs.z3.lib}/lib:${pkgs.z3.java}/lib" ./gradlew build
                 popd || exit 1
 
                 pushd spoon-visualisation || exit 1
@@ -107,7 +114,7 @@
                 mvn -q checkstyle:checkstyle license:check
                 mvn -q depclean:depclean
                 popd || exit 1
-              '';
+              '');
               extraRemote = pkgs.writeScriptBin "extra-remote" ''
                 curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-pull-request.sh | bash
               '';
@@ -128,10 +135,10 @@
                     ps.pygithub
                     ps.commonmark
                   ])
-                else [];
+                else [ ];
               packages = with pkgs;
                 [ jdk maven test coverage mavenPomQuality javadocQuality reproducibleBuilds ]
-                ++ (if extraCheckPackages then [ gradle pythonEnv z3 extra extraRemote ] else [ ]);
+                ++ (if extraCheckPackages then [ gradle pythonEnv z3.java z3.lib extra extraRemote ] else [ ]);
             };
         in
         rec {
