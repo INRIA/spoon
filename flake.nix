@@ -15,7 +15,7 @@
       # Provide some binary packages for selected system types.
       devShells = forAllSystems (system:
         let
-          mkShell = extraCheckPackages: javaVersion:
+          mkShell = { release ? false, extraChecks ? false, javaVersion }:
             let
               pkgs = import nixpkgs {
                 inherit system;
@@ -31,8 +31,42 @@
                         z3 = prev.z3.override { inherit jdk; javaBindings = true; };
                       };
                     in
-                    (if extraCheckPackages then base // extra else base))
+                    (if extraChecks then base // extra else base))
                 ];
+              };
+              semver = pkgs.buildGoModule rec {
+                name = "semver";
+                version = "2.1.0";
+
+                vendorHash = "sha256-HKqZbgP7vqDJMaHUbSqfSOnBYwzOtIr9o2v/T9S+uNg=";
+                subPackages = [ "cmd/semver" ];
+
+                src = pkgs.fetchFromGitHub {
+                  owner = "ffurrer2";
+                  repo = "semver";
+                  rev = "v${version}";
+                  sha256 = "sha256-i/XPA2Hr2puJFKupIeBUE/yFPJxSeVsDWcz1OepxIcU=";
+                };
+              };
+              jreleaser = pkgs.stdenv.mkDerivation rec {
+                pname = "jreleaser-cli";
+                version = "1.7.0";
+
+                src = pkgs.fetchurl {
+                  url = "https://github.com/jreleaser/jreleaser/releases/download/v${version}/jreleaser-tool-provider-${version}.jar";
+                  sha256 = "sha256-gr1IWisuep00xyoZWKXtHymWkQjbDhlk6+UC16bKXu0=";
+                };
+
+                nativeBuildInputs = with pkgs; [ makeWrapper ];
+
+                dontUnpack = true;
+
+                installPhase = ''
+                  mkdir -p $out/share/java/ $out/bin/
+                  cp $src $out/share/java/${pname}.jar
+                  makeWrapper ${pkgs.jdk}/bin/java $out/bin/${pname} \
+                    --add-flags "-jar $out/share/java/${pname}.jar"
+                '';
               };
             in
             pkgs.mkShell rec {
@@ -58,7 +92,7 @@
                 mvn -f spoon-pom -B test-compile
                 mvn -f spoon-pom -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
               '';
-              extra = pkgs.writeScriptBin "extra" (if !extraCheckPackages then "exit 2" else ''
+              extra = pkgs.writeScriptBin "extra" (if !extraChecks then "exit 2" else ''
                 set -eu
                 # Use silent log config
                 cp chore/logback.xml src/test/resources/
@@ -129,7 +163,7 @@
                 ./chore/check-javadoc-regressions.py COMPARE_WITH_MASTER
               '';
               pythonEnv =
-                if extraCheckPackages then
+                if extraChecks then
                   with pkgs; python311.withPackages (ps: [
                     ps.requests
                     ps.pygithub
@@ -138,15 +172,18 @@
                 else [ ];
               packages = with pkgs;
                 [ jdk maven test coverage mavenPomQuality javadocQuality reproducibleBuilds ]
-                ++ (if extraCheckPackages then [ gradle pythonEnv z3.java z3.lib extra extraRemote ] else [ ]);
-            };
+                ++ (if extraChecks then [ gradle pythonEnv z3.java z3.lib extra extraRemote ] else [ ])
+                ++ (if release then [ semver jreleaser ] else [ ]);
+            }
+          ;
         in
         rec {
           default = jdk20;
-          jdk20 = mkShell false 20;
-          jdk17 = mkShell false 17;
-          jdk11 = mkShell false 11;
-          extraChecks = mkShell true 11;
+          jdk20 = mkShell { javaVersion = 20; };
+          jdk17 = mkShell { javaVersion = 17; };
+          jdk11 = mkShell { javaVersion = 11; };
+          extraChecks = mkShell { extraChecks = true; javaVersion = 11; };
+          jReleaser = mkShell { release = true; javaVersion = 11; };
         });
     };
 }
