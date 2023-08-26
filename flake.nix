@@ -1,5 +1,5 @@
 {
-  description = "A small flake building maven projects";
+  description = "Spoon is a metaprogramming library to analyze and transform Java source code. 🥄 is made with ❤️, 🍻 and ✨. It parses source files to build a well-designed AST with powerful analysis and transformation API.";
 
   # Nixpkgs / NixOS version to use.
   inputs = {

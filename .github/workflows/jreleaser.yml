@@ -1,20 +1,14 @@
 name: Release
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      version:
-        description: 'Next release version'
+      release-script-to-run:
         required: true
-        default: 'patch'
-        type: choice
-        options:
-          - major
-          - minor
-          - patch
+        type: string
 
 jobs:
-  release:
+  jreleaser:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,7 +34,7 @@ jobs:
           key: ${{ runner.os }}
 
       - name: Do release
-        run: nix develop .#jReleaser --command chore/release.sh ${{ github.event.inputs.version }}
+        run: nix develop .#jReleaser --command ${{ inputs.release-script-to-run }}
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
           JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
