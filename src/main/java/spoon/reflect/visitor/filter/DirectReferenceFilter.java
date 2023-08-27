@@ -10,11 +10,14 @@ package spoon.reflect.visitor.filter;
 import spoon.reflect.reference.CtReference;
 
 /**
- * This simple filter matches all the references to a given element by using
- * reference equality.
+ * A filter for {@link CtReference}s that compare equal to the reference provided in the constructor.
+ * Note that this does <strong>not</strong> cover all references to the pointed-to element.
+ * If the reference to search for refers to a field, for example, type information is part of the
+ * {@link spoon.reflect.reference.CtVariableReference}. This will cause searches for generic fields
+ * to turn up short, as references with a known type are <em>different</em>.
  */
 public class DirectReferenceFilter<T extends CtReference> extends AbstractFilter<T> {
-	CtReference reference;
+	private final CtReference reference;
 
 	/**
 	 * Creates the filter.
