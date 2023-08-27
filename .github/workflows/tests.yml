@@ -14,7 +14,7 @@ on:
       - master
       - chore/flakey-flakey-rise-and-shine
   schedule:
-  - cron: "0 0 * * *"
+    - cron: "0 0 * * *"
 
 env:
   MAVEN_OPTS: >-
@@ -23,31 +23,20 @@ env:
     -Daether.connector.requestTimeout=300000
 
 jobs:
-  build:
+  test-linux:
     runs-on: ${{ matrix.os }}
+    name: Tests with Java ${{ matrix.java }} on ${{ matrix.os }}
     strategy:
       matrix:
         java: [11, 17, 20]
         os: [ubuntu-latest]
-
-    name: Tests with Java ${{ matrix.java }} on ${{ matrix.os }}
     steps:
-      - name: git checkout
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - name: Checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
         with:
           fetch-depth: 0
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v4
-      - uses: DeterminateSystems/magic-nix-cache-action@v2
-      - name: Check Nixpkgs inputs
-        uses: DeterminateSystems/flake-checker-action@v5
-        with:
-          fail-mode: true
-      - name: Use Maven dependency cache
-        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven
+      - name: Setup env
+        uses: ./.github/actions/setup-tests
 
       - name: Time nix setup
         run: nix develop .#jdk${{ matrix.java }} --command true
@@ -80,22 +69,12 @@ jobs:
     runs-on: ubuntu-latest
     name: Test with coverage
     steps:
-      - name: git checkout
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - name: Checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
         with:
           fetch-depth: 0
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v4
-      - uses: DeterminateSystems/magic-nix-cache-action@v2
-      - name: Check Nixpkgs inputs
-        uses: DeterminateSystems/flake-checker-action@v5
-        with:
-          fail-mode: true
-      - name: Use Maven dependency cache
-        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven
+      - name: Setup env
+        uses: ./.github/actions/setup-tests
 
       - name: Time nix setup
         run: nix develop --command true
@@ -109,22 +88,12 @@ jobs:
     runs-on: ubuntu-latest
     name: Extra checks
     steps:
-      - name: git checkout
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - name: Checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
         with:
           fetch-depth: 0
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v4
-      - uses: DeterminateSystems/magic-nix-cache-action@v2
-      - name: Check Nixpkgs inputs
-        uses: DeterminateSystems/flake-checker-action@v5
-        with:
-          fail-mode: true
-      - name: Use Maven dependency cache
-        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven
+      - name: Setup env
+        uses: ./.github/actions/setup-tests
 
       - name: Time nix setup
         run: nix develop .#extraChecks --command true
@@ -140,22 +109,12 @@ jobs:
     runs-on: ubuntu-latest
     name: reproducible-builds
     steps:
-      - name: git checkout
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - name: Checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
         with:
           fetch-depth: 0
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v4
-      - uses: DeterminateSystems/magic-nix-cache-action@v2
-      - name: Check Nixpkgs inputs
-        uses: DeterminateSystems/flake-checker-action@v5
-        with:
-          fail-mode: true
-      - name: Use Maven dependency cache
-        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven
+      - name: Setup env
+        uses: ./.github/actions/setup-tests
 
       - name: Time nix setup
         run: nix develop --command true
@@ -165,22 +124,12 @@ jobs:
   maven-central-requirements:
     runs-on: ubuntu-latest
     steps:
-      - name: git checkout
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - name: Checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
         with:
           fetch-depth: 0
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v4
-      - uses: DeterminateSystems/magic-nix-cache-action@v2
-      - name: Check Nixpkgs inputs
-        uses: DeterminateSystems/flake-checker-action@v5
-        with:
-          fail-mode: true
-      - name: Use Maven dependency cache
-        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven
+      - name: Setup env
+        uses: ./.github/actions/setup-tests
 
       - name: Time nix setup
         run: nix develop --command true

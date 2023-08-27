@@ -16,22 +16,8 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
-      - name: Set git user
-        run: |
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "<>"
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v4
-      - uses: DeterminateSystems/magic-nix-cache-action@v2
-      - name: Check Nixpkgs inputs
-        uses: DeterminateSystems/flake-checker-action@v5
-        with:
-          fail-mode: true
-      - name: Use Maven dependency cache
-        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}
+      - name: Setup env
+        uses: ./.github/actions/setup-tests
 
       - name: Do release
         run: nix develop .#jReleaser --command ${{ inputs.release-script-to-run }}
