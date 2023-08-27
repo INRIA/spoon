@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
+
+import org.jspecify.annotations.Nullable;
+
 import spoon.SpoonException;
 import spoon.reflect.meta.ContainerKind;
 import spoon.support.util.ImmutableMap;
@@ -173,7 +176,7 @@ public class TobeMatched {
 	 * @param matcher a matching algorithm
 	 * @return {@link TobeMatched} with List of remaining (to be matched) targets or null if there is no match
 	 */
-	public TobeMatched matchNext(BiFunction<Object, ImmutableMap, ImmutableMap> matcher) {
+	public @Nullable TobeMatched matchNext(BiFunction<Object, ImmutableMap, ImmutableMap> matcher) {
 		if (targets.isEmpty()) {
 			//no target -> no match
 			return null;
@@ -205,7 +208,7 @@ public class TobeMatched {
 	 * @param remainingMatch the {@link TobeMatched} whose parameters has to be returned
 	 * @return parameters from `remainingMatch`, if it exists. Else returns null
 	 */
-	public static ImmutableMap getMatchedParameters(TobeMatched remainingMatch) {
+	public static @Nullable ImmutableMap getMatchedParameters(TobeMatched remainingMatch) {
 		return remainingMatch == null ? null : remainingMatch.getParameters();
 	}
 	/**

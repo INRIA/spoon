@@ -9,6 +9,8 @@ package spoon;
 
 import java.util.Locale;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Types of output.
  */
@@ -42,7 +44,7 @@ public enum OutputType {
 	 *
 	 * @see Launcher#printUsage()
 	 */
-	public static OutputType fromString(String string) {
+	public static @Nullable OutputType fromString(String string) {
 		for (OutputType outputType : OutputType.values()) {
 			if (outputType.toString().equals(string)) {
 				return outputType;

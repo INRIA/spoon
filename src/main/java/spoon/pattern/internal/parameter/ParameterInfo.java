@@ -7,6 +7,8 @@
  */
 package spoon.pattern.internal.parameter;
 
+import org.jspecify.annotations.Nullable;
+
 import spoon.pattern.Pattern;
 import spoon.pattern.Quantifier;
 import spoon.pattern.internal.ResultHolder;
@@ -35,7 +37,7 @@ public interface ParameterInfo {
 	 * @param value the new, to be stored value
 	 * @return copy of `parameters` with new value or existing `parameters` if value is already there or null if value doesn't fit into these parameters
 	 */
-	ImmutableMap addValueAs(ImmutableMap parameters, Object value);
+	@Nullable ImmutableMap addValueAs(ImmutableMap parameters, Object value);
 
 	/**
 	 * Takes the value of parameter identified by this {@link ParameterInfo} from the `parameters`

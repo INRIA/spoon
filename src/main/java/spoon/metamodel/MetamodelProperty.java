@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -435,7 +437,7 @@ public class MetamodelProperty {
 	 * @param realType
 	 * @return new expectedType or null if it is not matching
 	 */
-	private MatchLevel getMatchLevel(CtTypeReference<?> expectedType, CtTypeReference<?> realType) {
+	private @Nullable MatchLevel getMatchLevel(CtTypeReference<?> expectedType, CtTypeReference<?> realType) {
 		if (expectedType.equals(realType)) {
 			return MatchLevel.EQUALS;
 		}

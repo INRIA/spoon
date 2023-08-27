@@ -100,6 +100,11 @@
       <version>1.23.0</version>
 	</dependency>
     <dependency>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+      <version>0.3.0</version>
+    </dependency>
+    <dependency>
       <!-- to reproduce JTD error with nullable annotation -->
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
