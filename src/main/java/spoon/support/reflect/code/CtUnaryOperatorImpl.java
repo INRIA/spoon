@@ -29,7 +29,7 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUna
 	String label;
 
 	@MetamodelPropertyField(role = EXPRESSION)
-	CtExpression<T> operand;
+	CtExpression<?> operand;
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -37,7 +37,7 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUna
 	}
 
 	@Override
-	public CtExpression<T> getOperand() {
+	public CtExpression<?> getOperand() {
 		return operand;
 	}
 
@@ -76,7 +76,7 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUna
 	}
 
 	@Override
-	public <C extends CtUnaryOperator> C setOperand(CtExpression<T> expression) {
+	public <C extends CtUnaryOperator> C setOperand(CtExpression<?> expression) {
 		if (expression != null) {
 			expression.setParent(this);
 		}
