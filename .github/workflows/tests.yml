@@ -53,6 +53,29 @@ jobs:
         run: nix develop .#jdk${{ matrix.java }} --command true
       - name: Test
         run: nix develop .#jdk${{ matrix.java }} --command test
+
+  test-windows:
+    runs-on: windows-latest
+    name: Tests with Java 17 on windows-latest
+    steps:
+      - name: Disable Git's autocrlf
+        run: git config --global core.autocrlf false
+      - name: git checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@cd89f46ac9d01407894225f350157564c9c7cee2 # v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      - name: Test
+        run: |
+          cp chore/logback.xml src/test/resources/
+          mvn -f spoon-pom test
+          cat testResults.spoon
+
   coverage:
     runs-on: ubuntu-latest
     name: Test with coverage
