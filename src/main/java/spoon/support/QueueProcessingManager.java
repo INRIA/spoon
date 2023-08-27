@@ -109,7 +109,7 @@ public class QueueProcessingManager implements ProcessingManager {
 		int i = 0;
 		while ((p = processors.poll()) != null) {
 			try {
-				getFactory().getEnvironment().reportProgressMessage(p.getClass().getName());
+				getFactory().getEnvironment().debugMessage(p.getClass().getName());
 				current = p;
 				p.init(); // load the properties
 				p.process();

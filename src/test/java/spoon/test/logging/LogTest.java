@@ -74,7 +74,7 @@ public class LogTest {
 	private static Stream<Pair<Level, Integer>> getLogLevelsAndExpectedCounts() {
 		return Stream.of(
 				Pair.of(Level.DEBUG, 6),
-				Pair.of(Level.INFO, 2),
+				Pair.of(Level.INFO, 1),
 				Pair.of(Level.WARN, 0),
 				Pair.of(Level.ERROR, 0),
 				Pair.of(Level.OFF, 0)

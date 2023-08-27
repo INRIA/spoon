@@ -551,7 +551,7 @@ public class Launcher implements SpoonAPI {
 
 	protected void reportClassPathMode() {
 		String cpmode = jsapActualArgs.getString("cpmode").toUpperCase();
-		factory.getEnvironment().report(null, Level.INFO, "Running in " + cpmode + " mode (doc: http://spoon.gforge.inria.fr/launcher.html).");
+		factory.getEnvironment().report(null, Level.DEBUG, "Running in " + cpmode + " mode (doc: http://spoon.gforge.inria.fr/launcher.html).");
 	}
 
 	/**
@@ -723,10 +723,9 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public void run() {
 		Environment env = modelBuilder.getFactory().getEnvironment();
-		env.reportProgressMessage(getVersionMessage());
-		env.reportProgressMessage("running Spoon...");
-
-		env.reportProgressMessage("start processing...");
+		env.debugMessage(getVersionMessage());
+		env.reportProgressMessage("Running Spoon...");
+		env.debugMessage("Start processing...");
 
 		long tstart = System.currentTimeMillis();
 
@@ -743,7 +742,7 @@ public class Launcher implements SpoonAPI {
 
 		long t = System.currentTimeMillis();
 
-		env.debugMessage("program spooning done in " + (t - tstart) + " ms");
+		env.debugMessage("Program spooning done in " + (t - tstart) + " ms");
 		env.reportEnd();
 
 	}
