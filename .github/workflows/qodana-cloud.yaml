@@ -4,7 +4,7 @@
 # risk of someone injecting malicious code into a release and then simply
 # changing a tag.
 
-name: Qodana
+name: Qodana-Cloud-Scan
 on:
   workflow_dispatch:
   pull_request:
