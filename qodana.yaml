@@ -1,30 +1,38 @@
 profile:
   name: qodana.recommended
 version: "1.0"
-include:
-  - name: Anonymous2MethodRef
-  - name: AssignmentToCatchBlockParameter
-  - name: AssignmentToLambdaParameter
-  - name: AssignmentToMethodParameter
-  - name: AssignmentToNull
-  - name: Convert2Lambda
-  - name: DoubleBraceInitialization
-  - name: EqualsAndHashcode
-  - name: JavaLangImport
-  # Disabled for annotations applied to type
-  #- name: MissortedModifiers
-  - name: NestedAssignment
-  - name: NonShortCircuitBoolean
-  - name: RedundantFieldInitialization
-  - name: RedundantSuppression
-  - name: Reformat
-  - name: ReturnNull
-  - name: SamePackageImport
-  - name: StringEquality
-  - name: UnnecessaryBoxing
-  - name: UnnecessaryLocalVariable
-  - name: UnnecessaryUnboxing
-  - name: UNUSED_IMPORT
-  - name: PointlessBooleanExpression 
-exclude:
-  - name: UseOfClone
+groups:
+  - groupId: IncludedPaths
+    groups:
+          - "category:Java"
+          - "GLOBAL"
+  - groupId: ExcludedInspections # list of inspections disabled by specific reason
+    inspections:
+      - "!IncludedPaths"
+      - Annotator # substituted by JavaAnnotator in sanity
+      - JavaAnnotator # works in "sanity" inspections
+      - SyntaxError # should work on sanity level
+      - Since15 #Detects wrong language level. Should work on sanity.
+      - JavadocBlankLines # Questionable. Spam on mockito, RxJava and other projects.
+      - UseOfClone # We use clone correct implemented often as deep copy. It's not a problem.
+      - UnstableApiUsage  
+      - MissortedModifiers   # Disabled for annotations applied to type
+inspections:
+  - group: ExcludedInspections
+    enabled: false
+  - group: IncludedPaths
+    ignore:
+      - "vendor/**"
+      - "build/**"
+      - "buildSrc/**"
+      - "builds/**"
+      - "dist/**"
+      - "tests/**"
+      - "tools/**"
+      - "vendor/**"
+      - "**.test.ts"
+      - "scope#$gitignore" # $gitignore scope available only in qodana execution
+      - "scope#test:*..*"
+      - "scope#file:buildSrc/*"
+  - inspection: JavadocReference
+    severity: WARNING # It has default ERROR severity. It's understandable for unresolved references in javadocs for editor but not on CI.
