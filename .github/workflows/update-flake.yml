@@ -19,12 +19,12 @@ jobs:
         uses: DeterminateSystems/update-flake-lock@da2fd6f2563fe3e4f2af8be73b864088564e263d # v20
         id: update-flake
         with:
-          pr-title: "Update flake.lock"
+          pr-title: "chore(deps): Update flake.lock"
           pr-labels: |
             chore
           token: ${{ secrets.GH_PAT_NIX }}
 
       - name: Enable Pull Request Automerge
-        run: gh pr merge --merge --auto "${{ steps.update-flake.outputs.pull-request-number }}"
+        run: 'gh pr merge --auto --squash -t "chore(deps): Update flake.lock" ${{ steps.update-flake.outputs.pull-request-number }}'
         env:
           GH_TOKEN: ${{ secrets.GH_PAT_NIX }}
