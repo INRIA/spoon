@@ -25,6 +25,7 @@ jobs:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
         with:
             post-pr-comment: "false"
+            pr-mode: "false"
             push-fixes: pull-request
             args: "--apply-fixes"
 
