@@ -29,7 +29,7 @@ public class RoleHandlerHelper {
 	private RoleHandlerHelper() {
 	}
 
-	private static Map<Class<?>, List<RoleHandler>> roleHandlersByClass = new HashMap<>();
+	private static final Map<Class<?>, List<RoleHandler>> roleHandlersByClass = new HashMap<>();
 
 	private static final Map<CtRole, List<RoleHandler>> roleHandlers = new EnumMap<>(CtRole.class);
 	static {

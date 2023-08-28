@@ -173,8 +173,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	/**
 	 * @param requiredType a required type of the value which matches as value of this parameter
 	 * @param matchCondition a {@link Predicate} which selects matching values
-	 * @return
-	 */
+     */
 	public <T> AbstractParameterInfo setMatchCondition(Class<T> requiredType, Predicate<T> matchCondition) {
 		this.parameterValueType = requiredType;
 		this.matchCondition = (Predicate) matchCondition;
@@ -183,7 +182,6 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 
 	/**
 	 * Checks whether `value` matches with required type and match condition.
-	 * @param value
 	 * @return
 	 */
 	protected boolean matches(Object value) {
@@ -335,7 +333,6 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	}
 
 	/**
-	 * @param parameters
 	 * @return 0 if there is no value. 1 if there is single value or null. Number of values in collection if there is a collection
 	 */
 	private int getNumberOfValues(ImmutableMap parameters) {

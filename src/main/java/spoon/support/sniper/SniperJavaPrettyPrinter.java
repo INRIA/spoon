@@ -156,8 +156,8 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 				Collections.singletonList(compilationUnit.getOriginalSourceFragment()),
 				new ChangeResolver(getChangeCollector(), compilationUnit)),
 		() -> {
-			super.calculate(sourceCompilationUnit, types);;
-		});
+			super.calculate(sourceCompilationUnit, types);
+        });
 	}
 
 	/** Throws an {@link IllegalArgumentException} if the given types do not exactly match the types of the CU. */
@@ -221,8 +221,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 			public void printSourceFragment(SourceFragment fragment, ModificationStatus isModified) {
 				if (isModified == ModificationStatus.UNKNOWN || isModified == ModificationStatus.MODIFIED) {
 					printAction.run();
-					return;
-				} else {
+                } else {
 					if (fragment instanceof CollectionSourceFragment) {
 						//we started scanning of collection of elements
 						SourceFragmentPrinter listContext = getCollectionContext(null, (CollectionSourceFragment) fragment, isModified.toBoolean());
@@ -313,8 +312,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 				// we don't have any source fragment for this element, so we simply pretty-print it normally
 				if (fragment == null) {
 					superScanInContext(this.element, DefaultSourceFragmentPrinter.INSTANCE);
-					return;
-				} else if (fragment instanceof CollectionSourceFragment) {
+                } else if (fragment instanceof CollectionSourceFragment) {
 					//we started scanning of collection of elements
 					SourceFragmentPrinter listContext = getCollectionContext(this.element, (CollectionSourceFragment) fragment, isModified.toBoolean());
 					//push the context of this collection
@@ -407,11 +405,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	 * Call normal java printing in defined `context`
 	 * @param element to be printed element
 	 * @param context to be used context
-	 * @param muted whether it has to be processed using
-	 * 	true - muted,
-	 * 	false - not muted
-	 * 	null - same like before
-	 */
+     */
 	private void superScanInContext(CtElement element, SourceFragmentPrinter context) {
 			runInContext(context, () -> super.scan(element));
 	}

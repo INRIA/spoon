@@ -20,7 +20,7 @@ import spoon.reflect.visitor.Filter;
  */
 public class NamedElementFilter<T extends CtNamedElement> implements Filter<T> {
 	private final String name;
-	private Class<T> acceptedClass;
+	private final Class<T> acceptedClass;
 
 	/**
 	 *

@@ -14,7 +14,7 @@ import spoon.reflect.declaration.CtType;
 import java.lang.annotation.Annotation;
 
 public class PackageRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
-	private CtPackage ctPackage;
+	private final CtPackage ctPackage;
 
 	public PackageRuntimeBuilderContext(CtPackage ctPackage) {
 		super(ctPackage);

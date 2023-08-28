@@ -20,8 +20,6 @@ public class ChainOfMatchersImpl implements Matchers {
 	private final Matchers next;
 
 	/**
-	 * @param items
-	 * @param next
 	 * @return new {@link ChainOfMatchersImpl} which starts with items nodes and continues with `next` {@link Matchers}
 	 */
 	public static Matchers create(List<? extends RootNode> items, Matchers next) {

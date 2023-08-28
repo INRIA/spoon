@@ -225,7 +225,7 @@ public class StringNode extends AbstractPrimitiveMatcher {
 		int off = 0;
 		for (Region region : getRegions()) {
 			if (region.from > off) {
-				sb.append(getStringValueWithMarkers().substring(off, region.from));
+				sb.append(getStringValueWithMarkers(), off, region.from);
 			}
 			sb.append("${").append(region.param.getName()).append("}");
 			off = region.to;

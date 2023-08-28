@@ -5,13 +5,6 @@
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
-/**
- *  This file originally comes from JavaParser and is distributed under the terms of
- * a) the GNU Lesser General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- * b) the terms of the Apache License
- */
 package spoon.javadoc.internal;
 
 import static spoon.javadoc.internal.JavadocInlineTag.nextWord;
@@ -36,8 +29,8 @@ import spoon.reflect.code.CtComment;
 public class Javadoc implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private JavadocDescription description;
-	private List<JavadocBlockTag> blockTags;
+	private final JavadocDescription description;
+	private final List<JavadocBlockTag> blockTags;
 
 	public Javadoc() {
 		this(new JavadocDescription());
@@ -118,8 +111,8 @@ public class Javadoc implements Serializable {
 		return "Javadoc{" + "description=" + description + ", blockTags=" + blockTags + '}';
 	}
 
-	private static String BLOCK_TAG_PREFIX = "@";
-	private static Pattern BLOCK_PATTERN =
+	private static final String BLOCK_TAG_PREFIX = "@";
+	private static final Pattern BLOCK_PATTERN =
 			Pattern.compile("^\\s*" + BLOCK_TAG_PREFIX, Pattern.MULTILINE);
 
 	/** parse the description part (before tags) of a Javadoc */
@@ -202,10 +195,8 @@ public class Javadoc implements Serializable {
 			// In this combined string it is easier to handle multiple lines which actually belong
 			// together
 			String tagBlock =
-				cleanLines
-					.subList(indexOfFirstBlockTag, cleanLines.size())
-					.stream()
-					.collect(Collectors.joining(CtComment.LINE_SEPARATOR));
+                    String.join(CtComment.LINE_SEPARATOR, cleanLines
+                            .subList(indexOfFirstBlockTag, cleanLines.size()));
 
 			// Split up the entire tag back again, considering now that some lines belong to the
 			// same

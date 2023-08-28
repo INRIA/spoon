@@ -368,8 +368,7 @@ public interface Factory {
 
 
 	/**
-	 *  @see CodeFactory#createJavaDocTag()
-	 */
+     */
 	CtJavaDocTag createJavaDocTag();
 
 	/**

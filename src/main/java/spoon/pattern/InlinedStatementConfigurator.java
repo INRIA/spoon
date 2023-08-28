@@ -51,7 +51,7 @@ import spoon.support.Experimental;
  * </code></pre>
  * because inline statements are executed during substitution process and are not included in generated result.
  *
- * Main documentation at http://spoon.gforge.inria.fr/pattern.html.
+ * Main documentation at <a href="http://spoon.gforge.inria.fr/pattern.html">...</a>.
  */
 @Experimental
 public class InlinedStatementConfigurator {
@@ -167,12 +167,8 @@ public class InlinedStatementConfigurator {
 						return;
 					}
 				}
-				if (vrOfExpression instanceof PrimitiveMatcher) {
-					osp.addCase((PrimitiveMatcher) vrOfExpression, getPatternNode(bodyToStatements(block)));
-				} else {
-					throw new SpoonException("Inline `if` statement have defined single value pattern parameter in expression. But there is " + vrOfExpression.getClass().getName());
-				}
-			} else {
+                osp.addCase((PrimitiveMatcher) vrOfExpression, getPatternNode(bodyToStatements(block)));
+            } else {
 				//expression is null, it is: else {}
 				osp.addCase(null, getPatternNode(bodyToStatements(block)));
 			}
@@ -198,8 +194,6 @@ public class InlinedStatementConfigurator {
 	/**
 	 * calls function once for each expression/then block and at the end calls function for last else block.
 	 *
-	 * @param ifElement
-	 * @param consumer
 	 * @return true if all function calls returns true or if there is no function call
 	 */
 	private void forEachIfCase(CtIf ifElement, BiConsumer<CtExpression<Boolean>, CtStatement> consumer) {

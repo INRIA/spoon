@@ -44,7 +44,7 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 	private static final String ABSTRACT_MODIFIER_ERROR =
 			"Abstract modifier is not allowed on record";
 	@MetamodelPropertyField(role = CtRole.RECORD_COMPONENT)
-	private Set<CtRecordComponent> components = new LinkedHashSet<>();
+	private final Set<CtRecordComponent> components = new LinkedHashSet<>();
 
 	@Override
 	@DerivedProperty

@@ -43,7 +43,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	List<CtTypeReference<?>> types = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
-	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
+	private final CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	@Override
 	public void accept(CtVisitor visitor) {

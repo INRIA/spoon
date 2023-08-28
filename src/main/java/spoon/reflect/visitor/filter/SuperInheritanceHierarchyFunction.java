@@ -75,15 +75,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			exit((CtElement) typeRef);
 		}
 
-		@Override
-		public ScanningMode enter(CtElement element) {
-			return ScanningMode.NORMAL;
-		}
-
-		@Override
-		public void exit(CtElement element) {
-		}
-	}
+    }
 
 	/**
 	 * The mapping function created using this constructor
@@ -130,10 +122,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			}
 			return ScanningMode.SKIP_ALL;
 		}
-		@Override
-		public void exit(CtElement element) {
-		}
-	}
+    }
 
 	/**
 	 * @param includingSelf if true then input element is sent to output too. By default it is false.
@@ -245,7 +234,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 				visitSuperInterfaces(typeRef, outputConsumer);
 				if (interfacesExtendObject) {
 					//last visit Object.class, because interface inherits all public type members of Object.class
-					sendResultWithListener(typeRef.getFactory().Type().OBJECT, isClass, outputConsumer, (ref) -> { });
+					sendResultWithListener(typeRef.getFactory().Type().OBJECT, false, outputConsumer, (ref) -> { });
 				}
 			} else {
 				//call visitSuperClasses only for input of type class. The contract of visitSuperClasses requires that

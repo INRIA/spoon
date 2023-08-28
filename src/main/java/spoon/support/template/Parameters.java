@@ -76,7 +76,8 @@ public abstract class Parameters {
 		}
 		Object tparamValue = getValue(template, parameterName, rtField);
 		if (rtField.getType().isArray() && (index != null)) {
-			tparamValue = ((Object[]) tparamValue)[index];
+            assert tparamValue != null;
+            tparamValue = ((Object[]) tparamValue)[index];
 		}
 		return tparamValue;
 	}
@@ -150,10 +151,8 @@ public abstract class Parameters {
 			}
 			rtField.setAccessible(true);
 			rtField.set(template, value);
-			if (rtField.getType().isArray()) {
-				// TODO: RP: THIS IS WRONG!!!! tparamValue is never used or set!
-			}
-		} catch (Exception e) {
+            // TODO: RP: THIS IS WRONG!!!! tparamValue is never used or set!
+        } catch (Exception e) {
 			throw new UndefinedParameterException();
 		}
 	}
@@ -218,8 +217,6 @@ public abstract class Parameters {
 	 * + adds mapping of template model reference to target type as parameter too
 	 * @param f
 	 * 		the factory
-	 * @param targetType
-	 * 		the target type of the substitution (can be null), which will be done with result parameters
 	 * @param template
 	 * 		the template that holds the parameter values
 	 */

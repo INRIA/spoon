@@ -98,7 +98,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean enableComments = true;
 
-	private transient  Logger logger = Launcher.LOGGER;
+	private final transient  Logger logger = Launcher.LOGGER;
 
 	private Level level = Level.ERROR;
 

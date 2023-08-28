@@ -264,7 +264,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Prints an element. This method shall be called by the toString() method of an element.
 	 * It is responsible for any initialization required to print an arbitrary element.
-	 * @param element
 	 * @return A string containing the pretty printed element (and descendants).
 	 */
 	public String printElement(CtElement element) {
@@ -325,11 +324,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (expr instanceof CtLiteral) {
 			return false;
 		}
-		if (expr instanceof CtVariableAccess) {
-			return false;
-		}
-		return true;
-	}
+        return !(expr instanceof CtVariableAccess);
+    }
 
 	/**
 	 * Enters a statement.
@@ -727,7 +723,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		CtExpression<T> elseExpression = conditional.getElseExpression();
 		boolean isAssign;
-		if ((isAssign = elseExpression instanceof CtAssignment)) {
+		if ((isAssign == elseExpression instanceof CtAssignment)) {
 			printer.writeSeparator("(");
 		}
 		scan(elseExpression);
@@ -920,12 +916,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return false;
 		}
 		//forceFullyQualified is ON, we should print full qualified names
-		if (target instanceof CtThisAccess) {
-			//the implicit this access is never printed even in forceFullyQualified mode
-			return false;
-		}
-		return true;
-	}
+        //the implicit this access is never printed even in forceFullyQualified mode
+        return !(target instanceof CtThisAccess);
+    }
 
 	@Override
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
@@ -1650,7 +1643,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * JDT doesn't support <code>new Foo<K>.Bar()</code>. To avoid reprinting this kind of type reference,
 	 * we check that the reference has a declaring type with generics.
-	 * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=474593
+	 * See <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=474593">...</a>
 	 *
 	 * @param reference Type reference concerned by the bug.
 	 * @return true if a declaring type has generic types.
@@ -2035,24 +2028,21 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			//print access type always if fully qualified mode is forced
 			return true;
 		}
-		if (context.forceWildcardGenerics() && accessType.getTypeDeclaration().getFormalCtTypeParameters().size() > 0) {
-			//print access type if access type is generic and we have to force wildcard generics
-			/*
-			 * E.g.
-			 * class A<T> {
-			 *  class B {
-			 *  }
-			 *  boolean m(Object o) {
-			 *   return o instanceof B;			//compilation error
-			 *   return o instanceof A.B; 		// OK
-			 *   return o instanceof A<?>.B; 	// OK
-			 *  }
-			 * }
-			 */
-			return true;
-		}
-		return false;
-	}
+        //print access type if access type is generic and we have to force wildcard generics
+        /*
+         * E.g.
+         * class A<T> {
+         *  class B {
+         *  }
+         *  boolean m(Object o) {
+         *   return o instanceof B;			//compilation error
+         *   return o instanceof A.B; 		// OK
+         *   return o instanceof A<?>.B; 	// OK
+         *  }
+         * }
+         */
+        return context.forceWildcardGenerics() && !accessType.getTypeDeclaration().getFormalCtTypeParameters().isEmpty();
+    }
 
 	@Override
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {

@@ -1513,7 +1513,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(QualifiedNameReference qualifiedNameRef, BlockScope scope) {
-		if (qualifiedNameRef.binding instanceof FieldBinding || qualifiedNameRef.binding instanceof VariableBinding) {
+		if (qualifiedNameRef.binding instanceof VariableBinding) {
 			context.enter(helper.createVariableAccess(qualifiedNameRef), qualifiedNameRef);
 			return true;
 		} else if (qualifiedNameRef.binding instanceof TypeBinding) {

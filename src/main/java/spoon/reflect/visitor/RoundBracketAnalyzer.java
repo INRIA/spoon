@@ -19,8 +19,8 @@ import spoon.reflect.declaration.CtElement;
 class RoundBracketAnalyzer {
 
 	enum EncloseInRoundBrackets {
-		YES, NO, UNKNOWN;
-	}
+		YES, NO, UNKNOWN
+    }
 
 	private RoundBracketAnalyzer() {
 	}

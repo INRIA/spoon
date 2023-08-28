@@ -91,12 +91,7 @@ public class ModuleFactory extends SubFactory {
 			return CtModule.TOP_LEVEL_MODULE_NAME;
 		}
 
-		@Override
-		public void accept(CtVisitor visitor) {
-			visitor.visitCtModule(this);
-		}
-
-		@Override
+        @Override
 		public CtElement getParent() {
 			return this.parent;
 		}

@@ -39,7 +39,7 @@ abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 	@Override
 	public <W, X> java.util.List<X> asList(W e) {
 		return new AbstractList<X>() {
-			T element = castTarget(e);
+			final T element = castTarget(e);
 			boolean hasValue = SingleHandler.this.getValue(element) != null;
 
 			@Override

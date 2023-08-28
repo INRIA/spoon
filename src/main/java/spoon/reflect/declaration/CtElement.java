@@ -147,7 +147,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * Add an annotation for this element
 	 *
-	 * @param annotation
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = ANNOTATION)
@@ -156,7 +155,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * Remove an annotation for this element
 	 *
-	 * @param annotation
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = ANNOTATION)

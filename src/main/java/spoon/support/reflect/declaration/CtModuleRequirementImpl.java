@@ -34,7 +34,7 @@ public class CtModuleRequirementImpl extends CtElementImpl implements CtModuleRe
 	@Override
 	public <T extends CtModuleRequirement> T setRequiresModifiers(Set<RequiresModifier> requiresModifiers) {
 		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, CtRole.MODIFIER, this.requiresModifiers, new HashSet<>(requiresModifiers));
-		if (requiresModifiers == null || requiresModifiers.isEmpty()) {
+		if (requiresModifiers.isEmpty()) {
 			this.requiresModifiers = CtElementImpl.emptySet();
 			return (T) this;
 		}

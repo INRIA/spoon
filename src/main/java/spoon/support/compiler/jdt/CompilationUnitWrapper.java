@@ -17,7 +17,7 @@ import java.util.List;
 
 class CompilationUnitWrapper extends CompilationUnit {
 
-	private CtType type;
+	private final CtType type;
 
 	CompilationUnitWrapper(CtType type) {
 		// char[] contents, String fileName, String encoding, String destinationPath, boolean ignoreOptionalProblems

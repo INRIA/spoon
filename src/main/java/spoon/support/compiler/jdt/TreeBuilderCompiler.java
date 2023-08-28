@@ -33,9 +33,9 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-	private boolean ignoreSyntaxErrors;
+	private final boolean ignoreSyntaxErrors;
 
-	private Level level;
+	private final Level level;
 
 	TreeBuilderCompiler(INameEnvironment environment, IErrorHandlingPolicy policy, CompilerOptions options,
 						ICompilerRequestor requestor, IProblemFactory problemFactory, PrintWriter out,

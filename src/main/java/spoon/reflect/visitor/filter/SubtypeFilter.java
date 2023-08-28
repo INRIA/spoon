@@ -18,7 +18,7 @@ import spoon.reflect.visitor.Filter;
  */
 public class SubtypeFilter extends AbstractFilter<CtType<?>> {
 
-	private CtTypeReference<?> superType;
+	private final CtTypeReference<?> superType;
 	private String superTypeQualifiedName;
 
 	public SubtypeFilter(CtTypeReference<?> superType) {

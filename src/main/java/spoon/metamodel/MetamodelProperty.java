@@ -77,7 +77,7 @@ public class MetamodelProperty {
 	private Boolean derived;
 	private Boolean unsettable;
 
-	private Map<MMMethodKind, List<MMMethod>> methodsByKind = new EnumMap<>(MMMethodKind.class);
+	private final Map<MMMethodKind, List<MMMethod>> methodsByKind = new EnumMap<>(MMMethodKind.class);
 	private Map<String, MMMethod> methodsBySignature;
 
 	/**
@@ -107,8 +107,6 @@ public class MetamodelProperty {
 	}
 
 	/**
-	 * @param method
-	 * @param createIfNotExist
 	 * @return existing {@link MMMethod}, which overrides `method` or creates and registers new one if `createIfNotExist`==true
 	 */
 	MMMethod addMethod(CtMethod<?> method, boolean createIfNotExist) {
@@ -181,7 +179,8 @@ public class MetamodelProperty {
 			getterValueType = getTypeofItems(getterValueType);
 			setterValueType = getTypeofItems(setterValueType);
 		}
-		if (getterValueType.equals(setterValueType)) {
+        assert getterValueType != null;
+        if (getterValueType.equals(setterValueType)) {
 			return mmGetMethod.getReturnType();
 		}
 		if (getterValueType.isSubtypeOf(setterValueType)) {
@@ -308,8 +307,6 @@ public class MetamodelProperty {
 	}
 
 	/**
-	 * @param methods
-	 * @param key
 	 * @return index of the method which best matches the `key` accessor of this field
 	 *  -1 if it cannot be resolved
 	 */
@@ -379,7 +376,8 @@ public class MetamodelProperty {
 
 		for (int i = 0; i < methods.size(); i++) {
 			MMMethod mMethod = methods.get(i);
-			MatchLevel matchLevel = getMatchLevel(expectedValueType, mMethod.getValueType());
+            assert expectedValueType != null;
+            MatchLevel matchLevel = getMatchLevel(expectedValueType, mMethod.getValueType());
 			if (matchLevel != null) {
 				//it is matching
 				if (idx == -1) {
@@ -408,7 +406,7 @@ public class MetamodelProperty {
 		CtTypeReference<?> itemValueType;
 		if (valueContainerType == ContainerKind.MAP) {
 			if (!String.class.getName().equals(valueType.getActualTypeArguments().get(0).getQualifiedName())) {
-				throw new SpoonException("Unexpected container of type: " + valueType.toString());
+				throw new SpoonException("Unexpected container of type: " + valueType);
 			}
 			itemValueType = valueType.getActualTypeArguments().get(1);
 		} else {
@@ -433,8 +431,6 @@ public class MetamodelProperty {
 	/**
 	 * Checks whether expectedType and realType are matching.
 	 *
-	 * @param expectedType
-	 * @param realType
 	 * @return new expectedType or null if it is not matching
 	 */
 	private @Nullable MatchLevel getMatchLevel(CtTypeReference<?> expectedType, CtTypeReference<?> realType) {
@@ -463,7 +459,7 @@ public class MetamodelProperty {
 		if (derived == null) {
 			if (getOwner().getKind() == ConceptKind.LEAF && isUnsettable()) {
 				derived = Boolean.TRUE;
-				return derived;
+				return true;
 			}
 			// by default it's derived
 			derived = Boolean.FALSE;
@@ -478,7 +474,7 @@ public class MetamodelProperty {
 			for (CtMethod<?> ctMethod : getter.getDeclaredMethods()) {
 				if (ctMethod.getAnnotation(derivedProperty) != null) {
 					derived = Boolean.TRUE;
-					return derived;
+					return true;
 				}
 			}
 
@@ -489,7 +485,7 @@ public class MetamodelProperty {
 			for (MetamodelProperty superField : superProperties) {
 				if (superField.isDerived()) {
 					derived = Boolean.TRUE;
-					return derived;
+					return true;
 				}
 			}
 		}
@@ -509,14 +505,14 @@ public class MetamodelProperty {
 			MMMethod setter = getMethod(MMMethodKind.SET);
 			if (setter == null) {
 				unsettable = Boolean.TRUE;
-				return unsettable;
+				return true;
 			}
 			CtTypeReference<UnsettableProperty> unsettableProperty = setter.getActualCtMethod().getFactory().createCtTypeReference(UnsettableProperty.class);
 
 			for (CtMethod<?> ctMethod : setter.getDeclaredMethods()) {
 				if (ctMethod.getAnnotation(unsettableProperty) != null) {
 					unsettable = Boolean.TRUE;
-					return unsettable;
+					return true;
 				}
 			}
 
@@ -606,10 +602,10 @@ public class MetamodelProperty {
 					try {
 						return (U) rtMethod.invoke(element);
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-						throw new SpoonException("Invocation of getter on " + toString() + " failed", e);
+						throw new SpoonException("Invocation of getter on " + this + " failed", e);
 					}
 				}
-				throw new SpoonException("Cannot invoke getter on " + toString());
+				throw new SpoonException("Cannot invoke getter on " + this);
 			}
 		}
 		return getRoleHandler().getValue(element);
@@ -628,11 +624,11 @@ public class MetamodelProperty {
 					try {
 						rtMethod.invoke(element, value);
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-						throw new SpoonException("Invocation of setter on " + toString() + " failed", e);
+						throw new SpoonException("Invocation of setter on " + this + " failed", e);
 					}
 					return;
 				}
-				throw new SpoonException("Cannot invoke setter on " + toString());
+				throw new SpoonException("Cannot invoke setter on " + this);
 			}
 		}
 		getRoleHandler().setValue(element, value);

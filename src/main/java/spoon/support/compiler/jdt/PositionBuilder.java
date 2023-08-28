@@ -109,11 +109,11 @@ public class PositionBuilder {
 				int declarationSourceEnd = sourceEnd;
 				declarationSourceStart = findPrevNonWhitespace(contents, getParentsSourceStart(), declarationSourceStart - 1);
 				if (contents[declarationSourceStart] != '(') {
-					return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at start of cast expression on offset: " + declarationSourceStart);
+					return handlePositionProblem("Unexpected character '" + contents[declarationSourceStart] + "' at start of cast expression on offset: " + declarationSourceStart);
 				}
 				declarationSourceEnd = findNextNonWhitespace(contents, contents.length - 1, declarationSourceEnd + 1);
 				if (contents[declarationSourceEnd] != ')') {
-					return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at end of cast expression on offset: " + declarationSourceEnd);
+					return handlePositionProblem("Unexpected character '" + contents[declarationSourceStart] + "' at end of cast expression on offset: " + declarationSourceEnd);
 				}
 				return cf.createCompoundSourcePosition(cu,
 						sourceStart, sourceEnd,
@@ -136,7 +136,7 @@ public class PositionBuilder {
 							return handlePositionProblem("Cannot found beginning of cast expression until offset: " + getParentsSourceStart());
 						}
 						if (contents[declarationSourceStart] != '(') {
-							return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at start of expression on offset: " + declarationSourceStart);
+							return handlePositionProblem("Unexpected character '" + contents[declarationSourceStart] + "' at start of expression on offset: " + declarationSourceStart);
 						}
 						nrOfBrackets--;
 					}
@@ -144,7 +144,7 @@ public class PositionBuilder {
 					while (nrOfBrackets > 0) {
 						declarationSourceEnd = findNextNonWhitespace(contents, contents.length - 1, declarationSourceEnd + 1);
 						if (contents[declarationSourceEnd] != ')') {
-							return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at end of expression on offset: " + declarationSourceEnd);
+							return handlePositionProblem("Unexpected character '" + contents[declarationSourceStart] + "' at end of expression on offset: " + declarationSourceEnd);
 						}
 						nrOfBrackets--;
 					}
@@ -189,10 +189,10 @@ public class PositionBuilder {
 				}
 				int bracketStart = findNextNonWhitespace(contents, endOfTry, catchStart + CATCH.length());
 				if (bracketStart < 0) {
-					return handlePositionProblem("Unexpected end of file instead of \'(\' after catch statement on offset: " + catchStart);
+					return handlePositionProblem("Unexpected end of file instead of '(' after catch statement on offset: " + catchStart);
 				}
 				if (contents[bracketStart] != '(') {
-					return handlePositionProblem("Unexpected character " + contents[bracketStart] + " instead of \'(\' after catch statement on offset: " + bracketStart);
+					return handlePositionProblem("Unexpected character " + contents[bracketStart] + " instead of '(' after catch statement on offset: " + bracketStart);
 				}
 				declarationSourceStart = bracketStart + 1;
 			}
@@ -206,7 +206,7 @@ public class PositionBuilder {
 				}
 				int bracketOff = findNextNonWhitespace(contents, forEach.getPosition().getSourceEnd(), parentStart + 3);
 				if (bracketOff < 0 || contents[bracketOff] != '(') {
-					return handlePositionProblem("Expected character after \'for\' instead of \'(\' at offset: " + (parentStart + 3));
+					return handlePositionProblem("Expected character after 'for' instead of '(' at offset: " + (parentStart + 3));
 				}
 				declarationSourceStart = bracketOff + 1;
 				declarationSourceEnd = sourceEnd;
@@ -442,7 +442,7 @@ public class PositionBuilder {
 				if (contents[sourceEnd] == '-' && contents.length > sourceEnd + 1 && contents[sourceEnd + 1] == '>') {
 					sourceEnd++;
 				} else {
-					return handlePositionProblem("Unexpected character " + contents[sourceEnd] + " instead of \':\' or \'->\' in CtCase on: " + sourceEnd);
+					return handlePositionProblem("Unexpected character " + contents[sourceEnd] + " instead of ':' or '->' in CtCase on: " + sourceEnd);
 				}
 			}
 		} else if ((node instanceof AssertStatement)) {
@@ -538,10 +538,8 @@ public class PositionBuilder {
 	}
 
 	/**
-	 * @param tryElement
 	 * @param negIdx 0 - last block, 1 - one before last block, ...
-	 * @return
-	 */
+     */
 	private int getEndOfLastTryBlock(CtTry tryElement, int negIdx) {
 		//offset where we can start to search for catch
 		int endOfLastBlock = tryElement.getBody().getPosition().getSourceEnd();
@@ -583,7 +581,7 @@ public class PositionBuilder {
 
 		//move end after the last char
 		end++;
-		while (start < end && explicitModifiersByName.size() > 0) {
+		while (start < end && !explicitModifiersByName.isEmpty()) {
 			int o1 = findNextNonWhitespace(contents, end - 1, start);
 			if (o1 == -1) {
 				break;
@@ -606,7 +604,7 @@ public class PositionBuilder {
 			}
 			start = o2;
 		}
-		if (explicitModifiersByName.size() > 0) {
+		if (!explicitModifiersByName.isEmpty()) {
 			throw new SpoonException("Position of CtExtendedModifiers: [" + String.join(", ", explicitModifiersByName.keySet()) + "] not found in " + String.valueOf(contents, start, end - start));
 		}
 	}
@@ -714,7 +712,7 @@ public class PositionBuilder {
 			char c = content[off];
 			if (c == '"' && !inString) {
 				inString = true;
-			} else if (c == '"' && inString) {
+			} else if (c == '"') {
 				inString = false;
 			}
 			if (Character.isWhitespace(c) || (!inString && getEndOfComment(content, maxOff, off) >= 0)) {

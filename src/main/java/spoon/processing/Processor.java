@@ -73,15 +73,7 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	 */
 	void process();
 
-	/**
-	 * Do the processing job for a given element. This method is called on an
-	 * element if the method {@link #isToBeProcessed(CtElement)} returns true.
-	 *
-	 * @param element
-	 *            the element that holds the processed annotations
-	 */
-
-	/**
+    /**
 	 * Gets all the element types than need to be processed.
 	 */
 	Set<Class<? extends CtElement>> getProcessedElementTypes();

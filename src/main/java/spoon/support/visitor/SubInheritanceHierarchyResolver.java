@@ -44,7 +44,7 @@ import java.util.Set;
 public class SubInheritanceHierarchyResolver {
 
 	/** where the subtypes will be looked for */
-	private CtPackage inputPackage;
+	private final CtPackage inputPackage;
 
 	/** whether interfaces are included in the result */
 	private boolean includingInterfaces = true;
@@ -52,7 +52,7 @@ public class SubInheritanceHierarchyResolver {
 	 * Set of qualified names of all super types whose sub types we are searching for.
 	 * Each found sub type is added to this set too
 	 */
-	private Set<String> targetSuperTypes = new HashSet<>();
+	private final Set<String> targetSuperTypes = new HashSet<>();
 	/**
 	 * if true then we have to check if type is a subtype of superClass or superInterfaces too
 	 * if false then it is enough to search in superClass hierarchy only (faster)

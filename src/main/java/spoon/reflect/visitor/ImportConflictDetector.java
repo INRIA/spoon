@@ -282,7 +282,7 @@ public class ImportConflictDetector extends ImportAnalyzer<LexicalScope> {
 			CtPackageReference packRef = typeRef.getPackage();
 			if (packRef != null) {
 				String qname = packRef.getQualifiedName();
-				if (qname != null && qname.length() > 0) {
+				if (qname != null && !qname.isEmpty()) {
 					int idx = qname.indexOf('.');
 					if (idx < 0) {
 						idx = qname.length();

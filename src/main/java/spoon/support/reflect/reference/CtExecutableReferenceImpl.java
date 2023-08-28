@@ -60,11 +60,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	CtTypeReference<?> declaringType;
 
 	@MetamodelPropertyField(role = TYPE)
-	/**
-	 * For methods, stores the return type of the method. (not pretty-printed).
-	 * For constructors, stores the type of the target constructor (pretty-printed).
-	 */
-	CtTypeReference<T> type;
+    CtTypeReference<T> type;
 
 	@MetamodelPropertyField(role = ARGUMENT_TYPE)
 	List<CtTypeReference<?>> parameters = CtElementImpl.emptyList();
@@ -98,7 +94,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public CtExecutable<T> getExecutableDeclaration() {
+	public CtConstructor getExecutableDeclaration() {
 		CtTypeReference<?> declaringType = getDeclaringType();
 		if (declaringType == null) {
 			return null;
@@ -113,11 +109,11 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		return getCtExecutable(declaringType.getTypeDeclaration());
 	}
 
-	private CtExecutable<T> getCtExecutable(CtType<?> typeDecl) {
+	private CtLambda getCtExecutable(CtType<?> typeDecl) {
 		if (typeDecl == null) {
 			return null;
 		}
-		CtTypeReference<?>[] arrayParameters = parameters.toArray(new CtTypeReferenceImpl<?>[0]);
+		CtTypeReference<?>[] arrayParameters = parameters.toArray(new CtTypeReference[0]);
 		CtExecutable<T> method = typeDecl.getMethod(getSimpleName(), arrayParameters);
 		if ((method == null) && (typeDecl instanceof CtClass) && this.isConstructor()) {
 			try {

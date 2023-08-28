@@ -36,7 +36,7 @@ import java.util.Set;
  */
 public class AccessibleVariablesFinder {
 
-	private CtElement expression;
+	private final CtElement expression;
 
 	public AccessibleVariablesFinder(CtElement expression) {
 		this.expression = expression;

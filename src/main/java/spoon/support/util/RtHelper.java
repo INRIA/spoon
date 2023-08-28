@@ -174,9 +174,6 @@ public abstract class RtHelper {
 	/**
 	 * Looks for first public method of clazz (or any super class or super interface),
 	 * whose name is equal to methodName and number of parameters is numParams
-	 * @param clazz
-	 * @param methodName
-	 * @param numParams
 	 * @return the found method or null
 	 */
 	public static Method getMethod(Class<?> clazz, String methodName, int numParams) {

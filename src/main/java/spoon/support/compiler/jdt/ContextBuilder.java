@@ -97,7 +97,8 @@ public class ContextBuilder {
 		}
 
 		ASTPair pair = stack.peek();
-		CtElement current = pair.element;
+        assert pair != null;
+        CtElement current = pair.element;
 
 		if (current instanceof CtExpression) {
 			while (!casts.isEmpty()) {
@@ -126,7 +127,8 @@ public class ContextBuilder {
 			this.jdtTreeBuilder.getExiter().setChild(current);
 			this.jdtTreeBuilder.getExiter().setChild(pair.node);
 			ASTPair parentPair = stack.peek();
-			this.jdtTreeBuilder.getExiter().exitParent(parentPair);
+            assert parentPair != null;
+            this.jdtTreeBuilder.getExiter().exitParent(parentPair);
 		}
 	}
 
@@ -150,7 +152,8 @@ public class ContextBuilder {
 	 * @throws NullPointerException if the stack is empty
 	 */
 	CtElement getCurrentElement() {
-		return stack.peek().element;
+        assert stack.peek() != null;
+        return stack.peek().element;
 	}
 
 	/**
@@ -158,7 +161,8 @@ public class ContextBuilder {
 	 * @throws NullPointerException if the stack is empty
 	 */
 	ASTNode getCurrentNode() {
-		return stack.peek().node;
+        assert stack.peek() != null;
+        return stack.peek().node;
 	}
 
 	CtElement getContextElementOnLevel(int level) {

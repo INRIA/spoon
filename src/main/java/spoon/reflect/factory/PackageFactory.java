@@ -8,6 +8,7 @@
 package spoon.reflect.factory;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +23,7 @@ import spoon.reflect.reference.CtPackageReference;
 /**
  * The {@link CtPackage} sub-factory.
  */
-public class PackageFactory extends SubFactory {
+public class PackageFactory extends SubFactory implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**

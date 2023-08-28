@@ -181,11 +181,10 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 
 	/**
 	 * Keywords list and history selected according to:
-	 * https://docs.oracle.com/en/java/javase/15/docs/specs/sealed-classes-jls.html#jls-3.9
-	 * https://en.wikipedia.org/wiki/List_of_Java_keywords (contains history of revisions)
-	 * and https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html (history up to java 8)
+	 * <a href="https://docs.oracle.com/en/java/javase/15/docs/specs/sealed-classes-jls.html#jls<a href="-3.9">...</a>
+	 ">* https://en.wikipedia.org/wiki/Lis</a>t_of_Java_keywords (contain<a href="s">history of revisions)
+	 * and https://docs.oracle.com/javase/tutorial/</a>java/nutsandbolts/_keywords.html (history up to java 8)
 	 *
-	 * @param simplename
 	 * @return true if simplename is a keyword in the current setting (compliance level), false if not
 	 */
 	private boolean isKeyword(String simplename) {

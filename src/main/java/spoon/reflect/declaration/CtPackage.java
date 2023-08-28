@@ -123,7 +123,6 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	/**
 	 * add a subpackage
 	 *
-	 * @param pack
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = SUB_PACKAGE)
@@ -132,7 +131,6 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	/**
 	 * remove a subpackage
 	 *
-	 * @param pack
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = SUB_PACKAGE)

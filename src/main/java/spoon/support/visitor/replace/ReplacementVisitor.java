@@ -1392,9 +1392,9 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		new spoon.support.visitor.replace.ReplacementVisitor(original, replaces.toArray(new spoon.reflect.declaration.CtElement[0])).scan(original.getParent());
 	}
 
-	private spoon.reflect.declaration.CtElement original;
+	private final spoon.reflect.declaration.CtElement original;
 
-	private spoon.reflect.declaration.CtElement[] replace;
+	private final spoon.reflect.declaration.CtElement[] replace;
 
 	private static final spoon.reflect.declaration.CtElement[] EMPTY = new spoon.reflect.declaration.CtElement[0];
 
@@ -1467,17 +1467,15 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		}
 		if (shouldBeDeleted != null) {
 			list.remove(index);
-			if (replace.length > 0) {
-				for (spoon.reflect.declaration.CtElement aReplace : replace) {
-					T ele = ((T) (aReplace));
-					if (ele != null) {
-						list.add(index, ele);
-						ele.setParent(shouldBeDeleted.getParent());
-						index = index + 1;
-					}
-				}
-			}
-			listener.set(list);
+            for (spoon.reflect.declaration.CtElement aReplace : replace) {
+                T ele = ((T) (aReplace));
+                if (ele != null) {
+                    list.add(index, ele);
+                    ele.setParent(shouldBeDeleted.getParent());
+                    index = index + 1;
+                }
+            }
+            listener.set(list);
 		}
 	}
 

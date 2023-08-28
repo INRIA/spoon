@@ -55,7 +55,7 @@ public interface CtJavaDocTag extends CtElement {
 			this.name = name;
 		}
 
-		private String name;
+		private final String name;
 
 		/**
 		 * Get tag name

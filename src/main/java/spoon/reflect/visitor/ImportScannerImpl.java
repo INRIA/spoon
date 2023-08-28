@@ -16,23 +16,10 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtLiteral;
-import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeMember;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -40,17 +27,7 @@ import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,10 +50,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	protected Map<String, CtExecutableReference<?>> methodImports = new TreeMap<>();
 	//top declaring type of that import
 	protected CtTypeReference<?> targetType;
-	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
-	private Set<String> fieldAndMethodsNames = new HashSet<>();
-	private Set<CtTypeReference> exploredReferences = new HashSet<>(); // list of explored references
-	private Map<CtImport, Boolean> usedImport = new HashMap<>(); // defined if imports had been used or not
+	private final Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
+	private final Set<String> fieldAndMethodsNames = new HashSet<>();
+	private final Set<CtTypeReference> exploredReferences = new HashSet<>(); // list of explored references
+	private final Map<CtImport, Boolean> usedImport = new HashMap<>(); // defined if imports had been used or not
 
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
@@ -138,14 +115,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	}
 
-	@Override
-	public void scan(CtElement element) {
-		if (element != null) {
-			element.accept(this);
-		}
-	}
-
-	@Override
+    @Override
 	public void visitCtJavaDoc(CtJavaDoc ctJavaDoc) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(ctJavaDoc.getContent());
@@ -156,22 +126,20 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 		String javadoc = stringBuilder.toString();
 		for (CtImport ctImport : this.usedImport.keySet()) {
-			switch (ctImport.getImportKind()) {
-				case TYPE:
-					if (javadoc.contains(ctImport.getReference().getSimpleName()) && ctImport.getReference() instanceof CtTypeReference) {
-						//assure that it is not just any occurrence of same substring, but it is real javadoc link to the same type
-						if (matchesTypeName(javadoc, (CtTypeReference<?>) ctImport.getReference())) {
-							this.setImportUsed(ctImport);
-						}
-					}
-					break;
-			}
+            if (Objects.requireNonNull(ctImport.getImportKind()) == CtImportKind.TYPE) {
+                if (javadoc.contains(ctImport.getReference().getSimpleName()) && ctImport.getReference() instanceof CtTypeReference) {
+                    //assure that it is not just any occurrence of same substring, but it is real javadoc link to the same type
+                    if (matchesTypeName(javadoc, (CtTypeReference<?>) ctImport.getReference())) {
+                        this.setImportUsed(ctImport);
+                    }
+                }
+            }
 		}
 	}
 
-	private static Set<String> mainTags = new HashSet<>(Arrays.asList("see", "throws", "exception"));
-	private static Set<String> inlineTags = new HashSet<>(Arrays.asList("link", "linkplain", "value"));
-	private static Pattern tagRE = Pattern.compile("(\\{)?@(\\w+)\\s+([\\w\\.\\$]+)(?:#(\\w+)(?:\\(([^\\)]*)\\)))?");
+	private static final Set<String> mainTags = new HashSet<>(Arrays.asList("see", "throws", "exception"));
+	private static final Set<String> inlineTags = new HashSet<>(Arrays.asList("link", "linkplain", "value"));
+	private static final Pattern tagRE = Pattern.compile("(\\{)?@(\\w+)\\s+([\\w\\.\\$]+)(?:#(\\w+)(?:\\(([^\\)]*)\\)))?");
 
 	private boolean matchesTypeName(String javadoc, CtTypeReference<?> typeRef) {
 		Matcher m = tagRE.matcher(javadoc);
@@ -210,9 +178,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			if (typeName.equals(typeRef.getQualifiedName())) {
 				return true;
 			}
-			if (typeName.equals(typeRef.getSimpleName())) {
-				return true;
-			}
+            return typeName.equals(typeRef.getSimpleName());
 		}
 		return false;
 	}
@@ -394,17 +360,14 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 								CtExecutableReference localReference = exec.getReference();
 								declaringType = localReference.getDeclaringType();
 								reference = localReference;
-							} else if (parent instanceof CtInvocation) {
+							} else {
 								CtInvocation invo = (CtInvocation) parent;
 								CtExecutableReference localReference = invo.getExecutable();
 								declaringType = localReference.getDeclaringType();
 								reference = localReference;
-							} else {
-								declaringType = null;
-								reference = null;
 							}
 
-							if (reference != null && isImported(reference)) {
+							if (isImported(reference)) {
 								// if we are in the **same** package we do the import for test with method isImported
 								if (declaringType != null) {
 									if (declaringType.getPackage() != null && !declaringType.getPackage().isUnnamedPackage()) {
@@ -424,7 +387,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 						}
 					}
 				}
-			} catch (ParentNotInitializedException e) {
+			} catch (ParentNotInitializedException ignored) {
 			}
 			CtPackageReference pack = targetType.getPackage();
 			if (pack != null && ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
@@ -597,7 +560,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	/**
 	 * This method is used to check if the declaring type has been already imported, or if it is local
 	 * In both case we do not want to import it, even in FQN mode.
-	 * @param declaringType
 	 * @return true if it is local or imported
 	 */
 	private boolean declaringTypeIsLocalOrImported(CtTypeReference declaringType) {
@@ -631,7 +593,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	/**
 	 * Test if the given executable reference is targeted a method name which is in collision with a method name of the current class
-	 * @param ref
 	 * @return
 	 */
 	private boolean isInCollisionWithLocalMethod(CtExecutableReference ref) {
@@ -805,7 +766,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	/**
 	 * Test if the reference can be imported, i.e. test if the importation could lead to a collision.
-	 * @param ref
 	 * @return true if the ref should be imported.
 	 */
 	protected boolean isTypeInCollision(CtReference ref, boolean fqnMode) {

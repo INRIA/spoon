@@ -18,8 +18,8 @@ public class BodyHolderSourcePositionImpl extends DeclarationSourcePositionImpl
 		implements BodyHolderSourcePosition {
 
 	private static final long serialVersionUID = 1L;
-	private int bodyStart;
-	private int bodyEnd;
+	private final int bodyStart;
+	private final int bodyEnd;
 
 	public BodyHolderSourcePositionImpl(
 			CompilationUnit compilationUnit,

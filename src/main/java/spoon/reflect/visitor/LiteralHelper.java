@@ -40,7 +40,7 @@ abstract class LiteralHelper {
 		} else if (base == LiteralBase.HEXADECIMAL) {
 			return "0x" + Long.toHexString(value) + "L";
 		}
-		return Long.toString(value) + "L";
+		return value + "L";
 	}
 
 	private static String getBasedString(Float value, LiteralBase base) {

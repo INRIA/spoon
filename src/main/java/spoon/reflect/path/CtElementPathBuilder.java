@@ -78,7 +78,7 @@ public class CtElementPathBuilder {
 						String name = pair[1];
 						if (name != null) {
 							//the path with name is more readable, so prefer name instead of index
-							if (role.getSubRoles().size() > 0) {
+							if (!role.getSubRoles().isEmpty()) {
 								//there are subroles.
 								role = role.getMatchingSubRoleFor(cur);
 								pathElement = new CtRolePathElement(role);

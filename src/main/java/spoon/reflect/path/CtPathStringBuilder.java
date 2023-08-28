@@ -33,13 +33,13 @@ public class CtPathStringBuilder {
 		// try without name
 		try {
 			return Class.forName(name);
-		} catch (ClassNotFoundException ex) {
+		} catch (ClassNotFoundException ignored) {
 		}
 
 		// search in spoon.reflect.declaration
 		try {
 			return Class.forName("spoon.reflect.declaration." + name);
-		} catch (ClassNotFoundException ex) {
+		} catch (ClassNotFoundException ignored) {
 		}
 		// search in
 		try {
@@ -93,21 +93,18 @@ public class CtPathStringBuilder {
 			}
 			token = tokenizer.getNextToken(PATH_DELIMITERS);
 			if (AbstractPathElement.ARGUMENT_START.equals(token)) {
-				while (true) {
-					String argName = tokenizer.getNextToken(ARG_NAME_DELIMITERS);
-					if (!NAME_MATCHER.matcher(argName).matches()) {
-						throw new CtPathException("Argument name must be a word, but is: " + argName);
-					}
-					token = tokenizer.getNextToken(ARG_NAME_DELIMITERS);
-					if (!AbstractPathElement.ARGUMENT_NAME_SEPARATOR.equals(token)) {
-						throw new CtPathException("Expects " + AbstractPathElement.ARGUMENT_NAME_SEPARATOR);
-					}
-					token = parseArgumentValue(tokenizer, argName, pathElement);
-					if ("]".equals(token)) {
-						break;
-					}
-					//read next argument
-				}
+                do {
+                    String argName = tokenizer.getNextToken(ARG_NAME_DELIMITERS);
+                    if (!NAME_MATCHER.matcher(argName).matches()) {
+                        throw new CtPathException("Argument name must be a word, but is: " + argName);
+                    }
+                    token = tokenizer.getNextToken(ARG_NAME_DELIMITERS);
+                    if (!AbstractPathElement.ARGUMENT_NAME_SEPARATOR.equals(token)) {
+                        throw new CtPathException("Expects " + AbstractPathElement.ARGUMENT_NAME_SEPARATOR);
+                    }
+                    token = parseArgumentValue(tokenizer, argName, pathElement);
+                    //read next argument
+                } while (!"]".equals(token));
 				token = tokenizer.getNextToken(MAIN_DELIMITERS);
 			}
 			path.addLast(pathElement);
@@ -128,7 +125,7 @@ public class CtPathStringBuilder {
 			if ("(".equals(token) || "[".equals(token)) {
 				//starts bracket
 				stack.push(token);
-			} else if (stack.size() > 0) {
+			} else if (!stack.isEmpty()) {
 				//we are in some brackets. Just wait for end of bracket
 				if (")".equals(token)) {
 					//closing bracket

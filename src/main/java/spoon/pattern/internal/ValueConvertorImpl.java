@@ -104,18 +104,13 @@ public class ValueConvertorImpl implements ValueConvertor {
 				return (T) ((Class) value).getSimpleName();
 			} else if (value instanceof CtInvocation) {
 				return (T) getShortSignatureForJavadoc(((CtInvocation<?>) value).getExecutable());
-			} else if (value instanceof CtExecutableReference) {
-				return (T) getShortSignatureForJavadoc((CtExecutableReference<?>) value);
 			} else if (value instanceof CtExecutable) {
 				return (T) getShortSignatureForJavadoc(((CtExecutable<?>) value).getReference());
-			} else if (value instanceof CtLiteral) {
-				Object val = ((CtLiteral<Object>) value).getValue();
-				return val == null ? null : (T) val.toString();
 			} else if (value instanceof Enum) {
 				return (T) ((Enum) value).name();
 			} else if (value != null) {
 				return (T) value.toString();
-			} else if (value == null) {
+			} else {
 				throw new SpoonException("Missing parameter value for parameter `" + parameterName + "`");
 			}
 			throw new SpoonException("Parameter value has unexpected class: " + value.getClass().getName() + ", whose conversion to String is not supported");

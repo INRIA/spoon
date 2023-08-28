@@ -37,7 +37,7 @@ public class CtQueryImpl implements CtQuery {
 	 */
 	private List<Object> inputs;
 
-	private OutputFunctionWrapper outputStep = new OutputFunctionWrapper();
+	private final OutputFunctionWrapper outputStep = new OutputFunctionWrapper();
 	private AbstractStep lastStep = outputStep;
 	private AbstractStep firstStep = lastStep;
 
@@ -65,7 +65,6 @@ public class CtQueryImpl implements CtQuery {
 
 	/**
 	 * adds list of elements which will be used as input of the query too
-	 * @param input
 	 * @return this to support fluent API
 	 */
 	public CtQueryImpl addInput(Object... input) {
@@ -431,13 +430,11 @@ public class CtQueryImpl implements CtQuery {
 				 * so we can check expected type before next call and to avoid slow throwing of ClassCastException
 				 */
 				expectedClass = detectTargetClassFromCCE(e, input);
-				if (expectedClass == null) {
-					/*
-					 * It wasn't able to detect expected class from the CCE.
-					 * OK, so we cannot optimize next call and we have to let JVM to throw next CCE, but it is only performance problem. Not functional.
-					 */
-				}
-				log(this, e.getMessage(), input);
+                /*
+                 * It wasn't able to detect expected class from the CCE.
+                 * OK, so we cannot optimize next call and we have to let JVM to throw next CCE, but it is only performance problem. Not functional.
+                 */
+                log(this, e.getMessage(), input);
 				return;
 			}
 			//Do not ignore this exception in client's code. It is not expected. It cannot be ignored.
@@ -575,7 +572,7 @@ public class CtQueryImpl implements CtQuery {
 				if ("getIndexOfCallerInStackOfLambda".equals(stack[i].getMethodName())) {
 					//check whether we can detect type of lambda input parameter from CCE
 					Class<?> detectedClass = detectTargetClassFromCCE(e, obj);
-					if (detectedClass == null || !CtType.class.equals(detectedClass)) {
+					if (!CtType.class.equals(detectedClass)) {
 						//we cannot detect type of lambda input parameter from ClassCastException on this JVM implementation
 						//mark it by negative index, so the query engine will fall back to eating of all CCEs and slow implementation
 						return -1;

@@ -19,7 +19,7 @@ public class PartialSourcePositionImpl extends NoSourcePosition {
 
 	private static final long serialVersionUID = 1L;
 
-	private CompilationUnit compilationUnit;
+	private final CompilationUnit compilationUnit;
 
 	public PartialSourcePositionImpl(CompilationUnit compilationUnit) {
 		this.compilationUnit = compilationUnit;

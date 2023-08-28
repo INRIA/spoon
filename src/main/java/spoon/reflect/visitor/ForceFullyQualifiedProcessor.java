@@ -80,9 +80,7 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 		CtElement parent = typeRef.getParent();
 		if (parent instanceof CtClass && ((CtClass) parent).getSuperclass() == typeRef) {
 			CtElement parent2 = parent.getParent();
-			if (parent2 instanceof CtNewClass) {
-				return true;
-			}
+            return parent2 instanceof CtNewClass;
 		}
 		return false;
 	}

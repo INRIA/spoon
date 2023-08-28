@@ -37,7 +37,7 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 		this(pattern, true);
 	}
 
-	private static Set<String> failingPatterns = new HashSet<>();
+	private static final Set<String> failingPatterns = new HashSet<>();
 
 	public CtNamedPathElement(String pattern, boolean canBeRegexp) {
 		this.pattern = pattern;
@@ -87,7 +87,7 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 	}
 
 	private class NameScanner extends CtInheritanceScanner {
-		private Collection<CtElement> results = new LinkedList<>();
+		private final Collection<CtElement> results = new LinkedList<>();
 
 		NameScanner() {
 		}

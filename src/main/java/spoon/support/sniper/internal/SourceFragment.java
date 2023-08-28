@@ -12,7 +12,7 @@ import spoon.support.Experimental;
 /**
  * Represents a part of source code.
  *
- * See https://github.com/INRIA/spoon/pull/2283
+ * See <a href="https://github.com/INRIA/spoon/pull/2283">...</a>
  */
 @Experimental
 public interface SourceFragment  {

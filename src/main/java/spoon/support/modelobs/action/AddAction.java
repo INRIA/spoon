@@ -10,7 +10,7 @@ package spoon.support.modelobs.action;
 import spoon.support.modelobs.context.Context;
 
 public class AddAction<T>  extends Action {
-	private T newValue;
+	private final T newValue;
 
 	public AddAction(Context context, T newValue) {
 		super(context);

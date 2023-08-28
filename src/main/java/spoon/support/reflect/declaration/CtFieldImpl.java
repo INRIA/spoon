@@ -43,7 +43,7 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	CtTypeReference<T> type;
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
-	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
+	private final CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	public CtFieldImpl() {
 	}

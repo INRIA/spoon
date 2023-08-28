@@ -124,9 +124,9 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		CtMethod<?> lambdaExecutableMethod = null;
 		CtElement parent = lambdaTypeRef.getParent();
 		CtTypeReference<?> parentTypeReference = null;
-		if (parent != null && parent instanceof CtLocalVariable) {
+		if (parent instanceof CtLocalVariable) {
 			parentTypeReference = ((CtLocalVariable) parent).getType();
-		} else if (parent != null && parent instanceof CtAssignment) {
+		} else if (parent instanceof CtAssignment) {
 			parentTypeReference = ((CtAssignment) parent).getAssigned().getType();
 		}
 		for (CtTypeReference<?> ctTypeReference : ((CtIntersectionTypeReference<?>) lambdaTypeRef).getBounds()) {

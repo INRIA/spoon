@@ -70,14 +70,14 @@ import static spoon.pattern.PatternBuilder.getLocalTypeRefBySimpleName;
 /**
  * Used to define pattern parameters.
  *
- * Main documentation at http://spoon.gforge.inria.fr/pattern.html.
+ * Main documentation at <a href="http://spoon.gforge.inria.fr/pattern.html">...</a>.
  */
 @Experimental
 public class PatternParameterConfigurator {
 	private final PatternBuilder patternBuilder;
 	private final Map<String, AbstractParameterInfo> parameterInfos;
 	private AbstractParameterInfo currentParameter;
-	private List<CtElement> substitutedNodes = new ArrayList<>();
+	private final List<CtElement> substitutedNodes = new ArrayList<>();
 	private ConflictResolutionMode conflictResolutionMode = ConflictResolutionMode.FAIL;
 
 	PatternParameterConfigurator(PatternBuilder patternBuilder, Map<String, AbstractParameterInfo> parameterInfos) {
@@ -192,10 +192,7 @@ public class PatternParameterConfigurator {
 			.forEach((CtTypeReference<?> typeRef) -> {
 				addSubstitutionRequest(pi, typeRef);
 			});
-		/**
-		 * If Type itself is found part of model, then substitute it's simple name too
-		 */
-		CtType<?> type2 = queryModel().filterChildren((CtType<?> t) -> t.getQualifiedName().equals(typeQualifiedName)).first();
+        CtType<?> type2 = queryModel().filterChildren((CtType<?> t) -> t.getQualifiedName().equals(typeQualifiedName)).first();
 		if (type2 != null) {
 			//Substitute name of template too
 			addSubstitutionRequest(pi, type2, CtRole.NAME);
@@ -216,10 +213,7 @@ public class PatternParameterConfigurator {
 			.forEach((CtTypeReference<?> typeRef) -> {
 				addSubstitutionRequest(pi, typeRef);
 			});
-		/**
-		 * If Type itself is found part of model, then substitute it's simple name too
-		 */
-		String typeQName = type.getQualifiedName();
+        String typeQName = type.getQualifiedName();
 		CtType<?> type2 = queryModel().filterChildren((CtType<?> t) -> t.getQualifiedName().equals(typeQName)).first();
 		if (type2 != null) {
 			//Substitute name of template too
@@ -336,8 +330,7 @@ public class PatternParameterConfigurator {
 	/**
 	 * Add parameters for each variable reference of `variable`
 	 * @param variable to be substituted variable
-	 * @return this to support fluent API
-	 */
+     */
 	private void createPatternParameterForVariable(CtVariable<?> variable) {
 		CtQueryable searchScope;
 		if (patternBuilder.isInModel(variable)) {
@@ -405,14 +398,13 @@ public class PatternParameterConfigurator {
 				String fieldName = typeMember.getSimpleName();
 				String stringMarker = (param.value() != null && !param.value().isEmpty()) ? param.value() : fieldName;
 				//for the compatibility reasons with Parameters.getNamesToValues(), use the proxy name as parameter name
-				String parameterName = stringMarker;
 
-				CtTypeReference<?> paramType = paramField.getType();
+                CtTypeReference<?> paramType = paramField.getType();
 
 				if (paramType.isSubtypeOf(f.Type().ITERABLE) || paramType instanceof CtArrayTypeReference<?>) {
 					//parameter is a multivalue
 					// here we need to replace all named element and all references whose simpleName == stringMarker
-					parameter(parameterName).setContainerKind(ContainerKind.LIST).byNamedElement(stringMarker).byReferenceName(stringMarker);
+					parameter(stringMarker).setContainerKind(ContainerKind.LIST).byNamedElement(stringMarker).byReferenceName(stringMarker);
 				} else if (paramType.isSubtypeOf(typeReferenceRef) || paramType.getQualifiedName().equals(Class.class.getName())) {
 					/*
 					 * parameter with value type TypeReference or Class, identifies replacement of local type whose name is equal to parameter name
@@ -420,44 +412,44 @@ public class PatternParameterConfigurator {
 					String nestedType = getLocalTypeRefBySimpleName(templateType, stringMarker);
 					if (nestedType != null) {
 						//all references to nestedType has to be replaced
-						parameter(parameterName).byType(nestedType);
+						parameter(stringMarker).byType(nestedType);
 					}
 					//and replace the variable references by class access
-					parameter(parameterName).byVariable(paramField);
+					parameter(stringMarker).byVariable(paramField);
 				} else if (paramType.getQualifiedName().equals(String.class.getName())) {
 					String nestedType = getLocalTypeRefBySimpleName(templateType, stringMarker);
 					if (nestedType != null) {
 						//There is a local type with such name. Replace it
-						parameter(parameterName).byType(nestedType);
+						parameter(stringMarker).byType(nestedType);
 					}
 				} else if (paramType.isSubtypeOf(templateParamRef)) {
-					parameter(parameterName)
+					parameter(stringMarker)
 						.byTemplateParameterReference(paramField);
 					//if there is any invocation of method with name matching to stringMarker, then substitute their invocations too.
 					templateType.getMethodsByName(stringMarker).forEach(m -> {
-						parameter(parameterName).byInvocation(m);
+						parameter(stringMarker).byInvocation(m);
 					});
 				} else if (paramType.isSubtypeOf(ctStatementRef)) {
 					//if there is any invocation of method with name matching to stringMarker, then substitute their invocations too.
 					templateType.getMethodsByName(stringMarker).forEach(m -> {
-						parameter(parameterName).setContainerKind(ContainerKind.LIST).byInvocation(m);
+						parameter(stringMarker).setContainerKind(ContainerKind.LIST).byInvocation(m);
 					});
 				} else {
 					//it is not a String. It is used to substitute CtLiteral of parameter value
-					parameter(parameterName)
+					parameter(stringMarker)
 						//all occurrences of parameter name in pattern model are subject of substitution
 						.byVariable(paramField);
 				}
 				if (paramType.getQualifiedName().equals(Object.class.getName()) && parameterValues != null) {
 					//if the parameter type is Object, then detect the real parameter type from the parameter value
-					Object value = parameterValues.get(parameterName);
+					Object value = parameterValues.get(stringMarker);
 					if (value instanceof CtLiteral || value instanceof CtTypeReference) {
 						/*
 						 * the real parameter value is CtLiteral or CtTypeReference
 						 * We should replace all method invocations whose name equals to stringMarker
 						 * by that CtLiteral or qualified name of CtTypeReference
 						 */
-						ParameterInfo pi = parameter(parameterName).getCurrentParameter();
+						ParameterInfo pi = parameter(stringMarker).getCurrentParameter();
 						queryModel().filterChildren((CtInvocation<?> inv) -> {
 							return inv.getExecutable().getSimpleName().equals(stringMarker);
 						}).forEach((CtInvocation<?> inv) -> {
@@ -467,12 +459,12 @@ public class PatternParameterConfigurator {
 				}
 
 				//any value can be converted to String. Substitute content of all string attributes
-				parameter(parameterName).setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
+				parameter(stringMarker).setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
 					.bySubstring(stringMarker);
 
 				if (parameterValues != null) {
 					//handle automatic inline statements
-					addInlineStatements(fieldName, parameterValues.get(parameterName));
+					addInlineStatements(fieldName, parameterValues.get(stringMarker));
 				}
 			} else {
 				//TODO CtMethod was may be supported in old Template engine!!!
@@ -646,7 +638,7 @@ public class PatternParameterConfigurator {
 		/**
 		 * List of all Spoon model {@link RoleHandler}s, which provides access to attribute value of type String
 		 */
-		private static List<RoleHandler> stringAttributeRoleHandlers = new ArrayList<>();
+		private static final List<RoleHandler> stringAttributeRoleHandlers = new ArrayList<>();
 		static {
 			RoleHandlerHelper.forEachRoleHandler(rh -> {
 				if (rh.getValueClass().isAssignableFrom(String.class)) {
@@ -884,8 +876,7 @@ public class PatternParameterConfigurator {
 	 * for input `element` expression `X` in expression `X[Y]` it returns expression `X[Y]`
 	 * and registers extra {@link ListParameterInfo} to the parameter assigned to `X`
 	 * @param pep pair of parameter and element which has to be transformed
-	 * @return
-	 */
+     */
 	private ParameterElementPair transformArrayAccess(ParameterElementPair pep) {
 		CtElement element = pep.element;
 		if (element.isParentInitialized()) {

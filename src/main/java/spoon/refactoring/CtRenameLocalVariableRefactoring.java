@@ -136,12 +136,10 @@ public class CtRenameLocalVariableRefactoring extends AbstractRenameRefactoring<
 				if (shadowedVar != null) {
 					//found variable reference, which would be shadowed by variable after rename.
 					createNameConflictIssue(var, shadowedVar);
-				} else {
-					/*
-					 * there is no local variable reference, which would be shadowed by variable after rename.
-					 * OK
-					 */
-				}
+				}  /*
+				 * there is no local variable reference, which would be shadowed by variable after rename.
+				 * OK
+				 */
 			} else {
 				/*
 				 * the found variable is in conflict with target variable with newName

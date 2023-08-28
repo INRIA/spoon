@@ -106,7 +106,7 @@ public class SpoonObjectFieldsTable extends JFrame {
 
 	private JTable jTable = null;
 
-	private transient  Object o;
+	private final transient  Object o;
 
 	/**
 	 * This is the default constructor
@@ -158,8 +158,7 @@ public class SpoonObjectFieldsTable extends JFrame {
 	/**
 	 * This method initializes this
 	 *
-	 * @return void
-	 */
+     */
 	private void initialize() {
 		this.setSize(320, 240);
 		this.setLocation((getGraphicsConfiguration().getDevice().getDisplayMode().getWidth() - getWidth()) / 2,

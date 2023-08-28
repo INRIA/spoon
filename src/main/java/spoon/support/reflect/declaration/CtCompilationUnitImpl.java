@@ -160,7 +160,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 
 	@Override
 	public List<CtType<?>> getDeclaredTypes() {
-		return Collections.unmodifiableList(declaredTypeReferences.stream().map(ref -> ref.getTypeDeclaration()).collect(Collectors.toList()));
+		return declaredTypeReferences.stream().map(CtTypeReference::getTypeDeclaration).collect(Collectors.toUnmodifiableList());
 	}
 
 	@Override
@@ -229,7 +229,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 		if (packageDeclaration != null) {
 			return packageDeclaration.getReference().getDeclaration();
 		}
-		if (declaredTypeReferences.size() > 0) {
+		if (!declaredTypeReferences.isEmpty()) {
 			return declaredTypeReferences.get(0).getPackage().getDeclaration();
 		}
 		return getFactory().getModel().getRootPackage();
@@ -239,7 +239,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 	public CtPackageDeclaration getPackageDeclaration() {
 		if (packageDeclaration == null) {
 			CtPackageReference packRef;
-			if (declaredTypeReferences.size() > 0) {
+			if (!declaredTypeReferences.isEmpty()) {
 				packRef = declaredTypeReferences.get(0).getPackage().clone();
 			} else {
 				packRef = getFactory().getModel().getRootPackage().getReference();

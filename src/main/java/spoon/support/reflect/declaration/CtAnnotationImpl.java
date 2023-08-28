@@ -62,7 +62,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	CtTypeReference<A> annotationType;
 
 	@MetamodelPropertyField(role = CtRole.VALUE)
-	private Map<String, CtExpression> elementValues = new TreeMap() {
+	private final Map<String, CtExpression> elementValues = new TreeMap() {
 		@Override
 		public Set<Entry<String, CtExpression>> entrySet() {
 			Set<Entry<String, CtExpression>> result = new TreeSet<>(new Comparator<Entry<String, CtExpression>>() {
@@ -264,7 +264,8 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 		Object ret = EvalHelper.convertElementToRuntimeObject(expr);
 		Class<?> type = getElementType(key);
-		return forceObjectToType(ret, type);
+        assert type != null;
+        return forceObjectToType(ret, type);
 	}
 
 	private Object forceObjectToType(Object ret, Class<?> type) {
@@ -338,8 +339,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	}
 
 	public Map<String, Object> getElementValues() {
-		Map<String, Object> res = new TreeMap<>();
-		res.putAll(elementValues);
+        Map<String, Object> res = new TreeMap<>(elementValues);
 		return res;
 	}
 
@@ -419,7 +419,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	@SuppressWarnings("unchecked")
 	public A getActualAnnotation() {
 		class AnnotationInvocationHandler implements InvocationHandler {
-			CtAnnotation<? extends Annotation> annotation;
+			final CtAnnotation<? extends Annotation> annotation;
 
 			AnnotationInvocationHandler(CtAnnotation<? extends Annotation> annotation) {
 				this.annotation = annotation;

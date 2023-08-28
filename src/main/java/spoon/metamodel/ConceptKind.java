@@ -21,5 +21,5 @@ public enum ConceptKind {
 	 * that cannot be directly instantiated. Some of them are marker interfaces.
 	 * Examples: CtExecutable, CtReference, CtBodyHolder, ...
 	 */
-	ABSTRACT;
+	ABSTRACT
 }

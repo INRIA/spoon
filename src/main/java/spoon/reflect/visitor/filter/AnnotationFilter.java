@@ -16,7 +16,7 @@ import spoon.reflect.declaration.CtElement;
  */
 public class AnnotationFilter<E extends CtElement> extends TypeFilter<E> {
 
-	private Class<? extends Annotation> annotationType;
+	private final Class<? extends Annotation> annotationType;
 
 	/**
 	 * Creates the filter.

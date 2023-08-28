@@ -22,6 +22,7 @@ import spoon.support.DerivedProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
@@ -212,8 +213,8 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 	// just to test if qodana works
 	public void qodanaTest(String a) {
 		Integer[] arr = null;
-		arr.toString();
-		arr.hashCode();
+        Arrays.toString(arr);
+        Arrays.hashCode(arr);
 		a.equals(arr);
 		System.out.println(a);
 	}

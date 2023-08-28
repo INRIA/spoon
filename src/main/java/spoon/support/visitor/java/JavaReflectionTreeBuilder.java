@@ -17,11 +17,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
+
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
@@ -153,7 +150,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			exit();
 		}
 
-		contexts.peek().addPackage(ctPackage);
+        assert contexts.peek() != null;
+        contexts.peek().addPackage(ctPackage);
 	}
 
 	// Returns whether the given package is already in the context stack
@@ -186,18 +184,18 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			}
 			@Override
 			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
-				switch (role) {
-					case SUPER_TYPE:
-						ctClass.setSuperclass(typeReference);
-						return;
-				}
+                if (Objects.requireNonNull(role) == CtRole.SUPER_TYPE) {
+                    ctClass.setSuperclass(typeReference);
+                    return;
+                }
 				super.addTypeReference(role, typeReference);
 			}
 		});
 		super.visitClass(clazz);
 		exit();
 
-		contexts.peek().addType(ctClass);
+        assert contexts.peek() != null;
+        contexts.peek().addType(ctClass);
 	}
 
 	@Override
@@ -210,7 +208,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		super.visitInterface(clazz);
 		exit();
 
-		contexts.peek().addType(ctInterface);
+        assert contexts.peek() != null;
+        contexts.peek().addType(ctInterface);
 	}
 
 	@Override
@@ -233,7 +232,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		super.visitEnum(clazz);
 		exit();
 
-		contexts.peek().addType(ctEnum);
+        assert contexts.peek() != null;
+        contexts.peek().addType(ctEnum);
 	}
 
 	@Override
@@ -256,7 +256,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		super.visitAnnotationClass(clazz);
 		exit();
 
-		contexts.peek().addType(ctAnnotationType);
+        assert contexts.peek() != null;
+        contexts.peek().addType(ctAnnotationType);
 	}
 
 	@Override
@@ -289,7 +290,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		super.visitAnnotation(annotation);
 		exit();
 
-		contexts.peek().addAnnotation(ctAnnotation);
+        assert contexts.peek() != null;
+        contexts.peek().addAnnotation(ctAnnotation);
 	}
 
 	@Override
@@ -302,17 +304,15 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		super.visitConstructor(constructor);
 		exit();
 
-		contexts.peek().addConstructor(ctConstructor);
+        assert contexts.peek() != null;
+        contexts.peek().addConstructor(ctConstructor);
 	}
 
 	@Override
 	public void visitMethod(RtMethod method, Annotation parent) {
 		final CtMethod<Object> ctMethod = factory.Core().createMethod();
 		ctMethod.setSimpleName(method.getName());
-		/**
-		 * java 8 static interface methods are marked as abstract but has body
-		 */
-		if (!Modifier.isAbstract(method.getModifiers())) {
+        if (!Modifier.isAbstract(method.getModifiers())) {
 			ctMethod.setBody(factory.Core().createBlock());
 		}
 		setModifier(ctMethod, method.getModifiers() & Modifier.methodModifiers());
@@ -322,7 +322,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		super.visitMethod(method, parent);
 		exit();
 
-		contexts.peek().addMethod(ctMethod);
+        assert contexts.peek() != null;
+        contexts.peek().addMethod(ctMethod);
 	}
 
 	@Override
@@ -348,7 +349,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		super.visitField(field);
 		exit();
 
-		contexts.peek().addField(ctField);
+        assert contexts.peek() != null;
+        contexts.peek().addField(ctField);
 	}
 
 	@Override
@@ -361,7 +363,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		super.visitEnumValue(field);
 		exit();
 
-		contexts.peek().addEnumValue(ctEnumValue);
+        assert contexts.peek() != null;
+        contexts.peek().addEnumValue(ctEnumValue);
 	}
 
 	@Override
@@ -374,7 +377,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		super.visitParameter(parameter);
 		exit();
 
-		contexts.peek().addParameter(ctParameter);
+        assert contexts.peek() != null;
+        contexts.peek().addParameter(ctParameter);
 	}
 
 	@Override
@@ -383,7 +387,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		for (RuntimeBuilderContext context : contexts) {
 			CtTypeParameter typeParameter = context.getTypeParameter(genericDeclaration, parameter.getName());
 			if (typeParameter != null) {
-				contexts.peek().addFormalType(typeParameter.clone());
+                assert contexts.peek() != null;
+                contexts.peek().addFormalType(typeParameter.clone());
 				return;
 			}
 		}
@@ -395,22 +400,22 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			@SuppressWarnings("incomplete-switch")
 			@Override
 			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
-				switch (role) {
-					case SUPER_TYPE:
-						if (typeParameter.getSuperclass() != null) {
-							typeParameter.setSuperclass(typeParameter.getFactory().createIntersectionTypeReferenceWithBounds(Arrays.asList(typeParameter.getSuperclass(), typeReference)));
-						} else {
-							typeParameter.setSuperclass(typeReference);
-						}
-						return;
-				}
+                if (Objects.requireNonNull(role) == CtRole.SUPER_TYPE) {
+                    if (typeParameter.getSuperclass() != null) {
+                        typeParameter.setSuperclass(typeParameter.getFactory().createIntersectionTypeReferenceWithBounds(Arrays.asList(typeParameter.getSuperclass(), typeReference)));
+                    } else {
+                        typeParameter.setSuperclass(typeReference);
+                    }
+                    return;
+                }
 				super.addTypeReference(role, typeReference);
 			}
 		});
 		super.visitTypeParameter(parameter);
 		exit();
 
-		contexts.peek().addFormalType(typeParameter);
+        assert contexts.peek() != null;
+        contexts.peek().addFormalType(typeParameter);
 	}
 
 	@Override
@@ -423,7 +428,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		for (RuntimeBuilderContext context : contexts) {
 			CtTypeParameter typeParameter = context.getTypeParameter(genericDeclaration, parameter.getName());
 			if (typeParameter != null) {
-				contexts.peek().addTypeReference(role, typeParameter.getReference());
+                assert contexts.peek() != null;
+                contexts.peek().addTypeReference(role, typeParameter.getReference());
 				return;
 			}
 		}
@@ -432,7 +438,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		super.visitTypeParameterReference(role, parameter);
 		exit();
 
-		contexts.peek().addTypeReference(role, typeParameterReference);
+        assert contexts.peek() != null;
+        contexts.peek().addTypeReference(role, typeParameterReference);
 	}
 
 	@Override
@@ -458,7 +465,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		super.visitTypeReference(role, type);
 		exit();
 
-		contexts.peek().addTypeReference(role, ctTypeReference);
+        assert contexts.peek() != null;
+        contexts.peek().addTypeReference(role, ctTypeReference);
 	}
 
 	@Override
@@ -481,7 +489,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		super.visitTypeReference(role, type);
 		exit();
 
-		contexts.peek().addTypeReference(role, wildcard);
+        assert contexts.peek() != null;
+        contexts.peek().addTypeReference(role, wildcard);
 	}
 
 	// check if a type parameter that is bounded by some expression involving itself has already been processed
@@ -507,18 +516,18 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		enter(new TypeReferenceRuntimeBuilderContext(typeArray, arrayTypeReference) {
 			@Override
 			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
-				switch (role) {
-					case DECLARING_TYPE:
-						arrayTypeReference.setDeclaringType(typeReference);
-						return;
-				}
+                if (Objects.requireNonNull(role) == CtRole.DECLARING_TYPE) {
+                    arrayTypeReference.setDeclaringType(typeReference);
+                    return;
+                }
 				arrayTypeReference.setComponentType(typeReference);
 			}
 		});
 		super.visitArrayReference(role, typeArray);
 		exit();
 
-		contexts.peek().addTypeReference(role, arrayTypeReference);
+        assert contexts.peek() != null;
+        contexts.peek().addTypeReference(role, arrayTypeReference);
 	}
 
 
@@ -531,7 +540,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		super.visitTypeReference(role, clazz);
 		exit();
 
-		contexts.peek().addTypeReference(role, typeReference);
+        assert contexts.peek() != null;
+        contexts.peek().addTypeReference(role, typeReference);
 	}
 
 
@@ -593,7 +603,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		super.visitRecord(clazz);
 		exit();
 
-		contexts.peek().addType(ctRecord);
+        assert contexts.peek() != null;
+        contexts.peek().addType(ctRecord);
 	}
 
 	@Override
@@ -605,7 +616,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 		Arrays.stream(recordComponent.getAnnotations()).forEach(this::visitAnnotation);
 		exit();
-		contexts.peek().addRecordComponent(ctRecordComponent);
+        assert contexts.peek() != null;
+        contexts.peek().addRecordComponent(ctRecordComponent);
 	}
 
 }

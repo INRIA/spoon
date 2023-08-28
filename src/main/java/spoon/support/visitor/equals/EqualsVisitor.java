@@ -59,11 +59,11 @@ public class EqualsVisitor extends CtBiScannerDefault {
 		}
 		if (elements == null) {
 			if (others != null) {
-				fail(role, elements, others);
+				fail(role, null, others);
 			}
 			return;
 		} else if (others == null) {
-			fail(role, elements, others);
+			fail(role, elements, null);
 			return;
 		}
 		if ((elements.size()) != (others.size())) {
@@ -85,12 +85,12 @@ public class EqualsVisitor extends CtBiScannerDefault {
 		}
 		if (element == null) {
 			if (other != null) {
-				fail(role, element, other);
+				fail(role, null, other);
 				return;
 			}
 			return;
 		} else if (other == null) {
-			fail(role, element, other);
+			fail(role, element, null);
 			return;
 		}
 		if (element == other) {

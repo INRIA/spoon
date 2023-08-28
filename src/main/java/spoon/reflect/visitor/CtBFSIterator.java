@@ -20,7 +20,7 @@ public class CtBFSIterator extends CtScanner implements Iterator<CtElement> {
 	/**
 	 * A deque containing the elements the iterator has seen but not expanded
 	 */
-	private ArrayDeque<CtElement> deque = new ArrayDeque<>();
+	private final ArrayDeque<CtElement> deque = new ArrayDeque<>();
 
 	/**
 	 * CtIterator constructor, prepares the iterator from the @root node
@@ -61,7 +61,8 @@ public class CtBFSIterator extends CtScanner implements Iterator<CtElement> {
 			throw new java.util.NoSuchElementException();
 		}
 		CtElement next = deque.poll(); // get the element to expand from the deque
-		next.accept(this); // call @scan for each direct child of the node
+        assert next != null;
+        next.accept(this); // call @scan for each direct child of the node
 		return next;
 	}
 }

@@ -38,7 +38,7 @@ import java.util.function.BiConsumer;
  */
 public class SwitchNode extends AbstractNode implements InlineNode {
 
-	private List<CaseNode> cases = new ArrayList<>();
+	private final List<CaseNode> cases = new ArrayList<>();
 
 	public SwitchNode() {
 	}
@@ -178,7 +178,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 				return true;
 			}
 			Boolean value = generator.generateSingleTarget(vrOfExpression, parameters, Boolean.class);
-			return value == null ? false : value.booleanValue();
+			return value != null && value.booleanValue();
 		}
 
 		@Override
@@ -214,13 +214,12 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 				if (lastIf == null) {
 					//it is first IF
 					resultStmt = ifStmt;
-					lastIf = ifStmt;
-				} else {
+                } else {
 					//it is next IF. Append it as else into last IF
 					lastIf.setElseStatement(ifStmt);
-					lastIf = ifStmt;
-				}
-			} else {
+                }
+                lastIf = ifStmt;
+            } else {
 				if (lastElse != null) {
 					throw new SpoonException("Only one SwitchNode can have no expression.");
 				}

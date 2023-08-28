@@ -22,15 +22,15 @@ import spoon.support.compiler.VirtualFile;
 
 public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
-	private final AtomicLong snippetNumber = new AtomicLong(0);
-	public static final String SNIPPET_FILENAME_PREFIX = JDTSnippetCompiler.class.getName() + "_spoonSnippet_";
+    public static final String SNIPPET_FILENAME_PREFIX = JDTSnippetCompiler.class.getName() + "_spoonSnippet_";
 
 	private CompilationUnit snippetCompilationUnit;
 
 	public JDTSnippetCompiler(Factory factory, String contents) {
 		super(factory);
 		//give the Virtual file the unique name so JDTCommentBuilder.spoonUnit can be correctly initialized
-		addInputSource(new VirtualFile(contents, SNIPPET_FILENAME_PREFIX + (snippetNumber.incrementAndGet())));
+        AtomicLong snippetNumber = new AtomicLong(0);
+        addInputSource(new VirtualFile(contents, SNIPPET_FILENAME_PREFIX + (snippetNumber.incrementAndGet())));
 	}
 
 	@Override

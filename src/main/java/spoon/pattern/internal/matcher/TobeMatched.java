@@ -188,8 +188,7 @@ public class TobeMatched {
 				//return remaining match
 				return removeTarget(parameters, 0);
 			}
-			return null;
-		} else {
+        } else {
 			//handle un-ordered list of targets - match with all targets, stop at first matching
 			int idxOfMatch = 0;
 			while (idxOfMatch < targets.size()) {
@@ -200,9 +199,9 @@ public class TobeMatched {
 				//try to match next target
 				idxOfMatch++;
 			}
-			return null;
-		}
-	}
+        }
+        return null;
+    }
 
 	/**
 	 * @param remainingMatch the {@link TobeMatched} whose parameters has to be returned

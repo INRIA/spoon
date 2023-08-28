@@ -60,11 +60,8 @@ class TypeNameScope extends NameScopeImpl {
 			return r;
 		}
 		r = super.forEachElementByName(name, consumer);
-		if (r != null) {
-			return r;
-		}
-		return null;
-	}
+        return r;
+    }
 
 	private void putType(CtType<?> t) {
 		putIfNotExists(typesByName, t);

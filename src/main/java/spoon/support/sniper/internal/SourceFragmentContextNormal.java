@@ -39,8 +39,7 @@ public class SourceFragmentContextNormal extends AbstractSourceFragmentPrinter {
 	/**
 	 * @param mutableTokenWriter {@link MutableTokenWriter}, which is used for printing
 	 * @param rootFragment the {@link ElementSourceFragment}, which represents whole elements. E.g. whole type or method
-	 * @param changeResolver
-	 */
+     */
 	public SourceFragmentContextNormal(MutableTokenWriter mutableTokenWriter, ElementSourceFragment rootFragment, ChangeResolver changeResolver) {
 		super(mutableTokenWriter, changeResolver, rootFragment.getGroupedChildrenFragments());
 	}

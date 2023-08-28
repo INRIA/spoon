@@ -86,11 +86,11 @@ public class Launcher implements SpoonAPI {
 	 * Contains the arguments accepted by this launcher (available after
 	 * construction and accessible by sub-classes).
 	 */
-	private static JSAP jsapSpec;
+	private static final JSAP jsapSpec;
 	protected JSAPResult jsapActualArgs;
 
-	private List<String> processorTypes = new ArrayList<>();
-	private List<Processor<? extends CtElement>> processors = new ArrayList<>();
+	private final List<String> processorTypes = new ArrayList<>();
+	private final List<Processor<? extends CtElement>> processors = new ArrayList<>();
 
 	/**
 	 * This field is used to ensure that {@link #setArgs(String[])} is only called once.
@@ -477,11 +477,7 @@ public class Launcher implements SpoonAPI {
 		environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
 		environment.setCopyResources(!jsapActualArgs.getBoolean("no-copy-resources"));
 
-		if (jsapActualArgs.getBoolean("disable-comments")) {
-			environment.setCommentEnabled(false);
-		} else {
-			environment.setCommentEnabled(true);
-		}
+        environment.setCommentEnabled(!jsapActualArgs.getBoolean("disable-comments"));
 
 		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
 		if (jsapActualArgs.getBoolean("disable-model-self-checks")) {

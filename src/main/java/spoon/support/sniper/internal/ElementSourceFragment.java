@@ -191,14 +191,16 @@ public class ElementSourceFragment implements SourceFragment {
 
 			@Override
 			protected void enter(CtElement e) {
-				if (parents.peek().getElement() == e) {
+                assert parents.peek() != null;
+                if (parents.peek().getElement() == e) {
 					// needed to bootstrap
 					return;
 				}
 				if (e instanceof CtCompilationUnit) {
 					return;
 				}
-				ElementSourceFragment currentFragment = parents.peek().addChild(scannedRole, e);
+                assert parents.peek() != null;
+                ElementSourceFragment currentFragment = parents.peek().addChild(scannedRole, e);
 				if (currentFragment != null) {
 					parents.push(currentFragment);
 					if (e instanceof CtModifiable) {
@@ -208,11 +210,10 @@ public class ElementSourceFragment implements SourceFragment {
 							currentFragment.addChild(CtRole.MODIFIER, ctExtendedModifier);
 						}
 					}
-				} else {
-					// if this happens, this means that some fragments are wrong
-					// and we'll get intro trouble later
-					// see bugs 3133 and 3154, crashing in addChild
-				}
+				}  // if this happens, this means that some fragments are wrong
+				// and we'll get intro trouble later
+				// see bugs 3133 and 3154, crashing in addChild
+
 			}
 			@Override
 			protected void exit(CtElement e) {
@@ -548,7 +549,7 @@ public class ElementSourceFragment implements SourceFragment {
 	 * sometimes fail to print it.
 	 */
 	private SourceFragment removeNonCommentSuffixSpace(List<SourceFragment> list) {
-		if (list.size() > 0) {
+		if (!list.isEmpty()) {
 			SourceFragment lastChild = list.get(list.size() - 1);
 			SourceFragment secondLastChild = list.size() > 1 ? list.get(list.size() - 2) : null;
 			if (isSpaceFragment(lastChild) && !isCommentFragment(secondLastChild)) {
@@ -666,7 +667,8 @@ public class ElementSourceFragment implements SourceFragment {
 			throw new SpoonException("Inconsistent start/end. Start=" + start + " is greater then End=" + end);
 		}
 		String sourceCode = getOriginalSourceCode();
-		if (sourceCode.isEmpty()) {
+        assert sourceCode != null;
+        if (sourceCode.isEmpty()) {
 			return;
 		}
 		StringBuilder buff = new StringBuilder();

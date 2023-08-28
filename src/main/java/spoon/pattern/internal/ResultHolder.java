@@ -45,8 +45,7 @@ public abstract class ResultHolder<T> {
 
 	/**
 	 * calls consumer.accept(value) once for each contained value
-	 * @param consumer
-	 */
+     */
 	public abstract void mapEachResult(Function<T, T> consumer);
 	/**
 	 * @return List of actually stored results

@@ -79,7 +79,7 @@ public abstract class SpoonResourceHelper {
 	 */
 	public static SpoonFolder createFolder(File f) throws FileNotFoundException {
 		if (!f.exists()) {
-			throw new FileNotFoundException(f.toString() + " does not exist");
+			throw new FileNotFoundException(f + " does not exist");
 		}
 		try {
 			if (f.isDirectory()) {

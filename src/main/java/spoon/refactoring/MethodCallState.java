@@ -21,9 +21,9 @@ import spoon.reflect.declaration.CtType;
  * are empty.
  */
 public class MethodCallState {
-	private CtExecutable<?> method;
-	private Collection<CtExecutable<?>> callerMethods;
-	private Collection<CtType<?>> callerFields;
+	private final CtExecutable<?> method;
+	private final Collection<CtExecutable<?>> callerMethods;
+	private final Collection<CtType<?>> callerFields;
 
 	/**
 	 *

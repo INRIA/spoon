@@ -28,7 +28,7 @@ import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
 class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
-	private static Class<?> recordClass = getRecordClass();
+	private static final Class<?> recordClass = getRecordClass();
 
 	@Override
 	public void visitPackage(Package aPackage) {
@@ -380,20 +380,16 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 			visitAnnotation(annotation);
 		}
-		if (field.getGenericType() != null) {
-			visitTypeReference(CtRole.TYPE, field.getGenericType());
-		}
-	}
+        visitTypeReference(CtRole.TYPE, field.getGenericType());
+    }
 
 	@Override
 	public void visitEnumValue(Field field) {
 		for (Annotation annotation : field.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
-		if (field.getType() != null) {
-			visitTypeReference(CtRole.TYPE, field.getType());
-		}
-	}
+        visitTypeReference(CtRole.TYPE, field.getType());
+    }
 
 	@Override
 	public void visitParameter(RtParameter parameter) {

@@ -18,8 +18,8 @@ public class CompoundSourcePositionImpl extends SourcePositionImpl
 		implements CompoundSourcePosition {
 
 	private static final long serialVersionUID = 1L;
-	private int declarationSourceStart;
-	private int declarationSourceEnd;
+	private final int declarationSourceStart;
+	private final int declarationSourceEnd;
 
 	public CompoundSourcePositionImpl(CompilationUnit compilationUnit, int nameStart, int nameEnd,
 			int declarationSourceStart, int declarationSourceEnd,

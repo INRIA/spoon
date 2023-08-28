@@ -112,7 +112,7 @@ public class ReferenceBuilder {
 
 	// Allow to detect circular references and to avoid endless recursivity
 	// when resolving parameterizedTypes (e.g. Enum<E extends Enum<E>>)
-	private Map<TypeBinding, CtTypeReference> exploringParameterizedBindings = new HashMap<>();
+	private final Map<TypeBinding, CtTypeReference> exploringParameterizedBindings = new HashMap<>();
 
 	private final JDTTreeBuilder jdtTreeBuilder;
 
@@ -144,8 +144,7 @@ public class ReferenceBuilder {
 	 *
 	 * @param type Qualified type from JDT.
 	 * @param scope Scope of the parent element.
-	 * @return
-	 */
+     */
 	<T> CtTypeReference<T> buildTypeReference(QualifiedTypeReference type, Scope scope) {
 		CtTypeReference<T> accessedType = buildTypeReference((TypeReference) type, scope);
 		final TypeBinding receiverType = type != null ? type.resolvedType : null;
@@ -191,7 +190,7 @@ public class ReferenceBuilder {
 			this.jdtTreeBuilder.getContextBuilder().isBuildTypeCast = isTypeCast;
 			this.jdtTreeBuilder.getContextBuilder().enter(currentReference, type);
 			this.jdtTreeBuilder.getContextBuilder().isBuildTypeCast = false;
-			if (type.annotations != null && type.annotations.length - 1 <= position && type.annotations[position] != null && type.annotations[position].length > 0) {
+			if (type.annotations != null && type.annotations.length - 1 <= position && type.annotations[position] != null) {
 				for (Annotation annotation : type.annotations[position]) {
 					if (scope instanceof ClassScope) {
 						annotation.traverse(this.jdtTreeBuilder, (ClassScope) scope);
@@ -229,7 +228,8 @@ public class ReferenceBuilder {
 		}
 		//detect whether something is implicit
 		if (type instanceof SingleTypeReference) {
-			typeReference.setSimplyQualified(true);
+            assert typeReference != null;
+            typeReference.setSimplyQualified(true);
 		} else if (type instanceof QualifiedTypeReference) {
 			jdtTreeBuilder.getHelper().handleImplicit((QualifiedTypeReference) type, typeReference);
 		}
@@ -356,8 +356,7 @@ public class ReferenceBuilder {
 								try {
 									packageBinding = environment.createPackage(chars);
 								} catch (NullPointerException e) {
-									packageBinding = null;
-								}
+                                }
 							}
 						}
 						if (packageBinding == null || packageBinding instanceof ProblemPackageBinding) {
@@ -760,7 +759,7 @@ public class ReferenceBuilder {
 	 * Try to build a CtTypeReference from a simple name with specified generic types but
 	 * returns null if the name doesn't correspond to a type (not start by an upper case).
 	 */
-	public <T> CtTypeReference<T> getTypeReference(String name) {
+	public <T> CtTypeReference getTypeReference(String name) {
 		CtTypeReference<T> main = null;
 		if (name.matches(".*(<.+>)")) {
 			Pattern pattern = Pattern.compile("([^<]+)<(.+)>");

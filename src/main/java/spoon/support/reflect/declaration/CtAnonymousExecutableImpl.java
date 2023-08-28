@@ -30,7 +30,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
-	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
+	private final CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	@Override
 	public void accept(CtVisitor visitor) {

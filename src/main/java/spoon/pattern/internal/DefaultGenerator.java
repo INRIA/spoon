@@ -42,7 +42,7 @@ import org.jspecify.annotations.Nullable;
 public class DefaultGenerator implements Generator {
 	protected final Factory factory;
 	private boolean addGeneratedBy = false;
-	private ListOfNodes nodes;
+	private final ListOfNodes nodes;
 
 	public DefaultGenerator(Factory factory, ListOfNodes nodes) {
 		this.nodes = nodes;
@@ -227,7 +227,7 @@ public class DefaultGenerator implements Generator {
 	}
 
 	@Override
-	public <T extends CtElement> List<T> generate(ImmutableMap params) {
+	public <T extends CtElement> List generate(ImmutableMap params) {
 		Class valueType = null;
 		RootNode node = nodes.getNodes().get(0);
 		if (node instanceof ElementNode) {

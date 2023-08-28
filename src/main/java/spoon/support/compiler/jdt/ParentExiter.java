@@ -125,11 +125,10 @@ public class ParentExiter extends CtInheritanceScanner {
 	private CtElement child;
 	private ASTNode childJDT;
 	private ASTPair parentPair;
-	private Map<CtTypedElement<?>, List<CtAnnotation>> annotationsMap = new HashMap<>();
+	private final Map<CtTypedElement<?>, List<CtAnnotation>> annotationsMap = new HashMap<>();
 
 	/**
-	 * @param jdtTreeBuilder
-	 */
+     */
 	ParentExiter(JDTTreeBuilder jdtTreeBuilder) {
 		this.jdtTreeBuilder = jdtTreeBuilder;
 	}
@@ -1038,7 +1037,6 @@ public class ParentExiter extends CtInheritanceScanner {
 	}
 
 	/**
-	 * @param tryBlock
 	 * @return last CtCatch of `tryBlock` or null
 	 */
 	private CtCatch getLastCatcher(CtTry tryBlock) {

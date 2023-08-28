@@ -136,8 +136,8 @@ public class PrintingContext {
 	}
 
 	public class Writable implements AutoCloseable {
-		private EnumSet<PrintingOptions> oldStates;
-		private CtStatement oldStatement;
+		private final EnumSet<PrintingOptions> oldStates;
+		private final CtStatement oldStatement;
 
 		protected Writable() {
 			oldStatement = statement;

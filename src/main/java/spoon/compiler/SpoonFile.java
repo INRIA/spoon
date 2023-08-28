@@ -34,8 +34,7 @@ public interface SpoonFile extends SpoonResource {
 	 * Tells if this file is an actual file (not a virtual file that holds
 	 * in-memory contents).
 	 *
-	 * @return
-	 */
+     */
 	boolean isActualFile();
 
 	/**

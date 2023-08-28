@@ -8,6 +8,7 @@
 package spoon.support;
 
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
@@ -212,7 +213,7 @@ import spoon.support.visitor.equals.CloneHelper;
  * This class implements a default core factory for Spoon's meta-model. This
  * implementation is done with regular Java classes (POJOs).
  */
-public class DefaultCoreFactory extends SubFactory implements CoreFactory {
+public class DefaultCoreFactory extends SubFactory implements CoreFactory, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -421,7 +422,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	}
 
 	@Override
-	public <T> CtUnboundVariableReference<T> createUnboundVariableReference() {
+	public <T> CtUnboundVariableReference createUnboundVariableReference() {
 		CtUnboundVariableReference e = new CtUnboundVariableReferenceImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;

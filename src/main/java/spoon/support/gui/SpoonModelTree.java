@@ -47,7 +47,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 
 	Enumeration<?> enume;
 
-	private Factory factory;
+	private final Factory factory;
 
 	private JPanel jContentPane = null;
 
@@ -57,7 +57,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 
 	JPopupMenu menu;
 
-	private DefaultMutableTreeNode root; // @jve:decl-index=0:visual-constraint="207,57"
+	private final DefaultMutableTreeNode root; // @jve:decl-index=0:visual-constraint="207,57"
 
 	String searchValue;
 
@@ -209,8 +209,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 	/**
 	 * This method initializes this
 	 *
-	 * @return void
-	 */
+     */
 	private void initialize() {
 		this.setSize(640, 480);
 		this.setLocation((getGraphicsConfiguration().getDevice()

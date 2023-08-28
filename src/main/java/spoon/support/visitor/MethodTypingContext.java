@@ -34,7 +34,7 @@ import spoon.reflect.reference.CtTypeReference;
  * For the scope method or constructor and super type hierarchy of it's declaring type,
  * it is able to adapt type parameters.
  *
- * https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.4
+ * <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.4">...</a>
  * Where two methods or constructors M and N have the same type parameters {@link #hasSameMethodFormalTypeParameters(CtFormalTypeDeclarer)},
  * a type mentioned in N can be adapted to the type parameters of M
  */
@@ -206,10 +206,10 @@ public class MethodTypingContext extends AbstractTypingContext {
 		return actualTypeArguments.get(typeParamPosition);
 	}
 
-	private Set<CtFormalTypeDeclarer> checkingFormalTypeParamsOf = Collections.newSetFromMap(new IdentityHashMap<>(1));
+	private final Set<CtFormalTypeDeclarer> checkingFormalTypeParamsOf = Collections.newSetFromMap(new IdentityHashMap<>(1));
 
 	/**
-	 * https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.4
+	 * <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.4">...</a>
 	 *
 	 * Formal type parameters of method are same if
 	 * 1) both methods have same number of formal type parameters

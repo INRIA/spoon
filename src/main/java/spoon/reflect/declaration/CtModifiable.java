@@ -50,16 +50,14 @@ public interface CtModifiable extends CtElement {
 	/**
 	 * add a modifier
 	 *
-	 * @param modifier
-	 */
+     */
 	@PropertySetter(role = MODIFIER)
 	<T extends CtModifiable> T addModifier(ModifierKind modifier);
 
 	/**
 	 * remove a modifier
 	 *
-	 * @param modifier
-	 */
+     */
 	@PropertySetter(role = MODIFIER)
 	<T extends CtModifiable> T removeModifier(ModifierKind modifier);
 

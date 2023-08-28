@@ -14,7 +14,7 @@ import spoon.support.modelobs.context.Context;
  * @param <T>
  */
 public class DeleteAction<T> extends Action {
-	private T oldValue;
+	private final T oldValue;
 
 	public DeleteAction(Context context, T oldValue) {
 		super(context);

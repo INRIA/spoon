@@ -8,7 +8,7 @@
 package spoon.reflect.visitor;
 
 /**
- * Define a visitable element in spoon. You can read the page Wikipedia http://en.wikipedia.org/wiki/Visitor_pattern.
+ * Define a visitable element in spoon. You can read the page Wikipedia <a href="http://en.wikipedia.org/wiki/Visitor_pattern">...</a>.
  */
 public interface CtVisitable {
 	/**

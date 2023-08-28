@@ -189,7 +189,8 @@ class JDTTreeBuilderQuery {
 				return true;
 			}
 			if (value.getClass().isArray()) {
-				Object[] fields = (Object[]) value;
+                assert value instanceof Object[];
+                Object[] fields = (Object[]) value;
 				for (Object field : fields) {
 					if (field instanceof FieldBinding && elementType.name().equals(CharOperation.charToString(((FieldBinding) field).name))) {
 						return true;
@@ -273,13 +274,15 @@ class JDTTreeBuilderQuery {
 	static BinaryOperatorKind getBinaryOperatorKind(int operator) {
 		switch (operator) {
 		case OperatorIds.EQUAL_EQUAL:
-			return BinaryOperatorKind.EQ;
+            case OperatorIds.EQUAL:
+                return BinaryOperatorKind.EQ;
 		case OperatorIds.LESS_EQUAL:
 			return BinaryOperatorKind.LE;
 		case OperatorIds.GREATER_EQUAL:
 			return BinaryOperatorKind.GE;
 		case OperatorIds.NOT_EQUAL:
-			return BinaryOperatorKind.NE;
+            case OperatorIds.NOT:
+                return BinaryOperatorKind.NE;
 		case OperatorIds.LEFT_SHIFT:
 			return BinaryOperatorKind.SL;
 		case OperatorIds.RIGHT_SHIFT:
@@ -294,9 +297,7 @@ class JDTTreeBuilderQuery {
 			return BinaryOperatorKind.PLUS;
 		case OperatorIds.MINUS:
 			return BinaryOperatorKind.MINUS;
-		case OperatorIds.NOT:
-			return BinaryOperatorKind.NE;
-		case OperatorIds.REMAINDER:
+            case OperatorIds.REMAINDER:
 			return BinaryOperatorKind.MOD;
 		case OperatorIds.XOR:
 			return BinaryOperatorKind.BITXOR;
@@ -314,9 +315,7 @@ class JDTTreeBuilderQuery {
 			return BinaryOperatorKind.LT;
 		case OperatorIds.QUESTIONCOLON:
 			throw new RuntimeException("Unknown operator");
-		case OperatorIds.EQUAL:
-			return BinaryOperatorKind.EQ;
-		}
+        }
 		return null;
 	}
 

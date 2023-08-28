@@ -758,7 +758,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			CtTypeReference<?> visibleDeclType = null;
 			CtTypeReference<?> type = contextTypeRef;
 			//search which type or declaring type of startType extends from nestedType
-			while (visibleDeclType == null && type != null) {
+			while (type != null) {
 				visibleDeclType = getLastVisibleSuperClassExtendingFrom(type, declType);
 				if (visibleDeclType != null) {
 					//found one!
@@ -778,9 +778,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	/**
 	 * adds the actualTypeArguments of sourceTypeRef to targetTypeRef. Type of targetTypeRef extends from type of sourceTypeRef
-	 * @param targetTypeRef
-	 * @param sourceTypeRef
-	 */
+     */
 	private static void applyActualTypeArguments(CtTypeReference<?> targetTypeRef, CtTypeReference<?> sourceTypeRef) {
 		CtTypeReference<?> targetDeclType = targetTypeRef.getDeclaringType();
 		CtTypeReference<?> sourceDeclType = sourceTypeRef.getDeclaringType();
@@ -812,8 +810,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	/**
 	 *
-	 * @param sourceType
-	 * @param targetType
 	 * @return sourceType or last super class of sourceType, which extends from targetType and which is visible from sourceType or null if sourceType does not extends from targetType
 	 */
 	private static CtTypeReference<?> getLastVisibleSuperClassExtendingFrom(CtTypeReference<?> sourceType, CtTypeReference<?> targetType) {

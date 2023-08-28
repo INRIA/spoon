@@ -55,7 +55,7 @@ import java.util.function.Consumer;
 public class ElementPrinterHelper {
 	private final DefaultJavaPrettyPrinter prettyPrinter;
 	private final Environment env;
-	private TokenWriter printer;
+	private final TokenWriter printer;
 
 	public ElementPrinterHelper(TokenWriter printerTokenWriter, DefaultJavaPrettyPrinter prettyPrinter, Environment env) {
 		this.printer = printerTokenWriter;

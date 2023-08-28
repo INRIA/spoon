@@ -182,7 +182,7 @@ public class CodeFactory extends SubFactory {
 		CtExecutableReference<T> executableReference = factory.Core()
 				.createExecutableReference();
 		executableReference.setType(type);
-		executableReference.setDeclaringType(type == null ? type : type.clone());
+		executableReference.setDeclaringType(type == null ? null : type.clone());
 		executableReference.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
 		List<CtTypeReference<?>> typeReferences = new ArrayList<>();
 		for (CtExpression<?> parameter : parameters) {
@@ -542,7 +542,6 @@ public class CodeFactory extends SubFactory {
 	 * If element is CtBlock, then it directly returns that element
 	 * If element is null, then it returns null.
 	 * note: It must not create empty CtBlock - as expected in CtCatch, CtExecutable, CtLoop and CtTry setBody implementations
-	 * @param element
 	 * @return CtBlock instance
 	 */
 	public <T extends CtStatement> CtBlock<?> getOrCreateCtBlock(T element) {

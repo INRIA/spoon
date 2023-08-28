@@ -47,7 +47,7 @@ public class LexicalScopeScanner extends EarlyTerminatingScanner<Object> {
 			scopes.pop();
 		}
 	}
-	private static NameScopeImpl EMPTY = new NameScopeImpl(null, null);
+	private static final NameScopeImpl EMPTY = new NameScopeImpl(null, null);
 	/**
 	 * @return {@link LexicalScope} of actually scanned element. The {@link LexicalScope#forEachElementByName(String, java.util.function.Function)} can be used
 	 * to get all {@link CtElement}s which are mapped to that simple name
@@ -117,8 +117,8 @@ public class LexicalScopeScanner extends EarlyTerminatingScanner<Object> {
 				}
 				parent.addNamedElement(localVariable);
 			}
-		};
-		Visitor scanner = new Visitor();
+		}
+        Visitor scanner = new Visitor();
 		target.accept(scanner);
 		return scanner.finder;
 	}

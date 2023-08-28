@@ -22,7 +22,7 @@ public class CtIterator extends CtScanner implements Iterator<CtElement> {
 	/**
 	 * A deque containing the elements the iterator has seen but not expanded
 	 */
-	private Deque<CtElement> deque = new ArrayDeque<CtElement>() {
+	private final Deque<CtElement> deque = new ArrayDeque<CtElement>() {
 		/**
 		 * add a collection of elements with addFirst instead of default add() which defaults to addLast()
 		 * @param c Collection of CtElements
@@ -40,7 +40,7 @@ public class CtIterator extends CtScanner implements Iterator<CtElement> {
 	/**
 	 * A deque to be used when scanning an element so that @deque preserves the elements in dfs without complete expansion
 	 */
-	private ArrayDeque<CtElement> currentChildren = new ArrayDeque<>();
+	private final ArrayDeque<CtElement> currentChildren = new ArrayDeque<>();
 
 	/**
 	 * CtIterator constructor, prepares the iterator from the @root node
@@ -82,7 +82,8 @@ public class CtIterator extends CtScanner implements Iterator<CtElement> {
 		}
 		CtElement next = deque.pollFirst(); // get the element to expand from the deque
 		currentChildren.clear(); // clear for this scan
-		next.accept(this); // call @scan for each direct child of the node
+        assert next != null;
+        next.accept(this); // call @scan for each direct child of the node
 		deque.addAll(currentChildren); // overridden method to add all to first
 		return next;
 	}

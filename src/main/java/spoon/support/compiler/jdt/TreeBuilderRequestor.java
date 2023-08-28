@@ -16,8 +16,7 @@ public class TreeBuilderRequestor implements ICompilerRequestor {
 	private final JDTBasedSpoonCompiler jdtCompiler;
 
 	/**
-	 * @param jdtCompiler
-	 */
+     */
 	TreeBuilderRequestor(JDTBasedSpoonCompiler jdtCompiler) {
 		this.jdtCompiler = jdtCompiler;
 	}

@@ -246,10 +246,8 @@ public abstract class Substitution {
 	 * template parameters by their values. Field annotated with
 	 * {@link spoon.template.Local} or {@link Parameter} is not inserted.
 
-	 * @param targetType
 	 * @param template
-	 * @param field
-	 */
+     */
 	static void insertGeneratedField(CtType<?> targetType, Template<?> template, CtField<?> field) {
 
 		if (field.getAnnotation(Local.class) != null) {
@@ -420,9 +418,9 @@ public abstract class Substitution {
 		CtConstructor<T> newConstrutor = substitute(targetClass, template, (CtConstructor<T>) sourceConstructor);
 		// remove the implicit constructor if clashing
 		if (newConstrutor.getParameters().isEmpty()) {
-			CtConstructor<?> c = targetClass.getConstructor();
+			CtConstructor<T> c = targetClass.getConstructor();
 			if (c != null && c.isImplicit()) {
-				targetClass.removeConstructor((CtConstructor<T>) c);
+				targetClass.removeConstructor(c);
 			}
 		}
 		targetClass.addConstructor(newConstrutor);

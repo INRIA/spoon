@@ -28,7 +28,7 @@ import spoon.support.util.ImmutableMapImpl;
  */
 public class MatchingScanner extends EarlyTerminatingScanner<Void> {
 	private final ListOfNodes pattern;
-	private CtConsumer<? super Match> matchConsumer;
+	private final CtConsumer<? super Match> matchConsumer;
 
 	public MatchingScanner(ListOfNodes pattern, CtConsumer<? super Match> matchConsumer) {
 		this.pattern = pattern;

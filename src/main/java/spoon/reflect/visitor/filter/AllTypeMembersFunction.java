@@ -89,7 +89,7 @@ public class AllTypeMembersFunction implements CtConsumableFunction<CtTypeInform
 							break;
 						case SKIP_PRIVATE:
 							if (typeMember.hasModifier(ModifierKind.PRIVATE) && !isInputType) {
-								continue loop;
+								continue;
 							}
 							break;
 						default:

@@ -47,7 +47,6 @@ public interface PrettyPrinter {
 	/**
 	 * Prints an element. This method shall be called by the toString() method of an element.
 	 * It is responsible for any initialization required to print an arbitrary element.
-	 * @param element
 	 * @return A string containing the pretty printed element (and descendants).
 	 */
 	String printElement(CtElement element);
@@ -70,6 +69,6 @@ public interface PrettyPrinter {
 	 */
 	Map<Integer, Integer> getLineNumberMapping();
 
-	/** pretty-prints the element, call {@link #toString()} to get the result */
+	/** pretty-prints the element, call  to get the result */
 	String prettyprint(CtElement ctElement);
 }

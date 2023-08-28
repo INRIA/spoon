@@ -52,9 +52,8 @@ public class ForceImportProcessor extends ImportAnalyzer<LexicalScope> {
 					//the reference to direct child type has to be made implicit
 					reference.setSimplyQualified(true);
 					return;
-				} else {
-					//reference to deeper nested child type or to child type from different type has to be kept as it is
-				}
+				}  //reference to deeper nested child type or to child type from different type has to be kept as it is
+
 			}
 			//else it is a reference to a child type from different compilation unit
 			//keep it as it is (usually explicit)

@@ -61,7 +61,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	/*
 	 * maps qualified name of the type to the actual type arguments of this type in `scope`
 	 */
-	private Map<String, List<CtTypeReference<?>>> typeToArguments = new HashMap<>();
+	private final Map<String, List<CtTypeReference<?>>> typeToArguments = new HashMap<>();
 	/**
 	 * remember which super class was last visited.
 	 * The next super class scanning will start here
@@ -250,7 +250,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 * 1) thisMethod class is a subclass of thatMethod class
 	 * 2) thisMethod is a subsignature of thatMethod
 	 *
-	 * See http://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.4.8.1
+	 * See <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.4.8.1">...</a>
 	 *
 	 * @param thisMethod - the scope method
 	 * @param thatMethod - to be checked method
@@ -275,7 +275,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 
 	/**
 	 * isSubsignature is defined as an oriented relation between two methods as defined in
-	 * See https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.2
+	 * See <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.2">...</a>
 	 *
 	 * thisMethod is subsignature of thatMethod if either
 	 * A) thisMethod is same signature like thatMethod
@@ -291,7 +291,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 
 	/**
 	 * Two methods are considered as having the same signature if they have the same name and argument types
-	 * See https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.2
+	 * See <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.2">...</a>
 	 *
 	 * @param thisExecutable - the scope method to be checked with
 	 * @param thatExecutable - the checked method
@@ -564,18 +564,17 @@ public class ClassTypingContext extends AbstractTypingContext {
 			//the raw type or not a generic type. Arguments are ignored in subtype detection
 			return true;
 		}
-		List<CtTypeReference<?>> subTypeArgs = expectedSuperTypeArguments;
-		if (subTypeArgs.isEmpty()) {
+        if (expectedSuperTypeArguments.isEmpty()) {
 			//the raw type or not a generic type
 			return true;
 		}
-		if (subTypeArgs.size() != superTypeArgs.size()) {
+		if (expectedSuperTypeArguments.size() != superTypeArgs.size()) {
 			//the number of arguments is not same - it should not happen ...
 			return false;
 		}
-		for (int i = 0; i < subTypeArgs.size(); i++) {
+		for (int i = 0; i < expectedSuperTypeArguments.size(); i++) {
 			CtTypeReference<?> superArg = superTypeArgs.get(i);
-			CtTypeReference<?> subArg = subTypeArgs.get(i);
+			CtTypeReference<?> subArg = expectedSuperTypeArguments.get(i);
 			if (!isSubTypeArg(subArg, superArg)) {
 				return false;
 			}

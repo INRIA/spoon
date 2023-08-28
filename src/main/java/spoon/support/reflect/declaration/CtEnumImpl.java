@@ -58,12 +58,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 		return allMethods;
 	}
 
-	@Override
-	public boolean isSubtypeOf(CtTypeReference<?> type) {
-		return getReference().isSubtypeOf(type);
-	}
-
-	@Override
+    @Override
 	public <C extends CtEnum<T>> C addEnumValue(CtEnumValue<?> enumValue) {
 		if (enumValue == null) {
 			return (C) this;
@@ -218,7 +213,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	}
 
 	@Override
-	public <R> CtMethod<R> getMethod(String name, CtTypeReference<?>... parameterTypes) {
+	public <R> CtMethod getMethod(String name, CtTypeReference<?>... parameterTypes) {
 		if ("values".equals(name) && parameterTypes.length == 0) {
 			return valuesMethod();
 		} else if ("valueOf".equals(name) && parameterTypes.length == 1 && parameterTypes[0].equals(factory.Type().STRING)) {
@@ -229,7 +224,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	}
 
 	@Override
-	public <R> CtMethod<R> getMethod(CtTypeReference<R> returnType, String name, CtTypeReference<?>... parameterTypes) {
+	public <R> CtMethod getMethod(CtTypeReference<R> returnType, String name, CtTypeReference<?>... parameterTypes) {
 		if ("values".equals(name)
 			&& parameterTypes.length == 0
 			&& returnType.equals(getReference())) {

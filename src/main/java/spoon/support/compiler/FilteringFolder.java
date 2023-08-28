@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import spoon.compiler.SpoonResource;
 
 /**
- * A filtering resource, see https://github.com/INRIA/spoon/issues/877
+ * A filtering resource, see <a href="https://github.com/INRIA/spoon/issues/877">...</a>
  *
  */
 public class FilteringFolder extends VirtualFolder {

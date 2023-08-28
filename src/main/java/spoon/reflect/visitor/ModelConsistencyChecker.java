@@ -59,7 +59,8 @@ public class ModelConsistencyChecker extends CtScanner {
 					element.setParent(stack.peek());
 				} else {
 					final String name = element instanceof CtNamedElement ? " - " + ((CtNamedElement) element).getSimpleName() : "";
-					environment.report(null, Level.WARN,
+                    assert stack.peek() != null;
+                    environment.report(null, Level.WARN,
 							(element.isParentInitialized() ? "inconsistent" : "null") + " parent for " + element.getClass() + name + " - " + element.getPosition() + " - " + stack.peek()
 									.getPosition());
 					dumpStack();

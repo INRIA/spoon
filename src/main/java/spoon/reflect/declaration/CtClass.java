@@ -68,7 +68,6 @@ public interface CtClass<T> extends CtType<T>, CtStatement, CtSealable {
 	/**
 	 * Add an anonymous block to this class.
 	 *
-	 * @param e
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = ANNONYMOUS_EXECUTABLE)
@@ -77,7 +76,6 @@ public interface CtClass<T> extends CtType<T>, CtStatement, CtSealable {
 	/**
 	 * Remove an anonymous block to this class.
 	 *
-	 * @param e
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = ANNONYMOUS_EXECUTABLE)

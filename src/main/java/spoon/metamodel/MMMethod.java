@@ -85,7 +85,6 @@ public class MMMethod {
 	}
 
 	/**
-	 * @param method
 	 * @return true of this {@link MMMethod} overrides `method`. In different words, if it represents the same method
 	 */
 	public boolean overrides(CtMethod<?> method) {

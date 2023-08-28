@@ -190,14 +190,14 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				break;
 			case EQ:
 				if (leftObject == null) {
-					value = leftObject == rightObject;
+					value = null == rightObject;
 				} else {
 					value = leftObject.equals(rightObject);
 				}
 				break;
 			case NE:
 				if (leftObject == null) {
-					value = leftObject != rightObject;
+					value = null != rightObject;
 				} else {
 					value = !leftObject.equals(rightObject);
 				}
@@ -369,13 +369,8 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		for (CtStatement s : block.getStatements()) {
 			CtElement res = evaluate(s);
 			if (res != null) {
-				if (res instanceof CtStatement) {
-					b.addStatement((CtStatement) res);
-				} else {
-					//the context expects statement. We cannot simplify in this case
-					b.addStatement(s.clone());
-				}
-			}
+                b.addStatement((CtStatement) res);
+            }
 			// do not copy unreachable statements
 			if (flowEnded) {
 				break;
@@ -564,7 +559,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 						setResult(l);
 						return;
 					}
-				} catch (Exception e) {
+				} catch (Exception ignored) {
 				}
 			}
 		}

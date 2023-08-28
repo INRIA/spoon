@@ -112,7 +112,7 @@ public abstract class ModelList<T extends CtElement> extends AbstractList<T> imp
 		boolean result = list.add(e);
 		updateModCount();
 		onSizeChanged(list.size());
-		return result;
+		return true;
 	}
 
 	@Override
@@ -197,7 +197,7 @@ public abstract class ModelList<T extends CtElement> extends AbstractList<T> imp
 	 * This ArrayList wrapper is needed to get access to protected ArrayList#modCount
 	 * To be able to read modCount from `list` and to copy it into this.modCount
 	 * To manage the {@link ConcurrentModificationException}.
-	 * See https://docs.oracle.com/javase/7/docs/api/java/util/AbstractList.html#modCount
+	 * See <a href="https://docs.oracle.com/javase/7/docs/api/java/util/AbstractList.html#modCount">...</a>
 	 */
 	private static class InternalList<T> extends ArrayList<T> {
 		private static final long serialVersionUID = 1L;

@@ -115,11 +115,7 @@ public class SnippetCompilationHelper {
 	private static boolean containsOnlyWhiteSpace(CtElement element) {
 		char[] snippet = (element.toString() + '\n').toCharArray();
 		int next = PositionBuilder.findNextNonWhitespace(snippet, snippet.length - 1, 0);
-		if (next == -1) {
-			return true;
-		} else {
-			return false;
-		}
+        return next == -1;
 	}
 
 	private static void replaceComments(CtStatement element) {

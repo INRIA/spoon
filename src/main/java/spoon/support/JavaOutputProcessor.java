@@ -54,12 +54,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	public JavaOutputProcessor() {
 	}
 
-	@Override
-	public Environment getEnvironment() {
-		return this.getFactory().getEnvironment();
-	}
-
-	public PrettyPrinter getPrinter() {
+    public PrettyPrinter getPrinter() {
 		if (printer == null) {
 			//create printer using CURRENT Environment settings
 			return getFactory().getEnvironment().createPrettyPrinter();

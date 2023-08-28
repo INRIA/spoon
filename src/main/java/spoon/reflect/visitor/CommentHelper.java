@@ -40,12 +40,10 @@ public class CommentHelper {
 		// prefix
 		switch (commentType) {
 		case FILE:
-			printer.write(DefaultJavaPrettyPrinter.JAVADOC_START).writeln();
+            case JAVADOC:
+                printer.write(DefaultJavaPrettyPrinter.JAVADOC_START).writeln();
 			break;
-		case JAVADOC:
-			printer.write(DefaultJavaPrettyPrinter.JAVADOC_START).writeln();
-			break;
-		case INLINE:
+            case INLINE:
 			printer.write(DefaultJavaPrettyPrinter.INLINE_COMMENT_START);
 			break;
 		case BLOCK:
@@ -53,26 +51,21 @@ public class CommentHelper {
 			break;
 		}
 		// content
-		switch (commentType) {
-			case INLINE:
-				printer.write(content);
-				break;
-			default:
-				// per line suffix
-				printCommentContent(printer, comment, s -> { return (" * " + s).replaceAll(" *$", ""); });
-		}
+        if (commentType == CtComment.CommentType.INLINE) {
+            printer.write(content);
+        } else {// per line suffix
+            printCommentContent(printer, comment, s -> {
+                return (" * " + s).replaceAll(" *$", "");
+            });
+        }
 		// suffix
 		switch (commentType) {
 			case BLOCK:
-				printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_END);
+            case FILE:
+            case JAVADOC:
+                printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_END);
 				break;
-			case FILE:
-				printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_END);
-				break;
-			case JAVADOC:
-				printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_END);
-				break;
-		}
+        }
 	}
 
 	static void printCommentContent(PrinterHelper printer, CtComment comment, Function<String, String> transfo) {

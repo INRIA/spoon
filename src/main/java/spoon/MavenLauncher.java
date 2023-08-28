@@ -23,7 +23,7 @@ public class MavenLauncher extends Launcher {
 	private static final Logger LOGGER  = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private String mvnHome;
-	private SOURCE_TYPE sourceType;
+	private final SOURCE_TYPE sourceType;
 	private SpoonPom model;
 	private boolean forceRefresh = false;
 	private final SpoonPom.MavenOptions mavenOptions = SpoonPom.MavenOptions.empty();

@@ -49,7 +49,7 @@ abstract class SetHandler<T, V> extends AbstractRoleHandler<T, Set<V>, V> {
 	@Override
 	public <W, X> Set<X> asSet(W e) {
 		return new AbstractSet<X>() {
-			T element = castTarget(e);
+			final T element = castTarget(e);
 
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override

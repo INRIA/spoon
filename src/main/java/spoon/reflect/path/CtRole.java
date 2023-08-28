@@ -150,12 +150,11 @@ public enum CtRole {
 
 	/**
 	 * Get the {@link CtRole} associated to the field name
-	 * @param name
 	 * @return
 	 */
 	public static CtRole fromName(String name) {
 		for (CtRole role : CtRole.values()) {
-			if (role.getCamelCaseName().toLowerCase().equals(name.toLowerCase()) || role.name().equals(name)) {
+			if (role.getCamelCaseName().equalsIgnoreCase(name) || role.name().equals(name)) {
 				return role;
 			}
 		}

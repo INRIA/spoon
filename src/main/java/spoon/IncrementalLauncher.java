@@ -45,23 +45,19 @@ public class IncrementalLauncher extends Launcher {
 
 	private static class CacheInfo implements Serializable {
 		/** Cache version */
-		public static final long serialVersionUID = 1L; //TODO: Spoon version
+		private static final long serialVersionUID = 1L; //TODO: Spoon version
 		/** Timestamp of the last model build */
 		public long lastBuildTime;
 		/** Map of input source files and corresponding binary files */
 		public Map<File, Set<File>> inputSourcesMap;
 	}
 
-	private final Set<File> mInputSources;
 	private final File mIncrementalCacheDirectory;
 	private final File mModelFile;
 	private final File mCacheInfoFile;
 	private final File mClassFilesDir;
 	private final boolean mChangesPresent;
-	private Set<String> mSourceClasspath;
 	private Set<File> mRemovedSources = new HashSet<>();
-	private Set<File> mAddedSources = new HashSet<>();
-	private Set<File> mCommonSources = new HashSet<>();
 	private CacheInfo mCacheInfo = null;
 
 	private static CacheInfo loadCacheInfo(File file) throws InvalidClassException {
@@ -130,7 +126,6 @@ public class IncrementalLauncher extends Launcher {
 	 * @param sourceClasspath Source classpath of the spoon model.
 	 * @param cacheDirectory The directory to store all incremental information. If it's empty, full rebuild will be performed.
 	 * @param forceRebuild Force to perform full rebuild, ignoring incremental cache.
-	 * @throws IllegalArgumentException
 	 * @throws SpoonException
 	 */
 	public IncrementalLauncher(Set<File> inputResources, Set<String> sourceClasspath, File cacheDirectory, boolean forceRebuild) {
@@ -138,8 +133,8 @@ public class IncrementalLauncher extends Launcher {
 			throw new IllegalArgumentException("unable to create incremental launcher with null cache directory");
 		}
 
-		mInputSources = getAllJavaFiles(inputResources);
-		mSourceClasspath = new HashSet<>(sourceClasspath);
+		Set<File> mInputSources = getAllJavaFiles(inputResources);
+		Set<String> mSourceClasspath = new HashSet<>(sourceClasspath);
 		mIncrementalCacheDirectory = cacheDirectory;
 		mModelFile = new File(cacheDirectory, "model");
 		mCacheInfoFile = new File(cacheDirectory, "cache-info");
@@ -178,8 +173,8 @@ public class IncrementalLauncher extends Launcher {
 
 			// Build model incrementally.
 			mRemovedSources = new HashSet<>(CollectionUtils.subtract(mCacheInfo.inputSourcesMap.keySet(), mInputSources));
-			mAddedSources = new HashSet<>(CollectionUtils.subtract(mInputSources, mCacheInfo.inputSourcesMap.keySet()));
-			mCommonSources = new HashSet<>(CollectionUtils.intersection(mCacheInfo.inputSourcesMap.keySet(), mInputSources));
+			Set<File> mAddedSources = new HashSet<>(CollectionUtils.subtract(mInputSources, mCacheInfo.inputSourcesMap.keySet()));
+			Set<File> mCommonSources = new HashSet<>(CollectionUtils.intersection(mCacheInfo.inputSourcesMap.keySet(), mInputSources));
 
 			Set<File> incrementalSources = new HashSet<>(mAddedSources);
 			for (File e : mCommonSources) {
@@ -245,7 +240,6 @@ public class IncrementalLauncher extends Launcher {
 	 * @param inputResources Resources to be parsed to build the spoon model.
 	 * @param sourceClasspath Source classpath of the spoon model.
 	 * @param cacheDirectory The directory to store all incremental information. If it's empty, full rebuild will be performed.
-	 * @throws IllegalArgumentException
 	 * @throws SpoonException
 	 */
 	public IncrementalLauncher(Set<File> inputResources, Set<String> sourceClasspath, File cacheDirectory) {

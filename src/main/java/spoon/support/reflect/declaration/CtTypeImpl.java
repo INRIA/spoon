@@ -81,7 +81,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	Set<CtTypeReference<?>> interfaces = emptySet();
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
-	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
+	private final CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	@MetamodelPropertyField(role = {CtRole.TYPE_MEMBER, CtRole.FIELD, CtRole.CONSTRUCTOR, CtRole.ANNONYMOUS_EXECUTABLE, CtRole.METHOD, CtRole.NESTED_TYPE})
 	List<CtTypeMember> typeMembers = emptyList();
@@ -135,7 +135,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		if (this.typeMembers == CtElementImpl.<CtTypeMember>emptyList()) {
 			this.typeMembers = new ArrayList<>();
 		}
-		if (!this.typeMembers.stream().anyMatch(m -> m == member)) {
+		if (this.typeMembers.stream().noneMatch(m -> m == member)) {
 			member.setParent(this);
 			CtRole role = CtRole.TYPE_MEMBER.getMatchingSubRoleFor(member);
 			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, role, this.typeMembers, position, member);

@@ -46,7 +46,7 @@ public class PatternPrinter extends DefaultGenerator {
 		DEFAULT_FACTORY.getEnvironment().setCommentEnabled(true);
 	}
 
-	private List<ParamOnElement> params = new ArrayList<>();
+	private final List<ParamOnElement> params = new ArrayList<>();
 	private boolean printParametersAsComments = true;
 
 	public PatternPrinter() {
@@ -124,9 +124,9 @@ public class PatternPrinter extends DefaultGenerator {
 
 	@Override
 	public <T> void getValueAs(ParameterInfo parameterInfo, ResultHolder<T> result, ImmutableMap parameters) {
-		Object obj = generatePatternParameterElement(parameterInfo, result.getRequiredClass());
+		T obj = generatePatternParameterElement(parameterInfo, result.getRequiredClass());
 		if (obj != null) {
-			result.addResult((T) obj);
+			result.addResult(obj);
 		}
 	}
 

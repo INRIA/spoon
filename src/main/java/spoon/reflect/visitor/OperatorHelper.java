@@ -67,14 +67,12 @@ public final class OperatorHelper {
 			case COMPL:
 				return "~";
 			case PREINC:
-				return "++";
+            case POSTINC:
+                return "++";
 			case PREDEC:
-				return "--";
-			case POSTINC:
-				return "++";
-			case POSTDEC:
-				return "--";
-			default:
+            case POSTDEC:
+                return "--";
+            default:
 				throw new SpoonException("Unsupported operator " + o.name());
 		}
 	}
@@ -134,7 +132,7 @@ public final class OperatorHelper {
 
 	/**
 	 * Get the precedence of a binary operator as defined by
-	 * https://introcs.cs.princeton.edu/java/11precedence/
+	 * <a href="https://introcs.cs.princeton.edu/java/11precedence/">...</a>
 	 *
 	 * @param o A binary operator kind.
 	 * @return The precedence of the given operator.
@@ -178,7 +176,7 @@ public final class OperatorHelper {
 
 	/**
 	 * Get the precedence of a unary operator as defined by
-	 * https://introcs.cs.princeton.edu/java/11precedence/
+	 * <a href="https://introcs.cs.princeton.edu/java/11precedence/">...</a>
 	 *
 	 * @param o A unary operator kind.
 	 * @return The precedence of the given operator.
@@ -202,7 +200,7 @@ public final class OperatorHelper {
 
 	/**
 	 * Get the associativity of a binary operator as defined by
-	 * https://introcs.cs.princeton.edu/java/11precedence/
+	 * <a href="https://introcs.cs.princeton.edu/java/11precedence/">...</a>
 	 *
 	 * All binary operators are left-associative in Java, except for the relational operators that
 	 * have no associativity (i.e. you can't chain them).
@@ -228,7 +226,7 @@ public final class OperatorHelper {
 
 	/**
 	 * Get the associativity of a unary operator, as defined by
-	 * https://introcs.cs.princeton.edu/java/11precedence/
+	 * <a href="https://introcs.cs.princeton.edu/java/11precedence/">...</a>
 	 *
 	 * All unary operators are right-associative, except for post increment and decrement, which
 	 * are not associative.

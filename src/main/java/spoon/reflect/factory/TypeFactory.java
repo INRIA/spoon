@@ -320,7 +320,7 @@ public class TypeFactory extends SubFactory {
 	/**
 	 * Creates a reference to a simple type
 	 */
-	public <T> CtTypeReference<T> createReference(Class<T> type, boolean includingFormalTypeParameter) {
+	public <T> CtTypeReference createReference(Class<T> type, boolean includingFormalTypeParameter) {
 		if (type == null) {
 			return null;
 		}
@@ -411,7 +411,7 @@ public class TypeFactory extends SubFactory {
 	/**
 	 * Create a reference to a simple type, setting the beginning of its fully qualified name as implicit
 	 */
-	public <T> CtTypeReference<T> createSimplyQualifiedReference(String qualifiedName) {
+	public <T> CtTypeReference createSimplyQualifiedReference(String qualifiedName) {
 		CtTypeReference ref = createReference(qualifiedName);
 		ref.getPackage().setImplicit(true);
 		return ref;
@@ -422,8 +422,8 @@ public class TypeFactory extends SubFactory {
 	 *
 	 * `TypeFactory#get(String)` returns null if the class is not in the source classpath (even if it is in the binary classpath).
 	 * `TypeFactory#get(Class)` returns null if the class is neither in the source classpath nor in the binary classpath,
-	 * and returns a [shadow class](http://spoon.gforge.inria.fr/reflection.html) if it is only in the binary classpath.
-	 * Note that a shadow class has empty method bodies, if you need a shadow class with method bodies, see [spoon-decompiler](https://github.com/INRIA/spoon/tree/master/spoon-decompiler))
+	 * and returns a [shadow class](<a href="http://spoon.gforge.inria.fr/reflection.html">...</a>) if it is only in the binary classpath.
+	 * Note that a shadow class has empty method bodies, if you need a shadow class with method bodies, see [<a href="spoon-decompiler](https://github.com/INRIA/spoon/tree/maste">...</a>r/spoon-decompiler))
 	 * @return a type if source in the source classpath or null if does not exist
 	 */
 	@SuppressWarnings("unchecked")

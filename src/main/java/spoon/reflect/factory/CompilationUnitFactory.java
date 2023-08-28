@@ -42,7 +42,7 @@ public class CompilationUnitFactory extends SubFactory {
 	 *
 	 * contract maintained by method addType.
 	 */
-	private transient Map<String, CompilationUnit> cachedCompilationUnits = new TreeMap<>();
+	private final transient Map<String, CompilationUnit> cachedCompilationUnits = new TreeMap<>();
 
 	/**
 	 * Gets an immutable compilation unit map.
@@ -188,7 +188,6 @@ public class CompilationUnitFactory extends SubFactory {
 	/**
 	 * Removes compilation unit from the cache and returns it
 	 * Used by JDTSnippetCompiler to remove processed snippet from the cache
-	 * @param filePath
 	 * @return a cached compilation unit or null
 	 */
 	public CompilationUnit removeFromCache(String filePath) {

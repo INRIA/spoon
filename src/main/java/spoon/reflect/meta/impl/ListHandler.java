@@ -48,7 +48,7 @@ abstract class ListHandler<T, V> extends AbstractRoleHandler<T, List<V>, V> {
 	@Override
 	public <W, X> java.util.List<X> asList(W e) {
 		return new AbstractList<X>() {
-			T element = castTarget(e);
+			final T element = castTarget(e);
 
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
@@ -109,7 +109,7 @@ abstract class ListHandler<T, V> extends AbstractRoleHandler<T, List<V>, V> {
 		List<V> values = new ArrayList<>(this.<T, List<V>>getValue(element));
 		boolean ret = values.add(value);
 		setValue(element, values);
-		return ret;
+		return true;
 	}
 
 	protected V get(T element, int index) {

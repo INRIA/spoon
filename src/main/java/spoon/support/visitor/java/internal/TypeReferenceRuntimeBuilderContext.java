@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class TypeReferenceRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
-	private CtTypeReference<?> typeReference;
-	private Type type;
-	private Map<String, CtTypeParameter> mapTypeParameters;
+	private final CtTypeReference<?> typeReference;
+	private final Type type;
+	private final Map<String, CtTypeParameter> mapTypeParameters;
 
 	public TypeReferenceRuntimeBuilderContext(Type type, CtTypeReference<?> typeReference) {
 		super(typeReference);

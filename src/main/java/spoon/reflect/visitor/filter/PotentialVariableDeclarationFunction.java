@@ -75,8 +75,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 
 	/**
 	 * Searches for a variable with exact name.
-	 * @param variableName
-	 */
+     */
 	public PotentialVariableDeclarationFunction(String variableName) {
 		this.variableName = variableName;
 	}
@@ -166,8 +165,6 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 	}
 
 	/**
-	 * @param var
-	 * @param output
 	 * @return true if query processing is terminated
 	 */
 	private boolean sendToOutput(CtVariable<?> var, CtConsumer<Object> output) {

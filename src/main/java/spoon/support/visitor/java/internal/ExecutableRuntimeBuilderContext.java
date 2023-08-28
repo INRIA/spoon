@@ -24,9 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
-	private CtExecutable<?> ctExecutable;
-	private Executable executable;
-	private Map<String, CtTypeParameter> mapTypeParameters;
+	private final CtExecutable<?> ctExecutable;
+	private final Executable executable;
+	private final Map<String, CtTypeParameter> mapTypeParameters;
 
 	public ExecutableRuntimeBuilderContext(Executable executable, CtMethod<?> ctMethod) {
 		super(ctMethod);

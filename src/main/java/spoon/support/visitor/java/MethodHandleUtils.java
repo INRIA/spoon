@@ -27,13 +27,13 @@ class MethodHandleUtils {
 		// no instance
 	}
 
-	private static Class<?> recordComponent = lookupRecordComponentClass();
-	private static MethodHandle isRecord = lookupRecord();
-	private static MethodHandle lookupRecordComponents = lookupRecordComponents();
-	private static MethodHandle lookupRecordComponentName = lookupRecordComponentName();
-	private static MethodHandle lookupRecordComponentType = lookupRecordComponentType();
+	private static final Class<?> recordComponent = lookupRecordComponentClass();
+	private static final MethodHandle isRecord = lookupRecord();
+	private static final MethodHandle lookupRecordComponents = lookupRecordComponents();
+	private static final MethodHandle lookupRecordComponentName = lookupRecordComponentName();
+	private static final MethodHandle lookupRecordComponentType = lookupRecordComponentType();
 
-	private static MethodHandle lookupPermittedSubclasses = lookupPermittedSubclasses();
+	private static final MethodHandle lookupPermittedSubclasses = lookupPermittedSubclasses();
 
 	/**
 	 * Checks if the given class is a record.
@@ -105,7 +105,6 @@ class MethodHandleUtils {
 	 * This method is a call to the jdk method {@code java.lang.reflect.RecordComponent#getGenericType()}.
 	 * Because we cant use the jdk method directly, we need to use reflection to get the method.
 	 * We cant use the record component type directly so we use the upper type annotated element here. Passing any other element will return null.
-	 * @param component
 	 * @return
 	 */
 	public static Type getRecordComponentType(AnnotatedElement component) {

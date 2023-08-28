@@ -14,8 +14,8 @@ import spoon.reflect.path.CtRole;
  * defines the context of an action
  */
 public abstract class Context {
-	private CtElement elementWhereChangeHappens;
-	private CtRole changedProperty;
+	private final CtElement elementWhereChangeHappens;
+	private final CtRole changedProperty;
 
 	public Context(CtElement element, CtRole changedProperty) {
 		this.elementWhereChangeHappens = element;

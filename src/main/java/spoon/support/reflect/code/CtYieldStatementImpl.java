@@ -54,6 +54,6 @@ public class CtYieldStatementImpl extends CtStatementImpl implements CtYieldStat
 
 	@Override
 	public CtYieldStatement clone() {
-		return CtYieldStatement.class.cast(super.clone());
+		return (CtYieldStatement) super.clone();
 	}
 }

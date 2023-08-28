@@ -78,7 +78,6 @@ public class JDTCommentBuilder {
 	private final CompilationUnitDeclaration declarationUnit;
 	private CompilationUnit spoonUnit;
 	private Factory factory;
-	private ICompilationUnit sourceUnit;
 	private char[] contents;
 
 	/**
@@ -92,7 +91,7 @@ public class JDTCommentBuilder {
 			return;
 		}
 		this.factory = factory;
-		this.sourceUnit = declarationUnit.compilationResult.compilationUnit;
+		ICompilationUnit sourceUnit = declarationUnit.compilationResult.compilationUnit;
 		this.contents = sourceUnit.getContents();
 		this.spoonUnit = JDTTreeBuilder.getOrCreateCompilationUnit(declarationUnit, factory);
 	}
@@ -149,8 +148,7 @@ public class JDTCommentBuilder {
 	 * Insert the element to nearer element in the elements collections
 	 * @param comment the comment to insert
 	 * @param elements the collection that content the ast elements
-	 * @return
-	 */
+     */
 	private CtElement addCommentToNear(final CtComment comment, final Collection<CtElement> elements) {
 		CtElement best = null;
 		int smallDistance = Integer.MAX_VALUE;
@@ -198,7 +196,7 @@ public class JDTCommentBuilder {
 				//it is a virtual compilation unit - e.g. Snipet compilation unit
 				//all such comments belongs to declared type
 				List<CtType<?>> types = spoonUnit.getDeclaredTypes();
-				if (types.size() > 0) {
+				if (!types.isEmpty()) {
 					types.get(0).addComment(comment);
 					return;
 				}
@@ -522,8 +520,8 @@ public class JDTCommentBuilder {
 		class FindCommentParentScanner extends EarlyTerminatingScanner<Void> {
 			public CtElement commentParent;
 
-			private int start;
-			private int end;
+			private final int start;
+			private final int end;
 
 			FindCommentParentScanner(int start, int end) {
 				this.start = start;
@@ -569,7 +567,6 @@ public class JDTCommentBuilder {
 	}
 
 	/**
-	 * @param e
 	 * @return body of element or null if this element has no body
 	 */
 	static CtElement getBody(CtElement e) {

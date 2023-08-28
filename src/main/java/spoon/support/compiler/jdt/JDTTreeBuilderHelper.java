@@ -125,7 +125,7 @@ public class JDTTreeBuilderHelper {
 	 * 		Corresponds to the exception type declared in the catch.
 	 * @return a catch variable.
 	 */
-	CtCatchVariable<Throwable> createCatchVariable(TypeReference typeReference, Scope scope) {
+	CtCatchVariable createCatchVariable(TypeReference typeReference, Scope scope) {
 		final Argument jdtCatch = (Argument) jdtTreeBuilder.getContextBuilder().getCurrentNode();
 		final Set<CtExtendedModifier> modifiers = getModifiers(jdtCatch.modifiers, false, ModifierTarget.LOCAL_VARIABLE);
 

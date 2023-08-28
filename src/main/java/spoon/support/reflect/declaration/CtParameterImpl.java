@@ -42,7 +42,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	boolean varArgs = false;
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
-	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
+	private final CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	@MetamodelPropertyField(role = CtRole.IS_INFERRED)
 	private boolean inferred;

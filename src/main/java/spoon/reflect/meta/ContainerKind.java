@@ -14,28 +14,28 @@ package spoon.reflect.meta;
 public enum ContainerKind {
 	/**
 	 * It is a single value field
-	 * Example: {@link spoon.support.reflect.declaration.CtClassImpl#simpleName}
-	 */
+	 * Example:
+     */
 	SINGLE,
 
 
 	/**
 	 * It is a list of values
-	 * Example: {@link spoon.support.reflect.declaration.CtClassImpl#typeMembers}
-	 */
+	 * Example:
+     */
 	LIST,
 
 
 	/**
 	 * It is a set of values
-	 * Example: {@link spoon.support.reflect.declaration.CtPackageImpl#types}
-	 */
+	 * Example:
+     */
 	SET,
 
 
 	/**
 	 * It is a map&lt;String, T&gt; of values
-	 * Example: {@link spoon.support.reflect.declaration.CtAnnotationImpl#elementValues}
-	 */
-	MAP;
+	 * Example:
+     */
+	MAP
 }

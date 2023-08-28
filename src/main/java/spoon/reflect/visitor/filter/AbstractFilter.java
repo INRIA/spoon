@@ -21,7 +21,7 @@ import spoon.support.util.RtHelper;
  */
 public abstract class AbstractFilter<T extends CtElement> implements Filter<T> {
 
-	private Class<T> type;
+	private final Class<T> type;
 
 	/**
 	 * Creates a filter with the type of the potentially matching elements.

@@ -12,11 +12,7 @@ import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -98,7 +94,7 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 	}
 
 	@Override
-	public CtField<T> getFieldDeclaration() {
+	public CtEnumValue getFieldDeclaration() {
 		if (declaringType == null) {
 			return null;
 		}

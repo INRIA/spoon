@@ -26,9 +26,9 @@ import java.util.Set;
  */
 public class ExecutableReferenceFilter implements Filter<CtExecutableReference<?>> {
 
-	private Map<CtExecutable<?>, CtExecutable<?>> executables = new IdentityHashMap<>();
-	private Set<String> typeQualifiedNames = new HashSet<>();
-	private Set<String> methodNames = new HashSet<>();
+	private final Map<CtExecutable<?>, CtExecutable<?>> executables = new IdentityHashMap<>();
+	private final Set<String> typeQualifiedNames = new HashSet<>();
+	private final Set<String> methodNames = new HashSet<>();
 
 	/**
 	 * Creates a new executable reference filter.

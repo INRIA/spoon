@@ -31,7 +31,7 @@ import spoon.reflect.declaration.CtElement;
  * constructors exist for different approaches creating this. You can create
  * this processor with either a Iterable of processors or a Consumer.
  *
- * For creating and managing threads a {@link Executors#newFixedThreadPool()} is
+ * For creating and managing threads a  is
  * used. Creating more threads then cores can harm the performance. Using a
  * different thread pool could increase the performance, but this class should
  * be general usage. If you need better performance you may want to use an own
@@ -39,8 +39,8 @@ import spoon.reflect.declaration.CtElement;
  */
 public abstract class AbstractParallelProcessor<E extends CtElement> extends AbstractProcessor<E> {
 
-	private ExecutorService service;
-	private ArrayBlockingQueue<Processor<E>> processorQueue;
+	private final ExecutorService service;
+	private final ArrayBlockingQueue<Processor<E>> processorQueue;
 
 	// Maps each processor to its last submitted job to be able to wait for all processors to finish
 	private final Map<Processor<E>, Future<?>> lastSubmittedJobs;

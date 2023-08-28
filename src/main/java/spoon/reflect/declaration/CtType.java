@@ -130,7 +130,6 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * Adds a field at the top of the type (before static block).
 	 * Note that the position of these field will be negative to be written at the top of the type.
 	 *
-	 * @param field
 	 * @return <tt>true</tt> if the field is added.
 	 */
 	@PropertySetter(role = FIELD)
@@ -139,7 +138,6 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	/**
 	 * add a field at the end of the field list.
 	 *
-	 * @param field
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = FIELD)
@@ -148,7 +146,6 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	/**
 	 * add a field at a given position.
 	 *
-	 * @param field
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = FIELD)
@@ -163,7 +160,6 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	/**
 	 * remove a Field
 	 *
-	 * @param field
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = FIELD)
@@ -172,7 +168,6 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	/**
 	 * Add a nested type.
 	 *
-	 * @param nestedType
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = NESTED_TYPE)
@@ -181,7 +176,6 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	/**
 	 * Remove a nested type.
 	 *
-	 * @param nestedType
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = NESTED_TYPE)
@@ -299,14 +293,12 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	<C extends CtType<T>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces);
 
 	/**
-	 * @param interfac
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = INTERFACE)
 	<S, C extends CtType<T>> C addSuperInterface(CtTypeReference<S> interfac);
 
 	/**
-	 * @param interfac
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = INTERFACE)

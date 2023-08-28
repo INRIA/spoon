@@ -572,8 +572,7 @@ public interface CoreFactory {
 	/**
 	 * Create an access to annotation value
 	 *
-	 * @return
-	 */
+     */
 	<T> CtAnnotationFieldAccess<T> createAnnotationFieldAccess();
 
 	/**

@@ -15,9 +15,10 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.util.Objects;
 
 public class VariableRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
-	private CtVariable ctVariable;
+	private final CtVariable ctVariable;
 
 	public VariableRuntimeBuilderContext(CtField<?> ctField) {
 		super(ctField);
@@ -36,11 +37,10 @@ public class VariableRuntimeBuilderContext extends AbstractRuntimeBuilderContext
 
 	@Override
 	public void addTypeReference(CtRole role, CtTypeReference<?> ctTypeReference) {
-		switch (role) {
-		case TYPE:
-			ctVariable.setType(ctTypeReference);
-			return;
-		}
+        if (Objects.requireNonNull(role) == CtRole.TYPE) {
+            ctVariable.setType(ctTypeReference);
+            return;
+        }
 		super.addTypeReference(role, ctTypeReference);
 	}
 }

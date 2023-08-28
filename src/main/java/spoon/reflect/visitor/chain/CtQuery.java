@@ -78,7 +78,6 @@ public interface CtQuery extends CtQueryable {
 	 * then the query is already bound to this element.
 	 * A new call of {@link CtQuery#setInput(Object...)} is always possible, it resets the current binding and sets the new one.
 	 *
-	 * @param input
 	 * @return this to support fluent API
 	 */
 	<T extends CtQuery> T setInput(Object... input);
@@ -142,7 +141,6 @@ public interface CtQuery extends CtQueryable {
 
 	/**
 	 * Sets the name of current query, to identify the current step during debugging of a query
-	 * @param name
 	 * @return this to support fluent API
 	 */
 	CtQuery name(String name);
@@ -152,7 +150,6 @@ public interface CtQuery extends CtQueryable {
 	 * by java's return statement, but by a call to {@link CtConsumer#accept(Object)}, this
 	 * allows efficient and easy to write chained processing, see {@link CtConsumableFunction}.
 	 *
-	 * @param queryStep
 	 * @return this to support fluent API
 	 */
 	@Override

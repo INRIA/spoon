@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Utility class to select parts of AST to be used as a model of a {@link PatternBuilder}.
  *
- * Main documentation at http://spoon.gforge.inria.fr/pattern.html.
+ * Main documentation at <a href="http://spoon.gforge.inria.fr/pattern.html">...</a>.
  */
 @Experimental
 public class PatternBuilderHelper {
@@ -51,8 +51,7 @@ public class PatternBuilderHelper {
 	/**
 	 * Returns clone of the patternType.
 	 * The clone is done only once. Later calls returns cached clone.
-	 * @return
-	 */
+     */
 	private CtType<?> getClonedPatternType() {
 		if (clonedPatternType == null) {
 			clonedPatternType = patternType.clone();
@@ -115,11 +114,11 @@ public class PatternBuilderHelper {
 		CtMethod<?> method = getOneByFilter(filter);
 		CtBlock<?> body = method.getBody();
 		if (body.getStatements().size() != 1) {
-			throw new SpoonException("The body of " + method.getSignature() + " must contain exactly one statement. But there is:\n" + body.toString());
+			throw new SpoonException("The body of " + method.getSignature() + " must contain exactly one statement. But there is:\n" + body);
 		}
 		CtStatement firstStatement = body.getStatements().get(0);
 		if (!(firstStatement instanceof CtReturn)) {
-			throw new SpoonException("The body of " + method.getSignature() + " must contain return statement. But there is:\n" + body.toString());
+			throw new SpoonException("The body of " + method.getSignature() + " must contain return statement. But there is:\n" + body);
 		}
 		setElements(Collections.singletonList(((CtReturn<?>) firstStatement).getReturnedExpression()));
 	}

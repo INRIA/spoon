@@ -135,7 +135,6 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 	}
 
 	/**
-	 * @param fragment
 	 * @return true if at least part of `fragment` is modified.
 	 * 	false if whole `fragment` is not modified.
 	 * 	ModificationStatus.UNKNOWN if it is not possible to detect it here. Then it will be detected later.
@@ -145,10 +144,9 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 			switch (((TokenSourceFragment) fragment).getType()) {
 			//we do not know the role of the identifier token, so we do not know whether it is modified or not
 			case IDENTIFIER:
-				return ModificationStatus.UNKNOWN;
-			case COMMENT:
-				return ModificationStatus.UNKNOWN;
-			default:
+                case COMMENT:
+                    return ModificationStatus.UNKNOWN;
+                default:
 				//all others are constant tokens, which cannot be modified
 				return ModificationStatus.NOT_MODIFIED;
 			}
@@ -187,7 +185,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 					CtComment comment = (CtComment) sourceFragment.getElement();
 					if (changeResolver.isElementExists(comment)) {
 						//comment still exist
-						if (changeResolver.getChanges(comment).size() > 0) {
+						if (!changeResolver.getChanges(comment).isEmpty()) {
 							//comment is modified print it normally
 							mutableTokenWriter.writeComment(comment);
 						} else {

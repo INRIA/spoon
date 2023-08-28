@@ -57,7 +57,8 @@ public class SpoonTreeBuilder extends CtScanner {
 				return prefix + nodeName;
 			}
 		};
-		nodes.peek().add(node);
+        assert nodes.peek() != null;
+        nodes.peek().add(node);
 		nodes.push(node);
 	}
 

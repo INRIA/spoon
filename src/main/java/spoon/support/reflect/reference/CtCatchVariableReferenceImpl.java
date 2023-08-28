@@ -25,7 +25,7 @@ public class CtCatchVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> 
 	}
 
 	@Override
-	public CtCatchVariable<T> getDeclaration() {
+	public CtCatchVariable getDeclaration() {
 		CtElement element = this;
 		String name = getSimpleName();
 		CtCatchVariable var;

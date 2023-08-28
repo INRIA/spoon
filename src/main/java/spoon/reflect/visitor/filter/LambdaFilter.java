@@ -22,7 +22,7 @@ import spoon.reflect.visitor.Filter;
  */
 public class LambdaFilter implements Filter<CtLambda<?>> {
 
-	private Set<String> qualifiedNamesOfInterfaces = new HashSet<>();
+	private final Set<String> qualifiedNamesOfInterfaces = new HashSet<>();
 
 	/**
 	 * Use {@link #addImplementingInterface(CtTypeInformation)} to define set of interfaces whose lambdas it is search for

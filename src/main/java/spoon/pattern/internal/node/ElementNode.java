@@ -164,9 +164,9 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		return new ListOfNodes((List) nodes);
 	}
 
-	private CtElement templateElement;
+	private final CtElement templateElement;
 	private MetamodelConcept elementType;
-	private Map<MetamodelProperty, RootNode> roleToNode = new HashMap<>();
+	private final Map<MetamodelProperty, RootNode> roleToNode = new HashMap<>();
 
 	/**
 	 * @param elementType The type of Spoon node which has to be generated/matched by this {@link ElementNode}
@@ -206,7 +206,6 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	}
 
 	/**
-	 * @param role
 	 * @return a {@link RootNode}, which exists on the `role` or creates implicit container for that role
 	 */
 	public RootNode getOrCreateNodeOfRole(CtRole role, Map<CtElement, RootNode> patternElementToSubstRequests) {

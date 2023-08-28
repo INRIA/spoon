@@ -38,15 +38,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -321,14 +313,14 @@ public class SpoonPom implements SpoonResource {
 			Matcher matcher = MAVEN_PROPERTY.matcher(value);
 			while (matcher.find()) {
 				String var = matcher.group();
-				val = val.replace(var, getProperty(var.substring(2, var.length() - 1)));
+				val = val.replace(var, Objects.requireNonNull(getProperty(var.substring(2, var.length() - 1))));
 			}
 		}
 		return val;
 	}
 
 	/**
-	 * Get the value of a property. Reference: https://maven.apache.org/ref/3.6.3/maven-model-builder/#Model_Interpolation
+	 * Get the value of a property. Reference: <a href="https://maven.apache.org/ref/3.6.3/maven-model-builder/#Model_Interpolation">...</a>
 	 * @param key the key of the property
 	 * @return the property value if key exists or null
 	 */
@@ -490,8 +482,14 @@ public class SpoonPom implements SpoonResource {
 			Invoker invoker = new DefaultInvoker();
 			invoker.setMavenHome(mvnHome);
 			invoker.setWorkingDirectory(directory);
-			invoker.setErrorHandler(s -> LOGGER.debug(s));
-			invoker.setOutputHandler(s -> LOGGER.debug(s));
+			invoker.setErrorHandler(s -> {
+                assert LOGGER != null;
+                LOGGER.debug(s);
+            });
+			invoker.setOutputHandler(s -> {
+                assert LOGGER != null;
+                LOGGER.debug(s);
+            });
 			try {
 				invoker.execute(request);
 			} catch (MavenInvocationException e) {

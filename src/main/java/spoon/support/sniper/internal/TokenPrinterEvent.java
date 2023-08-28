@@ -69,7 +69,7 @@ public abstract class TokenPrinterEvent implements PrinterEvent {
 
 	@Override
 	public String toString() {
-		return type.name() + ": \'" + token + "\'";
+		return type.name() + ": '" + token + "'";
 	}
 
 	public TokenType getTokenType() {

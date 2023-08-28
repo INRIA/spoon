@@ -24,7 +24,7 @@ public abstract class AbstractPathElement<P extends CtElement, T extends CtEleme
 	public static final String ARGUMENT_END = "]";
 	public static final String ARGUMENT_NAME_SEPARATOR = "=";
 
-	private Map<String, String> arguments = new TreeMap<>();
+	private final Map<String, String> arguments = new TreeMap<>();
 
 	public Map<String, String> getArguments() {
 		return arguments;

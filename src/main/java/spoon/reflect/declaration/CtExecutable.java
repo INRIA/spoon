@@ -62,7 +62,6 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	/**
 	 * Add a parameter for this executable
 	 *
-	 * @param parameter
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = PARAMETER)
@@ -81,7 +80,6 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	/**
 	 * Remove a parameter for this executable
 	 *
-	 * @param parameter
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean removeParameter(CtParameter<?> parameter);
@@ -102,7 +100,6 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	/**
 	 * add a thrown type.
 	 *
-	 * @param throwType
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = THROWN)
@@ -111,7 +108,6 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	/**
 	 * remove a thrown type.
 	 *
-	 * @param throwType
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = THROWN)

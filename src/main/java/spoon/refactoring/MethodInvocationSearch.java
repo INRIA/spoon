@@ -34,8 +34,8 @@ import spoon.support.reflect.code.CtLambdaImpl;
  * and methods.
  */
 public class MethodInvocationSearch extends CtScanner {
-	private Map<CtExecutable<?>, Collection<CtExecutable<?>>> invocationsOfMethod = new HashMap<>();
-	private Map<CtExecutable<?>, Collection<CtType<?>>> invocationsOfField = new HashMap<>();
+	private final Map<CtExecutable<?>, Collection<CtExecutable<?>>> invocationsOfMethod = new HashMap<>();
+	private final Map<CtExecutable<?>, Collection<CtType<?>>> invocationsOfField = new HashMap<>();
 
 	@Override
 	public <T> void visitCtMethod(CtMethod<T> method) {
@@ -60,11 +60,11 @@ public class MethodInvocationSearch extends CtScanner {
 		}
 		invocations.stream().filter(v -> !v.isImplicit()).map(v -> v.getExecutable().getExecutableDeclaration())
 				.filter(Objects::nonNull).filter(v -> v.getPosition().isValidPosition())
-				.forEach(v -> invocationsOfMethod.merge(v, new HashSet<>(Arrays.asList(transformedMethod)),
+				.forEach(v -> invocationsOfMethod.merge(v, new HashSet<>(Collections.singletonList(transformedMethod)),
 						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
 		constructors.stream().filter(v -> !v.isImplicit()).map(v -> v.getExecutable().getExecutableDeclaration())
 				.filter(Objects::nonNull)
-				.forEach(v -> invocationsOfMethod.merge(v, new HashSet<>(Arrays.asList(transformedMethod)),
+				.forEach(v -> invocationsOfMethod.merge(v, new HashSet<>(Collections.singletonList(transformedMethod)),
 						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
 		super.visitCtMethod(method);
 	}
@@ -86,11 +86,11 @@ public class MethodInvocationSearch extends CtScanner {
 	public <T> void visitCtField(CtField<T> field) {
 		field.getElements(new TypeFilter<>(CtInvocation.class)).stream()
 				.map(call -> call.getExecutable().getExecutableDeclaration())
-				.forEach(method -> invocationsOfField.merge(method, new HashSet<>(Arrays.asList(field.getDeclaringType())),
+				.forEach(method -> invocationsOfField.merge(method, new HashSet<>(Collections.singletonList(field.getDeclaringType())),
 						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
 		field.getElements(new TypeFilter<>(CtConstructorCall.class)).stream()
 				.map(call -> call.getExecutable().getExecutableDeclaration())
-				.forEach(method -> invocationsOfField.merge(method, new HashSet<>(Arrays.asList(field.getDeclaringType())),
+				.forEach(method -> invocationsOfField.merge(method, new HashSet<>(Collections.singletonList(field.getDeclaringType())),
 						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
 		super.visitCtField(field);
 	}

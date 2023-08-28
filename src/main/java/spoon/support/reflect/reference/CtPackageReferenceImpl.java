@@ -31,7 +31,7 @@ public class CtPackageReferenceImpl extends CtReferenceImpl implements CtPackage
 
 	@Override
 	public Package getActualPackage() {
-		return Package.getPackage(getSimpleName());
+		return Package.getDefinedPackage(getSimpleName());
 	}
 
 	@Override

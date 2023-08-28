@@ -32,8 +32,8 @@ public class ProcessingVisitor extends CtScanner {
 	private boolean canBeProcessed(CtElement e) {
 		if (!factory.getEnvironment().isProcessingStopped()
 				&& processor.getProcessedElementTypes() != null) {
-			for (Object o : processor.getProcessedElementTypes()) {
-				if (!((Class<?>) o).isAssignableFrom(e.getClass())) {
+			for (Class<?> o : processor.getProcessedElementTypes()) {
+				if (!o.isAssignableFrom(e.getClass())) {
 					return false;
 				}
 			}

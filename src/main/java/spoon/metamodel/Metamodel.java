@@ -494,7 +494,7 @@ public class Metamodel {
 		ctType.getSuperInterfaces().forEach(superIfaceRef -> addFieldsOfSuperType(mmConcept, superIfaceRef));
 	}
 
-	private static Set<String> EXPECTED_TYPES_NOT_IN_CLASSPATH = new HashSet<>(Arrays.asList(
+	private static final Set<String> EXPECTED_TYPES_NOT_IN_CLASSPATH = new HashSet<>(Arrays.asList(
 			"java.lang.Cloneable",
 			"java.lang.Object",
 			"spoon.processing.FactoryAccessor",
@@ -563,9 +563,7 @@ public class Metamodel {
 				}
 				if (typeAdaptor.isConflicting(method, currentMethod)) {
 					CtAnnotation<A> annotation2 = currentMethod.getAnnotation(annotationType);
-					if (annotation2 != null) {
-						return annotation2;
-					}
+                    return annotation2;
 				}
 				return null;
 			}).first();

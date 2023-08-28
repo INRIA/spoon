@@ -48,13 +48,7 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 		return Collections.emptySet();
 	}
 
-	@Override
-	@DerivedProperty
-	public CtTypeReference<?> getSuperclass() {
-		return null;
-	}
-
-	@Override
+    @Override
 	@UnsettableProperty
 	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
 		return (C) this;

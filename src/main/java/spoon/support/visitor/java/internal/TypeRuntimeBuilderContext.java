@@ -27,7 +27,7 @@ import java.util.Map;
 public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	protected CtType type;
 	protected Type rtType;
-	private Map<String, CtTypeParameter> mapTypeParameters;
+	private final Map<String, CtTypeParameter> mapTypeParameters;
 
 	public TypeRuntimeBuilderContext(Type rtType, CtType type) {
 		super(type);

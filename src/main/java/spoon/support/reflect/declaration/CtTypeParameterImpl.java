@@ -216,17 +216,7 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 		return null;
 	}
 
-	@Override
-	public boolean isPrimitive() {
-		return false;
-	}
-
-	@Override
-	public boolean isAnonymous() {
-		return false;
-	}
-
-	@Override
+    @Override
 	public boolean isLocalType() {
 		return false;
 	}

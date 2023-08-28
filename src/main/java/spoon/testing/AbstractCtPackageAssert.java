@@ -38,7 +38,7 @@ public abstract class AbstractCtPackageAssert<T extends AbstractCtPackageAssert<
 			throw new AssertionError(String.format("The actual package named %1$s isn't equals to the expected package named %2$s", actual.getSimpleName(), expected.getSimpleName()));
 		}
 
-		if (processors != null && !processors.isEmpty()) {
+		if (!processors.isEmpty()) {
 			process(actual.getFactory(), processors);
 		}
 

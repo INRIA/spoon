@@ -94,7 +94,7 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 	 * @return the suffix whitespaces at the end of collection of elements
 	 */
 	protected String getSuffixSpace() {
-		if (childFragments.size() > 0) {
+		if (!childFragments.isEmpty()) {
 			SourceFragment item = childFragments.get(childFragments.size() - 1);
 			if (isSpaceFragment(item)) {
 				return item.getSourceCode();

@@ -163,7 +163,7 @@ public class ContractVerifier {
 
 		// the scanner and the parent are in correspondence
 		new CtScanner() {
-			Deque<CtElement> elementStack = new ArrayDeque<>();
+			final Deque<CtElement> elementStack = new ArrayDeque<>();
 
 			@Override
 			public void scan(CtElement e) {
@@ -398,8 +398,7 @@ public class ContractVerifier {
 	public void checkAssignmentContracts() {
 		for (CtAssignment assign : _rootPackage.getElements(new TypeFilter<>(CtAssignment.class))) {
 			CtExpression assigned = assign.getAssigned();
-			if (!(assigned instanceof CtFieldWrite
-					|| assigned instanceof CtVariableWrite || assigned instanceof CtArrayWrite)) {
+			if (!(assigned instanceof CtVariableWrite || assigned instanceof CtArrayWrite)) {
 				throw new AssertionError("AssignmentContract error:" + assign.getPosition() + "\n" + assign + "\nAssigned is " + assigned.getClass());
 			}
 		}
@@ -415,7 +414,7 @@ public class ContractVerifier {
 	public void checkParentConsistency(CtElement element) {
 		final Set<CtElement> inconsistentParents = new HashSet<>();
 		new CtScanner() {
-			private Deque<CtElement> previous = new ArrayDeque<>();
+			private final Deque<CtElement> previous = new ArrayDeque<>();
 
 			@Override
 			protected void enter(CtElement e) {
@@ -460,8 +459,7 @@ public class ContractVerifier {
 		_rootPackage.filterChildren(null).forEach((CtElement ele) -> {
 			//uncomment this line to get stacktrace of real problem. The dummyException is used to avoid OutOfMemoryException
 //			Exception secondStack = new Exception("STACK");
-			Exception secondStack = dummyException;
-			Exception firstStack = allElements.put(ele, secondStack);
+            Exception firstStack = allElements.put(ele, dummyException);
 			if (firstStack != null) {
 				if (firstStack == dummyException) {
 					fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele + " is shared");
@@ -473,7 +471,7 @@ public class ContractVerifier {
 						.write(ele.toString()).writeln()
 						.write("Is linked by these stacktraces").writeln()
 						.write("1) " + getStackTrace(firstStack)).writeln()
-						.write("2) " + getStackTrace(secondStack)).writeln()
+						.write("2) " + getStackTrace(dummyException)).writeln()
 						.decTab();
 			}
 		});
@@ -505,7 +503,6 @@ public class ContractVerifier {
 
 	/**
 	 * Asserts that all siblings and children of sp are well ordered
-	 * @param sourceFragment
 	 * @param minOffset TODO
 	 * @param maxOffset TODO
 	 * @return number of checked {@link SourcePosition} nodes

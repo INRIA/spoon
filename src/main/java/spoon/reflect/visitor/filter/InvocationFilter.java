@@ -18,7 +18,7 @@ import spoon.reflect.visitor.Filter;
  */
 public class InvocationFilter implements Filter<CtInvocation<?>> {
 
-	private CtExecutableReference<?> executable;
+	private final CtExecutableReference<?> executable;
 
 	/**
 	 * Creates a new invocation filter.

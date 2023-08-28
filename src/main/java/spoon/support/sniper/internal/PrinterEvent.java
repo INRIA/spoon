@@ -23,7 +23,6 @@ public interface PrinterEvent  {
 	/**
 	 * We have a source fragment of to be printed element.
 	 * Print unmodified parts of this source `fragment`
-	 * @param fragment
 	 * @param isModified true if at least some part of `SourceFragment` is modified.
 	 */
 	void printSourceFragment(SourceFragment fragment, ModificationStatus isModified);

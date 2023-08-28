@@ -33,8 +33,8 @@ import java.util.Set;
 public interface CtModuleRequirement extends CtModuleDirective {
 
 	enum RequiresModifier {
-		STATIC, TRANSITIVE;
-	}
+		STATIC, TRANSITIVE
+    }
 
 	@PropertyGetter(role = CtRole.MODIFIER)
 	Set<RequiresModifier> getRequiresModifiers();

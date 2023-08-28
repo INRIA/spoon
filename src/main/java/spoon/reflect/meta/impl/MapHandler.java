@@ -51,7 +51,7 @@ abstract class MapHandler<T, V> extends AbstractRoleHandler<T, Map<String, V>, V
 	public <W, X> Map<String, X> asMap(W e) {
 		// TODO Auto-generated method stub
 		return new AbstractMap<String, X>() {
-			T element = castTarget(e);
+			final T element = castTarget(e);
 
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override

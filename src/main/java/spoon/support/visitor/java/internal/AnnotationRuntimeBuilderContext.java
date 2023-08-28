@@ -12,9 +12,10 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.util.Objects;
 
 public class AnnotationRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
-	private CtAnnotation<Annotation> ctAnnotation;
+	private final CtAnnotation<Annotation> ctAnnotation;
 
 	public AnnotationRuntimeBuilderContext(CtAnnotation<Annotation> ctAnnotation) {
 		super(ctAnnotation);
@@ -28,12 +29,11 @@ public class AnnotationRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 
 	@Override
 	public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
-		switch (role) {
-		case ANNOTATION_TYPE:
-			ctAnnotation.setAnnotationType((CtTypeReference<? extends Annotation>) typeReference);
-			ctAnnotation.setType((CtTypeReference<Annotation>) typeReference);
-			return;
-		}
+        if (Objects.requireNonNull(role) == CtRole.ANNOTATION_TYPE) {
+            ctAnnotation.setAnnotationType((CtTypeReference<? extends Annotation>) typeReference);
+            ctAnnotation.setType((CtTypeReference<Annotation>) typeReference);
+            return;
+        }
 		super.addTypeReference(role, typeReference);
 	}
 

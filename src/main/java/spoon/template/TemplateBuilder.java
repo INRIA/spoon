@@ -60,8 +60,7 @@ class TemplateBuilder {
 	 * @param templateType {@link CtClass} model of `template`
 	 * @param template a instance of the {@link Template}. It is needed here,
 	 * 			because parameter value types influences which AST nodes will be the target of substitution
-	 * @return
-	 */
+     */
 	public static TemplateBuilder createTemplateBuilder(CtElement templateRoot, CtClass<?> templateType, Template<?> template) {
 		Factory f = templateRoot.getFactory();
 
@@ -97,7 +96,7 @@ class TemplateBuilder {
 			pb = new PatternBuilder(Collections.singletonList(templateRoot));
 		}
 		Map<String, Object> templateParameters = template == null ? null : Parameters.getTemplateParametersAsMap(f, template);
-		pb.setAutoSimplifySubstitutions(template == null ? false : template.withPartialEvaluation());
+		pb.setAutoSimplifySubstitutions(template != null && template.withPartialEvaluation());
 		pb.configurePatternParameters(pc -> {
 			pc.byTemplateParameter(templateParameters);
 			pc.byParameterValues(templateParameters);
@@ -106,9 +105,9 @@ class TemplateBuilder {
 		return new TemplateBuilder(templateType, pb, template);
 	}
 
-	private Template<?> template;
-	private PatternBuilder patternBuilder;
-	private CtClass<?> templateType;
+	private final Template<?> template;
+	private final PatternBuilder patternBuilder;
+	private final CtClass<?> templateType;
 
 	private TemplateBuilder(CtClass<?> templateType, PatternBuilder patternBuilder, Template<?> template) {
 		this.template = template;

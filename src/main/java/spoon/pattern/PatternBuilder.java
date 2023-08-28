@@ -48,7 +48,7 @@ import spoon.support.Experimental;
 /**
  * The master class to create a {@link Pattern} instance.
  *
- * Main documentation at http://spoon.gforge.inria.fr/pattern.html.
+ * Main documentation at <a href="http://spoon.gforge.inria.fr/pattern.html">...</a>.
  */
 @Experimental
 public class PatternBuilder {
@@ -73,7 +73,7 @@ public class PatternBuilder {
 	private final Map<CtElement, RootNode> patternElementToSubstRequests = new IdentityHashMap<>();
 	private final Set<RootNode> explicitNodes = Collections.newSetFromMap(new IdentityHashMap<>());
 
-	private CtTypeReference<?> templateTypeRef;
+	private final CtTypeReference<?> templateTypeRef;
 	private final Map<String, AbstractParameterInfo> parameterInfos = new HashMap<>();
 	CtQueryable patternQuery;
 	private ValueConvertor valueConvertor;
@@ -234,7 +234,7 @@ public class PatternBuilder {
 		if (oldNode != newNode) {
 			if (conflictMode == ConflictResolutionMode.APPEND) {
 				if (!(oldNode instanceof ListOfNodes)) {
-					oldNode = new ListOfNodes(new ArrayList<>(Arrays.asList(oldNode)));
+					oldNode = new ListOfNodes(new ArrayList<>(Collections.singletonList(oldNode)));
 				}
 				if (newNode instanceof ListOfNodes) {
 					((ListOfNodes) oldNode).getNodes().addAll(((ListOfNodes) newNode).getNodes());
@@ -264,10 +264,7 @@ public class PatternBuilder {
 	/**
 	 * Changes the Pattern by way the `node` is used at position of template element.
 	 * It is used for example to mark that `element` as pattern parameter
-	 * @param element
-	 * @param node
-	 * @param conflictMode
-	 */
+     */
 	void setNodeOfElement(CtElement element, RootNode node, ConflictResolutionMode conflictMode) {
 		modifyNodeOfElement(element, conflictMode, oldNode -> {
 			return node;
@@ -277,11 +274,7 @@ public class PatternBuilder {
 	/**
 	 * Changes the Pattern by way the `node` is used at position of template element attribute of `role`.
 	 * It is used for example to mark that `element` as pattern parameter
-	 * @param element
-	 * @param role
-	 * @param node
-	 * @param conflictMode
-	 */
+     */
 	void setNodeOfAttributeOfElement(CtElement element, CtRole role, RootNode node, ConflictResolutionMode conflictMode) {
 		modifyNodeOfAttributeOfElement(element, role, conflictMode, oldAttrNode -> {
 			return node;
@@ -406,7 +399,6 @@ public class PatternBuilder {
 	 * because inline statements are executed during substitution process and are not included in generated result.
 	 *
 	 * The inline statements may be used in PatternMatching process (opposite to Pattern substitution) too.
-	 * @param consumer
 	 * @return this to support fluent API
 	 */
 	public PatternBuilder configureInlineStatements(Consumer<InlinedStatementConfigurator> consumer) {

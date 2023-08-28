@@ -88,7 +88,7 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 
 	@Override
 	public boolean isSimplyQualified() {
-		if (bounds != null && bounds.size() > 0) {
+		if (bounds != null && !bounds.isEmpty()) {
 			return bounds.get(0).isSimplyQualified();
 		}
 		return false;
@@ -96,7 +96,7 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 
 	@Override
 	public CtIntersectionTypeReferenceImpl<T> setSimplyQualified(boolean isSimplyQualified) {
-		if (bounds != null && bounds.size() > 0) {
+		if (bounds != null && !bounds.isEmpty()) {
 			bounds.get(0).setSimplyQualified(isSimplyQualified);
 		}
 		return this;

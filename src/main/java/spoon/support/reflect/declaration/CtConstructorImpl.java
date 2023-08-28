@@ -39,7 +39,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	List<CtTypeParameter> formalCtTypeParameters = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
-	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
+	private final CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	@MetamodelPropertyField(role = CtRole.COMPACT_CONSTRUCTOR)
 	private boolean compactConstructor = false;

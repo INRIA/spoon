@@ -82,7 +82,7 @@ public class ChangeResolver {
 	 * @return true if scope `element` is changed
 	 */
 	public boolean hasChangedRole() {
-		return changedRoles.size() > 0;
+		return !changedRoles.isEmpty();
 	}
 
 	/**

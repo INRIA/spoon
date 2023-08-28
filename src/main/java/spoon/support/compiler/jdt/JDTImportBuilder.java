@@ -33,10 +33,10 @@ import java.util.Set;
 class JDTImportBuilder {
 
 	private final CompilationUnitDeclaration declarationUnit;
-	private CompilationUnit spoonUnit;
-	private ICompilationUnit sourceUnit;
-	private Factory factory;
-	private Set<CtImport> imports;
+	private final CompilationUnit spoonUnit;
+	private final ICompilationUnit sourceUnit;
+	private final Factory factory;
+	private final Set<CtImport> imports;
 
 	JDTImportBuilder(CompilationUnitDeclaration declarationUnit,  Factory factory) {
 		this.declarationUnit = declarationUnit;
@@ -105,7 +105,7 @@ class JDTImportBuilder {
 						}
 
 						List<CtMethod<?>> methods = klass.getMethodsByName(methodOrFieldOrTypeName);
-						if (methods.size() > 0) {
+						if (!methods.isEmpty()) {
 							methodOrFieldOrType = methods.get(0);
 							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
 						}

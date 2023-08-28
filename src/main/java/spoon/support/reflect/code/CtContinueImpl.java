@@ -46,9 +46,9 @@ public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 	public CtStatement getLabelledStatement() {
 		List<CtStatement> listParents = this.map(new ParentFunction().includingSelf(true)).list();
 
-		for (CtElement parent : listParents) {
+		for (CtStatement parent : listParents) {
 			if (parent instanceof CtStatement) {
-				CtStatement statement = (CtStatement) parent;
+				CtStatement statement = parent;
 
 				if (statement.getLabel() != null && statement.getLabel().equals(this.getTargetLabel())) {
 					return statement;

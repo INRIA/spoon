@@ -144,10 +144,10 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 
 	/** a set of imports for a given compilation unit */
 	public class Context {
-		private CtCompilationUnit compilationUnit;
-		private Map<String, CtImport> computedImports;
+		private final CtCompilationUnit compilationUnit;
+		private final Map<String, CtImport> computedImports;
 		private String packageQName;
-		private Set<String> typeRefQNames;
+		private final Set<String> typeRefQNames;
 
 		Context(CtCompilationUnit cu) {
 			this.compilationUnit = cu;
@@ -254,11 +254,8 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			if (isEqual) {
 				return true;
 			}
-			if (role == equalsVisitor.getNotEqualRole()) {
-				return true;
-			}
-			return false;
-		}
+            return role == equalsVisitor.getNotEqualRole();
+        }
 
 		void onCompilationUnitProcessed(CtCompilationUnit compilationUnit) {
 			ModelList<CtImport> existingImports = compilationUnit.getImports();

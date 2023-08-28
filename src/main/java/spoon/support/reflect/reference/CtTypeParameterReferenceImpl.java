@@ -190,7 +190,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public boolean isGenerics() {
-		if (getDeclaration() instanceof CtTypeParameter) {
+		if (getDeclaration() != null) {
 			return true;
 		}
 		return getBoundingType() != null && getBoundingType().isGenerics();

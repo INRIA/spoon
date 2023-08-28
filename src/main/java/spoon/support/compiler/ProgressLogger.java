@@ -14,7 +14,7 @@ import java.util.GregorianCalendar;
 public class ProgressLogger implements SpoonProgress {
 	private long stepTimer;
 	private long timer;
-	private Environment environment;
+	private final Environment environment;
 
 	public ProgressLogger(Environment environment) {
 		this.environment = environment;

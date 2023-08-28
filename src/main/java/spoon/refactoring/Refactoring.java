@@ -231,8 +231,7 @@ public final class Refactoring {
 	 * Result is written to /$Path/$Package. For different output folder see
 	 * {@link Refactoring#removeDeprecatedMethods(String, String)}.
 	 *
-	 * @param input Path to java files in folder.
-	 */
+     */
 	public static void removeDeprecatedMethods(String path) {
 		new CtDeprecatedRefactoring().removeDeprecatedMethods(path);
 	}

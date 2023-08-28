@@ -29,7 +29,7 @@ import spoon.support.Experimental;
 /**
  * Represents a pattern for matching code. A pattern is composed of a list of AST models, where a model is an AST with some nodes being "pattern parameters".
  *
- * Main documentation at http://spoon.gforge.inria.fr/pattern.html.
+ * Main documentation at <a href="http://spoon.gforge.inria.fr/pattern.html">...</a>.
  *
  * Instances can created with {@link PatternBuilder}.
  *
@@ -43,7 +43,7 @@ import spoon.support.Experimental;
  */
 @Experimental
 public class Pattern {
-	private ListOfNodes modelValueResolver;
+	private final ListOfNodes modelValueResolver;
 	private boolean addGeneratedBy = false;
 	private final Factory factory;
 	/** package-protected, must use {@link PatternBuilder} */

@@ -12,7 +12,7 @@ package spoon;
  *
  * In Spoon, we do believe that poetry has a place in software.
  *
- * This class counters the dark side of the force which won at https://github.com/rust-lang/rust/issues/13871
+ * This class counters the dark side of the force which won at <a href="https://github.com/rust-lang/rust/issues/13871">...</a>
  */
 public class LovecraftException extends SpoonException {
 	private static final long serialVersionUID = 1L;

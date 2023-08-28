@@ -26,7 +26,7 @@ public class CtModifierHandler implements Serializable {
 
 	private Set<CtExtendedModifier> modifiers = CtElementImpl.emptySet();
 
-	private CtElement element;
+	private final CtElement element;
 
 	public CtModifierHandler(CtElement element) {
 		this.element = element;

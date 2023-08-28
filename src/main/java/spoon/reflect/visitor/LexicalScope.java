@@ -26,7 +26,7 @@ import java.util.function.Function;
  * //scope3
  * }
  *
- * See https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping
+ * See <a href="https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping">...</a>
  */
 @Experimental
 public interface LexicalScope {

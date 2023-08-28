@@ -446,7 +446,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 				try {
 					new JDTCommentBuilder(unit, aFactory).build();
 				} catch (Exception e) {
-					getEnvironment().report(null, Level.ERROR, "JDTCommentBuilder crashed with the error, some comments may be missing in the model: " + e.toString());
+					getEnvironment().report(null, Level.ERROR, "JDTCommentBuilder crashed with the error, some comments may be missing in the model: " + e);
 				}
 			});
 		}

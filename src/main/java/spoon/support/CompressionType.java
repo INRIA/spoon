@@ -15,5 +15,5 @@ public enum CompressionType {
 	NONE,
 	GZIP,
 	LZMA,
-	BZIP2;
+	BZIP2
 }

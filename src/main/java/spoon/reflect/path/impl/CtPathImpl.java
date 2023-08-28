@@ -43,7 +43,7 @@ public class CtPathImpl implements CtPath {
 
 		int index = 0;
 		for (CtPathElement pathEl : getElements()) {
-			if (pathEl.getElements(roots).size() > 0) {
+			if (!pathEl.getElements(roots).isEmpty()) {
 				break;
 			}
 			index++;

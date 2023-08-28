@@ -32,13 +32,11 @@ import java.util.List;
  */
 public class CtPathBuilder {
 
-	private List<CtPathElement> elements = new LinkedList<>();
+	private final List<CtPathElement> elements = new LinkedList<>();
 
 	/**
 	 * Add a name matcher to this path.
 	 *
-	 * @param name
-	 * @param args
 	 * @return
 	 */
 	public CtPathBuilder name(String name, String[]... args) {
