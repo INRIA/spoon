@@ -12,20 +12,24 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
 jobs:
   qodana:
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
         with:
-          fetch-depth: 0  # a full history is required for pull request analysis
+          fetch-depth: 0
       - name: 'Qodana Scan'
-        uses: JetBrains/qodana-action@v2023.2
+        uses: JetBrains/qodana-action@77f0ff0c702065648df9fd0340a48919dca5a1ff # v2023.2.1
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+      - uses: github/codeql-action/upload-sarif@a09933a12a80f87b87005513f0abb1494c27a716 # v2
         with:
-            post-pr-comment: "false"
-            pr-mode: "false"
-            # push-fixes: pull-request
-            # args: "--apply-fixes"
+          sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
 
