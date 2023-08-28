@@ -197,7 +197,7 @@ public class ContextBuilder {
 				this.<T, CtLocalVariable<T>>getVariableDeclaration(name, clazz);
 		if (localVariable == null) {
 			// note: this happens when using the new try(vardelc) structure
-			this.jdtTreeBuilder.getLogger().error(
+			JDTTreeBuilder.getLogger().error(
 					format("Could not find declaration for local variable %s at %s",
 							name, getCurrentElement().getPosition()));
 		}
@@ -212,7 +212,7 @@ public class ContextBuilder {
 				this.<T, CtCatchVariable<T>>getVariableDeclaration(name, clazz);
 		if (catchVariable == null) {
 			// note: this happens when using the new try(vardelc) structure
-			this.jdtTreeBuilder.getLogger().error(
+			JDTTreeBuilder.getLogger().error(
 					format("Could not find declaration for catch variable %s at %s",
 							name, getCurrentElement().getPosition()));
 		}
@@ -224,7 +224,7 @@ public class ContextBuilder {
 		if (variable == null) {
 			// note: this happens when using the new try(vardelc) structure
 			// note: this can happen when identifier is not a variable name but e.g. a Type name.
-			this.jdtTreeBuilder.getLogger().debug(
+			JDTTreeBuilder.getLogger().debug(
 					format("Could not find declaration for variable %s at %s.",
 							name, getCurrentElement().getPosition()));
 		}

@@ -1519,7 +1519,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		} else if (qualifiedNameRef.binding instanceof TypeBinding) {
 			TypeBinding typeBinding = (TypeBinding) qualifiedNameRef.binding;
 			CtTypeReference<?> typeRef = references.getTypeReference(typeBinding);
-			helper.handleImplicit(typeBinding.getPackage(), qualifiedNameRef, null, typeRef);
+			JDTTreeBuilderHelper.handleImplicit(typeBinding.getPackage(), qualifiedNameRef, null, typeRef);
 			context.enter(factory.Code().createTypeAccessWithoutCloningReference(typeRef), qualifiedNameRef);
 			return true;
 		} else if (qualifiedNameRef.binding instanceof ProblemBinding) {

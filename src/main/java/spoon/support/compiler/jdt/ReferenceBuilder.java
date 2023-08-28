@@ -112,7 +112,7 @@ public class ReferenceBuilder {
 
 	// Allow to detect circular references and to avoid endless recursivity
 	// when resolving parameterizedTypes (e.g. Enum<E extends Enum<E>>)
-	private Map<TypeBinding, CtTypeReference> exploringParameterizedBindings = new HashMap<>();
+	private final Map<TypeBinding, CtTypeReference> exploringParameterizedBindings = new HashMap<>();
 
 	private final JDTTreeBuilder jdtTreeBuilder;
 
@@ -191,7 +191,7 @@ public class ReferenceBuilder {
 			this.jdtTreeBuilder.getContextBuilder().isBuildTypeCast = isTypeCast;
 			this.jdtTreeBuilder.getContextBuilder().enter(currentReference, type);
 			this.jdtTreeBuilder.getContextBuilder().isBuildTypeCast = false;
-			if (type.annotations != null && type.annotations.length - 1 <= position && type.annotations[position] != null && type.annotations[position].length > 0) {
+			if (type.annotations != null && type.annotations.length - 1 <= position && type.annotations[position] != null) {
 				for (Annotation annotation : type.annotations[position]) {
 					if (scope instanceof ClassScope) {
 						annotation.traverse(this.jdtTreeBuilder, (ClassScope) scope);
@@ -231,7 +231,7 @@ public class ReferenceBuilder {
 		if (type instanceof SingleTypeReference) {
 			typeReference.setSimplyQualified(true);
 		} else if (type instanceof QualifiedTypeReference) {
-			jdtTreeBuilder.getHelper().handleImplicit((QualifiedTypeReference) type, typeReference);
+			JDTTreeBuilderHelper.handleImplicit((QualifiedTypeReference) type, typeReference);
 		}
 		return typeReference;
 	}
@@ -604,7 +604,7 @@ public class ReferenceBuilder {
 		if (ref instanceof SingleTypeReference) {
 			ctRef.setSimplyQualified(true);
 		} else if (ref instanceof QualifiedTypeReference) {
-			jdtTreeBuilder.getHelper().handleImplicit((QualifiedTypeReference) ref, ctRef);
+			JDTTreeBuilderHelper.handleImplicit((QualifiedTypeReference) ref, ctRef);
 		}
 		return ctRef;
 	}

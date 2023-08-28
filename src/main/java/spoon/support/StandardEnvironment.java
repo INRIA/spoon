@@ -98,7 +98,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean enableComments = true;
 
-	private transient  Logger logger = Launcher.LOGGER;
+	private final transient  Logger logger = Launcher.LOGGER;
 
 	private Level level = Level.ERROR;
 
@@ -539,7 +539,7 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public boolean getNoClasspath() {
 		if (this.noclasspath == null) {
-			print("Spoon is used with the default noClasspath option set as true. See: http://spoon.gforge.inria.fr/launcher.html#about-the-classpath", level.INFO);
+			print("Spoon is used with the default noClasspath option set as true. See: http://spoon.gforge.inria.fr/launcher.html#about-the-classpath", Level.INFO);
 			this.noclasspath = true;
 		}
 		return noclasspath;
