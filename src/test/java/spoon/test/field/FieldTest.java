@@ -277,13 +277,15 @@ public class FieldTest {
 	void testArrayLengthDeclaringTypeNested() {
 		// contract: the declaring type of a "length" access on arrays is set even when nested
 		Launcher launcher = new Launcher();
-		launcher.addInputResource(new VirtualFile("public class Example {\n" +
-																							"	public String[] array = new String[4];\n" +
-																							"	public static void main(String[] args) {\n" +
-																							"		Example other = new Example();\n" +
-																							"		int i = other.array.length;\n" +
-																							"	}\n" +
-																							"}"));
+		launcher.addInputResource(new VirtualFile(
+						"public class Example {\n" +
+						"	public String[] array = new String[4];\n" +
+						"	public static void main(String[] args) {\n" +
+						"		Example other = new Example();\n" +
+						"		int i = other.array.length;\n" +
+						"	}\n" +
+						"}"
+		));
 
 		CtModel ctModel = launcher.buildModel();
 		List<CtFieldReference<?>> elements = ctModel.getElements(new TypeFilter<>(CtFieldReference.class));
