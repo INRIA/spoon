@@ -92,8 +92,14 @@ public class CompilationUnitFactory extends SubFactory {
 	/**
 	 * remove a type from the list of types to be pretty-printed
 	 */
-	public void removeType(CtType type) {
-		cachedCompilationUnits.remove(type.getPosition().getCompilationUnit().getFile().getAbsolutePath());
+	public void removeType(CtType<?> type) {
+		File file = type.getPosition().getCompilationUnit().getFile();
+		if (file != null) {
+			cachedCompilationUnits.remove(type.getPosition().getCompilationUnit().getFile().getAbsolutePath());
+		} else {
+			// Virtual files do not have a file, so fall back to a slow scan, trying to find them by reference equality
+			cachedCompilationUnits.values().removeIf(it -> it == type.getPosition().getCompilationUnit());
+		}
 	}
 
 	/**
