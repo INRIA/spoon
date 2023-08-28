@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.ExportsStatement;
+import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
@@ -366,10 +367,30 @@ public class JDTTreeBuilderHelper {
 			if (ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
 				va.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(ref.getDeclaringType(), true));
 			} else if (!ref.isStatic()) {
-				va.setTarget(jdtTreeBuilder.getFactory().Code().createThisAccess(jdtTreeBuilder.getReferencesBuilder().getTypeReference(singleNameReference.actualReceiverType), true));
+				CtTypeReference<?> owningType = jdtTreeBuilder.getReferencesBuilder().getTypeReference(singleNameReference.actualReceiverType);
+				if (enclosingClassHasFieldWithName(singleNameReference)) {
+					va.setTarget(jdtTreeBuilder.getFactory().Code().createThisAccess(owningType, true));
+				} else {
+					va.setTarget(
+							jdtTreeBuilder.getFactory().createSuperAccess()
+									.setType(owningType)
+									.setImplicit(true)
+					);
+				}
 			}
 		}
 		return va;
+	}
+
+	private boolean enclosingClassHasFieldWithName(SingleNameReference singleNameReference) {
+		for (ASTPair pair : jdtTreeBuilder.getContextBuilder().getAllContexts()) {
+			if (pair.node instanceof TypeDeclaration) {
+				FieldDeclaration[] fields = ((TypeDeclaration) pair.node).fields;
+				return fields != null
+						&& Arrays.stream(fields).anyMatch(it -> Arrays.equals(it.name, singleNameReference.token));
+			}
+		}
+		return false;
 	}
 
 	/**

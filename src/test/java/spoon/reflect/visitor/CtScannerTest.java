@@ -39,6 +39,7 @@ import spoon.metamodel.Metamodel;
 import spoon.metamodel.MetamodelConcept;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -271,9 +272,9 @@ public class CtScannerTest {
 		// this is a coarse-grain check to see if the scanner changes
 		// no more exec ref in paramref
 		// also takes into account the comments
-		assertEquals(3667, counter.nElement + countOfCommentsInCompilationUnits);
-		assertEquals(2449, counter.nEnter + countOfCommentsInCompilationUnits);
-		assertEquals(2449, counter.nExit + countOfCommentsInCompilationUnits);
+		assertEquals(3629, counter.nElement + countOfCommentsInCompilationUnits);
+		assertEquals(2411, counter.nEnter + countOfCommentsInCompilationUnits);
+		assertEquals(2411, counter.nExit + countOfCommentsInCompilationUnits);
 
 		// contract: all AST nodes which are part of Collection or Map are visited first by method "scan(Collection|Map)" and then by method "scan(CtElement)"
 		Counter counter2 = new Counter();

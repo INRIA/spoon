@@ -17,10 +17,7 @@
 package spoon.test.targeted;
 
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtExpression;
@@ -44,6 +41,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.CtLineElementComparator;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.code.CtConstructorCallImpl;
 import spoon.support.reflect.code.CtFieldReadImpl;
 import spoon.support.reflect.code.CtThisAccessImpl;
@@ -55,6 +53,8 @@ import spoon.test.targeted.testclasses.Pozole;
 import spoon.test.targeted.testclasses.SuperClass;
 import spoon.test.targeted.testclasses.Tapas;
 import spoon.testing.utils.ModelTest;
+
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -537,6 +537,32 @@ public class TargetedExpressionTest {
 		final CtTypeReference<Object> thirdExpectedInner = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$4InnerSubscriber");
 		expectedThisAccess = type.getFactory().Code().createThisAccess(thirdExpectedInner);
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(thirdExpectedInner).target(expectedThisAccess).type(CtFieldWrite.class).result("this.index").isLocal(), elements.get(2));
+	}
+
+	@Test
+	void testUnqualifiedSuperFieldAccess() {
+		// contract: Unqualified super field accesses are modeled by an implicit CtSuperAccess
+		Launcher launcher = new Launcher();
+
+		launcher.getEnvironment().setComplianceLevel(17);
+		launcher.addInputResource(new VirtualFile(
+			"class A {\n" +
+			"    int a;\n" +
+			"}\n" +
+			"\n" +
+			"class B extends A {\n" +
+			"    void foo() {\n" +
+			"        super.a = a;\n" +
+			"    }\n" +
+			"}\n"
+		));
+
+		CtModel ctModel = launcher.buildModel();
+
+		CtFieldRead<?> read = ctModel.getElements(new TypeFilter<>(CtFieldRead.class)).get(0);
+		assertTrue(read.getTarget() instanceof CtSuperAccess<?>, "Target was no super access");
+		assertTrue(read.getTarget().isImplicit(), "super target was not implicit");
+		assertEquals(read.toString(), "a", "super target was still printed");
 	}
 
 	private void assertEqualsFieldAccess(ExpectedTargetedExpression expected, CtFieldAccess<?> fieldAccess) {
