@@ -15,10 +15,6 @@ on:
 jobs:
   qodana:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      checks: write
     steps:
       - uses: actions/checkout@v3
         with:
@@ -30,4 +26,6 @@ jobs:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
         with:
             post-pr-comment: "false"
+            push-fixes: pull-request
+            args: "--apply-fixes"
 
