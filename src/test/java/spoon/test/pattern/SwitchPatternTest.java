@@ -16,7 +16,7 @@ class SwitchPatternTest {
 
 	private static CtModel createModelFromString(String code) {
 		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setComplianceLevel(19);
+		launcher.getEnvironment().setComplianceLevel(20);
 		launcher.getEnvironment().setPreviewFeaturesEnabled(true);
 		launcher.addInputResource(new VirtualFile(code));
 		return launcher.buildModel();
