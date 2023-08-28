@@ -296,7 +296,7 @@ public class JDTTreeBuilderHelper {
 				}
 				other.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 				va = other;
-				declaringType = b.type;
+				declaringType = b != null ? b.type : null; // no classpath mode might cause b to be null
 				i++;
 			}
 		} else if (!(qualifiedNameReference.binding instanceof FieldBinding) && qualifiedNameReference.tokens.length > 1) {
