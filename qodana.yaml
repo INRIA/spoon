@@ -14,7 +14,7 @@ groups:
       - SyntaxError # should work on sanity level
       - Since15 #Detects wrong language level. Should work on sanity.
       - JavadocBlankLines # Questionable. Spam on mockito, RxJava and other projects.
-      - UseOfClone # We use clone correct implemented often as deep copy. It's not a problem.
+      - UseOfClone # We often use clone (correctly implemented as a deep copy). It's not a problem.
       - UnstableApiUsage  
       - MissortedModifiers   # Disabled for annotations applied to type
 inspections:
