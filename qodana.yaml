@@ -6,7 +6,8 @@ include:
   - name: AssignmentToCatchBlockParameter
   - name: AssignmentToLambdaParameter
   - name: AssignmentToMethodParameter
-  - name: AssignmentToNull
+  # disabled as it does not support nullability annotations
+  #- name: AssignmentToNull
   - name: Convert2Lambda
   - name: DoubleBraceInitialization
   - name: EqualsAndHashcode
