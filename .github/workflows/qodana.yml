@@ -37,6 +37,8 @@ jobs:
           with:
             args: --source-directory,./spoon-javadoc/src/main/java , --fail-threshold, 0
             post-pr-comment: "false"
+          env:
+            QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }
         - uses: github/codeql-action/upload-sarif@a09933a12a80f87b87005513f0abb1494c27a716 # v2
           with:
             sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
