@@ -38,6 +38,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -270,6 +271,25 @@ public class FieldTest {
 		List<CtFieldReference<?>> elements = ctModel.getElements(new TypeFilter<>(CtFieldReference.class));
 		assertEquals(1, elements.size());
 		assertEquals(Set.of(ModifierKind.PUBLIC, ModifierKind.FINAL), elements.get(0).getModifiers());
+	}
+
+	@Test
+	void testArrayLengthDeclaringTypeNested() {
+		// contract: the declaring type of a "length" access on arrays is set even when nested
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile("public class Example {\n" +
+																							"	public String[] array = new String[4];\n" +
+																							"	public static void main(String[] args) {\n" +
+																							"		Example other = new Example();\n" +
+																							"		int i = other.array.length;\n" +
+																							"	}\n" +
+																							"}"));
+
+		CtModel ctModel = launcher.buildModel();
+		List<CtFieldReference<?>> elements = ctModel.getElements(new TypeFilter<>(CtFieldReference.class));
+		assertEquals(2, elements.size());
+		CtArrayTypeReference<?> stringArrayRef = launcher.getFactory().createArrayReference("java.lang.String");
+		assertEquals(stringArrayRef, elements.get(1).getDeclaringType());
 	}
 
 }

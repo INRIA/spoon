@@ -283,11 +283,11 @@ public class JDTTreeBuilderHelper {
 			int i = 0; //positions index;
 			va.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 			sourceStart = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32);
+			TypeBinding declaringType = ((VariableBinding) qualifiedNameReference.binding).type;
 			for (FieldBinding b : qualifiedNameReference.otherBindings) {
 				isOtherBinding = qualifiedNameReference.otherBindings.length == i + 1;
-				TypeBinding type = ((VariableBinding) qualifiedNameReference.binding).type;
 				CtFieldAccess<T> other = createFieldAccess(
-						jdtTreeBuilder.getReferencesBuilder().getVariableReference(type, b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
+						jdtTreeBuilder.getReferencesBuilder().getVariableReference(declaringType, b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
 				//set source position of fa
 				if (i + qualifiedNameReference.indexOfFirstFieldBinding >= qualifiedNameReference.otherBindings.length) {
 					sourceEnd = qualifiedNameReference.sourceEnd();
@@ -296,6 +296,7 @@ public class JDTTreeBuilderHelper {
 				}
 				other.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 				va = other;
+				declaringType = b.type;
 				i++;
 			}
 		} else if (!(qualifiedNameReference.binding instanceof FieldBinding) && qualifiedNameReference.tokens.length > 1) {
