@@ -27,5 +27,5 @@ jobs:
             post-pr-comment: "false"
             pr-mode: "false"
             push-fixes: pull-request
-            args: "--apply-fixes"
+            # args: "--apply-fixes"
 
