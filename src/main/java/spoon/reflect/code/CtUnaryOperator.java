@@ -31,13 +31,13 @@ public interface CtUnaryOperator<T> extends CtExpression<T>, CtStatement {
 	 * Gets the expression to which the operator is applied.
 	 */
 	@PropertyGetter(role = EXPRESSION)
-	CtExpression<T> getOperand();
+	CtExpression<?> getOperand();
 
 	/**
 	 * Sets the expression to which the operator is applied.
 	 */
 	@PropertySetter(role = EXPRESSION)
-	<C extends CtUnaryOperator> C setOperand(CtExpression<T> expression);
+	<C extends CtUnaryOperator> C setOperand(CtExpression<?> expression);
 
 	/**
 	 * Sets the kind of this operator.
