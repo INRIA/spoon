@@ -30,6 +30,7 @@ jobs:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
         with:
           pr-mode: false
+          post-pr-comment: false
           args: --cleanup, -l, jetbrains/qodana-jvm:2023.2
           push-fixes: pull-request
 
