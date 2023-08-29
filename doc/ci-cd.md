@@ -1,4 +1,13 @@
-# Spoon Releases
+# Spoon CI/CD config
+
+## Continuous integration
+
+Spoon uses Github Actions pipelines and a Jenkins server for regression testing.
+
+The main Github Actions pipeline for testing are based on NIX as follows: TODO document a bit.
+
+
+## Continuous delivery
 
 ## Versioning
 
@@ -8,7 +17,6 @@ Spoon uses a three digit version number MAJOR.MINOR.HOTPATCH. We follow semantic
 * we bump MINOR in the remaining cases (the majority of cases).
 * we bump HOTPATCH when a normal release is not operational.
 
-## Continuous delivery
 
 ### Beta versions
 
