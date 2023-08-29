@@ -1,0 +1,29 @@
+name: Setup test environment
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set git user
+      shell: bash
+      run: |
+        git config --global user.name "GitHub Actions Bot"
+        git config --global user.email "<>"
+    - name: Install Nix
+      uses: DeterminateSystems/nix-installer-action@65d7c888b2778e8cf30a07a88422ccb23499bfb8 # v4
+    - uses: DeterminateSystems/magic-nix-cache-action@8a218f9e264e9c3803c9a1ee1c30d8e4ab55be63 # v2
+    - name: Check Nixpkgs inputs
+      uses: DeterminateSystems/flake-checker-action@4b90f9fc724969ff153fe1803460917c84fe00a3 # v5
+      with:
+        fail-mode: true
+    - name: Use Maven dependency cache
+      uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+      with:
+        path: ~/.m2/repository
+        # We use a unique key and restore from the base one, to ensure that
+        # the cache is updated every time, even if a cache hit was observed.
+        # See
+        # https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
+        # for more information.
+        key: ${{ runner.os }}-maven-${{ github.run_id }}
+        restore-keys: |
+          ${{ runner.os }}-maven

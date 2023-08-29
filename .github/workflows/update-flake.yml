@@ -1,0 +1,30 @@
+name: Update flake.lock
+on:
+  workflow_dispatch: # allows manual triggering
+  schedule:
+    - cron: '0 0 * * 0' # runs weekly on Sunday at 00:00
+
+jobs:
+  lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+        with:
+          fetch-depth: 0
+      - name: Setup env
+        uses: ./.github/actions/setup-tests
+
+      - name: Update flake.lock
+        uses: DeterminateSystems/update-flake-lock@da2fd6f2563fe3e4f2af8be73b864088564e263d # v20
+        id: update-flake
+        with:
+          pr-title: "chore(deps): Update flake.lock"
+          pr-labels: |
+            chore
+          token: ${{ secrets.GH_PAT_NIX }}
+
+      - name: Enable Pull Request Automerge
+        run: 'gh pr merge --auto --squash -t "chore(deps): Update flake.lock" ${{ steps.update-flake.outputs.pull-request-number }}'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT_NIX }}
