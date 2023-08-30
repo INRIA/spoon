@@ -16,7 +16,8 @@ groups:
       - JavadocBlankLines # Questionable. Spam on mockito, RxJava and other projects.
       - UseOfClone # We often use clone (correctly implemented as a deep copy). It's not a problem.
       - UnstableApiUsage  
-      - MissortedModifiers   # Disabled for annotations applied to type
+      - MissortedModifiers # Disabled for annotations applied to type
+      - AssignmentToNull   # Disabled as it does not support nullability annotations
 inspections:
   - group: ExcludedInspections
     enabled: false
