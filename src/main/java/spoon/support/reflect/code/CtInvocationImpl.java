@@ -207,14 +207,4 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 	public CtInvocation<T> clone() {
 		return (CtInvocation<T>) super.clone();
 	}
-
-
-	// just to test if qodana works
-	public void qodanaTest(String a) {
-		Integer[] arr = null;
-		arr.toString();
-		arr.hashCode();
-		a.equals(arr);
-		System.out.println(a);
-	}
 }
