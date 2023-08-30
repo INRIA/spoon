@@ -40,6 +40,7 @@ import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
+import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExecutableReferenceExpression;
@@ -283,11 +284,11 @@ public class JDTTreeBuilderHelper {
 			int i = 0; //positions index;
 			va.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 			sourceStart = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32);
+			@Nullable TypeBinding declaringType = ((VariableBinding) qualifiedNameReference.binding).type;
 			for (FieldBinding b : qualifiedNameReference.otherBindings) {
 				isOtherBinding = qualifiedNameReference.otherBindings.length == i + 1;
-				TypeBinding type = ((VariableBinding) qualifiedNameReference.binding).type;
 				CtFieldAccess<T> other = createFieldAccess(
-						jdtTreeBuilder.getReferencesBuilder().getVariableReference(type, b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
+						jdtTreeBuilder.getReferencesBuilder().getVariableReference(declaringType, b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
 				//set source position of fa
 				if (i + qualifiedNameReference.indexOfFirstFieldBinding >= qualifiedNameReference.otherBindings.length) {
 					sourceEnd = qualifiedNameReference.sourceEnd();
@@ -296,6 +297,7 @@ public class JDTTreeBuilderHelper {
 				}
 				other.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 				va = other;
+				declaringType = b != null ? b.type : null; // no classpath mode might cause b to be null
 				i++;
 			}
 		} else if (!(qualifiedNameReference.binding instanceof FieldBinding) && qualifiedNameReference.tokens.length > 1) {
