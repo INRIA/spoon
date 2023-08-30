@@ -4,8 +4,27 @@
 
 Spoon uses Github Actions pipelines and a Jenkins server for regression testing.
 
-The main Github Actions pipeline for testing are based on NIX as follows: TODO document a bit.
+The Github Actions pipeline currently executes multiple static analysis and
+code quality tools, and also runs unit tests for all spoon projects.
+Most commands executed in the pipeline are run in a [Nix](https://nixos.org)
+flake dev-shell, which you can also enter locally.
+This should ensure that running tests locally or on CI has the same results.
+Currently, the environment is not completely reproducible, as Nix has no good
+way to package maven dependencies.
 
+To enter the CI test environment for a given jdk, run `nix develop
+.#jdk<version>` or `nix develop` to use the default, latest version.
+The development shell provides multiple commands used by CI.
+The most important commands are
+- **`test`**: Executes tests for the core module
+- **`javadoc-quality`**: Runs the Javadoc quality check to ensure the
+  documentation quality does not degrade
+- **`reproducible-builds`**: Builds spoon twice and verifies the output is
+  identical using [diffoscope](https://diffoscope.org/)
+
+More commands exist for testing code coverage, ensuring the various spoon
+submodules still compile and their tests pass, as well as helpers for releasing
+spoon versions.
 
 ## Continuous delivery
 
