@@ -1,15 +1,9 @@
-# Workflow for testing spoon code quality.
-#
-# Note that actions are specified by commit hash. This is to avoid the security
-# risk of someone injecting malicious code into a release and then simply
-# changing a tag.
-
 name: Qodana-Cloud-Scan
 on:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
-  pull_request:
+  push:
     branches:
       - master
 
