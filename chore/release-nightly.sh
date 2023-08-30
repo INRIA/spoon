@@ -11,5 +11,5 @@ mvn --no-transfer-progress --batch-mode -Pjreleaser deploy:deploy-file -Dfile=".
 echo "::endgroup::"
 
 echo "::group::Running jreleaser"
-JRELEASER_PROJECT_VERSION="$NEXT_VERSION" jreleaser-cli deploy
+JRELEASER_PROJECT_VERSION="$CURRENT_VERSION_WITH_SNAPSHOT" jreleaser-cli deploy
 echo "::endgroup::"
