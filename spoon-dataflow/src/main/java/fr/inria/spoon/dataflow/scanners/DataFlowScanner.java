@@ -1399,7 +1399,7 @@ public abstract class DataFlowScanner extends AbstractCheckingScanner
             case PREINC:
             case POSTDEC:
             case PREDEC:
-                CtExpression<T> operand = operator.getOperand();
+                CtExpression<?> operand = operator.getOperand();
                 Expr prevExpr;
                 if (operand instanceof CtArrayWrite)
                 {
