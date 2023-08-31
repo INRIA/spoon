@@ -28,13 +28,13 @@ spoon versions.
 
 ## Continuous delivery
 
-Spoon has different three release channels:
+Spoon has three different release channels:
 - **Snapshot**: The latest development version, published to the Sonatype
   snapshot repository. This version is not guaranteed to be stable, and may
-  contain breaking changes.
+  contain breaking changes. After 90 days, snapshots are automatically deleted by Sonatype.
 - **Beta**: A release candidate for the next stable release. Weekly beta
-  releases are published to the Sonatype staging repository. 
-- **Stable**: A release following the [Semantic Versioning](https://semver.org)
+  releases are published to the SonaType release repository. This may contain unstable features, but should be mostly stable.
+- **Stable**: A stable release following the [Semantic Versioning](https://semver.org)
   specification. These releases are published to the Sonatype release
   repository.
 
