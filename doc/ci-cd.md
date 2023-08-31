@@ -28,6 +28,32 @@ spoon versions.
 
 ## Continuous delivery
 
+Spoon has different three release channels:
+- **Snapshot**: The latest development version, published to the Sonatype
+  snapshot repository. This version is not guaranteed to be stable, and may
+  contain breaking changes.
+- **Beta**: A release candidate for the next stable release. Weekly beta
+  releases are published to the Sonatype staging repository. 
+- **SemVer**: A release following the [Semantic Versioning](https://semver.org)
+  specification. These releases are published to the Sonatype release
+  repository.
+
+For the automatic release process, we use the [JReleaser](https://jreleaser.org) and GitHub actions.
+Beta and Snapshot releases are automatically published, see [Beta](../.github/workflows/release-beta.yml) and [Snapshot](../.github/workflows/release-nightly.yml) workflows.
+SemVer's releases are manually triggered, see [SemVer](../.github/workflows/release-manual.yml) workflow.
+This is a GitHub workflow that triggers the [JReleaser](https://jreleaser.org) release process.
+The input for this workflow is the next semver version: major, minor, patch.
+The script will automatically create a new branch, update the version number, create a tag, push the tag, and create a release on GitHub.
+Also, there will be a new release on Maven Central afterwards.
+The release process is:
+1. Create a new branch from the master branch
+2. Update the version number in the pom.xml files, parent + all child modules.
+3. Create a commit with the new version number.
+4. Execute the complete `maven verify` phase and deploy the artifacts to the staging repository.
+5. Execute `JReleaser` to create a release on GitHub and Maven Central.
+6. Update the version number in the pom.xml files to the next snapshot version.
+7. Merge the branch into master with a fast-forward merge.
+
 ## Versioning
 
 Spoon uses a three digit version number MAJOR.MINOR.HOTPATCH. We follow semantic versioning with the exception that we may increment the major version number for significant new features even when there are no breaking changes
