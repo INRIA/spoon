@@ -148,7 +148,7 @@ xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project" --type el
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories" --type elem -n pluginRepository -v "" pom.bak.xml > pom.bak1.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n id -v "ow2.org-snapshot" pom.bak1.xml > pom.bak2.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n name -v "Maven repository for Spoon Snapshot" pom.bak2.xml > pom.bak3.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n url -v "https://repository.ow2.org/nexus/content/repositories/snapshots/" pom.bak3.xml > pom.bak4.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n url -v "https://oss.sonatype.org/content/repositories/snapshots/" pom.bak3.xml > pom.bak4.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n snapshots -v "" pom.bak4.xml > pom.bak5.xml
 mv pom.bak5.xml pom.xml
 rm pom.bak*.xml
