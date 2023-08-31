@@ -13,7 +13,7 @@
 
 # Allow to define some options to the maven command, such as debug or memory options
 # -Drat.skip=true is for skipping license check which fails on some project incl. https://ci.inria.fr/sos/job/Commons-lang/
-MAVEN_COMMAND="mvn $MVN_OPTS -Dmaven.javadoc.skip=true -Drat.skip=true"
+MAVEN_COMMAND="mvn $MVN_OPTS -Dmaven.javadoc.skip=true -Drat.skip=true -Denforcer.skip=true "
 
 echo " "
 echo "-------------------------------------------------------"
