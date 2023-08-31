@@ -64,6 +64,7 @@ import org.eclipse.jdt.internal.compiler.lookup.UnresolvedReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VoidTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
+import org.jspecify.annotations.Nullable;
 import spoon.NoClasspathWorkaround;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtModule;
@@ -1195,7 +1196,7 @@ public class ReferenceBuilder {
 		return bindingCache.get(b).clone();
 	}
 
-	<T> CtFieldReference<T> getVariableReference(TypeBinding type, FieldBinding varbin) {
+	<T> CtFieldReference<T> getVariableReference(@Nullable TypeBinding type, FieldBinding varbin) {
 		CtFieldReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createFieldReference();
 		if (varbin == null) {
 			return ref;
@@ -1212,7 +1213,7 @@ public class ReferenceBuilder {
 		return ref;
 	}
 
-	<T> CtFieldReference<T> getVariableReference(TypeBinding type, FieldBinding fieldBinding, char[] tokens) {
+	<T> CtFieldReference<T> getVariableReference(@Nullable TypeBinding type, FieldBinding fieldBinding, char[] tokens) {
 		final CtFieldReference<T> ref = getVariableReference(type, fieldBinding);
 		if (fieldBinding != null) {
 			return ref;
