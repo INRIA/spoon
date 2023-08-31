@@ -12,6 +12,7 @@
             "digest",
             "pinDigest"
          ],
+         "ignoreDeps": ["org.apache.maven:maven-model"],
          "automerge":true
       }
    ]
