@@ -34,13 +34,13 @@ Spoon has different three release channels:
   contain breaking changes.
 - **Beta**: A release candidate for the next stable release. Weekly beta
   releases are published to the Sonatype staging repository. 
-- **SemVer**: A release following the [Semantic Versioning](https://semver.org)
+- **Stable**: A release following the [Semantic Versioning](https://semver.org)
   specification. These releases are published to the Sonatype release
   repository.
 
 For the automatic release process, we use the [JReleaser](https://jreleaser.org) and GitHub actions.
-Beta and Snapshot releases are automatically published, see [Beta](../.github/workflows/release-beta.yml) and [Snapshot](../.github/workflows/release-nightly.yml) workflows.
-SemVer's releases are manually triggered, see [SemVer](../.github/workflows/release-manual.yml) workflow.
+Beta and Snapshot releases are automatically published, see [Beta](/.github/workflows/release-beta.yml) and [Snapshot](/.github/workflows/release-nightly.yml) workflows.
+Stable releases are manually triggered, see [SemVer](/.github/workflows/release-manual.yml) workflow.
 This is a GitHub workflow that triggers the [JReleaser](https://jreleaser.org) release process.
 The input for this workflow is the next semver version: major, minor, patch.
 The script will automatically create a new branch, update the version number, create a tag, push the tag, and create a release on GitHub.
