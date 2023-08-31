@@ -29,19 +29,18 @@ spoon versions.
 ## Continuous delivery
 
 Spoon has three different release channels:
-- **Snapshot**: The latest development version, published to the Sonatype
-  snapshot repository. This version is not guaranteed to be stable, and may
+- **Snapshot**: The latest development version, published daily to the Sonatype
+  snapshot repository. This version is not guaranteed to be stable and may
   contain breaking changes. After 90 days, snapshots are automatically deleted by Sonatype.
 - **Beta**: A release candidate for the next stable release. Weekly beta
-  releases are published to the SonaType release repository. This may contain unstable features, but should be mostly stable.
+  releases are published to the SonaType release repository. They may contain unstable features, but should be mostly stable.
 - **Stable**: A stable release following the [Semantic Versioning](https://semver.org)
   specification. These releases are published to the Sonatype release
   repository.
 
 For the automatic release process, we use the [JReleaser](https://jreleaser.org) and GitHub actions.
-Beta and Snapshot releases are automatically published, see [Beta](/.github/workflows/release-beta.yml) and [Snapshot](/.github/workflows/release-nightly.yml) workflows.
-Stable releases are manually triggered, see [SemVer](/.github/workflows/release-manual.yml) workflow.
-This is a GitHub workflow that triggers the [JReleaser](https://jreleaser.org) release process.
+Beta and Snapshot releases are published automatically, see [Beta](/.github/workflows/release-beta.yml) and [Snapshot](/.github/workflows/release-nightly.yml).
+Stable releases are triggered manually using the [SemVer](/.github/workflows/release-manual.yml) workflow, which starts the [JReleaser](https://jreleaser.org) release process.
 The input for this workflow is the next semver version: major, minor, patch.
 The script will automatically create a new branch, update the version number, create a tag, push the tag, and create a release on GitHub.
 Also, there will be a new release on Maven Central afterwards.
