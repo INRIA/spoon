@@ -309,7 +309,7 @@ public class ReferenceBuilder {
 	 * @param expectedName Name expected in imports.
 	 * @return CtReference which can be a CtTypeReference, a CtPackageReference or null.
 	 */
-	CtReference getDeclaringReferenceFromImports(char[] expectedName) {
+	@Nullable CtReference getDeclaringReferenceFromImports(char[] expectedName) {
 		CompilationUnitDeclaration cuDeclaration = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration;
 		if (cuDeclaration == null) {
 			return null;
@@ -887,7 +887,7 @@ public class ReferenceBuilder {
 	 * @return a type reference or null if the binding has no closest match
 	 */
 	@SuppressWarnings("ReturnOfNull")
-	private CtTypeReference<?> getTypeReferenceFromUnresolvedReferenceBinding(UnresolvedReferenceBinding binding) {
+	private @Nullable CtTypeReference<?> getTypeReferenceFromUnresolvedReferenceBinding(UnresolvedReferenceBinding binding) {
 		TypeBinding closestMatch = binding.closestMatch();
 		if (closestMatch != null) {
 			CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
