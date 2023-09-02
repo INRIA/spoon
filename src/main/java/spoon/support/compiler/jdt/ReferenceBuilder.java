@@ -64,6 +64,7 @@ import org.eclipse.jdt.internal.compiler.lookup.UnresolvedReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VoidTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
+import org.eclipse.jdt.internal.core.nd.util.CharArrayUtils;
 import org.jspecify.annotations.Nullable;
 import spoon.NoClasspathWorkaround;
 import spoon.reflect.code.CtLambda;
@@ -157,7 +158,17 @@ public class ReferenceBuilder {
 					return true;
 				}
 			});
-			if (ref != null) {
+			// Equality ignores implicit state. The `accessedType` correctly models implicit parts, `ref` resolves a
+			// fully qualified name which might be accessed using an alias, e.g.
+			// class Foo { static class Inner {} }
+			// class Bar extends Foo {}
+			// Use: package.Bar.Inner
+			// Here the `accessedType` is `package.Foo.Inner`, but we want `package.Bar.Inner`, which is what
+			// getQualifiedTypeReference computes.
+			// This is still not perfect, as getQualifiedTypeReference can not resolve accesses like `Bar.Inner` within
+			// Bar.
+			if (ref != null && !ref.equals(accessedType)) {
+				JDTTreeBuilderHelper.handleImplicit(type, ref);
 				accessedType = ref;
 			}
 		}
