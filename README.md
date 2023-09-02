@@ -107,8 +107,8 @@ Maven:
 
 <!-- .* Marker comment. -->
 
-- August 31, Spoon 10.4.1 [(changelog)](https://github.com/INRIA/spoon/releases/tag/v10.4.1)
-- Jul 6, Spoon 10.4.0 [(changelog)](https://github.com/INRIA/spoon/releases/tag/v10.4.0)
+- August 31 2023, Spoon 10.4.1 [(changelog)](https://github.com/INRIA/spoon/releases/tag/v10.4.1)
+- Jul 6 2023, Spoon 10.4.0 [(changelog)](https://github.com/INRIA/spoon/releases/tag/v10.4.0)
 - March 13 2023, Spoon 10.3.0 [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-10.3.0)
 - Oct 2022, Spoon 10.2.0 [(changelog)](https://github.com/INRIA/spoon/pull/4946)
 - April 2022, Spoon 10.1.0 [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-10.1.0)
