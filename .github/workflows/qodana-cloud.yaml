@@ -28,6 +28,5 @@ jobs:
         with:
           pr-mode: false
           post-pr-comment: false
-          args: --cleanup, -l, jetbrains/qodana-jvm:2023.2
-          push-fixes: pull-request
+          args: -l, jetbrains/qodana-jvm:2023.2 --profile-path, "qodana.yaml"
 
