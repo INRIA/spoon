@@ -37,5 +37,6 @@ inspections:
   - inspection: JavadocReference
     severity: WARNING # It has default ERROR severity. It's understandable for unresolved references in javadocs for editor but not on CI.
   - inspection: MissortedModifiers
+    enabled: true
     options:
       m_requireAnnotationsFirst: false
