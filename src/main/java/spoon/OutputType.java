@@ -44,7 +44,8 @@ public enum OutputType {
 	 *
 	 * @see Launcher#printUsage()
 	 */
-	public static @Nullable OutputType fromString(String string) {
+	@Nullable
+	public static OutputType fromString(String string) {
 		for (OutputType outputType : OutputType.values()) {
 			if (outputType.toString().equals(string)) {
 				return outputType;
