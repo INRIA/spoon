@@ -1,6 +1,5 @@
-profile:
-  name: qodana.recommended
-version: "1.0"
+name: "Spoon-Checks" # Profile name
+baseProfile: qodana.recommended
 groups:
   - groupId: IncludedPaths
     groups:
@@ -16,7 +15,7 @@ groups:
       - JavadocBlankLines # Questionable. Spam on mockito, RxJava and other projects.
       - UseOfClone # We often use clone (correctly implemented as a deep copy). It's not a problem.
       - UnstableApiUsage  
-      - MissortedModifiers # Disabled for annotations applied to type
+      # - MissortedModifiers # Disabled for annotations applied to type
       - AssignmentToNull   # Disabled as it does not support nullability annotations
 inspections:
   - group: ExcludedInspections
@@ -37,3 +36,6 @@ inspections:
       - "scope#file:buildSrc/*"
   - inspection: JavadocReference
     severity: WARNING # It has default ERROR severity. It's understandable for unresolved references in javadocs for editor but not on CI.
+  - inspection: MissortedModifiers
+    options:
+      m_requireAnnotationsFirst: false
