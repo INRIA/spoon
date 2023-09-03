@@ -1,5 +1,5 @@
 name: "Spoon-Checks" # Profile name
-baseProfile: qodana.recommended
+path: "chore/qodana-inspections.yaml"
 groups:
   - groupId: IncludedPaths
     groups:
@@ -9,7 +9,7 @@ groups:
     inspections:
       - "!IncludedPaths"
       - Annotator # substituted by JavaAnnotator in sanity
-      # - JavaAnnotator # works in "sanity" inspections
+      - JavaAnnotator # works in "sanity" inspections
       - SyntaxError # should work on sanity level
       - Since15 # Detects wrong language level. Should work on sanity.
       - JavadocBlankLines # Questionable. Spam on mockito, RxJava and other projects.
@@ -36,7 +36,3 @@ inspections:
       - "scope#file:buildSrc/*"
   - inspection: JavadocReference
     severity: WARNING # It has default ERROR severity. It's understandable for unresolved references in javadocs for editor but not on CI.
-  - inspection: MissortedModifiers
-    enabled: true
-    options:
-      m_requireAnnotationsFirst: true
