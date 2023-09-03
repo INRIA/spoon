@@ -39,4 +39,4 @@ inspections:
   - inspection: MissortedModifiers
     enabled: true
     options:
-      m_requireAnnotationsFirst: false
+      m_requireAnnotationsFirst: true
