@@ -3,6 +3,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
+  pull_request:
+    branches:
+      - master
   push:
     branches:
       - master
