@@ -28,5 +28,5 @@ jobs:
         with:
           pr-mode: false
           post-pr-comment: false
-          args: --profile-path, "qodana.yaml"
+          args: -l,jetbrains/qodana-jvm:latest,--profile-path, "qodana.yaml"
 
