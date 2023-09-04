@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: '0 0 * * 0' # runs weekly on Sunday at 00:00
 
+permissions:
+  pull-requests: write
+  contents: write
+
 jobs:
   lockfile:
     runs-on: ubuntu-latest
@@ -27,4 +31,4 @@ jobs:
       - name: Enable Pull Request Automerge
         run: 'gh pr merge --auto --squash -t "chore(deps): Update flake.lock" ${{ steps.update-flake.outputs.pull-request-number }}'
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT_NIX }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
