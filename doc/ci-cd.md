@@ -39,8 +39,8 @@ Spoon has three different release channels:
   repository.
 
 For the automatic release process, we use the [JReleaser](https://jreleaser.org) and GitHub actions.
-Beta and Snapshot releases are published automatically, see [Beta](/.github/workflows/release-beta.yml) and [Snapshot](/.github/workflows/release-nightly.yml).
-Stable releases are triggered manually using the [SemVer](/.github/workflows/release-manual.yml) workflow, which starts the [JReleaser](https://jreleaser.org) release process.
+Beta and Snapshot releases are published automatically, see [Beta](https://github.com/INRIA/spoon/blob/master/.github/workflows/release-beta.yml) and [Snapshot](https://github.com/INRIA/spoon/blob/master/.github/workflows/release-nightly.yml).
+Stable releases are triggered manually using the [SemVer](https://github.com/INRIA/spoon/blob/master/.github/workflows/release-manual.yml) workflow, which starts the [JReleaser](https://jreleaser.org) release process.
 The input for this workflow is the next semver version: major, minor, patch.
 The script will automatically create a new branch, update the version number, create a tag, push the tag, and create a release on GitHub.
 Also, there will be a new release on Maven Central afterwards.
@@ -52,7 +52,6 @@ The release process is:
 5. Execute `JReleaser` to create a release on GitHub and Maven Central.
 6. Update the version number in the pom.xml files to the next snapshot version.
 7. Merge the branch into master with a fast-forward merge.
-
 ## Versioning
 
 Spoon uses a three digit version number MAJOR.MINOR.HOTPATCH. We follow semantic versioning with the exception that we may increment the major version number for significant new features even when there are no breaking changes
