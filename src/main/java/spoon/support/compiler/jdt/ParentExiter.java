@@ -29,6 +29,7 @@ import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.jspecify.annotations.Nullable;
 
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -1041,7 +1042,7 @@ public class ParentExiter extends CtInheritanceScanner {
 	 * @param tryBlock
 	 * @return last CtCatch of `tryBlock` or null
 	 */
-	private CtCatch getLastCatcher(CtTry tryBlock) {
+	private @Nullable CtCatch getLastCatcher(CtTry tryBlock) {
 		List<CtCatch> catchers = tryBlock.getCatchers();
 		int nrCatchers = catchers.size();
 		if (nrCatchers > 0) {
