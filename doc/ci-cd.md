@@ -2,10 +2,10 @@
 
 ## Continuous integration
 
-Spoon uses Github Actions pipelines and a Jenkins server for regression testing.
+Spoon uses Github Actions and a Jenkins server for regression testing.
 
-The Github Actions pipeline currently executes multiple static analysis and
-code quality tools, and also runs unit tests for all spoon projects.
+The Github Actions pipelines currently runs unit tests for all spoon projects and executes multiple static analysis and
+code quality tools.
 Most commands executed in the pipeline are run in a [Nix](https://nixos.org)
 flake dev-shell, which you can also enter locally.
 This should ensure that running tests locally or on CI has the same results.
@@ -38,7 +38,7 @@ Spoon has three different release channels:
   specification. These releases are published to the Sonatype release
   repository.
 
-For the automatic release process, we use the [JReleaser](https://jreleaser.org) and GitHub actions.
+For the automatic release process, we use the [JReleaser](https://jreleaser.org) in GitHub actions.
 Beta and Snapshot releases are published automatically, see [Beta](https://github.com/INRIA/spoon/blob/master/.github/workflows/release-beta.yml) and [Snapshot](https://github.com/INRIA/spoon/blob/master/.github/workflows/release-nightly.yml).
 Stable releases are triggered manually using the [SemVer](https://github.com/INRIA/spoon/blob/master/.github/workflows/release-manual.yml) workflow, which starts the [JReleaser](https://jreleaser.org) release process.
 The input for this workflow is the next semver version: major, minor, patch.
@@ -61,11 +61,7 @@ Spoon uses a three digit version number MAJOR.MINOR.HOTPATCH. We follow semantic
 * we bump HOTPATCH when a normal release is not operational.
 
 
-### Beta versions
-
-Once per week, a beta version is pushed to central. This is done by script https://github.com/SpoonLabs/spoon-deploy/blob/master/deploy-spoon-maven-central.sh triggered by a cron-based Github action (https://github.com/SpoonLabs/spoon-deploy/blob/master/.github/workflows/deploy.yml).
-
-## Release reference documentation
+## Manual Releases
 
 This article is a short summary of the [official documentation of sonatype](http://central.sonatype.org/pages/ossrh-guide.html), an [article by yegor](http://www.yegor256.com/2014/08/19/how-to-release-to-maven-central.html) and [official documentation of maven release plugin](http://maven.apache.org/maven-release/maven-release-plugin/).
 
