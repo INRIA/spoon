@@ -70,7 +70,7 @@ public interface Environment {
 	 *
 	 * most robust: {@link PRETTY_PRINTING_MODE#DEBUG}
 	 * most sophisticated: {@link PRETTY_PRINTING_MODE#AUTOIMPORT}
-     *
+	 *
 	 * @return the kind of pretty-printing expected.
 	 */
 	PRETTY_PRINTING_MODE getPrettyPrintingMode();
@@ -223,7 +223,7 @@ public interface Environment {
 
 	/**
 	 * Sets Spoon to use tabulations in the source code.
-     *
+	 *
 	 * @param b	whether Spoon should use tabulations when pretty-printing
 	 */
 	void useTabulations(boolean b);
@@ -335,7 +335,7 @@ public interface Environment {
 
 	/**
 	 * Returns the value ot the option noclasspath
-     *
+	 *
 	 * @return true iff Spoon is currently in noclasspath mode
 	 */
 	boolean getNoClasspath();
@@ -385,7 +385,7 @@ public interface Environment {
 
 	/**
 	 * Gets the level of loggers asked by the user.
-     *
+	 *
 	 * @return the current logging level
 	 */
 	Level getLevel();
@@ -482,7 +482,7 @@ public interface Environment {
 
 	/**
 	 * Set the model change listener
-     *
+	 *
 	 * @param modelChangeListener change listener to set
 	 */
 	void setModelChangeListener(FineModelChangeListener modelChangeListener);
@@ -531,7 +531,7 @@ public interface Environment {
 
 	/**
 	 * Get the spoonProgress logger. This method mustn't return null.
-     *
+	 *
 	 * @return the spoonProgress
 	 */
 	SpoonProgress getSpoonProgress();
@@ -618,7 +618,7 @@ public interface Environment {
 	 * underlying JDT compiler. Type resolution can become unpredictable as the order in which types
 	 * are parsed becomes a determining factor in which duplicated type actually makes it into the
 	 * model.
-     *
+	 *
 	 * @param ignoreDuplicateDeclarations (default false)  set to true to allow spoon to create a model of a project that
 	 *                                 contains multiple times the same class
 	 */
