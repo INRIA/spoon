@@ -16,7 +16,7 @@ runs:
       with:
         fail-mode: true
     - name: Use Maven dependency cache
-      uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+      uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
       with:
         path: ~/.m2/repository
         # We use a unique key and restore from the base one, to ensure that
