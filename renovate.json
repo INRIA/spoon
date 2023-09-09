@@ -3,6 +3,7 @@
       "config:base",
       "helpers:pinGitHubActionDigests"
    ],
+   "ignoreDeps": ["org.apache.maven:maven-model"],
    "packageRules":[
       {
          "matchUpdateTypes":[
@@ -12,7 +13,6 @@
             "digest",
             "pinDigest"
          ],
-         "ignoreDeps": ["org.apache.maven:maven-model"],
          "automerge":true
       }
    ]
