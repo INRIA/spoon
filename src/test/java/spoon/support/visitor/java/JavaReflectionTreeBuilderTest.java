@@ -64,6 +64,7 @@ import spoon.metamodel.MetamodelConcept;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
@@ -955,6 +956,34 @@ public class JavaReflectionTreeBuilderTest {
 		// Make sure we got the right class, but this should be fine now in any case
 		assertNotNull(victim.getField("bar"));
 		assertNull(victim.getField("foo"));
+	}
+
+	@Test
+	void test() throws ClassNotFoundException {
+		// contract: Infinity, -Infinity, NaN are not literals
+		ClassLoader loader = JavacFacade.compileFiles(
+						Map.of(
+										"SpecialValues.java",
+										"public class SpecialValues {\n" +
+										"  public static final double d_inf = 1.0d / 0.0d;\n" +
+										"  public static final double d_m_inf = -1.0d / 0.0d;\n" +
+										"  public static final double d_nan = 0.0d / 0.0d;\n" +
+										"  public static final float f_inf = 1.0f / 0.0f;\n" +
+										"  public static final float f_m_inf = -1.0f / 0.0f;\n" +
+										"  public static final float f_nan = 0.0f / 0.0f;\n" +
+										"}\n"
+						),
+						List.of()
+		);
+
+		Factory factory = createFactory();
+		// Load the class
+		CtType<?> specialValues = factory.Type().get(loader.loadClass("SpecialValues"));
+		for (CtField<?> field : specialValues.getFields()) {
+			assertNotNull(field.getDefaultExpression());
+			assertFalse(field.getDefaultExpression() instanceof CtLiteral<?>, "special value cannot be represented by literal");
+		}
+
 	}
 
 
