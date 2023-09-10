@@ -9,6 +9,8 @@ package spoon.support.compiler.jdt;
 
 import java.util.Set;
 
+import org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.eclipse.jdt.internal.compiler.ast.FakeDefaultLiteral;
 import org.eclipse.jdt.internal.compiler.ast.GuardedPattern;
 import org.eclipse.jdt.internal.compiler.ast.TypePattern;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedGenericMethodBinding;
@@ -126,6 +128,7 @@ import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
+import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
@@ -343,6 +346,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(CaseStatement caseStatement, BlockScope scope) {
+		Expression[] constantExpressions = caseStatement.constantExpressions;
+		if (constantExpressions != null && constantExpressions.length == 2 && constantExpressions[1] instanceof FakeDefaultLiteral) {
+			context.getCurrentElement();
+			CtCase<?> caseNullDefault = (CtCase<?>) context.getCurrentElement();
+			// TODO add default
+		}
 	}
 
 	@Override

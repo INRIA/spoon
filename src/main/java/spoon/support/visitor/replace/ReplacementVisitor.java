@@ -1,9 +1,8 @@
-/*
- * SPDX-License-Identifier: (MIT OR CECILL-C)
- *
- * Copyright (C) 2006-2023 INRIA and contributors
- *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+/* SPDX-License-Identifier: (MIT OR CECILL-C)
+
+Copyright (C) 2006-2019 INRIA and contributors
+
+Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.replace;
 /**
@@ -12,6 +11,34 @@ package spoon.support.visitor.replace;
  * This class is generated automatically by the processor spoon.generating.ReplacementVisitorGenerator.
  */
 public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	static class CtCasePatternGuardReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtCasePattern element;
+
+		CtCasePatternGuardReplaceListener(spoon.reflect.code.CtCasePattern element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setGuard(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	static class CtCasePatternPatternReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtPattern> {
+		private final spoon.reflect.code.CtCasePattern element;
+
+		CtCasePatternPatternReplaceListener(spoon.reflect.code.CtCasePattern element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtPattern replace) {
+			this.element.setPattern(replace);
+		}
+	}
+
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	static class CtRecordRecordComponentsReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
 		private final spoon.reflect.declaration.CtRecord element;
@@ -2313,5 +2340,15 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(recordType.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(recordType));
 		replaceElementIfExist(recordType.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(recordType));
 		replaceInListIfExist(recordType.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(recordType));
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public void visitCtCasePattern(spoon.reflect.code.CtCasePattern casePattern) {
+		replaceInListIfExist(casePattern.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(casePattern));
+		replaceElementIfExist(casePattern.getPattern(), new spoon.support.visitor.replace.ReplacementVisitor.CtCasePatternPatternReplaceListener(casePattern));
+		replaceElementIfExist(casePattern.getGuard(), new spoon.support.visitor.replace.ReplacementVisitor.CtCasePatternGuardReplaceListener(casePattern));
+		replaceElementIfExist(casePattern.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(casePattern));
+		replaceInListIfExist(casePattern.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(casePattern));
 	}
 }

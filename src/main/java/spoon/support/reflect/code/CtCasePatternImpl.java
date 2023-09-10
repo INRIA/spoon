@@ -1,12 +1,21 @@
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtPattern;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
+import java.io.Serial;
+
+// TODO model listeners
 public class CtCasePatternImpl extends CtExpressionImpl<Void> implements CtCasePattern {
+	@Serial
+	private static final long serialVersionUID = 1L;
+	@MetamodelPropertyField(role = CtRole.PATTERN)
 	private CtPattern pattern;
+	@MetamodelPropertyField(role = CtRole.CONDITION)
 	private CtExpression<?> guard;
 
 	@Override
@@ -34,5 +43,10 @@ public class CtCasePatternImpl extends CtExpressionImpl<Void> implements CtCaseP
 	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCasePattern(this);
+	}
+
+	@Override
+	public CtCasePattern clone() {
+		return (CtCasePattern) super.clone();
 	}
 }

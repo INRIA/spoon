@@ -43,6 +43,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConditional;
@@ -59,6 +60,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
@@ -517,6 +519,16 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtCatchVariable(e);
+	}
+
+	@Override
+	public void visitCtCasePattern(CtCasePattern casePattern) {
+		if (child instanceof CtPattern pattern) {
+			casePattern.setPattern(pattern);
+		} else if (child instanceof CtExpression<?> guard) {
+			casePattern.setGuard(guard);
+		}
+		super.visitCtCasePattern(casePattern);
 	}
 
 	@Override
