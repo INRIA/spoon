@@ -13,7 +13,7 @@
 
 # Allow to define some options to the maven command, such as debug or memory options
 # -Drat.skip=true is for skipping license check which fails on some project incl. https://ci.inria.fr/sos/job/Commons-lang/
-MAVEN_COMMAND="mvn $MVN_OPTS -Dmaven.javadoc.skip=true -Drat.skip=true"
+MAVEN_COMMAND="mvn $MVN_OPTS -Dmaven.javadoc.skip=true -Drat.skip=true -Denforcer.skip=true "
 
 echo " "
 echo "-------------------------------------------------------"
@@ -148,7 +148,7 @@ xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project" --type el
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories" --type elem -n pluginRepository -v "" pom.bak.xml > pom.bak1.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n id -v "ow2.org-snapshot" pom.bak1.xml > pom.bak2.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n name -v "Maven repository for Spoon Snapshot" pom.bak2.xml > pom.bak3.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n url -v "https://repository.ow2.org/nexus/content/repositories/snapshots/" pom.bak3.xml > pom.bak4.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n url -v "https://oss.sonatype.org/content/repositories/snapshots/" pom.bak3.xml > pom.bak4.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n snapshots -v "" pom.bak4.xml > pom.bak5.xml
 mv pom.bak5.xml pom.xml
 rm pom.bak*.xml
@@ -158,7 +158,7 @@ xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n artifactId -v "spoon-maven-plugin" pom.bak2.xml > pom.bak3.xml
 
 # we depend on the latest version of spoon-maven-plugin) 
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n version -v "3.5-SNAPSHOT" pom.bak3.xml > pom.bak4.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n version -v "[3.7,)" pom.bak3.xml > pom.bak4.xml
 
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n executions -v "" pom.bak4.xml > pom.bak5.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions" --type elem -n execution -v "" pom.bak5.xml > pom.bak6.xml

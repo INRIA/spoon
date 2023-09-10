@@ -426,6 +426,9 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 
 	@Override
 	public String toString() {
-		return this.file.getName();
+		if (this.file != null) {
+			return this.file.getName();
+		}
+		return "CompilationUnit<unknown file>";
 	}
 }

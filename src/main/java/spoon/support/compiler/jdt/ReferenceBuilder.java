@@ -64,6 +64,7 @@ import org.eclipse.jdt.internal.compiler.lookup.UnresolvedReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VoidTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
+import org.jspecify.annotations.Nullable;
 import spoon.NoClasspathWorkaround;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtModule;
@@ -156,7 +157,17 @@ public class ReferenceBuilder {
 					return true;
 				}
 			});
-			if (ref != null) {
+			// Equality ignores implicit state. The `accessedType` correctly models implicit parts, `ref` resolves a
+			// fully qualified name which might be accessed using an alias, e.g.
+			// class Foo { static class Inner {} }
+			// class Bar extends Foo {}
+			// Use: package.Bar.Inner
+			// Here the `accessedType` is `package.Foo.Inner`, but we want `package.Bar.Inner`, which is what
+			// getQualifiedTypeReference computes.
+			// This is still not perfect, as getQualifiedTypeReference can not resolve accesses like `Bar.Inner` within
+			// Bar.
+			if (ref != null && !ref.equals(accessedType)) {
+				JDTTreeBuilderHelper.handleImplicit(type, ref);
 				accessedType = ref;
 			}
 		}
@@ -308,7 +319,7 @@ public class ReferenceBuilder {
 	 * @param expectedName Name expected in imports.
 	 * @return CtReference which can be a CtTypeReference, a CtPackageReference or null.
 	 */
-	CtReference getDeclaringReferenceFromImports(char[] expectedName) {
+	@Nullable CtReference getDeclaringReferenceFromImports(char[] expectedName) {
 		CompilationUnitDeclaration cuDeclaration = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration;
 		if (cuDeclaration == null) {
 			return null;
@@ -886,7 +897,7 @@ public class ReferenceBuilder {
 	 * @return a type reference or null if the binding has no closest match
 	 */
 	@SuppressWarnings("ReturnOfNull")
-	private CtTypeReference<?> getTypeReferenceFromUnresolvedReferenceBinding(UnresolvedReferenceBinding binding) {
+	private @Nullable CtTypeReference<?> getTypeReferenceFromUnresolvedReferenceBinding(UnresolvedReferenceBinding binding) {
 		TypeBinding closestMatch = binding.closestMatch();
 		if (closestMatch != null) {
 			CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
@@ -1195,7 +1206,7 @@ public class ReferenceBuilder {
 		return bindingCache.get(b).clone();
 	}
 
-	<T> CtFieldReference<T> getVariableReference(TypeBinding type, FieldBinding varbin) {
+	<T> CtFieldReference<T> getVariableReference(@Nullable TypeBinding type, FieldBinding varbin) {
 		CtFieldReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createFieldReference();
 		if (varbin == null) {
 			return ref;
@@ -1212,7 +1223,7 @@ public class ReferenceBuilder {
 		return ref;
 	}
 
-	<T> CtFieldReference<T> getVariableReference(TypeBinding type, FieldBinding fieldBinding, char[] tokens) {
+	<T> CtFieldReference<T> getVariableReference(@Nullable TypeBinding type, FieldBinding fieldBinding, char[] tokens) {
 		final CtFieldReference<T> ref = getVariableReference(type, fieldBinding);
 		if (fieldBinding != null) {
 			return ref;

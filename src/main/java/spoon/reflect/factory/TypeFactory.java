@@ -467,7 +467,7 @@ public class TypeFactory extends SubFactory {
 				// If the class name is an integer, the class is an anonymous class, otherwise,
 				// it is a standard class.
 				//TODO reset cache when type is modified
-				return getFromCache(t, className, k -> {
+				return getAnonymousTypeFromCache(t, className, k -> {
 					//the searching for declaration of anonymous class is expensive
 					//do that only once and store it in cache of CtType
 					final List<CtNewClass> anonymousClasses = t.getElements(new TypeFilter<CtNewClass>(CtNewClass.class) {
@@ -488,15 +488,19 @@ public class TypeFactory extends SubFactory {
 		return null;
 	}
 
-	private static final String CACHE_KEY = TypeFactory.class.getName() + "-AnnonymousTypeCache";
+	private static final String ANONYMOUS_TYPES_CACHE_KEY = TypeFactory.class.getName() + "-AnnonymousTypeCache";
 
-	private <T, K> T getFromCache(CtElement element, K key, Function<K, T> valueResolver) {
-		Map<K, T> cache = (Map<K, T>) element.getMetadata(CACHE_KEY);
-		if (cache == null) {
-			cache = new HashMap<>();
-			element.putMetadata(CACHE_KEY, cache);
+	private <T, K> T getAnonymousTypeFromCache(CtElement element, K key, Function<K, T> valueResolver) {
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
+		synchronized (element) {
+			@SuppressWarnings("unchecked")
+			Map<K, T> cache = (Map<K, T>) element.getMetadata(ANONYMOUS_TYPES_CACHE_KEY);
+			if (cache == null) {
+				cache = new HashMap<>();
+				element.putMetadata(ANONYMOUS_TYPES_CACHE_KEY, cache);
+			}
+			return cache.computeIfAbsent(key, valueResolver);
 		}
-		return cache.computeIfAbsent(key, valueResolver);
 	}
 
 	private boolean isNumber(String str) {

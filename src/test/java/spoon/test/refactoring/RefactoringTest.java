@@ -17,6 +17,7 @@
 package spoon.test.refactoring;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -35,6 +36,7 @@ import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import spoon.Launcher;
 import spoon.refactoring.Refactoring;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtInvocation;
@@ -45,6 +47,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.test.refactoring.processors.ThisTransformationProcessor;
 import spoon.test.refactoring.testclasses.AClass;
 
@@ -184,4 +187,29 @@ public class RefactoringTest {
 			// error is kinda okay
 		}
 	}
+
+	@Test
+	void renameClassInVirtualFile() {
+		// contract: Renaming classes defined in virtual files should work
+		Launcher spoon = new Launcher();
+		spoon.addInputResource(new VirtualFile(
+			"public class Test {\n" +
+			"  void foo() {\n" +
+			"  }\n" +
+			"}\n"));
+		CtModel model = spoon.buildModel();
+		CtClass<?> clazz = model.getElements(new TypeFilter<>(CtClass.class)).get(0);
+
+		Refactoring.changeTypeName(clazz, "Test2");
+
+		assertTrue(
+			clazz.prettyprint().contains("class Test2 "),
+			"Class was not renamed: '" + clazz.prettyprint() + "'"
+		);
+		assertFalse(
+			clazz.prettyprint().contains("class Test "),
+			"Class was not renamed: '" + clazz.prettyprint() + "'"
+		);
+	}
+
 }

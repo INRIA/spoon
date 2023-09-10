@@ -1,130 +1,38 @@
 name: Release
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      version:
-        description: 'Next release version'
+      release-script-to-run:
         required: true
-        default: 'patch'
-        type: choice
-        options:
-          - major
-          - minor
-          - patch
+        type: string
 
 jobs:
-
-  build:
+  jreleaser:
     runs-on: ubuntu-latest
     steps:
-# Setups the environment
       - name: Checkout
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           fetch-depth: 0
           token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
-      - name: Set git user
-        run: |
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "<>"
-      - name: Set up JDK 11
-        uses: actions/setup-java@cd89f46ac9d01407894225f350157564c9c7cee2 # v3
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: maven
-          
-      - name: install go
-        uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4
-      - name: install semversion
-        run: go install github.com/ffurrer2/semver/cmd/semver@latest
-# Get current version from pom and remove snapshot if present.
-      - name: Get current version from pom and remove snapshot if present.
-        run: echo "CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//')" >> $GITHUB_ENV
-      - name: Get version with snapshot
-        run: echo "CURRENT_VERSION_WITH_SNAPSHOT=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-# Calculate release version:
-# - if `version` is patch, we just increment drop the `-SNAPSHOT` suffix
-#   (e.g. 10.0.1-SNAPSHOT -> 10.0.1)
-# - if `version` is minor or major, we increment the minor or major version and
-#   set the patch version to `0` (e.g. 10.0.1-SNAPSHOT -> 11.0.0 or 10.1.0)
-#
-# As we are using a snapshot version, the first call to `semver next` slices
-# off only the `-SNAPSHOT` suffix. We therefore run `semver next` on the
-# version *without* the `-SNAPSHOT` prefix for major and minor bumps.
-#
-# After release, we run `semver next` once again and append the `-SNAPSHOT`
-# suffix. This results in our patch version from above becoming
-# `10.0.2-SNAPSHOT`. The major/minor just get the patch set to `1` and
-# `-SNAPSHOT` appended.
-      - name: Set next version for patch
-        if: ${{ github.event.inputs.version == 'patch' }}
-        run: echo "NEXT_VERSION=$(semver next ${{ github.event.inputs.version }} $CURRENT_VERSION_WITH_SNAPSHOT)" >> $GITHUB_ENV
-      - name: Set next version for major/minor
-        if: ${{ github.event.inputs.version == 'major'  || github.event.inputs.version == 'minor' }}
-        run: echo "NEXT_VERSION=$(semver next ${{ github.event.inputs.version }} $CURRENT_VERSION)" >> $GITHUB_ENV
-      - name: set branchname to next version
-        run: echo "BRANCH_NAME=release/$NEXT_VERSION" >> $GITHUB_ENV
-      - name: Set release version
-        run: |
-            mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion=$NEXT_VERSION -DprocessAllModules
-            mvn --no-transfer-progress --batch-mode versions:set -DnewVersion=$NEXT_VERSION -DprocessAllModules
-            mvn -f spoon-javadoc --no-transfer-progress --batch-mode versions:set -DnewVersion=$NEXT_VERSION -DprocessAllModules
-      - name: Commit & Push changes
-        run: |
-          git checkout -b ${{env.BRANCH_NAME}}
-          git commit -am "release: Releasing version ${{ env.NEXT_VERSION }}"
-          git push --set-upstream origin ${{ env.BRANCH_NAME }}
+      - name: Setup env
+        uses: ./.github/actions/setup-tests
 
-
-
-# Now we can run the release
-      - name: Stage release
-        run:  |
-          mvn -f spoon-pom --no-transfer-progress --batch-mode -Pjreleaser clean deploy -DaltDeploymentRepository=local::default::file:./target/staging-deploy
-          mvn --no-transfer-progress --batch-mode -Pjreleaser deploy:deploy-file -Dfile="./spoon-pom/pom.xml" -DpomFile="./spoon-pom/pom.xml" -Durl=file://$(mvn help:evaluate -D"expression=project.basedir" -q -DforceStdout)/target/staging-deploy
-      - name: Print next version
-        run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//'
-      - name: Run JReleaser
-        uses: jreleaser/release-action@0b198089c53ad2aef0d2bff6b5e6061ead2bbb90 # v2
-        with:
-          setup-java: false
-          version: 1.4.0
-          arguments: full-release 
+      - name: Do release
+        run: nix develop .#jReleaser --command ${{ inputs.release-script-to-run }}
         env:
-          JRELEASER_PROJECT_VERSION: ${{ env.NEXT_VERSION }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
           JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
           JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.JRELEASER_GPG_PUBLIC_KEY }}
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
           JRELEASER_NEXUS2_MAVEN_CENTRAL_USERNAME: ${{ secrets.JRELEASER_NEXUS2_MAVEN_CENTRAL_USERNAME }}
           JRELEASER_NEXUS2_MAVEN_CENTRAL_PASSWORD: ${{ secrets.JRELEASER_NEXUS2_MAVEN_CENTRAL_PASSWORD }}
-# Time to set the next version: The next version of any Release is a snapshot version of the next patch version
-      - name : Set next version (patch of release version) with -SNAPSHOT suffix
-        run: |
-         echo "NEXT_RELEASE_VERSION=$(semver next patch $NEXT_VERSION)-SNAPSHOT" >> $GITHUB_ENV
-         echo "NEXT_RELEASE_VERSION_WITHOUT_SNAPSHOT=$(semver next patch $NEXT_VERSION)" >> $GITHUB_ENV
-      - name: Set release version
-        run: |
-            mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion=$NEXT_RELEASE_VERSION -DprocessAllModules
-            mvn --no-transfer-progress --batch-mode versions:set -DnewVersion=$NEXT_RELEASE_VERSION -DprocessAllModules
-            mvn -f spoon-javadoc --no-transfer-progress --batch-mode versions:set -DnewVersion=$NEXT_RELEASE_VERSION -DprocessAllModules
-# Commit and push changes
-      - name: Commit & Push changes
-        run: |
-          git commit -am "release: Setting SNAPSHOT version $NEXT_RELEASE_VERSION"
-          git push --set-upstream origin ${{ env.BRANCH_NAME }}
-      - name: Merge Fast Forward
-        run: |
-          git checkout master
-          git merge --ff-only ${{ env.BRANCH_NAME }}
-          git push origin master
 
-# Log failure:
+        # Log failures
       - name: JReleaser release output
         if: always()
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
         with:
           name: jreleaser-release
           path: |

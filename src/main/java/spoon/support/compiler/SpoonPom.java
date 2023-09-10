@@ -20,6 +20,7 @@ import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import spoon.Launcher;
 import spoon.MavenLauncher;
@@ -332,7 +333,7 @@ public class SpoonPom implements SpoonResource {
 	 * @param key the key of the property
 	 * @return the property value if key exists or null
 	 */
-	private String getProperty(String key) {
+	private @Nullable String getProperty(String key) {
 		if ("project.version".equals(key) || "pom.version".equals(key) || "version".equals(key)) {
 			if (model.getVersion() != null) {
 				return model.getVersion();

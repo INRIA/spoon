@@ -3,6 +3,7 @@
       "config:base",
       "helpers:pinGitHubActionDigests"
    ],
+   "ignoreDeps": ["org.apache.maven:maven-model"],
    "packageRules":[
       {
          "matchUpdateTypes":[

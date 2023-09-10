@@ -11,10 +11,15 @@ import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
 import spoon.Launcher;
 import spoon.compiler.Environment;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.modelobs.FineModelChangeListener;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
+import spoon.testing.utils.GitHubIssue;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -22,7 +27,7 @@ import java.util.function.Supplier;
 import static com.google.common.primitives.Primitives.allPrimitiveTypes;
 import static com.google.common.primitives.Primitives.wrap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.Check.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
@@ -119,6 +124,91 @@ public class CtTypeReferenceTest {
             expected,
             reference.getActualClass().getSimpleName()
         );
+    }
+
+    @Test
+    void testImplicitInnerClassIsNotQualified() {
+        // contract: If the source code contains no explicit outer class reference, so does the model
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setComplianceLevel(17);
+        launcher.getEnvironment().setAutoImports(true);
+        launcher.getEnvironment().setShouldCompile(true);
+        launcher.addInputResource(new VirtualFile(
+            "class TestInnerClass {\n" +
+            "    static class A { static class B {} }\n" +
+            "\n" +
+            "    A a = new A();\n" +
+            "    A.B b = new A.B();\n" +
+            "}\n"
+        ));
+
+        CtType<?> innerClass = launcher.buildModel().getAllTypes().iterator().next();
+        CtField<?> a = innerClass.getField("a");
+        assertEquals("A a = new A();", a.toString());
+        assertTrue(a.getType().getDeclaringType().isImplicit(), "Declaring access should be implicit");
+
+        CtField<?> b = innerClass.getField("b");
+        assertEquals("A.B b = new A.B();", b.toString());
+        assertTrue(
+            b.getType().getDeclaringType().getDeclaringType().isImplicit(),
+            "Declaring access should be implicit"
+        );
+    }
+
+    @Test
+    void testAliasAccessedClassIsNotQualified() {
+        // contract: If the source code contains no explicit outer class reference, so does the model
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setComplianceLevel(17);
+        launcher.getEnvironment().setAutoImports(true);
+        launcher.getEnvironment().setShouldCompile(true);
+        launcher.addInputResource(new VirtualFile(
+	        "class TestInnerClass {\n" +
+	        "	static class A { static class B {} }\n" +
+	        "}\n",
+            "TestInnerClass.java"
+        ));
+        launcher.addInputResource(new VirtualFile(
+            "class Inheritor extends TestInnerClass.A {\n" +
+            "  public void foo(B b) {}\n" +
+            "}\n",
+            "Inheritor.java"
+        ));
+
+        launcher.buildModel();
+        CtType<?> inheritor = launcher.getFactory().Type().get("Inheritor");
+        CtParameter<?> fooParam = inheritor.getMethodsByName("foo").get(0).getParameters().get(0);
+
+        // Not qualified
+        assertEquals("B b", fooParam.toString());
+    }
+
+    @Test
+    @GitHubIssue(issueNumber = -1, fixed = false)
+    void testAliasAccessedClassIsNotQualified2() {
+        // contract: If the source code contains no explicit outer class reference, so does the model
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setComplianceLevel(17);
+        launcher.getEnvironment().setAutoImports(true);
+        launcher.getEnvironment().setShouldCompile(true);
+        launcher.addInputResource(new VirtualFile(
+	        "class TestInnerClass {\n" +
+	        "	static class A { static class B {} }\n" +
+	        "}\n",
+            "TestInnerClass.java"
+        ));
+        launcher.addInputResource(new VirtualFile(
+            "class Inheritor extends TestInnerClass.A {\n" +
+            "  public void foo(Inheritor.B b) {}\n" +
+            "}\n",
+            "Inheritor.java"
+        ));
+
+        launcher.buildModel();
+        CtType<?> inheritor = launcher.getFactory().Type().get("Inheritor");
+        CtParameter<?> fooParam = inheritor.getMethodsByName("foo").get(0).getParameters().get(0);
+
+        assertEquals("Inheritor.B b", fooParam.toString());
     }
 
 }
