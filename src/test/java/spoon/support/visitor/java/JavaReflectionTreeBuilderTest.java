@@ -962,18 +962,18 @@ public class JavaReflectionTreeBuilderTest {
 	void test() throws ClassNotFoundException {
 		// contract: Infinity, -Infinity, NaN are not literals
 		ClassLoader loader = JavacFacade.compileFiles(
-						Map.of(
-										"SpecialValues.java",
-										"public class SpecialValues {\n" +
-										"  public static final double d_inf = 1.0d / 0.0d;\n" +
-										"  public static final double d_m_inf = -1.0d / 0.0d;\n" +
-										"  public static final double d_nan = 0.0d / 0.0d;\n" +
-										"  public static final float f_inf = 1.0f / 0.0f;\n" +
-										"  public static final float f_m_inf = -1.0f / 0.0f;\n" +
-										"  public static final float f_nan = 0.0f / 0.0f;\n" +
-										"}\n"
-						),
-						List.of()
+			Map.of(
+				"SpecialValues.java",
+				"public class SpecialValues {\n" +
+				"  public static final double d_inf = 1.0d / 0.0d;\n" +
+				"  public static final double d_m_inf = -1.0d / 0.0d;\n" +
+				"  public static final double d_nan = 0.0d / 0.0d;\n" +
+				"  public static final float f_inf = 1.0f / 0.0f;\n" +
+				"  public static final float f_m_inf = -1.0f / 0.0f;\n" +
+				"  public static final float f_nan = 0.0f / 0.0f;\n" +
+				"}\n"
+			),
+			List.of()
 		);
 
 		Factory factory = createFactory();
@@ -985,6 +985,5 @@ public class JavaReflectionTreeBuilderTest {
 		}
 
 	}
-
 
 }
