@@ -22,7 +22,10 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.Set;
-import spoon.reflect.code.CtLiteral;
+
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -337,7 +340,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			if (modifiers.contains(ModifierKind.STATIC)
 					&& modifiers.contains(ModifierKind.PUBLIC)
 					&& (field.getType().isPrimitive() || String.class.isAssignableFrom(field.getType()))) {
-				CtLiteral<Object> defaultExpression = factory.createLiteral(field.get(null));
+				CtExpression<Object> defaultExpression = buildExpressionForValue(field.get(null));
 				ctField.setDefaultExpression(defaultExpression);
 			}
 		} catch (IllegalAccessException | ExceptionInInitializerError | UnsatisfiedLinkError e) {
@@ -349,6 +352,37 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		exit();
 
 		contexts.peek().addField(ctField);
+	}
+
+	private CtExpression<Object> buildExpressionForValue(Object value) {
+		if (value instanceof Double) {
+			double d = (double) value;
+			if (Double.isNaN(d)) {
+				return buildDivision(0.0d, 0.0d);
+			}
+			if (Double.POSITIVE_INFINITY == d) {
+				return buildDivision(1.0d, 0.0d);
+			}
+			if (Double.NEGATIVE_INFINITY == d) {
+				return buildDivision(-1.0d, 0.0d);
+			}
+		} else if (value instanceof Float) {
+			float f = (float) value;
+			if (Float.isNaN(f)) {
+				return buildDivision(0.0f, 0.0f);
+			}
+			if (Float.POSITIVE_INFINITY == f) {
+				return buildDivision(1.0f, 0.0f);
+			}
+			if (Float.NEGATIVE_INFINITY == f) {
+				return buildDivision(-1.0f, 0.0f);
+			}
+		}
+		return factory.createLiteral(value);
+	}
+
+	private CtBinaryOperator<Object> buildDivision(Object first, Object second) {
+		return factory.createBinaryOperator(factory.createLiteral(first), factory.createLiteral(second), BinaryOperatorKind.DIV);
 	}
 
 	@Override
