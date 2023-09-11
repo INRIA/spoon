@@ -15,5 +15,8 @@
          ],
          "automerge":true
       }
-   ]
+   ],
+   "nix": {
+      "enabled": true
+   }
 }
