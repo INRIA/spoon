@@ -31,12 +31,24 @@ public class ClasspathOptions<T extends ClasspathOptions<T>> extends Options<T> 
 		return classpath(join(File.pathSeparator, classpaths));
 	}
 
+	/**
+	 * Adds the specified module path to the list of arguments.
+	 *
+	 * @param modulePath the module path to add
+	 * @return the instance of the class calling this method
+	 */
 	public T modulePath(String modulePath) {
 		args.add("--module-path");
 		args.add(modulePath);
 		return myself;
 	}
 
+	/**
+	 * Adds the specified list of module paths to the list of arguments.
+	 *
+	 * @param modulePaths the list of module paths to add
+	 * @return the instance of the class calling this method
+	 */
 	public T modulePath(List<String> modulePaths) {
 		args.add("--module-path");
 		args.add(String.join(File.pathSeparator, modulePaths));

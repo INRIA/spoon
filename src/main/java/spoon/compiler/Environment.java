@@ -309,8 +309,22 @@ public interface Environment {
 	 */
 	void setSourceClasspath(String[] sourceClasspath);
 
+	/**
+	 * Gets the module path used for sourcing the input modules.
+	 * The returned list is immutable and does not contain null values.
+	 *
+	 * @return A list of strings representing the module path. Each string element
+	 *         is the path to a directory or a module jar file.
+	 */
 	List<String> getSourceModulePath();
 
+	/**
+	 * Sets the module path that is used to build/compile the input sources.
+	 *
+	 * @param sourceModulePath The new module path to be set. Each string element
+	 *                         should be the path to a directory or a module jar file.
+	 * @throws NullPointerException if the argument is null or an element of the list is null.
+	 */
 	void setSourceModulePath(List<String> sourceModulePath);
 
 	/**
