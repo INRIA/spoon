@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.path.CtRole;
@@ -41,12 +42,12 @@ public abstract class TokenPrinterEvent implements PrinterEvent {
 	}
 
 	@Override
-	public SourcePositionHolder getElement() {
+	public @Nullable SourcePositionHolder getElement() {
 		return comment;
 	}
 
 	/** @return printed token or null if printing complex element or comment */
-	public String getToken() {
+	public @Nullable String getToken() {
 		return token;
 	}
 

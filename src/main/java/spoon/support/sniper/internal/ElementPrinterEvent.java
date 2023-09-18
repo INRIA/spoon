@@ -7,6 +7,7 @@
  */
 package spoon.support.sniper.internal;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
@@ -29,7 +30,7 @@ public abstract class ElementPrinterEvent implements PrinterEvent {
 	}
 
 	@Override
-	public SourcePositionHolder getElement() {
+	public @Nullable SourcePositionHolder getElement() {
 		return element;
 	}
 
