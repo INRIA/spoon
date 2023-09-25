@@ -18,7 +18,7 @@
               (final: prev:
                 let
                   base = rec {
-                    jdk = if javaVersion < 21 then prev."jdk${toString javaVersion}" else jdk21-ea;
+                    jdk = if javaVersion < 21 then prev."jdk${toString javaVersion}" else jdk21;
                     maven = prev.maven.override { inherit jdk; };
                   };
                   extra = with base; {
@@ -29,12 +29,12 @@
                 (if extraChecks then base // extra else base))
             ];
           };
-          jdk21-ea = pkgs.stdenv.mkDerivation rec {
+          jdk21 = pkgs.stdenv.mkDerivation rec {
             name = "jdk21-oracle";
             version = "21+35";
             src = builtins.fetchTarball {
-              url = "https://download.java.net/java/GA/jdk21/fd2272bbf8e04c3dbaee13770090416c/35/GPL/openjdk-21_linux-x64_bin.tar.gz";
-              sha256 = "sha256:0g3vf0kcpciixfv1kvgbk685h6cfn1s0cx2di4rhl3r7xlal217w";
+              url = "https://download.oracle.com/java/21/archive/jdk-21_linux-x64_bin.tar.gz";
+              sha256 = "sha256:1snj1jxa5175r17nb6l2ldgkcvjbp5mbfflwcc923svgf0604ps4";
             };
             installPhase = ''
               cd ..
@@ -188,7 +188,7 @@
         let
           # We have additional options (currently EA jdks) on 64 bit linux systems
           blessedSystem = "x86_64-linux";
-          blessed = { jdk21-ea = mkShell blessedSystem { javaVersion = 21; }; };
+          blessed = { jdk21 = mkShell blessedSystem { javaVersion = 21; }; };
           common = forAllSystems
             (system:
               rec {
