@@ -61,11 +61,7 @@ public class TypeAdaptor {
 	 * @param hierarchyStart the start of the hierarchy
 	 */
 	public TypeAdaptor(CtTypeReference<?> hierarchyStart) {
-		CtTypeReference<?> usedHierarchyStart = hierarchyStart;
-		if (hierarchyStart instanceof CtArrayTypeReference) {
-			usedHierarchyStart = ((CtArrayTypeReference<?>) hierarchyStart).getArrayType();
-		}
-		this.hierarchyStartReference = usedHierarchyStart;
+		this.hierarchyStartReference = hierarchyStart;
 		this.hierarchyStart = hierarchyStartReference.getTypeDeclaration();
 		this.initializedWithReference = true;
 	}
@@ -103,6 +99,12 @@ public class TypeAdaptor {
 		if (useLegacyTypeAdaption(superRef)) {
 			return getOldClassTypingContext().isSubtypeOf(superRef);
 		}
+		// This check is above the hierarchy start, as we can not build CtTypes for arrays of source-only types.
+		// Therefore, the hierarchyStart might be null for them.
+		if (hierarchyStartReference instanceof CtArrayTypeReference<?>) {
+			return handleArraySubtyping((CtArrayTypeReference<?>) hierarchyStartReference, superRef);
+		}
+
 		if (hierarchyStart == null) {
 			// We have no declaration, so we can't really do any subtype queries. This happens when the constructor was
 			// called with a type reference to a class not on the classpath. Any subtype relationships of that class are
@@ -114,10 +116,53 @@ public class TypeAdaptor {
 		if (!subtype) {
 			return false;
 		}
+		// No generics -> All good, no further analysis needed, we can say they are subtypes
 		if (hierarchyStartReference.getActualTypeArguments().isEmpty() && superRef.getActualTypeArguments().isEmpty()) {
 			return true;
 		}
+		// Generics? We need to check for subtyping relationships between wildcard and other parameters
+		// (co/contra variance). Delegate.
 		return new ClassTypingContext(hierarchyStartReference).isSubtypeOf(superRef);
+	}
+
+	/**
+	 * We need to special case array references, as we can not build a type declaration for them.
+	 * Array types do not exist in the source and no CtType can be built for them (unless they are shadow types).
+	 *
+	 * @param start the start reference
+	 * @param superRef the potential supertype
+	 * @return true if start is a subtype of superRef
+	 */
+	private static boolean handleArraySubtyping(CtArrayTypeReference<?> start, CtTypeReference<?> superRef) {
+		CtTypeReference<?> startInner = start.getArrayType();
+
+		// array-array subtyping
+		if (superRef instanceof CtArrayTypeReference) {
+			int startArrayDim = getArrayDimension(start.getSimpleName());
+			int superArrayDim = getArrayDimension(superRef.getSimpleName());
+			// Arrays of different shapes are not subtypes
+			if (startArrayDim != superArrayDim) {
+				return false;
+			}
+			CtTypeReference<?> superInner = ((CtArrayTypeReference<?>) superRef).getArrayType();
+
+			if (!isSubtype(startInner.getTypeDeclaration(), superInner)) {
+				return false;
+			}
+			// No generics -> All good, no further analysis needed, we can say they are subtypes
+			if (startInner.getActualTypeArguments().isEmpty() && superInner.getActualTypeArguments().isEmpty()) {
+				return true;
+			}
+			// Generics? We need to check for subtyping relationships between wildcard and other parameters
+			// (co/contra variance). Delegate.
+			return new ClassTypingContext(start).isSubtypeOf(superRef);
+		}
+		// array-normal subtyping
+		// https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.10.3
+		String superRefQualName = superRef.getQualifiedName();
+		return superRefQualName.equals("java.lang.Object")
+			|| superRefQualName.equals("java.io.Serializable")
+			|| superRefQualName.equals("java.lang.Cloneable");
 	}
 
 	/**
@@ -150,11 +195,51 @@ public class TypeAdaptor {
 		if (useLegacyTypeAdaption(base)) {
 			return new TypeAdaptor(base).isSubtypeOf(superRef);
 		}
+
+		// Handle shadow array types, as we can build a CtType for any Class, which includes arrays. We need to lower
+		// them to their innermost component type and then decide subtyping based on their relationship.
+		if (base.isArray() && superRef instanceof CtArrayTypeReference<?>) {
+			if (!base.isShadow()) {
+				throw new SpoonException("There are no source level array type declarations");
+			}
+			Class<?> actualClass = base.getActualClass();
+			// Arrays of different shapes are not subtypes
+			if (getArrayDimension(actualClass.getSimpleName()) != getArrayDimension(superRef.getSimpleName())) {
+				return false;
+			}
+			//noinspection AssignmentToMethodParameter
+			superRef = ((CtArrayTypeReference<?>) superRef).getArrayType();
+			//noinspection AssignmentToMethodParameter
+			base = base.getFactory().Type().get(getArrayType(actualClass));
+			// We can just carry on here, as T[] > S[] reduces to T > S.
+		}
+		// Note that we have handle T[] < Object/Serializable/Cloneable by using a shadow type as `base`, which will
+		// implement the correct interfaces as read by reflection.
+
 		String superRefFqn = superRef.getTypeErasure().getQualifiedName();
 
-		return superRef.getQualifiedName().equals("java.lang.Object")
-			|| base.getQualifiedName().equals(superRefFqn)
-			|| supertypeReachableInInheritanceTree(base, superRefFqn);
+		if (superRef.getQualifiedName().equals("java.lang.Object") || base.getQualifiedName().equals(superRefFqn)) {
+			return true;
+		}
+
+		return supertypeReachableInInheritanceTree(base, superRefFqn);
+	}
+
+	private static int getArrayDimension(String name) {
+		int dimension = 0;
+		for (int i = 0; i < name.length(); i++) {
+			if (name.codePointAt(i) == '[') {
+				dimension++;
+			}
+		}
+		return dimension;
+	}
+
+	private static Class<?> getArrayType(Class<?> array) {
+		if (array.isArray()) {
+			return getArrayType(array.getComponentType());
+		}
+		return array;
 	}
 
 	/**
@@ -560,8 +645,11 @@ public class TypeAdaptor {
 	}
 
 	@SuppressWarnings("AssignmentToMethodParameter")
-	private DeclarationNode buildHierarchyFrom(CtTypeReference<?> startReference, CtType<?> startType,
-		CtTypeReference<?> end) {
+	private DeclarationNode buildHierarchyFrom(
+		CtTypeReference<?> startReference,
+		CtType<?> startType,
+		CtTypeReference<?> end
+	) {
 		CtType<?> endType = findDeclaringType(end);
 		Map<CtTypeReference<?>, DeclarationNode> declarationNodes = new HashMap<>();
 
@@ -610,7 +698,7 @@ public class TypeAdaptor {
 			current = current.getDeclaringType();
 		}
 		throw new SpoonException(
-				"Did not find a suitable enclosing type to start parameter type adaption from"
+			"Did not find a suitable enclosing type to start parameter type adaption from"
 		);
 	}
 

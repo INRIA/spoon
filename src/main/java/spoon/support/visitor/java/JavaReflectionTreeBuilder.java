@@ -97,17 +97,12 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		// The shadow factory should not be modified in other places and nobody should be directly calling
 		// the visit methods.
 		synchronized (factory) {
-			CtPackage ctPackage;
 			CtType<?> ctEnclosingClass;
 			if (clazz.getEnclosingClass() != null && !clazz.isAnonymousClass()) {
 				ctEnclosingClass = factory.Type().get(clazz.getEnclosingClass());
 				return ctEnclosingClass.getNestedType(clazz.getSimpleName());
 			} else {
-				if (clazz.getPackage() == null) {
-					ctPackage = factory.Package().getRootPackage();
-				} else {
-					ctPackage = factory.Package().getOrCreate(clazz.getPackage().getName());
-				}
+				CtPackage ctPackage = getCtPackage(clazz);
 				if (contexts.isEmpty()) {
 					enter(new PackageRuntimeBuilderContext(ctPackage));
 				}
@@ -139,6 +134,24 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 				return type;
 			}
 		}
+	}
+
+	private <T> CtPackage getCtPackage(Class<T> clazz) {
+		Package javaPackage = clazz.getPackage();
+		if (javaPackage == null && clazz.isArray()) {
+			javaPackage = getArrayType(clazz).getPackage();
+		}
+		if (javaPackage == null) {
+			return factory.Package().getRootPackage();
+		}
+		return factory.Package().getOrCreate(javaPackage.getName());
+	}
+
+	private static Class<?> getArrayType(Class<?> array) {
+		if (array.isArray()) {
+			return getArrayType(array.getComponentType());
+		}
+		return array;
 	}
 
 	@Override
