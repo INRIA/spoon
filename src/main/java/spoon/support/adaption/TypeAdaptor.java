@@ -134,28 +134,10 @@ public class TypeAdaptor {
 	 * @return true if start is a subtype of superRef
 	 */
 	private static boolean handleArraySubtyping(CtArrayTypeReference<?> start, CtTypeReference<?> superRef) {
-		CtTypeReference<?> startInner = start.getArrayType();
-
 		// array-array subtyping
 		if (superRef instanceof CtArrayTypeReference) {
-			int startArrayDim = getArrayDimension(start.getSimpleName());
-			int superArrayDim = getArrayDimension(superRef.getSimpleName());
-			// Arrays of different shapes are not subtypes
-			if (startArrayDim != superArrayDim) {
-				return false;
-			}
-			CtTypeReference<?> superInner = ((CtArrayTypeReference<?>) superRef).getArrayType();
-
-			if (!isSubtype(startInner.getTypeDeclaration(), superInner)) {
-				return false;
-			}
-			// No generics -> All good, no further analysis needed, we can say they are subtypes
-			if (startInner.getActualTypeArguments().isEmpty() && superInner.getActualTypeArguments().isEmpty()) {
-				return true;
-			}
-			// Generics? We need to check for subtyping relationships between wildcard and other parameters
-			// (co/contra variance). Delegate.
-			return new ClassTypingContext(start).isSubtypeOf(superRef);
+			CtTypeReference<?> superInner = ((CtArrayTypeReference<?>) superRef).getComponentType();
+			return new TypeAdaptor(start.getComponentType()).isSubtypeOf(superInner);
 		}
 		// array-normal subtyping
 		// https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.10.3
@@ -202,16 +184,13 @@ public class TypeAdaptor {
 			if (!base.isShadow()) {
 				throw new SpoonException("There are no source level array type declarations");
 			}
+			// Peel off one layer at a time. Slow, but easy to maintain. Can be optimized to directly peel of
+			// min(a.dim, b.dim) when necessary.
 			Class<?> actualClass = base.getActualClass();
-			// Arrays of different shapes are not subtypes
-			if (getArrayDimension(actualClass.getSimpleName()) != getArrayDimension(superRef.getSimpleName())) {
-				return false;
-			}
-			//noinspection AssignmentToMethodParameter
-			superRef = ((CtArrayTypeReference<?>) superRef).getArrayType();
-			//noinspection AssignmentToMethodParameter
-			base = base.getFactory().Type().get(getArrayType(actualClass));
-			// We can just carry on here, as T[] > S[] reduces to T > S.
+			return isSubtype(
+				base.getFactory().Type().get(actualClass.getComponentType()),
+				((CtArrayTypeReference<?>) superRef).getComponentType()
+			);
 		}
 		// Note that we have handle T[] < Object/Serializable/Cloneable by using a shadow type as `base`, which will
 		// implement the correct interfaces as read by reflection.
@@ -223,23 +202,6 @@ public class TypeAdaptor {
 		}
 
 		return supertypeReachableInInheritanceTree(base, superRefFqn);
-	}
-
-	private static int getArrayDimension(String name) {
-		int dimension = 0;
-		for (int i = 0; i < name.length(); i++) {
-			if (name.codePointAt(i) == '[') {
-				dimension++;
-			}
-		}
-		return dimension;
-	}
-
-	private static Class<?> getArrayType(Class<?> array) {
-		if (array.isArray()) {
-			return getArrayType(array.getComponentType());
-		}
-		return array;
 	}
 
 	/**

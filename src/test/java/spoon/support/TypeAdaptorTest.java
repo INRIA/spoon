@@ -513,6 +513,8 @@ class TypeAdaptorTest {
 		CtArrayTypeReference<?> numArr = factory.createArrayReference(numType, 1);
 		CtArrayTypeReference<?> numArr2 = factory.createArrayReference(numType, 2);
 
+		CtArrayTypeReference<?> objArr = factory.createArrayReference(factory.Type().objectType(), 1);
+
 		verifySubtype(intArr, numArr, true);
 		verifySubtype(intArr2, numArr2, true);
 
@@ -525,6 +527,10 @@ class TypeAdaptorTest {
 		verifySubtype(intArr2, intType, false);
 		verifySubtype(numArr2, numType, false);
 		verifySubtype(numArr2, intType, false);
+
+		// int[][] < Object[], as int[] < Object
+		verifySubtype(intArr2, objArr, true);
+		verifySubtype(numArr2, objArr, true);
 	}
 
 	@Test
