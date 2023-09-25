@@ -377,7 +377,7 @@ public class CtQueryImpl implements CtQuery {
 		protected void onCallbackSet(String stackClass, String stackMethodName, Class<?> callbackClass, String callbackMethod, int nrOfParams, int idxOfInputParam) {
 			this.cceStacktraceClass = stackClass;
 			this.cceStacktraceMethodName = stackMethodName;
-			if (callbackClass.getName().contains("$$Lambda$")) {
+			if (callbackClass.getName().contains("$$Lambda")) {
 				//lambda expressions does not provide runtime information about type of input parameter
 				//clear it now. We can detect input type from first ClassCastException
 				this.expectedClass = null;
