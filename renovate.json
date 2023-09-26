@@ -11,7 +11,8 @@
             "patch",
             "pin",
             "digest",
-            "pinDigest"
+            "pinDigest",
+            "lockFileMaintenance"
          ],
          "automerge":true
       }
