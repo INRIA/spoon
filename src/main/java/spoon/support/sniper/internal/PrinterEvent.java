@@ -7,6 +7,7 @@
  */
 package spoon.support.sniper.internal;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.path.CtRole;
 
@@ -31,6 +32,6 @@ public interface PrinterEvent  {
 	/**
 	 * @return printed element or null if printing a primitive token
 	 */
-	SourcePositionHolder getElement();
+	@Nullable SourcePositionHolder getElement();
 
 }

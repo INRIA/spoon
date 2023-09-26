@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
@@ -35,7 +36,7 @@ public class ChangeCollector {
 	 * @param env to be checked {@link Environment}
 	 * @return {@link ChangeCollector} attached to the `env` or null if there is none
 	 */
-	public static ChangeCollector getChangeCollector(Environment env) {
+	public static @Nullable ChangeCollector getChangeCollector(Environment env) {
 		FineModelChangeListener mcl = env.getModelChangeListener();
 		if (mcl instanceof ChangeListener) {
 			return ((ChangeListener) mcl).getChangeCollector();
