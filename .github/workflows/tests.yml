@@ -39,9 +39,9 @@ jobs:
         uses: ./.github/actions/setup-tests
 
       - name: Time nix setup
-        run: nix develop .#jdk${{ matrix.java }} --command true
+        run: nix develop .#jdk${{ matrix.java }} --ignore-environment --keep MAVEN_OPTS --keep PATH --command true
       - name: Test
-        run: nix develop .#jdk${{ matrix.java }} --command test
+        run: nix develop .#jdk${{ matrix.java }} --ignore-environment --keep MAVEN_OPTS --keep PATH --command test
 
   test-windows:
     runs-on: windows-latest
@@ -77,9 +77,9 @@ jobs:
         uses: ./.github/actions/setup-tests
 
       - name: Time nix setup
-        run: nix develop --command true
+        run: nix develop --ignore-environment --keep MAVEN_OPTS --keep PATH --command true
       - name: Run tests with coverage
-        run: nix develop --command coverage
+        run: nix develop --ignore-environment --keep MAVEN_OPTS --keep PATH --keep PR_NUMBER --keep GITHUB_TOKEN --command coverage
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
@@ -96,14 +96,14 @@ jobs:
         uses: ./.github/actions/setup-tests
 
       - name: Time nix setup
-        run: nix develop .#extraChecks --command true
+        run: nix develop --ignore-environment --keep MAVEN_OPTS --keep PATH .#extraChecks --command true
       - name: Run extra checks
-        run: nix develop .#extraChecks --command extra
+        run: nix develop --ignore-environment --keep MAVEN_OPTS --keep PATH .#extraChecks --command extra
       - name: Trigger extra remote tasks
         if: github.repository == 'INRIA/spoon' && github.event_name == 'pull_request'
-        run: nix develop .#extraChecks --command extra-remote
+        run: nix develop --ignore-environment --keep MAVEN_OPTS --keep PATH .#extraChecks --command extra-remote
       - name: Run Javadoc quality check
-        run: nix develop .#extraChecks --command javadoc-quality
+        run: nix develop --ignore-environment --keep MAVEN_OPTS --keep PATH .#extraChecks --command javadoc-quality
 
   reproducible-builds:
     runs-on: ubuntu-latest
@@ -117,9 +117,9 @@ jobs:
         uses: ./.github/actions/setup-tests
 
       - name: Time nix setup
-        run: nix develop --command true
+        run: nix develop --ignore-environment --keep MAVEN_OPTS --keep PATH --command true
       - name: Check status
-        run: nix develop --command reproducible-builds
+        run: nix develop --ignore-environment --keep MAVEN_OPTS --keep PATH --command reproducible-builds
 
   maven-central-requirements:
     runs-on: ubuntu-latest
@@ -132,6 +132,6 @@ jobs:
         uses: ./.github/actions/setup-tests
 
       - name: Time nix setup
-        run: nix develop --command true
+        run: nix develop --ignore-environment --keep MAVEN_OPTS --keep PATH --command true
       - name: Check maven pom quality
-        run: nix develop --command maven-pom-quality
+        run: nix develop --ignore-environment --keep MAVEN_OPTS --keep PATH --command maven-pom-quality
