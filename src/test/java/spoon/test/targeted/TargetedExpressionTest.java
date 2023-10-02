@@ -562,6 +562,7 @@ public class TargetedExpressionTest {
 		CtFieldRead<?> read = ctModel.getElements(new TypeFilter<>(CtFieldRead.class)).get(0);
 		assertTrue(read.getTarget() instanceof CtSuperAccess<?>, "Target was no super access");
 		assertTrue(read.getTarget().isImplicit(), "super target was not implicit");
+		assertEquals("A", read.getTarget().getType().getQualifiedName());
 		assertEquals(read.toString(), "a", "super target was still printed");
 	}
 
