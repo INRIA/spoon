@@ -39,7 +39,6 @@ import spoon.metamodel.Metamodel;
 import spoon.metamodel.MetamodelConcept;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
