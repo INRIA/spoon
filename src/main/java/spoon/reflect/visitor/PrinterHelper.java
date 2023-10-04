@@ -85,6 +85,8 @@ public class PrinterHelper {
 
 	/**
 	 * Outputs a string.
+	 * @param s String to printed in output
+	 * @return current object of PrintHelper class
 	 */
 	public PrinterHelper write(String s) {
 		if (s != null) {
@@ -98,6 +100,8 @@ public class PrinterHelper {
 
 	/**
 	 * Outputs a char.
+	 * @param c Character to be printed in output
+	 * @return current object of PrinterHelper class
 	 */
 	public PrinterHelper write(char c) {
 		if (c == '\r') {
@@ -129,12 +133,16 @@ public class PrinterHelper {
 
 	/**
 	 * Generates a new line.
+	 * @return current object of PrinterHelper class
 	 */
 	public PrinterHelper writeln() {
 		write(lineSeparator);
 		return this;
 	}
 
+	/**
+	 * Appends tabs or spaces to a StringBuilder based on the environment settings.
+	 */
 	private void writeTabsInternal() {
 		for (int i = 0; i < nbTabs; i++) {
 			if (env != null && env.isUsingTabulations()) {
@@ -149,6 +157,10 @@ public class PrinterHelper {
 		}
 	}
 
+	/**
+	 * Writes tabs if the condition is met.
+	 * This method checks if tabs should be written, and if so, it writes them and resets the flag.
+	 */
 	protected void autoWriteTabs() {
 		if (shouldWriteTabs) {
 			writeTabsInternal();
@@ -158,6 +170,7 @@ public class PrinterHelper {
 
 	/**
 	 * Increments the current number of tabs.
+	 * @return current object of PrinterHelper class
 	 */
 	public PrinterHelper incTab() {
 		nbTabs++;
@@ -166,6 +179,7 @@ public class PrinterHelper {
 
 	/**
 	 * Decrements the current number of tabs.
+	 * @return current object of PrinterHelper class
 	 */
 	public PrinterHelper decTab() {
 		nbTabs--;
@@ -181,12 +195,17 @@ public class PrinterHelper {
 
 	/**
 	 * Sets the current number of tabs.
+	 * @return current object of PrinterHelper class
 	 */
 	public PrinterHelper setTabCount(int tabCount) {
 		nbTabs = tabCount;
 		return this;
 	}
 
+	/**
+	 * Removes the last line from the buffer if it matches the line separator.
+	 * @return true if the line was removed, false otherwise.
+	 */
 	public boolean removeLine() {
 		String ls = lineSeparator;
 		int i = sbf.length() - ls.length();
@@ -207,11 +226,18 @@ public class PrinterHelper {
 		return true;
 	}
 
+	/**
+	 * @param c Character that needs to be checked for being space/line-break character
+	 * @return true if character is space/line-break character
+	 */
 	private boolean isWhite(char c) {
 		return (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
 	}
 
-	/** writes as many newlines as needed to align the line number again between the element position and the current line number */
+	/** writes as many newlines as needed to align the line number again between the element position and the current line number
+	 * @param e The CtElement whose start position is to be adjusted. It should not be implicit and should have a valid position.
+	 * @return The current instance of PrinterHelper with the adjusted start position.
+	 */
 	public PrinterHelper adjustStartPosition(CtElement e) {
 		if (!e.isImplicit() && e.getPosition().isValidPosition()) {
 			// we should add some lines
@@ -243,12 +269,24 @@ public class PrinterHelper {
 		return this;
 	}
 
+	/**
+	 * Undefines the current line number mapping.
+	 * If the current line number mapping is null, it sets the line number mapping to 0.
+	 */
 	public void undefineLine() {
 		if (lineNumberMapping.get(line) == null) {
 			putLineNumberMapping(0);
 		}
 	}
 
+	/**
+	 * Maps the line number of a given CtElement to the current line number.
+	 * If the position of the CtElement is not valid, or it does not belong to the expected compilation unit, or it is a partial source position,
+	 * it undefines the current line number.
+	 *
+	 * @param e The CtElement whose line number is to be mapped.
+	 * @param unitExpected The expected compilation unit of the CtElement.
+	 */
 	public void mapLine(CtElement e, CtCompilationUnit unitExpected) {
 		SourcePosition sp = e.getPosition();
 		if ((sp.isValidPosition())
@@ -261,14 +299,26 @@ public class PrinterHelper {
 		}
 	}
 
+	/**
+	 * Maps a given line number to the current line number.
+	 * @param valueLine The line number to be mapped to the current line.
+	 */
 	public void putLineNumberMapping(int valueLine) {
 		lineNumberMapping.put(this.line, valueLine);
 	}
 
+	/**
+	 * Retrieves the current line number mapping as an unmodifiable map.
+	 * @return An unmodifiable map of the current line number mapping.
+	 */
 	public Map<Integer, Integer> getLineNumberMapping() {
 		return Collections.unmodifiableMap(lineNumberMapping);
 	}
 
+	/**
+	 * Converts the content of sbf StringBuilder in current object to a string representation.
+	 * @return String that contains content stored in sbf for current object of PrinterHelper class
+	 */
 	@Override
 	public String toString() {
 		return sbf.toString();
@@ -284,7 +334,7 @@ public class PrinterHelper {
 
 	/**
 	 * @param lineSeparator characters which will be printed as End of line.
-	 * By default there is System.getProperty("line.separator")
+	 * By default, there is System.getProperty("line.separator")
 	 */
 	public void setLineSeparator(String lineSeparator) {
 		this.lineSeparator = lineSeparator;
@@ -295,6 +345,10 @@ public class PrinterHelper {
 		this.write(' ');
 	}
 
+	/**
+	 * Sets the flag indicating whether to write tabs.
+	 * @param b The boolean value to set. If true, tabs will be written; if false, they won't be.
+	 */
 	public void setShouldWriteTabs(boolean b) {
 		this.shouldWriteTabs = b;
 	}
