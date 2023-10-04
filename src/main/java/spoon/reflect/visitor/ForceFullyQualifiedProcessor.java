@@ -9,6 +9,7 @@ package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
@@ -96,8 +97,8 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 		if (!target.isImplicit()) {
 			return;
 		}
-		if (target instanceof CtThisAccess) {
-			//the non implicit this access is not forced
+		if (target instanceof CtThisAccess || target instanceof CtSuperAccess) {
+			//the implicit this/super access is not forced
 			return;
 		}
 		if (target instanceof CtTypeAccess) {

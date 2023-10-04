@@ -28,7 +28,9 @@ public final class CommonUtils
             targets.addFirst(target);
             target = ((CtTargetedExpression) target).getTarget();
         }
-        targets.addFirst(target);
+        if (target != null) {
+            targets.addFirst(target);
+        }
 
         // Traverse all targets left to right
         IntExpr targetValue = null;
@@ -44,6 +46,9 @@ public final class CommonUtils
                 CtExpression index = arrayRead.getIndexExpression();
                 Expr arrayIndex = (Expr) index.getMetadata("value");
                 targetValue = (IntExpr) memory.readArray((CtArrayTypeReference) arrayRead.getTarget().getType(), targetValue, arrayIndex);
+            }
+            else if (t instanceof CtSuperAccess) {
+                targetValue = context.mkInt(Memory.thisPointer());
             }
             else if (t instanceof CtVariableRead)
             {
