@@ -26,7 +26,6 @@
                   };
                   extra = with base; {
                     gradle = prev.gradle.override { java = jdk; };
-                    z3 = prev.z3.override { inherit jdk; javaBindings = true; };
                   };
                 in
                 (if extraChecks then base // extra else base))
@@ -149,11 +148,6 @@
             mvn -q checkstyle:checkstyle license:check
             popd || exit 1
 
-            # Requires z3
-            pushd spoon-dataflow || exit 1
-            env LD_LIBRARY_PATH="${pkgs.z3.lib}/lib:${pkgs.z3.java}/lib" ./gradlew build
-            popd || exit 1
-
             pushd spoon-visualisation || exit 1
             mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
             mvn -q versions:update-parent -DallowSnapshots=true
@@ -194,7 +188,7 @@
             else [ ];
           packages = with pkgs;
             [ jdk maven test coverage mavenPomQuality javadocQuality reproducibleBuilds ]
-            ++ (if extraChecks then [ gradle pythonEnv z3.java z3.lib extra extraRemote ] else [ ])
+            ++ (if extraChecks then [ gradle pythonEnv extra extraRemote ] else [ ])
             ++ (if release then [ semver jreleaser ] else [ ]);
         };
     in
