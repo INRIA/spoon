@@ -32,7 +32,8 @@ Check out test directory for more examples.
 In general, spoon-dataflow is capable to evaluate expressions statically, perform symbolic execution, handle control flow of a program, and so on. It also features a proper memory model, so it nicely deals with reference aliasing.
 
 ## Build and run
-In order to build spoon-dataflow you need JDK 8 or newer.
+In order to build spoon-dataflow, you will need to have JDK 11 or later, as
+this is required by the latest versions of spoon-core.
 
 Now you can go to the build directory and run the resulting jar:    
 `java -jar spoon-dataflow.jar -sources <arg...> [-classpath <arg...>]`
