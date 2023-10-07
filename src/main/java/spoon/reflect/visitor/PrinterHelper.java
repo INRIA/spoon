@@ -23,7 +23,7 @@ import java.util.Map;
 public class PrinterHelper {
 	/**
 	 * Line separator which is used by the printer helper.
-	 * By default the system line separator is used
+	 * By default, the system line separator is used
 	 */
 	private String lineSeparator = System.getProperty("line.separator");
 
