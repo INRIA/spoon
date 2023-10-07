@@ -18,23 +18,37 @@
               (final: prev:
                 let
                   base = rec {
-                    jdk = if javaVersion < 21 then prev."jdk${toString javaVersion}" else jdk21-ea;
+                    jdk =
+                      if javaVersion < 21 then prev."jdk${toString javaVersion}"
+                      else if javaVersion == 22 then jdk22-ea
+                      else jdk21;
                     maven = prev.maven.override { inherit jdk; };
                   };
                   extra = with base; {
                     gradle = prev.gradle.override { java = jdk; };
-                    z3 = prev.z3.override { inherit jdk; javaBindings = true; };
                   };
                 in
                 (if extraChecks then base // extra else base))
             ];
           };
-          jdk21-ea = pkgs.stdenv.mkDerivation rec {
+          jdk21 = pkgs.stdenv.mkDerivation rec {
             name = "jdk21-oracle";
             version = "21+35";
             src = builtins.fetchTarball {
-              url = "https://download.java.net/java/GA/jdk21/fd2272bbf8e04c3dbaee13770090416c/35/GPL/openjdk-21_linux-x64_bin.tar.gz";
-              sha256 = "sha256:0g3vf0kcpciixfv1kvgbk685h6cfn1s0cx2di4rhl3r7xlal217w";
+              url = "https://download.oracle.com/java/21/archive/jdk-21_linux-x64_bin.tar.gz";
+              sha256 = "sha256:1snj1jxa5175r17nb6l2ldgkcvjbp5mbfflwcc923svgf0604ps4";
+            };
+            installPhase = ''
+              cd ..
+              mv $sourceRoot $out
+            '';
+          };
+          jdk22-ea = pkgs.stdenv.mkDerivation rec {
+            name = "jdk22-ea";
+            version = "22+16";
+            src = builtins.fetchTarball {
+              url = "https://download.java.net/java/early_access/jdk22/16/GPL/openjdk-22-ea+16_linux-x64_bin.tar.gz";
+              sha256 = "sha256:17fckjdr1gadm41ih2nxi8c7zdimk4s9p12d8jcr0paic74mqinj";
             };
             installPhase = ''
               cd ..
@@ -134,11 +148,6 @@
             mvn -q checkstyle:checkstyle license:check
             popd || exit 1
 
-            # Requires z3
-            pushd spoon-dataflow || exit 1
-            env LD_LIBRARY_PATH="${pkgs.z3.lib}/lib:${pkgs.z3.java}/lib" ./gradlew build
-            popd || exit 1
-
             pushd spoon-visualisation || exit 1
             mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
             mvn -q versions:update-parent -DallowSnapshots=true
@@ -179,7 +188,7 @@
             else [ ];
           packages = with pkgs;
             [ jdk maven test coverage mavenPomQuality javadocQuality reproducibleBuilds ]
-            ++ (if extraChecks then [ gradle pythonEnv z3.java z3.lib extra extraRemote ] else [ ])
+            ++ (if extraChecks then [ gradle pythonEnv extra extraRemote ] else [ ])
             ++ (if release then [ semver jreleaser ] else [ ]);
         };
     in
@@ -188,12 +197,15 @@
         let
           # We have additional options (currently EA jdks) on 64 bit linux systems
           blessedSystem = "x86_64-linux";
-          blessed = { jdk21-ea = mkShell blessedSystem { javaVersion = 21; }; };
+          blessed = rec {
+            jdk21 = mkShell blessedSystem { javaVersion = 21; };
+            jdk22-ea = mkShell blessedSystem { javaVersion = 22; };
+            default = jdk21;
+          };
           common = forAllSystems
             (system:
               rec {
-                default = jdk20;
-                jdk20 = mkShell system { javaVersion = 20; };
+                default = jdk11;
                 jdk17 = mkShell system { javaVersion = 17; };
                 jdk11 = mkShell system { javaVersion = 11; };
                 extraChecks = mkShell system { extraChecks = true; javaVersion = 11; };

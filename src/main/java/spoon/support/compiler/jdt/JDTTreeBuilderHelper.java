@@ -366,7 +366,18 @@ public class JDTTreeBuilderHelper {
 			if (ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
 				va.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(ref.getDeclaringType(), true));
 			} else if (!ref.isStatic()) {
-				va.setTarget(jdtTreeBuilder.getFactory().Code().createThisAccess(jdtTreeBuilder.getReferencesBuilder().getTypeReference(singleNameReference.actualReceiverType), true));
+				TypeBinding fieldDeclarerType = singleNameReference.fieldBinding().declaringClass;
+				TypeBinding actualReceiverType = singleNameReference.actualReceiverType;
+				CtTypeReference<?> owningType = jdtTreeBuilder.getReferencesBuilder().getTypeReference(fieldDeclarerType);
+				if (Arrays.equals(fieldDeclarerType.qualifiedSourceName(), actualReceiverType.qualifiedSourceName())) {
+					va.setTarget(jdtTreeBuilder.getFactory().Code().createThisAccess(owningType, true));
+				} else {
+					va.setTarget(
+							jdtTreeBuilder.getFactory().createSuperAccess()
+									.setType(owningType)
+									.setImplicit(true)
+					);
+				}
 			}
 		}
 		return va;

@@ -32,26 +32,8 @@ Check out test directory for more examples.
 In general, spoon-dataflow is capable to evaluate expressions statically, perform symbolic execution, handle control flow of a program, and so on. It also features a proper memory model, so it nicely deals with reference aliasing.
 
 ## Build and run
-In order to build spoon-dataflow you need JDK 8 or newer. Also, you have to download and install Z3.
-
-### Windows:
-1. Download z3-4.8.4 here: https://github.com/Z3Prover/z3/releases
-2. Add bin directory to your PATH environment variable
-3. Run `gradlew build`
-
-Note: Visual C++ 2015 Redistributable may be required.
-
-### Linux:
-1. Download z3-4.8.4 here https://github.com/Z3Prover/z3/releases
-2. Add bin directory to your LD_LIBRARY_PATH: `export LD_LIBRARY_PATH=/path/to/z3/bin`
-3. Run `./gradlew build`
-
-### macOS:
-1. Download z3-4.8.4 here https://github.com/Z3Prover/z3/releases
-2. Add bin directory to your DYLD_LIBRARY_PATH: `export DYLD_LIBRARY_PATH=/path/to/z3/bin`
-3. Run `./gradlew build`
-
-Note that you may still need to set up environment variables or java.lang.path in your IDE.
+In order to build spoon-dataflow, you will need to have JDK 11 or later, as
+this is required by the latest versions of spoon-core.
 
 Now you can go to the build directory and run the resulting jar:    
 `java -jar spoon-dataflow.jar -sources <arg...> [-classpath <arg...>]`
