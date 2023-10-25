@@ -209,22 +209,22 @@ public class PackageFactory extends SubFactory {
 			if (pack == mergingPackage) continue;
 
 
-            Set<CtType<?>> oldTypes = pack.getTypes();
-            Set<CtPackage> oldPacks = pack.getPackages();
+			Set<CtType<?>> oldTypes = pack.getTypes();
+			Set<CtPackage> oldPacks = pack.getPackages();
 
-            for (CtType<?> type : oldTypes) {
+			for (CtType<?> type : oldTypes) {
 				// If we don't disconnect the type from its old package, spoon will get mad.
 				((CtPackage)type.getParent()).removeType(type);
 				type.setParent(null);
 			}
 			types.addAll(oldTypes);
 
-            for (CtPackage oldPack : oldPacks) {
+			for (CtPackage oldPack : oldPacks) {
 				// Applies to packagesToMerge too.
 				((CtPackage)oldPack.getParent()).removePackage(oldPack);
-                oldPack.setParent(null);
-            }
-            subpacks.addAll(oldPacks);
+				oldPack.setParent(null);
+			}
+			subpacks.addAll(oldPacks);
 			pack.delete();
 		}
 		mergingPackage.setTypes(types);
