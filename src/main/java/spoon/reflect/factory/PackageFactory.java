@@ -8,18 +8,17 @@
 package spoon.reflect.factory;
 
 
-import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtPackageDeclaration;
-import spoon.reflect.reference.CtPackageReference;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
-
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageDeclaration;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtPackageReference;
 
 /**
  * The {@link CtPackage} sub-factory.
