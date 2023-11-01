@@ -14,9 +14,9 @@ from typing import Optional
 
 SPOON_SNAPSHOT_REPO = """
 <repository>
-    <id>ow2.org-snapshot</id>
+    <id>spoon-snapshot-repo</id>
     <name>Maven Repository for Spoon Snapshots</name>
-    <url>https://repository.ow2.org/nexus/content/repositories/snapshots/</url>
+    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
     <snapshots/>
 </repository>
 """
