@@ -16,9 +16,9 @@ echo "NEW_BETA_NUMBER $NEW_BETA_NUMBER"
 NEXT_VERSION="$CURRENT_VERSION-beta-$NEW_BETA_NUMBER"
 echo "::endgroup::"
 
-BRANCH_NAME="release/$NEXT_VERSION"
+BRANCH_NAME="beta-release/$NEXT_VERSION"
 
-echo "::group::Setting release version"
+echo "::group::Setting beta-release version"
 mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_VERSION" -DprocessAllModules
 mvn --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_VERSION" -DprocessAllModules
 mvn -f spoon-javadoc --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_VERSION" -DprocessAllModules
@@ -30,7 +30,7 @@ git commit -am "release: Releasing version $NEXT_VERSION"
 git push --set-upstream origin "$BRANCH_NAME"
 echo "::endgroup::"
 
-echo "::group::Staging release"
+echo "::group::Staging beta-release"
 mvn -f spoon-pom --no-transfer-progress --batch-mode -Pjreleaser clean deploy -DaltDeploymentRepository=local::default::file:./target/staging-deploy
 mvn --no-transfer-progress --batch-mode -Pjreleaser deploy:deploy-file -Dfile="./spoon-pom/pom.xml" -DpomFile="./spoon-pom/pom.xml" -Durl="file://$(mvn help:evaluate -D"expression=project.basedir" -q -DforceStdout)/target/staging-deploy"
 echo "::endgroup::"
