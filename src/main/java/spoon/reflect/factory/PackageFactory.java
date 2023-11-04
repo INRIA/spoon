@@ -188,7 +188,9 @@ public class PackageFactory extends SubFactory {
 		CtPackage probablePackage = packageWithTypes != null ? packageWithTypes : lastNonNullPackage;
 
 		// We're going to have to return null, but quodana complains, so I hope this keeps it happy.
-		if (probablePackage == null) return probablePackage;
+		if (probablePackage == null) {
+			return probablePackage;
+		}
 
 		// Return a non synthetic package but if *no* package had any types we return the last one.
 		// This ensures that you can also retrieve empty packages with this API
@@ -206,22 +208,23 @@ public class PackageFactory extends SubFactory {
 		HashSet<CtPackage> subpacks = new HashSet<>(mergingPackage.getPackages());
 
 		for (CtPackage pack : packagesToMerge) {
-			if (pack == mergingPackage) continue;
-
+			if (pack == mergingPackage) {
+				continue;
+			}
 
 			Set<CtType<?>> oldTypes = pack.getTypes();
 			Set<CtPackage> oldPacks = pack.getPackages();
 
 			for (CtType<?> type : oldTypes) {
 				// If we don't disconnect the type from its old package, spoon will get mad.
-				((CtPackage)type.getParent()).removeType(type);
+				((CtPackage) type.getParent()).removeType(type);
 				type.setParent(null);
 			}
 			types.addAll(oldTypes);
 
 			for (CtPackage oldPack : oldPacks) {
 				// Applies to packages too.
-				((CtPackage)oldPack.getParent()).removePackage(oldPack);
+				((CtPackage) oldPack.getParent()).removePackage(oldPack);
 				oldPack.setParent(null);
 			}
 			subpacks.addAll(oldPacks);
