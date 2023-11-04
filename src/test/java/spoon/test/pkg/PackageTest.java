@@ -21,10 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
@@ -47,6 +44,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
@@ -452,4 +450,25 @@ public class PackageTest {
 		var typeNames = types.stream().map(CtType::getSimpleName).collect(Collectors.toList());
 		assertEquals(typeNames, List.of("A", "D", "C", "B"));
 	}
+
+	@Test
+	public void testMergePackagesWithDifferentSourceRoots() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/package-src-roots/root1/src/main/java/");
+		launcher.addInputResource("./src/test/resources/package-src-roots/root2/src/main/java/");
+		CtModel model = launcher.buildModel();
+		CtPackage comExample = model.getRootPackage().getPackage("com").getPackage("example");
+
+		assertNotNull(comExample);
+
+		assertEquals(2, comExample.getTypes().size());
+
+		CtType<?> class1 = comExample.getType("Class1");
+
+		Collection<CtTypeReference<?>> refTypes = class1.getMethod("doSomething").getReferencedTypes();
+
+		assertTrue(refTypes.stream().anyMatch(it -> it.getSimpleName().equals("Class2")));
+	}
+
 }
