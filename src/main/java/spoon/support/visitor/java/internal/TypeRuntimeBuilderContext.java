@@ -7,6 +7,7 @@
  */
 package spoon.support.visitor.java.internal;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -106,7 +107,7 @@ public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	}
 
 	@Override
-	public CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string) {
+	public @Nullable CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string) {
 		return rtType == genericDeclaration ? this.mapTypeParameters.get(string) : null;
 	}
 }

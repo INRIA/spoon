@@ -10,6 +10,7 @@ package spoon.support.visitor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
@@ -91,5 +92,5 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 	 * @return {@link CtTypeReference} or {@link CtTypeParameterReference} adapted to scope of this {@link GenericTypeAdapter}
 	 *  or null if `typeParam` cannot be adapted to target `scope`
 	 */
-	protected abstract CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam);
+	protected abstract @Nullable CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam);
 }

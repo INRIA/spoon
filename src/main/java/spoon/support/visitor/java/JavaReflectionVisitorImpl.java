@@ -22,6 +22,8 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.reflect.path.CtRole;
 import spoon.support.visitor.java.reflect.RtMethod;
@@ -603,7 +605,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		return clazz.getEnclosingClass() == null && clazz.getPackage() != null;
 	}
 
-	private static Class<?> getRecordClass() {
+	private static @Nullable Class<?> getRecordClass() {
 		try {
 			return Class.forName("java.lang.Record");
 		} catch (Exception e) {

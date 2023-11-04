@@ -7,6 +7,7 @@
  */
 package spoon.support.visitor;
 
+import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -145,7 +146,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 * 	whose actual type argument values has to be resolved in scope of `scope` type
 	 * @return actual type arguments of `typeRef` in scope of `scope` element or null if typeRef is not a super type of `scope`
 	 */
-	public List<CtTypeReference<?>> resolveActualTypeArgumentsOf(CtTypeReference<?> typeRef) {
+	public @Nullable List<CtTypeReference<?>> resolveActualTypeArgumentsOf(CtTypeReference<?> typeRef) {
 		final String typeQualifiedName = typeRef.getQualifiedName();
 		List<CtTypeReference<?>> args = typeToArguments.get(typeQualifiedName);
 		if (args != null) {
@@ -335,7 +336,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 * @param type the potential inner class, whose enclosing type should be returned
 	 * @return enclosing type of a `type` is an inner type or null if `type` is explicitly or implicitly static or top level type
 	 */
-	private CtType<?> getEnclosingType(CtType<?> type) {
+	private @Nullable CtType<?> getEnclosingType(CtType<?> type) {
 		if (type.hasModifier(ModifierKind.STATIC)) {
 			return null;
 		}
@@ -354,7 +355,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 * @param typeRef the potential inner class, whose enclosing type should be returned
 	 * @return enclosing type of a `type` is an inner type or null if `type` is explicitly or implicitly static or top level type
 	 */
-	private CtTypeReference<?> getEnclosingType(CtTypeReference<?> typeRef) {
+	private @Nullable CtTypeReference<?> getEnclosingType(CtTypeReference<?> typeRef) {
 		CtType<?> type = typeRef.getTypeDeclaration();
 		if (type != null) {
 			if (type.hasModifier(ModifierKind.STATIC)) {
@@ -386,7 +387,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 *  or null if `typeParam` cannot be adapted to target `scope`
 	 */
 	@Override
-	protected CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam) {
+	protected @Nullable CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam) {
 		if (typeParam == null) {
 			throw new SpoonException("You cannot adapt a null type parameter.");
 		}
@@ -517,7 +518,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 		return getValue(actualTypeArguments, typeParam, declarer);
 	}
 
-	private List<CtTypeReference<?>> getActualTypeArguments(String qualifiedName) {
+	private @Nullable List<CtTypeReference<?>> getActualTypeArguments(String qualifiedName) {
 		List<CtTypeReference<?>> actualTypeArguments = typeToArguments.get(qualifiedName);
 		if (actualTypeArguments != null) {
 			return actualTypeArguments;

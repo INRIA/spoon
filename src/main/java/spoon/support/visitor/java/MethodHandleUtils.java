@@ -7,6 +7,8 @@
  */
 package spoon.support.visitor.java;
 
+import org.jspecify.annotations.Nullable;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -53,7 +55,7 @@ class MethodHandleUtils {
 	 * Returns the class object of record component from the jdk if present.
 	 * @return  the class object of record component from the jdk if present, null otherwise.
 	 */
-	private static Class<?> lookupRecordComponentClass() {
+	private static @Nullable Class<?> lookupRecordComponentClass() {
 		try {
 			return Class.forName("java.lang.reflect.RecordComponent");
 		} catch (ClassNotFoundException e) {
@@ -91,7 +93,7 @@ class MethodHandleUtils {
 	 * @param component  the record component to get the name from.
 	 * @return  the name of the given record component, null otherwise.
 	 */
-	public static String getRecordComponentName(AnnotatedElement component) {
+	public static @Nullable String getRecordComponentName(AnnotatedElement component) {
 		try {
 			return (String) lookupRecordComponentName.invoke(component);
 		} catch (Throwable e) {
@@ -108,7 +110,7 @@ class MethodHandleUtils {
 	 * @param component
 	 * @return
 	 */
-	public static Type getRecordComponentType(AnnotatedElement component) {
+	public static @Nullable Type getRecordComponentType(AnnotatedElement component) {
 		try {
 			return (Type) lookupRecordComponentType.invoke(component);
 		} catch (Throwable e) {
@@ -116,7 +118,7 @@ class MethodHandleUtils {
 		}
 	}
 
-	public static Class<?>[] getPermittedSubclasses(Class<?> clazz) {
+	public static @Nullable Class<?>[] getPermittedSubclasses(Class<?> clazz) {
 		try {
 			return (Class<?>[]) lookupPermittedSubclasses.invoke(clazz);
 		} catch (Throwable e) {
@@ -125,14 +127,14 @@ class MethodHandleUtils {
 	}
 
 
-	private static MethodHandle lookupRecord() {
+	private static @Nullable MethodHandle lookupRecord() {
 		try {
 			return MethodHandles.lookup().findVirtual(Class.class, "isRecord", MethodType.methodType(boolean.class));
 		} catch (Throwable e) {
 			return null;
 		}
 	}
-	private static MethodHandle lookupRecordComponents() {
+	private static @Nullable MethodHandle lookupRecordComponents() {
 		try {
 			MethodType arrayOfRecordComponentType = MethodType.methodType(Array.newInstance(recordComponent, 0).getClass());
 			return MethodHandles.lookup().findVirtual(Class.class, "getRecordComponents", arrayOfRecordComponentType);
@@ -140,7 +142,7 @@ class MethodHandleUtils {
 			return null;
 		}
 	}
-	private static MethodHandle lookupRecordComponentType() {
+	private static @Nullable MethodHandle lookupRecordComponentType() {
 		try {
 			return MethodHandles.lookup().findVirtual(recordComponent, "getGenericType", MethodType.methodType(Type.class));
 		} catch (Throwable e) {
@@ -148,7 +150,7 @@ class MethodHandleUtils {
 		}
 	}
 
-	private static MethodHandle lookupRecordComponentName() {
+	private static @Nullable MethodHandle lookupRecordComponentName() {
 		try {
 			return MethodHandles.lookup().findVirtual(recordComponent, "getName", MethodType.methodType(String.class));
 		} catch (Throwable e) {
@@ -156,7 +158,7 @@ class MethodHandleUtils {
 		}
 	}
 
-	private static MethodHandle lookupPermittedSubclasses() {
+	private static @Nullable MethodHandle lookupPermittedSubclasses() {
 		try {
 			return MethodHandles.lookup().findVirtual(Class.class, "getPermittedSubclasses", MethodType.methodType(Class[].class));
 		} catch (Throwable e) {
