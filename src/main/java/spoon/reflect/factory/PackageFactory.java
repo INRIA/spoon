@@ -187,6 +187,9 @@ public class PackageFactory extends SubFactory {
 
 		CtPackage probablePackage = packageWithTypes != null ? packageWithTypes : lastNonNullPackage;
 
+		// We're going to have to return null, but quodana complains, so I hope this keeps it happy.
+		if (probablePackage == null) return probablePackage;
+
 		// Return a non synthetic package but if *no* package had any types we return the last one.
 		// This ensures that you can also retrieve empty packages with this API
 		return mergeAmbiguousPackages(packages, probablePackage);
@@ -195,13 +198,10 @@ public class PackageFactory extends SubFactory {
 	/**
 	 * Merges ambiguous packagesToMerge together to fix inconsistent heirarchies.
 	 * @param packagesToMerge - The list of ambiguous packagesToMerge
-	 * @param mergingPackage - The package to merge everything into.
-	 * @return
+	 * @param mergingPackage - The package to merge everything into. Should not be null.
+	 * @return the merged package.
 	 */
 	private CtPackage mergeAmbiguousPackages(ArrayList<CtPackage> packagesToMerge, CtPackage mergingPackage) {
-
-		if (mergingPackage == null) return null;
-
 		HashSet<CtType<?>> types = new HashSet<>(mergingPackage.getTypes());
 		HashSet<CtPackage> subpacks = new HashSet<>(mergingPackage.getPackages());
 
@@ -220,7 +220,7 @@ public class PackageFactory extends SubFactory {
 			types.addAll(oldTypes);
 
 			for (CtPackage oldPack : oldPacks) {
-				// Applies to packagesToMerge too.
+				// Applies to packages too.
 				((CtPackage)oldPack.getParent()).removePackage(oldPack);
 				oldPack.setParent(null);
 			}
