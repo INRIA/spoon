@@ -9,7 +9,6 @@ import spoon.reflect.visitor.CtVisitor;
 
 import java.io.Serial;
 
-// TODO model listeners
 public class CtCasePatternImpl extends CtExpressionImpl<Void> implements CtCasePattern {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -25,6 +24,11 @@ public class CtCasePatternImpl extends CtExpressionImpl<Void> implements CtCaseP
 
 	@Override
 	public CtCasePattern setPattern(CtPattern pattern) {
+		if (pattern != null) {
+			pattern.setParent(this);
+		}
+		getFactory().getEnvironment().getModelChangeListener()
+			.onObjectUpdate(this, CtRole.PATTERN, pattern, this.pattern);
 		this.pattern = pattern;
 		return this;
 	}
@@ -36,6 +40,11 @@ public class CtCasePatternImpl extends CtExpressionImpl<Void> implements CtCaseP
 
 	@Override
 	public CtCasePattern setGuard(CtExpression<?> guard) {
+		if (guard != null) {
+			guard.setParent(this);
+		}
+		getFactory().getEnvironment().getModelChangeListener()
+			.onObjectUpdate(this, CtRole.CONDITION, guard, this.guard);
 		this.guard = guard;
 		return this;
 	}

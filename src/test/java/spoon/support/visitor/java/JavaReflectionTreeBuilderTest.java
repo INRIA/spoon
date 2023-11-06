@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.createFactory;
 import java.io.File;
 import java.io.ObjectInputStream;
+import java.io.Serial;
 import java.lang.annotation.Retention;
 import java.net.CookieManager;
 import java.net.URLClassLoader;
@@ -389,6 +390,9 @@ public class JavaReflectionTreeBuilderTest {
 				if (myAnnotation.getAnnotationType().getQualifiedName().equals(Root.class.getName())) {
 					return;
 				}
+				if (myAnnotation.getAnnotationType().getQualifiedName().equals(Serial.class.getName())) {
+					return;
+				}
 			}
 			if (role == CtRole.SUPER_TYPE && other == null && element != null && ((CtTypeReference<?>) element).getQualifiedName().equals(Object.class.getName())) {
 				//class X<T extends Object> cannot be distinguished in runtime from X<T>
@@ -424,7 +428,7 @@ public class JavaReflectionTreeBuilderTest {
 				List<CtAnnotation<?>> fileteredElements = ((List<CtAnnotation<?>>) elements).stream().filter(a -> {
 					CtTypeReference<?> at = a.getAnnotationType();
 					Class ac = at.getActualClass();
-					return ac != Override.class && ac != SuppressWarnings.class && ac != Root.class;
+					return ac != Override.class && ac != SuppressWarnings.class && ac != Root.class && ac != Serial.class;
 				}).collect(Collectors.toList());
 				super.biScan(role, fileteredElements, others);
 				return;

@@ -872,6 +872,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.code.CtCase.class)) {
 			return createCase();
 		}
+		if (klass.equals(spoon.reflect.code.CtCasePattern.class)) {
+			return createCasePattern();
+		}
 		if (klass.equals(spoon.reflect.code.CtCatch.class)) {
 			return createCatch();
 		}

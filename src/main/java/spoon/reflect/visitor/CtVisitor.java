@@ -551,12 +551,16 @@ public interface CtVisitor {
 	 * @param recordType the record to visit.
 	 */
 	void visitCtRecord(CtRecord recordType);
+
 	/**
 	 * Visits a record component.
 	 * @param recordComponent  the record component to visit.
 	 */
-
 	void visitCtRecordComponent(CtRecordComponent recordComponent);
 
+	/**
+	 * Visits a case pattern
+	 * @param casePattern the case pattern to visit.
+	 */
 	void visitCtCasePattern(CtCasePattern casePattern);
 }

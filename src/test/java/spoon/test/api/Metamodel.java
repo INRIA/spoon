@@ -1335,6 +1335,18 @@ public class Metamodel {
 
 			));
 
+			types.add(new Type("CtCasePattern", spoon.reflect.code.CtCasePattern.class, spoon.support.reflect.code.CtCasePatternImpl.class, fm -> fm
+				.field(CtRole.IS_IMPLICIT, false, false)
+				.field(CtRole.CAST, false, false)
+				.field(CtRole.POSITION, false, false)
+				.field(CtRole.ANNOTATION, false, false)
+				.field(CtRole.PATTERN, false, false)
+				.field(CtRole.CONDITION, false, false)
+				.field(CtRole.TYPE, false, false)
+				.field(CtRole.COMMENT, false, false)
+
+			));
+
 			types.add(new Type("CtNewClass", spoon.reflect.code.CtNewClass.class, spoon.support.reflect.code.CtNewClassImpl.class, fm -> fm
 				.field(CtRole.TYPE, true, false)
 				.field(CtRole.IS_IMPLICIT, false, false)

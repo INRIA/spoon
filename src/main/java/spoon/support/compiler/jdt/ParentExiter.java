@@ -487,7 +487,11 @@ public class ParentExiter extends CtInheritanceScanner {
 		}
 		if (node instanceof CaseStatement && ((CaseStatement) node).constantExpressions != null && child instanceof CtExpression
 				&& caseStatement.getCaseExpressions().size() < ((CaseStatement) node).constantExpressions.length) {
-			caseStatement.addCaseExpression((CtExpression<E>) child);
+			if (child instanceof CtPattern pattern) {
+				caseStatement.addCaseExpression((CtExpression<E>) jdtTreeBuilder.getFactory().Core().createCasePattern().setPattern(pattern));
+			} else {
+				caseStatement.addCaseExpression((CtExpression<E>) child);
+			}
 			return;
 		} else if (child instanceof CtStatement) {
 			caseStatement.addStatement((CtStatement) child);

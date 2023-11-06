@@ -1083,9 +1083,10 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtCasePattern(CtCasePattern casePattern) {
 		enter(casePattern);
 		// FIXME: annotations are not supported in case pattern (?)
+		scan(CtRole.CAST, casePattern.getTypeCasts());
 		scan(CtRole.ANNOTATION, casePattern.getAnnotations());
 		scan(CtRole.PATTERN, casePattern.getPattern());
-		scan(CtRole.EXPRESSION, casePattern.getGuard());
+		scan(CtRole.CONDITION, casePattern.getGuard());
 		scan(CtRole.TYPE, casePattern.getType()); // TODO does this make sense?
 		scan(CtRole.COMMENT, casePattern.getComments());
 		exit(casePattern);

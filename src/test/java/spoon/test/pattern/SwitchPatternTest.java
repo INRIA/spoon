@@ -45,7 +45,7 @@ class SwitchPatternTest {
 		CtSwitch<?> sw = createFromSwitchStatement("case Integer i");
 		CtCase<?> ctCase = sw.getCases().get(0);
 		CtExpression<?> caseExpression = ctCase.getCaseExpression();
-		assertThat(caseExpression).isInstanceOf(CtTypePattern.class); // TODO or CtCasePattern?
+		assertThat(caseExpression).isInstanceOf(CtCasePattern.class);
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class SwitchPatternTest {
 	@Test
 	void testCaseNullDefault() {
 		// contract: "case null, default" is represented by a null literal and TODO ???
-		CtSwitch<?> sw = createFromSwitchStatement("case null");
+		CtSwitch<?> sw = createFromSwitchStatement("case null, default");
 		CtCase<?> ctCase = sw.getCases().get(0);
 		List<? extends CtExpression<?>> caseExpressions = ctCase.getCaseExpressions();
 		assertThat(caseExpressions).hasSize(2);
