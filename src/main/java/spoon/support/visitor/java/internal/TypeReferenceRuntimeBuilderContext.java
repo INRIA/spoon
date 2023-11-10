@@ -7,6 +7,7 @@
  */
 package spoon.support.visitor.java.internal;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -72,7 +73,7 @@ public class TypeReferenceRuntimeBuilderContext extends AbstractRuntimeBuilderCo
 	}
 
 	@Override
-	public CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string) {
+	public @Nullable CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string) {
 		return type == genericDeclaration ? this.mapTypeParameters.get(string) : null;
 	}
 

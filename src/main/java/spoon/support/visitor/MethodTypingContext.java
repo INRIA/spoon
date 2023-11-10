@@ -15,6 +15,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -170,7 +171,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 	 *  or null if `typeParam` cannot be adapted to target `scope`
 	 */
 	@Override
-	protected CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam) {
+	protected @Nullable CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam) {
 		if (typeParam == null) {
 			return null;
 		}

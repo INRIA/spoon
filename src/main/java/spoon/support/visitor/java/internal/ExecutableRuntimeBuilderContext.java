@@ -7,6 +7,7 @@
  */
 package spoon.support.visitor.java.internal;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
@@ -77,7 +78,7 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 	}
 
 	@Override
-	public CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string) {
+	public @Nullable CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string) {
 		return executable == genericDeclaration ? this.mapTypeParameters.get(string) : null;
 	}
 }
