@@ -2345,6 +2345,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	@java.lang.Override
 	public void visitCtCasePattern(spoon.reflect.code.CtCasePattern casePattern) {
+		replaceInListIfExist(casePattern.getTypeCasts(), new spoon.support.visitor.replace.ReplacementVisitor.CtExpressionTypeCastsReplaceListener(casePattern));
 		replaceInListIfExist(casePattern.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(casePattern));
 		replaceElementIfExist(casePattern.getPattern(), new spoon.support.visitor.replace.ReplacementVisitor.CtCasePatternPatternReplaceListener(casePattern));
 		replaceElementIfExist(casePattern.getGuard(), new spoon.support.visitor.replace.ReplacementVisitor.CtCasePatternGuardReplaceListener(casePattern));

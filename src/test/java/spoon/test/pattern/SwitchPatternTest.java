@@ -7,14 +7,18 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtTypePattern;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,14 +33,18 @@ class SwitchPatternTest {
 	}
 
 	private static CtSwitch<?> createFromSwitchStatement(String cases) {
+		return createFromSwitchStatement(cases, true);
+	}
+	private static CtSwitch<?> createFromSwitchStatement(String cases, boolean def) {
 		return createModelFromString("""
 									class Foo {
 										void foo(Object arg) {
 											switch (arg) {
-												%s -> {};
+												%s -> {}
+												%s
 											}
 									}
-						""".formatted(cases))
+						""".formatted(cases, def ? "default -> {}" : ""))
 						.getElements(new TypeFilter<>(CtSwitch.class)).iterator().next();
 	}
 
@@ -74,10 +82,30 @@ class SwitchPatternTest {
 	@Test
 	void testCaseNullDefault() {
 		// contract: "case null, default" is represented by a null literal and TODO ???
-		CtSwitch<?> sw = createFromSwitchStatement("case null, default");
+		CtSwitch<?> sw = createFromSwitchStatement("case null, default", false);
 		CtCase<?> ctCase = sw.getCases().get(0);
 		List<? extends CtExpression<?>> caseExpressions = ctCase.getCaseExpressions();
 		assertThat(caseExpressions).hasSize(2);
 		// TODO
+	}
+
+	@Test
+	void testCaseQualifiedEnumConstant() {
+		// contract: fully qualified enum constants in cases are present in the model and printed again
+		CtSwitch<?> sw = createFromSwitchStatement("case java.nio.file.StandardCopyOption.ATOMIC_MOVE");
+		CtCase<?> ctCase = sw.getCases().get(0);
+		List<? extends CtExpression<?>> caseExpressions = ctCase.getCaseExpressions();
+		CtFieldRead<Object> fieldRead = sw.getFactory().createFieldRead();
+		CtTypeReference<StandardCopyOption> declaringType = sw.getFactory().Type().createReference(StandardCopyOption.class);
+		fieldRead.setTarget(sw.getFactory().createTypeAccess(declaringType));
+		fieldRead.setVariable(
+			sw.getFactory().Core().createFieldReference().setDeclaringType(declaringType)
+				.setFinal(true).setStatic(true).setSimpleName("ATOMIC_MOVE")
+		).setType(declaringType);
+		assertThat(caseExpressions).hasSize(1);
+		CtExpression<?> expression = caseExpressions.get(0);
+		assertThat(expression).isEqualTo(fieldRead);
+		assertThat(((CtFieldRead<?>) expression).getTarget()).matches(Predicate.not(CtExpression::isImplicit));
+		assertThat(sw.toString()).contains("case java.nio.file.StandardCopyOption.ATOMIC_MOVE");
 	}
 }

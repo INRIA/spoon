@@ -1095,9 +1095,10 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		spoon.reflect.code.CtCasePattern other = ((spoon.reflect.code.CtCasePattern) (this.stack.peek()));
 		enter(casePattern);
 		// FIXME: annotations are not supported in case pattern (?)
+		biScan(spoon.reflect.path.CtRole.CAST, casePattern.getTypeCasts(), other.getTypeCasts());
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, casePattern.getAnnotations(), other.getAnnotations());
 		biScan(spoon.reflect.path.CtRole.PATTERN, casePattern.getPattern(), other.getPattern());
-		biScan(spoon.reflect.path.CtRole.EXPRESSION, casePattern.getGuard(), other.getGuard());
+		biScan(spoon.reflect.path.CtRole.CONDITION, casePattern.getGuard(), other.getGuard());
 		biScan(spoon.reflect.path.CtRole.TYPE, casePattern.getType(), other.getType());// TODO does this make sense?
 
 		biScan(spoon.reflect.path.CtRole.COMMENT, casePattern.getComments(), other.getComments());

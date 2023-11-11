@@ -1151,6 +1151,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	public void visitCtCasePattern(spoon.reflect.code.CtCasePattern casePattern) {
 		spoon.reflect.code.CtCasePattern aCtCasePattern = casePattern.getFactory().Core().createCasePattern();
 		this.builder.copy(casePattern, aCtCasePattern);
+		aCtCasePattern.setTypeCasts(this.cloneHelper.clone(casePattern.getTypeCasts()));
 		aCtCasePattern.setAnnotations(this.cloneHelper.clone(casePattern.getAnnotations()));
 		aCtCasePattern.setPattern(this.cloneHelper.clone(casePattern.getPattern()));
 		aCtCasePattern.setGuard(this.cloneHelper.clone(casePattern.getGuard()));
