@@ -54,26 +54,14 @@ public class AccessibleVariablesFinder {
 		return Collections.emptyList();
 	}
 
-	/**
-	 * This method retrieves a list of variables from a given parent CtElement instance.
-	 * @param parent The parent element from which to retrieve variables.
-	 * @return A list of variables found within the parent element.
-	 */
 	private List<CtVariable> getVariable(final CtElement parent) {
 		final List<CtVariable> variables = new ArrayList<>();
 		if (parent == null) {
 			return variables;
 		}
 
-		/*
-		 * This class scans for variables within a given element.
-		 */
 		class VariableScanner extends CtInheritanceScanner {
 
-			/**
-			 * This method visits a list of statements and adds any variables it finds to the list.
-			 * @param e The list of statements to visit.
-			 */
 			@Override
 			public void visitCtStatementList(CtStatementList e) {
 				for (int i = 0; i < e.getStatements().size(); i++) {
@@ -91,10 +79,6 @@ public class AccessibleVariablesFinder {
 				super.visitCtStatementList(e);
 			}
 
-			/**
-			 * This method scans CtType instance and adds any fields it finds to the list.
-			 * @param type The type to scan.
-			 */
 			@Override
 			public <T> void scanCtType(CtType<T> type) {
 				List<CtField<?>> fields = type.getFields();
@@ -121,10 +105,6 @@ public class AccessibleVariablesFinder {
 				super.scanCtType(type);
 			}
 
-			/**
-			 * This method visits a try-with-resource statement and adds any resources it finds to the list.
-			 * @param e The try-with-resource statement to visit.
-			 */
 			@Override
 			public void visitCtTryWithResource(CtTryWithResource e) {
 				for (CtResource<?> resource: e.getResources()) {
@@ -135,20 +115,12 @@ public class AccessibleVariablesFinder {
 				super.visitCtTryWithResource(e);
 			}
 
-			/**
-			 * This method scans an executable and adds any parameters it finds to the list.
-			 * @param e The executable to scan.
-			 */
 			@Override
 			public void scanCtExecutable(CtExecutable e) {
 				variables.addAll(e.getParameters());
 				super.scanCtExecutable(e);
 			}
 
-			/**
-			 * This method visits a for loop and scans its initialization statements for variables.
-			 * @param e The for loop to visit.
-			 */
 			@Override
 			public void visitCtFor(CtFor e) {
 				for (CtStatement ctStatement : e.getForInit()) {

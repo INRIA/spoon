@@ -140,9 +140,6 @@ public class PrinterHelper {
 		return this;
 	}
 
-	/**
-	 * Appends tabs or spaces to a StringBuilder based on the environment settings.
-	 */
 	private void writeTabsInternal() {
 		for (int i = 0; i < nbTabs; i++) {
 			if (env != null && env.isUsingTabulations()) {
@@ -157,10 +154,6 @@ public class PrinterHelper {
 		}
 	}
 
-	/**
-	 * Writes tabs if the condition is met.
-	 * This method checks if tabs should be written, and if so, it writes them and resets the flag.
-	 */
 	protected void autoWriteTabs() {
 		if (shouldWriteTabs) {
 			writeTabsInternal();
@@ -226,10 +219,6 @@ public class PrinterHelper {
 		return true;
 	}
 
-	/**
-	 * @param c Character that needs to be checked for being space/line-break character
-	 * @return true if character is space/line-break character
-	 */
 	private boolean isWhite(char c) {
 		return (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
 	}

@@ -28,7 +28,11 @@ public class CacheBasedConflictFinder {
 		typeRef = type.getReference();
 	}
 
-	/** returns true if the given name is a field name */
+	/**
+	 * Checks if a field with the given name conflicts with fields in the type's scope.
+	 * @param name The name of the field to check for conflicts.
+	 * @return true if a field with the same name exists in the type's scope, false otherwise.
+	 */
 	public boolean hasFieldConflict(String name) {
 		if (cachedFieldNames == null) {
 			Collection<CtFieldReference<?>> allFields = type.getAllFields();
@@ -40,7 +44,11 @@ public class CacheBasedConflictFinder {
 		return cachedFieldNames.contains(name);
 	}
 
-	/** returns true if the given name is a nested type name */
+	/**
+	 * Checks if a nested type with the given name conflicts with nested types in the type's scope.
+	 * @param name The name of the nested type to check for conflicts.
+	 * @return true if a nested type with the same name exists in the type's scope, false otherwise.
+	 */
 	public boolean hasNestedTypeConflict(String name) {
 		if (cachedNestedTypeNames == null) {
 			Collection<CtType<?>> allTypes = type.getNestedTypes();
@@ -52,10 +60,18 @@ public class CacheBasedConflictFinder {
 		return cachedNestedTypeNames.contains(name);
 	}
 
+	/**
+	 * Gets the simple name of the referenced type.
+	 * @return The simple name of the referenced type.
+	 */
 	public String getSimpleName() {
 		return typeRef.getSimpleName();
 	}
 
+	/**
+	 * Gets the package reference of the referenced type.
+	 * @return The package reference of the referenced type.
+	 */
 	public CtPackageReference getPackage() {
 		return typeRef.getPackage();
 	}

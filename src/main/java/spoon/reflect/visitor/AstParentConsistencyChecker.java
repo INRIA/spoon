@@ -13,6 +13,11 @@ import spoon.reflect.reference.CtReference;
 public class AstParentConsistencyChecker extends CtScanner {
 
 	private CtElement parent;
+
+	/**
+	 * Scans a CtElement in the abstract syntax tree (AST) and enforces reference sharing across the AST.
+	 * @param element The CtElement to scan in the AST.
+	 */
 	@Override
 	public void scan(CtElement element) {
 		// We allow to share references across the AST

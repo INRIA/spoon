@@ -25,14 +25,17 @@ public class CommentHelper {
 	private CommentHelper() {
 	}
 
-	/** returns a pretty-printed version of a comment, with prefix, suffix, and intermediate prefix for block and Javadoc */
+	/**
+	 * Prints the content of a comment.
+	 * @param comment The comment to be printed.
+	 * @return A string containing the printed comment content.
+	 */
 	public static String printComment(CtComment comment) {
 		PrinterHelper ph = new PrinterHelper(comment.getFactory().getEnvironment());
 		// now we only use one single method to print all tags
 		printCommentContent(ph, comment, s -> { return  s; });
 		return ph.toString();
 	}
-
 
 	static void printComment(PrinterHelper printer, CtComment comment) {
 		CtComment.CommentType commentType = comment.getCommentType();
@@ -100,11 +103,6 @@ public class CommentHelper {
 		}
 	}
 
-	/**
-	 * Checks if the given stream has more than one element.
-	 * @param stream  the stream to check
-	 * @return  true if the stream has more than one element, false otherwise.
-	 */
 	private static boolean hasMoreThanOneElement(Stream<?> stream) {
 		return stream.skip(1).findAny().isPresent();
 	}
