@@ -60,18 +60,10 @@ public class CacheBasedConflictFinder {
 		return cachedNestedTypeNames.contains(name);
 	}
 
-	/**
-	 * Gets the simple name of the referenced type.
-	 * @return The simple name of the referenced type.
-	 */
 	public String getSimpleName() {
 		return typeRef.getSimpleName();
 	}
 
-	/**
-	 * Gets the package reference of the referenced type.
-	 * @return The package reference of the referenced type.
-	 */
 	public CtPackageReference getPackage() {
 		return typeRef.getPackage();
 	}

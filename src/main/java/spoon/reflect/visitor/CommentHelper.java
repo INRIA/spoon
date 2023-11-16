@@ -25,11 +25,6 @@ public class CommentHelper {
 	private CommentHelper() {
 	}
 
-	/**
-	 * Prints the content of a comment.
-	 * @param comment The comment to be printed.
-	 * @return A string containing the printed comment content.
-	 */
 	public static String printComment(CtComment comment) {
 		PrinterHelper ph = new PrinterHelper(comment.getFactory().getEnvironment());
 		// now we only use one single method to print all tags

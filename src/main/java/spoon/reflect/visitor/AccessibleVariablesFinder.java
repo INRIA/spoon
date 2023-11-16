@@ -42,11 +42,6 @@ public class AccessibleVariablesFinder {
 		this.expression = expression;
 	}
 
-	/**
-	 * Finds and returns a list of CtVariable objects associated with the parent of the expression.
-	 * If the parent of the expression is not initialized, it returns an empty list.
-	 * @return List of CtVariable objects if the parent of the expression is initialized, otherwise an empty list.
-	 */
 	public List<CtVariable> find() {
 		if (expression.isParentInitialized()) {
 			return getVariable(expression.getParent());

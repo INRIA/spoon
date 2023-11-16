@@ -195,10 +195,6 @@ public class PrinterHelper {
 		return this;
 	}
 
-	/**
-	 * Removes the last line from the buffer if it matches the line separator.
-	 * @return true if the line was removed, false otherwise.
-	 */
 	public boolean removeLine() {
 		String ls = lineSeparator;
 		int i = sbf.length() - ls.length();
@@ -243,11 +239,6 @@ public class PrinterHelper {
 		return this;
 	}
 
-	/**
-	 * writes as many newlines as needed for the current line to match the end line of the passed element
-	 * @param e element whose line number will be preserved by adding newlines
-	 * @return PrinterHelper
-	 */
 	public PrinterHelper adjustEndPosition(CtElement e) {
 		if (env != null && env.isPreserveLineNumbers() && e.getPosition().isValidPosition()) {
 			// let's add lines if required
@@ -258,24 +249,12 @@ public class PrinterHelper {
 		return this;
 	}
 
-	/**
-	 * Undefines the current line number mapping.
-	 * If the current line number mapping is null, it sets the line number mapping to 0.
-	 */
 	public void undefineLine() {
 		if (lineNumberMapping.get(line) == null) {
 			putLineNumberMapping(0);
 		}
 	}
 
-	/**
-	 * Maps the line number of a given CtElement to the current line number.
-	 * If the position of the CtElement is not valid, or it does not belong to the expected compilation unit, or it is a partial source position,
-	 * it undefines the current line number.
-	 *
-	 * @param e The CtElement whose line number is to be mapped.
-	 * @param unitExpected The expected compilation unit of the CtElement.
-	 */
 	public void mapLine(CtElement e, CtCompilationUnit unitExpected) {
 		SourcePosition sp = e.getPosition();
 		if ((sp.isValidPosition())
@@ -288,26 +267,14 @@ public class PrinterHelper {
 		}
 	}
 
-	/**
-	 * Maps a given line number to the current line number.
-	 * @param valueLine The line number to be mapped to the current line.
-	 */
 	public void putLineNumberMapping(int valueLine) {
 		lineNumberMapping.put(this.line, valueLine);
 	}
 
-	/**
-	 * Retrieves the current line number mapping as an unmodifiable map.
-	 * @return An unmodifiable map of the current line number mapping.
-	 */
 	public Map<Integer, Integer> getLineNumberMapping() {
 		return Collections.unmodifiableMap(lineNumberMapping);
 	}
 
-	/**
-	 * Converts the content of sbf StringBuilder in current object to a string representation.
-	 * @return String that contains content stored in sbf for current object of PrinterHelper class
-	 */
 	@Override
 	public String toString() {
 		return sbf.toString();
@@ -334,10 +301,6 @@ public class PrinterHelper {
 		this.write(' ');
 	}
 
-	/**
-	 * Sets the flag indicating whether to write tabs.
-	 * @param b The boolean value to set. If true, tabs will be written; if false, they won't be.
-	 */
 	public void setShouldWriteTabs(boolean b) {
 		this.shouldWriteTabs = b;
 	}
