@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -141,6 +142,11 @@ public class SpoonifierVisitor extends CtScanner {
 			}
 			propertyScanner.variableName = variableName;
 			element.accept(propertyScanner);
+		}
+
+		if (element instanceof CtType<?> && !((CtType<?>) element).isAnonymous()) {
+			// anonymous classes don't have a package
+			result.append(printTabs() + variableName + ".setParent(factory.Package().getOrCreate(\"" + ((CtType<?>) element).getPackage().getQualifiedName() + "\"));\n");
 		}
 
 		if (element.isParentInitialized() && !parentName.isEmpty()) {

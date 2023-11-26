@@ -91,6 +91,7 @@ public class SpoonifierTest {
 		testSpoonifierWith("src/test/java/spoon/test/spoonifier/testclasses/ArrayRealVector.java", i++);
 		testSpoonifierWith("src/test/java/spoon/test/prettyprinter/testclasses/FooCasper.java", i++);
 		testSpoonifierWith("src/test/java/spoon/test/prettyprinter/testclasses/Rule.java", i++);
+		testSpoonifierWith("src/test/resources/UnnamedPackage.java", i++);
 
 	}
 
@@ -214,6 +215,7 @@ public class SpoonifierTest {
 				"\tSet<ModifierKind> ctClass0Modifiers = new HashSet<>();\n" +
 				"\tctClass0Modifiers.add(ModifierKind.PUBLIC);\n" +
 				"\tctClass0.setModifiers(ctClass0Modifiers);\n" +
+				"\tctClass0.setParent(factory.Package().getOrCreate(\"\"));\n" +
 				"\t\tCtConstructor ctConstructor0 = factory.createConstructor();\n" +
 				"\t\tctConstructor0.setImplicit(true);\n" +
 				"\t\tctConstructor0.setSimpleName(\"<init>\");\n" +
