@@ -48,6 +48,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -329,5 +330,15 @@ public class CtTypeTest {
 				assertEquals(type, type.getReference().getTypeDeclaration());
 			}
 		}
+	}
+
+	@Test
+	@ModelTest(value = "src/test/resources/unequalCtType")
+	void ctTypesWithEqualNamesButDifferentPackagesShouldBeUnequal(CtModel model) {
+		// contract: CtTypes with equal names but different packages should be unequal
+		// assert
+		CtType<?> ac = model.getRootPackage().getPackage("a").getType("C");
+		CtType<?> bc = model.getRootPackage().getPackage("b").getType("C");
+		assertNotEquals(ac, bc);
 	}
 }

@@ -22,6 +22,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -61,6 +62,21 @@ public class EqualsChecker extends CtInheritanceScanner {
 		final CtNamedElement peek = (CtNamedElement) this.other;
 		if (!e.getSimpleName().equals(peek.getSimpleName())) {
 			setNotEqual(CtRole.NAME);
+		}
+		if (e instanceof CtType && peek instanceof CtType) {
+			CtType<?> element = (CtType<?>) e;
+			CtType<?> other = (CtType<?>) peek;
+
+			if (!element.getQualifiedName().equals(other.getQualifiedName())) {
+				if (element.getPackage().isImplicit() || other.getPackage().isImplicit()) {
+					// we don't compare package names if they are implicit
+					if (!element.getSimpleName().equals(other.getSimpleName())) {
+						setNotEqual(CtRole.NAME);
+					}
+				} else {
+					setNotEqual(CtRole.NAME);
+				}
+			}
 		}
 		super.scanCtNamedElement(e);
 	}
