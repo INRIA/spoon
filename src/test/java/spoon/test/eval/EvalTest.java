@@ -465,13 +465,12 @@ public class EvalTest {
 			.getElements(new TypeFilter<>(CtBinaryOperator.class))
 			.get(0);
 
-		CtType<?> currentType = ctBinaryOperator.getType().getTypeDeclaration().clone();
 		CtExpression<?> evaluated = ctBinaryOperator.partiallyEvaluate();
 		assertNotNull(
 			evaluated.getType(),
 			String.format("type of '%s' is null after evaluation", ctBinaryOperator)
 		);
-		assertEquals(currentType, evaluated.getType().getTypeDeclaration());
+		assertEquals(ctBinaryOperator.getType(), evaluated.getType());
 	}
 
 	@Test
