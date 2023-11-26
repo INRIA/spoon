@@ -146,7 +146,7 @@ public class SpoonifierVisitor extends CtScanner {
 
 		if (element instanceof CtType<?> && !((CtType<?>) element).isAnonymous()) {
 			// anonymous classes don't have a package
-			result.append(printTabs() + variableName + ".setParent(factory.Package().getOrCreate(\"" + ((CtType<?>) element).getPackage().getQualifiedName() + "\"));\n");
+			result.append(printTabs()).append(variableName).append(".setParent(factory.Package().getOrCreate(\"").append(((CtType<?>) element).getPackage().getQualifiedName()).append("\"));\n");
 		}
 
 		if (element.isParentInitialized() && !parentName.isEmpty()) {
