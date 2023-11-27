@@ -754,12 +754,12 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		}
 		CtTypeReference<?> contextTypeRef = contextType.getReference();
 		contextTypeRef.setPackage(declType.getPackage());
-		if (contextTypeRef != null && !contextTypeRef.canAccess(declType)) {
+		if (!contextTypeRef.canAccess(declType)) {
 			//search for visible declaring type
 			CtTypeReference<?> visibleDeclType = null;
 			CtTypeReference<?> type = contextTypeRef;
 			//search which type or declaring type of startType extends from nestedType
-			while (visibleDeclType == null && type != null) {
+			while (type != null) {
 				visibleDeclType = getLastVisibleSuperClassExtendingFrom(type, declType);
 				if (visibleDeclType != null) {
 					//found one!
