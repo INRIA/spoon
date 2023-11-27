@@ -753,6 +753,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return declType;
 		}
 		CtTypeReference<?> contextTypeRef = contextType.getReference();
+		contextTypeRef.setPackage(declType.getPackage());
 		if (contextTypeRef != null && !contextTypeRef.canAccess(declType)) {
 			//search for visible declaring type
 			CtTypeReference<?> visibleDeclType = null;

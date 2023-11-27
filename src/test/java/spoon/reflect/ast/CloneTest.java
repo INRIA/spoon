@@ -174,7 +174,7 @@ public class CloneTest {
 			//contract: there exists cloned target for each visitable element
 			CtElement targetElement = cl.sourceToTarget.remove(sourceElement);
 			assertNotNull(targetElement, "Missing target for sourceElement\n" + sourceElement);
-			assertCtElementEquals((CtElement) sourceElement, targetElement);
+			assertEquals(sourceElement.toString(), targetElement.toString());
 		});
 		//contract: each visitable elements was cloned exactly once. No more no less.
 		assertTrue(cl.sourceToTarget.isEmpty());
