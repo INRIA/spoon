@@ -68,7 +68,7 @@
       <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.15.0</version>
+      <version>2.15.1</version>
     </dependency>
     <dependency>
 	<!-- We use this old version for maximum compatibility, as we use the system maven installation for all commands anyways. -->
