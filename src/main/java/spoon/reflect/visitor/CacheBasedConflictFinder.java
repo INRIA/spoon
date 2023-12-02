@@ -29,9 +29,10 @@ public class CacheBasedConflictFinder {
 	}
 
 	/**
-	 * Checks if a field with the given name conflicts with fields in the type's scope.
+	 * Checks if there is a field conflict with the specified name.
+	 * A conflict refers to a situation where there is a field with the specified name ('name') that already exists in the collection of fields associated with the 'type'.
 	 * @param name The name of the field to check for conflicts.
-	 * @return true if a field with the same name exists in the type's scope, false otherwise.
+	 * @return {@code true} if there is a field conflict, {@code false} otherwise.
 	 */
 	public boolean hasFieldConflict(String name) {
 		if (cachedFieldNames == null) {

@@ -15,8 +15,18 @@ public class AstParentConsistencyChecker extends CtScanner {
 	private CtElement parent;
 
 	/**
-	 * Scans a CtElement in the abstract syntax tree (AST) and enforces reference sharing across the AST.
-	 * @param element The CtElement to scan in the AST.
+	 * Scans the given CtElement in the context of the AST. This method allows
+	 * sharing references across the AST. A leaf reference can be the same
+	 * at different places.
+	 *
+	 * @param element The CtElement to be scanned. If null or an instance of CtReference,
+	 *                the method returns without further processing.
+	 *
+	 * @throws IllegalStateException If the given element is already set as a child
+	 *                               of a different parent in the AST, and the parent
+	 *                               relationship is not properly initialized.
+	 *                               The exception provides detailed debug information
+	 *                               for better diagnosis.
 	 */
 	@Override
 	public void scan(CtElement element) {
