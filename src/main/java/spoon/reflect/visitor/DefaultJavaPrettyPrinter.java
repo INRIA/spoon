@@ -643,6 +643,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					printer.writeSeparator(",").writeSpace();
 				}
 			}
+			if (caseStatement.getIncludesDefault()) {
+				printer.writeSeparator(",")
+					.writeSpace()
+					.writeKeyword("default");
+			}
 		} else {
 			printer.writeKeyword("default");
 		}

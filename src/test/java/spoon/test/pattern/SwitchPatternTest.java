@@ -52,6 +52,7 @@ class SwitchPatternTest {
 	void testTypePatternInSwitch() {
 		CtSwitch<?> sw = createFromSwitchStatement("case Integer i");
 		CtCase<?> ctCase = sw.getCases().get(0);
+		assertThat(ctCase.getIncludesDefault()).isFalse();
 		CtExpression<?> caseExpression = ctCase.getCaseExpression();
 		assertThat(caseExpression).isInstanceOf(CtCasePattern.class);
 	}
@@ -61,6 +62,7 @@ class SwitchPatternTest {
 		// contract: CasePattern holds guard and its inner pattern
 		CtSwitch<?> sw = createFromSwitchStatement("case Integer i when i > 0");
 		CtCase<?> ctCase = sw.getCases().get(0);
+		assertThat(ctCase.getIncludesDefault()).isFalse();
 		CtExpression<?> caseExpression = ctCase.getCaseExpression();
 		assertThat(caseExpression).isInstanceOf(CtCasePattern.class);
 		CtExpression<?> guard = ((CtCasePattern) caseExpression).getGuard();
@@ -75,18 +77,19 @@ class SwitchPatternTest {
 		// contract: "case null" is represented by a null literal
 		CtSwitch<?> sw = createFromSwitchStatement("case null");
 		CtCase<?> ctCase = sw.getCases().get(0);
+		assertThat(ctCase.getIncludesDefault()).isFalse();
 		assertThat(ctCase.getCaseExpression()).isInstanceOf(CtLiteral.class);
 		assertThat(ctCase.getCaseExpression().getType()).isEqualTo(sw.getFactory().Type().nullType());
 	}
 
 	@Test
 	void testCaseNullDefault() {
-		// contract: "case null, default" is represented by a null literal and TODO ???
+		// contract: "case null, default" is represented by a null literal and the includesDefault property set to true
 		CtSwitch<?> sw = createFromSwitchStatement("case null, default", false);
 		CtCase<?> ctCase = sw.getCases().get(0);
 		List<? extends CtExpression<?>> caseExpressions = ctCase.getCaseExpressions();
-		assertThat(caseExpressions).hasSize(2);
-		// TODO
+		assertThat(caseExpressions).hasSize(1);
+		assertThat(ctCase.getIncludesDefault()).isTrue();
 	}
 
 	@Test
@@ -94,6 +97,7 @@ class SwitchPatternTest {
 		// contract: fully qualified enum constants in cases are present in the model and printed again
 		CtSwitch<?> sw = createFromSwitchStatement("case java.nio.file.StandardCopyOption.ATOMIC_MOVE");
 		CtCase<?> ctCase = sw.getCases().get(0);
+		assertThat(ctCase.getIncludesDefault()).isFalse();
 		List<? extends CtExpression<?>> caseExpressions = ctCase.getCaseExpressions();
 		CtFieldRead<Object> fieldRead = sw.getFactory().createFieldRead();
 		CtTypeReference<StandardCopyOption> declaringType = sw.getFactory().Type().createReference(StandardCopyOption.class);

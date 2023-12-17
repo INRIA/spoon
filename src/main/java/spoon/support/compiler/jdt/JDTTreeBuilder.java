@@ -350,7 +350,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (constantExpressions != null && constantExpressions.length == 2 && constantExpressions[1] instanceof FakeDefaultLiteral) {
 			context.getCurrentElement();
 			CtCase<?> caseNullDefault = (CtCase<?>) context.getCurrentElement();
-			// TODO add default
+			caseNullDefault.setIncludesDefault(true);
 		}
 	}
 

@@ -1022,6 +1022,7 @@ public class Metamodel {
 
 			types.add(new Type("CtCase", spoon.reflect.code.CtCase.class, spoon.support.reflect.code.CtCaseImpl.class, fm -> fm
 				.field(CtRole.IS_IMPLICIT, false, false)
+				.field(CtRole.DEFAULT_EXPRESSION, false, false)
 				.field(CtRole.LABEL, false, false)
 				.field(CtRole.POSITION, false, false)
 				.field(CtRole.CASE_KIND, false, false)

@@ -9,6 +9,7 @@ package spoon.reflect.code;
 
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.path.CtRole;
 
 import java.util.List;
 
@@ -78,6 +79,12 @@ public interface CtCase<S> extends CtStatement, CtStatementList {
 	 */
 	@PropertySetter(role = CASE_KIND)
 	<T extends CtCase<S>> T setCaseKind(CaseKind kind);
+
+	@PropertyGetter(role = CtRole.DEFAULT_EXPRESSION)
+	boolean getIncludesDefault();
+
+	@PropertySetter(role = CtRole.DEFAULT_EXPRESSION)
+	<T extends CtCase<S>> T setIncludesDefault(boolean includesDefault);
 
 	@Override
 	CtCase<S> clone();
