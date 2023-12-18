@@ -19,9 +19,8 @@
                 let
                   base = rec {
                     jdk =
-                      if javaVersion < 21 then prev."jdk${toString javaVersion}"
-                      else if javaVersion == 22 then jdk22-ea
-                      else jdk21;
+                      if javaVersion <= 21 then prev."jdk${toString javaVersion}"
+                      else jdk22-ea;
                     maven = prev.maven.override { inherit jdk; };
                   };
                   extra = with base; {
@@ -30,18 +29,6 @@
                 in
                 (if extraChecks then base // extra else base))
             ];
-          };
-          jdk21 = pkgs.stdenv.mkDerivation rec {
-            name = "jdk21-oracle";
-            version = "21+35";
-            src = builtins.fetchTarball {
-              url = "https://download.oracle.com/java/21/archive/jdk-21_linux-x64_bin.tar.gz";
-              sha256 = "sha256:1snj1jxa5175r17nb6l2ldgkcvjbp5mbfflwcc923svgf0604ps4";
-            };
-            installPhase = ''
-              cd ..
-              mv $sourceRoot $out
-            '';
           };
           jdk22-ea = pkgs.stdenv.mkDerivation rec {
             name = "jdk22-ea";
@@ -198,18 +185,16 @@
           # We have additional options (currently EA jdks) on 64 bit linux systems
           blessedSystem = "x86_64-linux";
           blessed = rec {
-            jdk21 = mkShell blessedSystem { javaVersion = 21; };
             jdk22-ea = mkShell blessedSystem { javaVersion = 22; };
-            default = jdk21;
           };
           common = forAllSystems
             (system:
               rec {
-                default = jdk11;
+                default = jdk17;
                 jdk17 = mkShell system { javaVersion = 17; };
-                jdk11 = mkShell system { javaVersion = 11; };
-                extraChecks = mkShell system { extraChecks = true; javaVersion = 11; };
-                jReleaser = mkShell system { release = true; javaVersion = 11; };
+                jdk21 = mkShell system { javaVersion = 21; };
+                extraChecks = mkShell system { extraChecks = true; javaVersion = 21; };
+                jReleaser = mkShell system { release = true; javaVersion = 21; };
               });
         in
         common // { "${blessedSystem}" = common."${blessedSystem}" // blessed; };
