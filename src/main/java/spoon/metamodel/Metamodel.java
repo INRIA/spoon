@@ -410,6 +410,7 @@ public class Metamodel {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.getEnvironment().setComplianceLevel(17);
 //		// Spoon model interfaces
 		Arrays.asList("spoon/reflect/code",
 				"spoon/reflect/declaration",
