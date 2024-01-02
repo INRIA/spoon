@@ -18,11 +18,11 @@ jobs:
           with:
             fetch-depth: 0
         - name: 'Qodana Scan'
-          uses: JetBrains/qodana-action@95ecb19ba27e308153723e54a790e4ad908b13a0 # v2023.2.8
+          uses: JetBrains/qodana-action@a8363b702c2d2d49a77620bcd10541686df21307 # v2023.3.0
           with:
             args: --source-directory,./src/main/java , --fail-threshold, 0
             post-pr-comment: "false"
-        - uses: github/codeql-action/upload-sarif@407ffafae6a767df3e0230c3df91b6443ae8df75 # v2
+        - uses: github/codeql-action/upload-sarif@1500a131381b66de0c52ac28abb13cd79f4b7ecc # v2
           with:
             sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
     code-quality-spoon-javadoc:
@@ -33,10 +33,10 @@ jobs:
           with:
             fetch-depth: 0
         - name: 'Qodana Scan (spoon-javadoc)'
-          uses: JetBrains/qodana-action@95ecb19ba27e308153723e54a790e4ad908b13a0 # v2023.2.8
+          uses: JetBrains/qodana-action@a8363b702c2d2d49a77620bcd10541686df21307 # v2023.3.0
           with:
             args: --source-directory,./spoon-javadoc/src/main/java , --fail-threshold, 0
             post-pr-comment: "false"
-        - uses: github/codeql-action/upload-sarif@407ffafae6a767df3e0230c3df91b6443ae8df75 # v2
+        - uses: github/codeql-action/upload-sarif@1500a131381b66de0c52ac28abb13cd79f4b7ecc # v2
           with:
             sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
