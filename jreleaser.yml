@@ -16,7 +16,7 @@ project:
     homepage: https://spoon.gforge.inria.fr/
   java:
     groupId: fr.inria.gforge
-    version: "11"
+    version: "17"
   inceptionYear: "2015"
 
 release:
