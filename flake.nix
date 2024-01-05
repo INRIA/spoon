@@ -147,7 +147,7 @@
             mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
             mvn -q versions:update-parent -DallowSnapshots=true
             git diff
-            mvn -q -Djava.src.version=11 test
+            mvn -q -Djava.src.version=17 test
             mvn -q checkstyle:checkstyle license:check
             mvn -q depclean:depclean
             popd || exit 1
