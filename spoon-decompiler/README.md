@@ -1,9 +1,9 @@
 # Spoon-Decompiler
 
-Spoon-decompiler is an extension of spoon that allow to work on bytecode by decompiling it (with your favorite decompiler, or one of those already included).
+Spoon-decompiler is an extension of spoon that allows working on bytecode by decompiling it (using your favorite decompiler, or one of those already included).
 This can be done offline with the help of [JarLauncher](http://spoon.gforge.inria.fr/launcher.html) or DecompiledResource, as well as at loadtime in an agent or a classLoader with the help of [SpoonClassFileTransformer](http://spoon.gforge.inria.fr/agent.html).
 
-This module is released as a separated artifact. To use it with maven please add the following lines to your pom:
+This module is released as a separate artifact. To use it with Maven, please add the following lines to your pom:
 
 ```xml
 <!--latest stable release-->

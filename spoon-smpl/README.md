@@ -1,4 +1,4 @@
-# Spoon-smpl: Semantic Patches for Java
+# Spoon-SmPL: Semantic Patches for Java
 
 This Spoon module implements the Semantic Patch Language called [SmPL](https://en.wikipedia.org/wiki/Coccinelle_(software)#Semantic_Patch_Language "Wikipedia entry"). The Semantic Patch Language, invented for C by the seminal tool [Coccinelle](https://github.com/coccinelle/coccinelle) enables to apply transformations in an automated way, where the transformation itself is a patch written in a special syntax.
 
@@ -27,7 +27,7 @@ The current scope of the implementation is summarized at https://spoon.gforge.in
 
 ## Architecture Notes
 
-* Parsing SMPL: see SmPLLexer
+* Parsing SmPL: see SmPLLexer
     *  SmPLLexer is used by SmPLParser, whose main method is method `parse`. Next, method `rewrite` transforms the SmPL code into the Java DSL.
 * class `SmPLRule` encapsulates a single rule, it is created by method `SmPLParser#compile`
 * class `FormulaCompiler` generates the CTL formula, method `compileFormula()` returns a `Formula`
