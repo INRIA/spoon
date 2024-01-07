@@ -47,6 +47,7 @@ public class ZippedCodeBaseTestContext {
 	public static CtModel buildModel(String pathToZipFile, boolean useAutoImports) {
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(useAutoImports);
+		launcher.getEnvironment().setIgnoreSyntaxErrors(true);
 
 		try {
 			launcher.addInputResource(new ZipFolder(new File(pathToZipFile)));
