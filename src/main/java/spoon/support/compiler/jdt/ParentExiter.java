@@ -1121,8 +1121,8 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtRecord(CtRecord recordType) {
-		if (child instanceof CtConstructor) {
-			recordType.addConstructor((CtConstructor) child);
+		if (child instanceof CtConstructor newConstructor) {
+			adjustConstructors(recordType, newConstructor);
 		}
 		if (child instanceof CtAnonymousExecutable) {
 			recordType.addAnonymousExecutable((CtAnonymousExecutable) child);
@@ -1131,6 +1131,44 @@ public class ParentExiter extends CtInheritanceScanner {
 			((CtRecord) recordType).addRecordComponent((CtRecordComponent) child);
 		}
 		super.visitCtRecord(recordType);
+	}
+	/**
+	 * Modifies the set of constructors of a {@link CtRecord} instance based on the properties of a new constructor.
+	 * <p>
+	 * This method performs the following operations:
+	 * <p>
+	 * - If the new constructor is implicit, the method checks against all constructors in the record. If a constructor
+	 * with matching parameters is found, the function returns without adding the new constructor.
+	 * <p>
+	 * - If the new constructor is not implicit, the method traverses the existing constructors of the record. If any
+	 * implicit constructor with matching parameters is found, it's removed from the record.
+	 * <p>
+	 * - If constructor to be added passes the conditions above, or no matching parameters are found, it gets added to the record.
+	 *
+	 * @param recordType     The {@link CtRecord} instance to which the new constructor might be added.
+	 * @param newConstructor The new constructor that should be added to the record, contingent on certain conditions.
+	 */
+	private static void adjustConstructors(CtRecord recordType, CtConstructor<Object> newConstructor) {
+		if (newConstructor.isImplicit()) {
+			for (CtConstructor<Object> constructor : recordType.getConstructors()) {
+				if (hasSameParameters(newConstructor, constructor)) {
+					return;
+				}
+			}
+		} else {
+			for (CtConstructor<Object> constructor : recordType.getConstructors()) {
+				if (constructor.isImplicit() && hasSameParameters(newConstructor, constructor)) {
+					recordType.removeConstructor(constructor);
+				}
+			}
+		}
+		recordType.addConstructor(newConstructor);
+	}
+
+	private static boolean hasSameParameters(CtConstructor<Object> newConstructor, CtConstructor<Object> constructor) {
+		// use endsWith because constructor already has a declaring type set while newConstructor doesn't
+		// but we are only interested in the parameters, so we compare e.g. "R(int)" with "(int)"
+		return constructor.getSignature().endsWith(newConstructor.getSignature());
 	}
 
 	@Override
