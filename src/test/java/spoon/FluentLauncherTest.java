@@ -96,7 +96,7 @@ public class FluentLauncherTest {
 	@Test
 	public void testMavenLauncher(@TempDir Path tempDir) throws IOException {
 		CtModel model = new FluentLauncher(new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.ALL_SOURCE))
-				.complianceLevel(11)
+				.complianceLevel(17)
 				.outputDirectory(tempDir.toString())
 				.buildModel();
 		assertNotNull(model);
