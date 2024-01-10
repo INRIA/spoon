@@ -211,6 +211,7 @@ public class MetamodelProperty {
 			//never return type  with implicit==true, such type is then not pretty printed
 			valueType.setImplicit(false);
 		}
+		valueType.setAnnotations(List.of()); // clear annotations, not relevant here
 		this.valueType = valueType;
 		this.valueContainerType = containerKindOf(valueType.getActualClass());
 		if (valueContainerType != ContainerKind.SINGLE) {

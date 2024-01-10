@@ -882,7 +882,7 @@ public class CommentTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 
-		launcher.getEnvironment().setComplianceLevel(16);
+		launcher.getEnvironment().setComplianceLevel(21);
 		// launcher.getEnvironment().setPreviewFeaturesEnabled(true);
 		
 		// interfaces.

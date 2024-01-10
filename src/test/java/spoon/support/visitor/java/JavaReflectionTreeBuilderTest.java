@@ -53,6 +53,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import com.mysema.query.support.ProjectableQuery;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -393,6 +394,9 @@ public class JavaReflectionTreeBuilderTest {
 				if (myAnnotation.getAnnotationType().getQualifiedName().equals(Serial.class.getName())) {
 					return;
 				}
+				if (myAnnotation.getAnnotationType().getQualifiedName().equals(Nullable.class.getName())) {
+					return;
+				}
 			}
 			if (role == CtRole.SUPER_TYPE && other == null && element != null && ((CtTypeReference<?>) element).getQualifiedName().equals(Object.class.getName())) {
 				//class X<T extends Object> cannot be distinguished in runtime from X<T>
@@ -428,7 +432,8 @@ public class JavaReflectionTreeBuilderTest {
 				List<CtAnnotation<?>> fileteredElements = ((List<CtAnnotation<?>>) elements).stream().filter(a -> {
 					CtTypeReference<?> at = a.getAnnotationType();
 					Class ac = at.getActualClass();
-					return ac != Override.class && ac != SuppressWarnings.class && ac != Root.class && ac != Serial.class;
+					return ac != Override.class && ac != SuppressWarnings.class && ac != Root.class
+						   && ac != Serial.class && ac != Nullable.class;
 				}).collect(Collectors.toList());
 				super.biScan(role, fileteredElements, others);
 				return;

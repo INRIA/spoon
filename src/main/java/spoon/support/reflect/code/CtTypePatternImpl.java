@@ -10,7 +10,6 @@ package spoon.support.reflect.code;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtPattern;

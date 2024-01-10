@@ -20,11 +20,11 @@ import static spoon.reflect.path.CtRole.PATTERN;
  * <p>
  * Example:
  * <pre>
- * Number num = myNum();
+ * Number num = Math.random() < 0.5 ? Integer.valueOf(1) : Double.valueOf(10.5);
  * switch (num) {
- *    case Integer i -> handleInt(i);
- *    case Double d when d > 0.5 -> handleDouble(d);
- *    case null, default -> handleOther();
+ *    case Integer i -> System.out.println("int: " + i);
+ *    case Double d when d > 0.5 -> System.out.println("double: " + d);
+ *    case null, default -> System.out.println("other");
  * }
  * </pre>
  */
