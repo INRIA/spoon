@@ -36,10 +36,6 @@ In the following example, javadoc is parsed and then printed out again -- but
 this time with some ANSI color highlighting applied. Note that references are
 pretty-printed according to `CtReference#toString()`.
 
-<details>
-
-<summary>Expand me for the code </summary>
-
 ```java
 void example() {
     String javadoc = "/**\n" +
@@ -75,7 +71,7 @@ void example() {
             // Javadoc comments can use "#foo" to refer to fields/methods
             // in the current class.
             new Launcher().getFactory().Type().OBJECT.getTypeDeclaration()
-            ).parse();
+    ).parse();
 
     for (JavadocElement element : elements) {
         System.out.print(element.accept(new ExampleVisitor()));
@@ -140,7 +136,6 @@ private static class ExampleVisitor implements JavadocVisitor<String> {
 }
 ```
 
-</details>
 <br>
 This will print a version with a bit more colours:
 ![ANSI colored javadoc]({{ "/images/spoon_javadoc_ansi_print.png" | prepend: site.baseurl }})
