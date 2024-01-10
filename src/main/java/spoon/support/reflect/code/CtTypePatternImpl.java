@@ -54,7 +54,6 @@ public class CtTypePatternImpl extends CtExpressionImpl<Void> implements CtTypeP
 	@Override
 	public <E extends CtElement> E setParent(CtElement parent) {
 		if (parent != null && !(parent instanceof CtBinaryOperator<?> || parent instanceof CtPattern || parent instanceof CtCasePattern)) {
-			// TODO
 			throw new SpoonException("type pattern can only be used in an instanceof binary operator or a case pattern (was " + parent.getClass() + ")");
 		}
 		return super.setParent(parent);

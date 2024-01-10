@@ -2348,6 +2348,5 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		scan(casePattern.getPattern());
 		printer.writeSpace().writeKeyword("when").writeSpace();
 		scan(casePattern.getGuard());
-		// FIXME or not
 	}
 }
