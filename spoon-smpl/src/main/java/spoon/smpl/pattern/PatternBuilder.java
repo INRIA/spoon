@@ -839,6 +839,11 @@ public class PatternBuilder implements CtVisitor {
 		throw new NotImplementedException("Not implemented");
 	}
 
+	@Override
+	public void visitCtCasePattern(CtCasePattern casePattern) {
+		throw new NotImplementedException("Not implemented");
+	}
+
 
 	/**
 	 * Parameter identifiers.
