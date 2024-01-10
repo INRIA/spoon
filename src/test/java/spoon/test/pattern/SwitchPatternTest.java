@@ -26,7 +26,7 @@ class SwitchPatternTest {
 
 	private static CtModel createModelFromString(String code) {
 		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setComplianceLevel(20);
+		launcher.getEnvironment().setComplianceLevel(21);
 		launcher.getEnvironment().setPreviewFeaturesEnabled(true);
 		launcher.addInputResource(new VirtualFile(code));
 		return launcher.buildModel();
@@ -50,6 +50,7 @@ class SwitchPatternTest {
 
 	@Test
 	void testTypePatternInSwitch() {
+		// contract: a simple type pattern is supported
 		CtSwitch<?> sw = createFromSwitchStatement("case Integer i");
 		CtCase<?> ctCase = sw.getCases().get(0);
 		assertThat(ctCase.getIncludesDefault()).isFalse();
