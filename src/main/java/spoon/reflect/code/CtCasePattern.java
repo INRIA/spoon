@@ -7,6 +7,7 @@
  */
 package spoon.reflect.code;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
@@ -29,17 +30,36 @@ import static spoon.reflect.path.CtRole.PATTERN;
  */
 public interface CtCasePattern extends CtExpression<Void> {
 
+	/**
+	 * {@return the pattern of of this case pattern}
+	 */
 	@PropertyGetter(role = PATTERN)
 	CtPattern getPattern();
 
+	/**
+	 * Sets the pattern for this case pattern.
+	 *
+	 * @param pattern the new pattern for this case pattern.
+	 * @return this case pattern.
+	 */
 	@PropertySetter(role = PATTERN)
 	CtCasePattern setPattern(CtPattern pattern);
 
+	/**
+	 * {@return the guard of this case pattern}
+	 * This method returns {@code null} if no guard is present.
+	 */
 	@PropertyGetter(role = CONDITION)
-	CtExpression<?> getGuard();
+	@Nullable CtExpression<?> getGuard();
 
+	/**
+	 * Sets the guarding expression for this case pattern.
+	 *
+	 * @param guard the expression guarding this case pattern. If {@code null}, no guard will be inserted in the code.
+	 * @return this case pattern.
+	 */
 	@PropertySetter(role = CONDITION)
-	CtCasePattern setGuard(CtExpression<?> guard);
+	CtCasePattern setGuard(@Nullable CtExpression<?> guard);
 
 	@Override
 	CtCasePattern clone();
