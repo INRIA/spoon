@@ -20,7 +20,7 @@ To use spoon-javadoc, add the following dependency to your `pom.xml`:
 <dependency>
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-javadoc</artifactId>
-    <version>$CurrentVersion</version>
+    <version>$currentVersion</version>
 </dependency>
 ```
 

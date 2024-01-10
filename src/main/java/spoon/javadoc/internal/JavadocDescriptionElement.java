@@ -19,7 +19,7 @@ package spoon.javadoc.internal;
 *
 * <p>So for example <code>a text</code> or <code>{@link String}</code> could be valid description
 * elements.
-* @deprecated Use the new javadoc parser submodule, See <a href="https://spoon.gforge.inria.fr/spoon_javadoc.html">Javadoc Parser</a>.
+* @deprecated Use the new javadoc parser submodule, see <a href="https://spoon.gforge.inria.fr/spoon_javadoc.html">Javadoc Parser</a>.
 */
 @Deprecated(forRemoval = true, since = "11.0.0")
 public interface JavadocDescriptionElement {

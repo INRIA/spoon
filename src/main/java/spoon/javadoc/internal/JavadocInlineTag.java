@@ -20,7 +20,7 @@ import java.io.Serializable;
 * An inline tag contained in a Javadoc description.
 *
 * <p>For example <code>{@link String}</code>
-* @deprecated Use the new javadoc parser submodule, See <a href="https://spoon.gforge.inria.fr/spoon_javadoc.html">Javadoc Parser</a>.
+* @deprecated Use the new javadoc parser submodule, see <a href="https://spoon.gforge.inria.fr/spoon_javadoc.html">Javadoc Parser</a>.
 */
 @Deprecated(forRemoval = true, since = "11.0.0")
 public class JavadocInlineTag implements JavadocDescriptionElement, Serializable {
