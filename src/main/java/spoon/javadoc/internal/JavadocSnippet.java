@@ -21,7 +21,9 @@ import java.io.Serializable;
 *
 * <p>For example in <code>A class totally unrelated to {@link String}, I swear!</code> we would
 * have two snippets: one before and one after the inline tag (<code>{@link String}</code>).
+* @deprecated Use the new javadoc parser submodule, See <a href="https://spoon.gforge.inria.fr/spoon_javadoc.html">Javadoc Parser</a>.
 */
+@Deprecated(forRemoval = true, since = "11.0.0")
 public class JavadocSnippet implements JavadocDescriptionElement, Serializable {
 	private static final long serialVersionUID = 1L;
 	private String text;

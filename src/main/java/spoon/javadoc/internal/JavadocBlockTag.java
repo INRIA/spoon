@@ -25,7 +25,9 @@ import java.io.Serializable;
 *
 * <p>Examples: <code>@see AnotherClass</code> <code>@since v0.0.1</code> <code>@author Jim O'Java
 * </code>
+* @deprecated Use the new javadoc parser submodule, See <a href="https://spoon.gforge.inria.fr/spoon_javadoc.html">Javadoc Parser</a>.
 */
+@Deprecated(forRemoval = true, since = "11.0.0")
 public class JavadocBlockTag implements Serializable {
 	private static final long serialVersionUID = 1L;
 
