@@ -118,10 +118,10 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	}
 
 	@Override
-	public <T extends CtCase<E>> T setIncludesDefault(boolean includesDefault) {
+	public CtCase<E> setIncludesDefault(boolean includesDefault) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.DEFAULT_EXPRESSION, includesDefault, this.includesDefault);
 		this.includesDefault = includesDefault;
-		return (T) this;
+		return this;
 	}
 
 	@Override

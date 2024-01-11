@@ -88,11 +88,12 @@ public interface CtCase<S> extends CtStatement, CtStatementList {
 
 	/**
 	 * Sets whether this case includes a trailing {@code default}.
+	 *
 	 * @param includesDefault whether this case includes a {@code default}.
 	 * @return this case.
 	 */
 	@PropertySetter(role = CtRole.DEFAULT_EXPRESSION)
-	<T extends CtCase<S>> T setIncludesDefault(boolean includesDefault);
+	CtCase<S> setIncludesDefault(boolean includesDefault);
 
 	@Override
 	CtCase<S> clone();
