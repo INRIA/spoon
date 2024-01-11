@@ -53,6 +53,7 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtRHSReceiver;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
@@ -1111,4 +1112,16 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(casePattern);
 		scanCtVisitable(casePattern);
 	}
+
+	@Override
+	public void visitCtRecordPattern(CtRecordPattern pattern) {
+		scanCtPattern(pattern);
+		scanCtExpression(pattern);
+		scanCtTypedElement(pattern);
+		scanCtCodeElement(pattern);
+		scanCtElement(pattern);
+		scanCtVisitable(pattern);
+	}
+
+
 }

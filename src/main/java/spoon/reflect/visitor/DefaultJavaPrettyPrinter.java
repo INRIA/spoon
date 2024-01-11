@@ -53,6 +53,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -2350,5 +2351,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeSpace().writeKeyword("when").writeSpace();
 			scan(casePattern.getGuard());
 		}
+	}
+
+	@Override
+	public void visitCtRecordPattern(CtRecordPattern recordPattern) {
+		scan(recordPattern.getRecordType());
+		elementPrinterHelper.printList(recordPattern.getPatternList(),
+			null, false, "(", false, false, ",", true, false, ")", this::scan);
 	}
 }
