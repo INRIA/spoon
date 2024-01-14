@@ -1,20 +1,25 @@
 package spoon.testing.assertions.codegen;
 
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import org.assertj.core.api.AbstractBooleanAssert;
+import org.assertj.core.api.AbstractByteAssert;
+import org.assertj.core.api.AbstractCharacterAssert;
+import org.assertj.core.api.AbstractCollectionAssert;
+import org.assertj.core.api.AbstractDoubleAssert;
+import org.assertj.core.api.AbstractFloatAssert;
+import org.assertj.core.api.AbstractIntegerAssert;
+import org.assertj.core.api.AbstractLongAssert;
 import org.assertj.core.api.AbstractObjectAssert;
+import org.assertj.core.api.AbstractShortAssert;
+import org.assertj.core.api.AbstractStringAssert;
+import org.assertj.core.api.ListAssert;
+import org.assertj.core.api.MapAssert;
+import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
+import spoon.metamodel.MMMethodKind;
 import spoon.metamodel.Metamodel;
+import spoon.metamodel.MetamodelConcept;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConstructorCall;
@@ -23,6 +28,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -32,15 +38,41 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.testing.assertions.SpoonAssert;
+
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class AssertJCodegen {
 
 	private static final String GEN_ROOT = "src/test/java/";
 	private static final Class<?> ASSERT_J_SUPERCLASS = AbstractObjectAssert.class;
+	protected static final Map<Class<?>, Class<?>> PRIMITIVE_TO_ASSERTJ_MAP = Map.of(
+		boolean.class, AbstractBooleanAssert.class,
+		byte.class, AbstractByteAssert.class,
+		char.class, AbstractCharacterAssert.class,
+		short.class, AbstractShortAssert.class,
+		int.class, AbstractIntegerAssert.class,
+		long.class, AbstractLongAssert.class,
+		float.class, AbstractFloatAssert.class,
+		double.class, AbstractDoubleAssert.class
+	);
 
-	record AssertModelPair(CtClass<?> assertClass, CtInterface<?> modelInterface) {}
+	record AssertModelPair(CtClass<?> assertClass, CtInterface<?> modelInterface) {
+	}
 
 	@Test
 	@Tag("codegen")
@@ -61,6 +93,9 @@ public class AssertJCodegen {
 			copyExistingMethods(assertInterface, existingInterfaces);
 			map.put(original, assertInterface);
 		}
+		for (var entry : map.entrySet()) {
+			createExtractingMethods(entry.getKey(), entry.getValue(), map);
+		}
 		List<AssertModelPair> assertClasses = new ArrayList<>();
 		for (var entry : map.entrySet()) {
 			CtInterface<?> assertInterface = entry.getValue();
@@ -72,8 +107,8 @@ public class AssertJCodegen {
 				if (superAssertInterface != null) {
 					CtTypeReference<?> reference = superAssertInterface.getReference();
 					assertInterface
-							.getFormalCtTypeParameters()
-							.forEach(param -> reference.addActualTypeArgument(param.getReference()));
+						.getFormalCtTypeParameters()
+						.forEach(param -> reference.addActualTypeArgument(param.getReference()));
 					assertInterface.addSuperInterface(reference);
 				}
 			}
@@ -109,7 +144,7 @@ public class AssertJCodegen {
 
 			@SuppressWarnings("rawtypes")
 			CtConstructorCall constructorCall = factory.createConstructorCall(
-					pair.assertClass().getReference(), factory.createCodeSnippetExpression(paramName));
+				pair.assertClass().getReference(), factory.createCodeSnippetExpression(paramName));
 			@SuppressWarnings("unchecked")
 			CtStatement ret = factory.<CtReturn<?>>createReturn().setReturnedExpression(constructorCall);
 			block.addStatement(ret);
@@ -126,10 +161,10 @@ public class AssertJCodegen {
 	 * @param existingInterfaces a map of existing interfaces where the key is the qualified name of the interface and the value is a list of CtType objects representing the interfaces
 	 */
 	private static void copyExistingMethods(
-			CtInterface<?> anInterface, Map<String, List<CtType<?>>> existingInterfaces) {
+		CtInterface<?> anInterface, Map<String, List<CtType<?>>> existingInterfaces) {
 		Set<String> existingMethods = anInterface.getDeclaredExecutables().stream()
-				.map(CtExecutableReference::getSignature)
-				.collect(Collectors.toSet());
+			.map(CtExecutableReference::getSignature)
+			.collect(Collectors.toSet());
 		if (existingInterfaces.containsKey(anInterface.getQualifiedName())) {
 			List<CtType<?>> ctTypes = existingInterfaces.get(anInterface.getQualifiedName());
 			if (ctTypes.size() == 1) {
@@ -151,8 +186,8 @@ public class AssertJCodegen {
 		launcher.addInputResource("src/test/java/spoon/testing/assertions");
 		launcher.buildModel();
 		return launcher.getModel().getAllTypes().stream()
-				.filter(v -> v.getPackage().getQualifiedName().equals("spoon.testing.assertions"))
-				.collect(Collectors.groupingBy(CtTypeInformation::getQualifiedName));
+			.filter(v -> v.getPackage().getQualifiedName().equals("spoon.testing.assertions"))
+			.collect(Collectors.groupingBy(CtTypeInformation::getQualifiedName));
 	}
 
 	private static void writeType(CtType<?> type, Launcher launcher) throws IOException {
@@ -166,12 +201,12 @@ public class AssertJCodegen {
 	private CtClass<?> createAssert(CtInterface<?> modelInterface, CtInterface<?> assertInterface) {
 		Factory factory = assertInterface.getFactory();
 		CtClass<?> ctClass =
-				factory.createClass("spoon.testing.assertions." + modelInterface.getSimpleName() + "Assert");
+			factory.createClass("spoon.testing.assertions." + modelInterface.getSimpleName() + "Assert");
 		ctClass.addModifier(ModifierKind.PUBLIC);
 		CtTypeReference<Object> abstractAssertRef = factory.createCtTypeReference(ASSERT_J_SUPERCLASS);
 		abstractAssertRef
-				.addActualTypeArgument(ctClass.getReference())
-				.addActualTypeArgument(createWildcardedReference(modelInterface));
+			.addActualTypeArgument(ctClass.getReference())
+			.addActualTypeArgument(createWildcardedReference(modelInterface));
 		ctClass.setSuperclass(abstractAssertRef);
 		CtTypeReference<?> reference = assertInterface.getReference();
 		for (CtTypeReference<?> typeArgument : abstractAssertRef.getActualTypeArguments()) {
@@ -189,11 +224,11 @@ public class AssertJCodegen {
 		selfMethod.setSimpleName("self");
 		selfMethod.setModifiers(Set.of(ModifierKind.PUBLIC));
 		CtAnnotation<Annotation> overrideAnnotation =
-				factory.createAnnotation(factory.createCtTypeReference(Override.class));
+			factory.createAnnotation(factory.createCtTypeReference(Override.class));
 		selfMethod.addAnnotation(overrideAnnotation.clone());
 		CtBlock<Object> codeBlock = factory.createBlock();
 		codeBlock.addStatement(
-				factory.createReturn().setReturnedExpression(factory.createCodeSnippetExpression("this")));
+			factory.createReturn().setReturnedExpression(factory.createCodeSnippetExpression("this")));
 		selfMethod.setBody(codeBlock);
 		selfMethod.setType(ctClass.getReference());
 
@@ -203,7 +238,7 @@ public class AssertJCodegen {
 		actualMethod.addAnnotation(overrideAnnotation.clone());
 		codeBlock = factory.createBlock();
 		codeBlock.addStatement(
-				factory.createReturn().setReturnedExpression(factory.createCodeSnippetExpression("this.actual")));
+			factory.createReturn().setReturnedExpression(factory.createCodeSnippetExpression("this.actual")));
 		actualMethod.setBody(codeBlock);
 		actualMethod.setType(model);
 
@@ -217,10 +252,10 @@ public class AssertJCodegen {
 		failWithMessageMethod.setType(factory.Type().voidPrimitiveType());
 		factory.createParameter(failWithMessageMethod, factory.Type().stringType(), "errorMessage");
 		factory.createParameter(
-						failWithMessageMethod,
-						factory.createArrayReference(factory.Type().objectType()),
-						"arguments")
-				.setVarArgs(true);
+				failWithMessageMethod,
+				factory.createArrayReference(factory.Type().objectType()),
+				"arguments")
+			.setVarArgs(true);
 
 		ctClass.addMethod(selfMethod).addMethod(actualMethod).addMethod(failWithMessageMethod);
 	}
@@ -228,7 +263,7 @@ public class AssertJCodegen {
 	private <T> void createConstructor(CtClass<T> assertionClass) {
 		Factory factory = assertionClass.getFactory();
 		CtTypeReference<?> actualElementType =
-				assertionClass.getSuperclass().getActualTypeArguments().get(1);
+			assertionClass.getSuperclass().getActualTypeArguments().get(1);
 		CtMethod<Object> method = factory.createMethod();
 
 		CtBlock<Object> codeBlock = factory.createBlock();
@@ -237,7 +272,7 @@ public class AssertJCodegen {
 		parameter.setSimpleName("actual");
 		method.addParameter(parameter);
 		CtCodeSnippetStatement codeSnippetStatement = factory.Code()
-				.createCodeSnippetStatement("super(actual, " + assertionClass.getSimpleName() + ".class)");
+			.createCodeSnippetStatement("super(actual, " + assertionClass.getSimpleName() + ".class)");
 		codeBlock.addStatement(codeSnippetStatement);
 		method.setBody(codeBlock);
 		@SuppressWarnings("unchecked")
@@ -249,14 +284,14 @@ public class AssertJCodegen {
 	CtInterface<?> createInterface(CtType<?> type) {
 		Factory factory = type.getFactory();
 		CtInterface<?> ctInterface =
-				factory.createInterface("spoon.testing.assertions." + type.getSimpleName() + "AssertInterface");
+			factory.createInterface("spoon.testing.assertions." + type.getSimpleName() + "AssertInterface");
 		CtTypeReference<?> abstractAssertRef = factory.createCtTypeReference(ASSERT_J_SUPERCLASS);
 		CtTypeParameter a =
-				factory.createTypeParameter().setSuperclass(abstractAssertRef).setSimpleName("A");
+			factory.createTypeParameter().setSuperclass(abstractAssertRef).setSimpleName("A");
 
 		CtTypeReference<?> ctElement = createWildcardedReference(type);
 		CtTypeParameter w =
-				factory.createTypeParameter().setSuperclass(ctElement).setSimpleName("W");
+			factory.createTypeParameter().setSuperclass(ctElement).setSimpleName("W");
 
 		abstractAssertRef.addActualTypeArgument(a.getReference()).addActualTypeArgument(w.getReference());
 		ctInterface.addFormalCtTypeParameter(a).addFormalCtTypeParameter(w);
@@ -266,12 +301,83 @@ public class AssertJCodegen {
 		return ctInterface;
 	}
 
+	private void createExtractingMethods(CtType<?> type, CtInterface<?> assertInterface, Map<CtInterface<?>, CtInterface<?>> map) {
+		Factory factory = type.getFactory();
+		CtMethod<?> baseMethod = factory.createMethod();
+		Metamodel instance = Metamodel.getInstance();
+		MetamodelConcept concept = instance.getConcept((Class<? extends CtElement>) type.getActualClass());
+		for (var entry : concept.getRoleToProperty().entrySet()) {
+			CtMethod<?> method = entry.getValue().getMethod(MMMethodKind.GET).getActualCtMethod();
+			if (method == null) {
+				continue;
+			}
+			String getter = method.getSimpleName();
+			CtCodeSnippetStatement codeSnippetStatement = factory.createCodeSnippetStatement("return org.assertj.core.api.Assertions.assertThat(actual()." + getter + "())");
+			CtMethod<?> specificMethod = baseMethod.clone()
+				.setDefaultMethod(true)
+				.setSimpleName(getter);
+			CtTypeReference<?> assertRef = switch (entry.getValue().getContainerKind()) {
+				case SINGLE -> {
+					if (method.getType().equals(factory.Type().stringType())) {
+						yield factory.createCtTypeReference(AbstractStringAssert.class)
+							.addActualTypeArgument(factory.createWildcardReference());
+					} else if (method.getType().isPrimitive()) {
+						Class<?> actualClass = method.getType().getActualClass();
+						yield factory.createCtTypeReference(PRIMITIVE_TO_ASSERTJ_MAP.get(actualClass))
+							.addActualTypeArgument(factory.createWildcardReference());
+					} else if (method.getType().isSubtypeOf(factory.createCtTypeReference(CtElement.class))) {
+						codeSnippetStatement = factory.createCodeSnippetStatement("return spoon.testing.assertions.SpoonAssertions.assertThat(actual()." + getter + "())");
+						CtInterface<?> ctInterface = map.get((CtInterface<?>) method.getType().getTypeErasure().getTypeDeclaration());
+						CtTypeReference<?> reference = ctInterface.getReference();
+						ctInterface.getFormalCtTypeParameters().forEach(__ -> reference.addActualTypeArgument(factory.createWildcardReference()));
+						yield reference;
+					}
+					yield factory.createCtTypeReference(ObjectAssert.class)
+						.addActualTypeArgument(method.getType());
+				}
+				case LIST -> factory.createCtTypeReference(ListAssert.class);
+				case SET -> {
+					CtTypeReference<?> ref = factory.createCtTypeReference(AbstractCollectionAssert.class);
+					CtTypeReference<?> e = method.getType().getActualTypeArguments().get(0);
+					ref.addActualTypeArgument(factory.createWildcardReference());
+					ref.addActualTypeArgument(factory.createCtTypeReference(Collection.class)
+						.addActualTypeArgument(factory.createWildcardReference().setBoundingType(e.clone()))
+					);
+					ref.addActualTypeArgument(e.clone());
+					ref.addActualTypeArgument(factory.createWildcardReference());
+					yield ref;
+				}
+				case MAP -> factory.createCtTypeReference(MapAssert.class);
+			};
+			specificMethod.setBody(factory.createBlock().addStatement(codeSnippetStatement));
+
+			switch (entry.getValue().getContainerKind()) {
+				case LIST, MAP -> {
+					for (CtTypeReference<?> argument : method.getType().getActualTypeArguments()) {
+						assertRef.addActualTypeArgument(argument.clone());
+					}
+				}
+			}
+			new CtScanner() {
+				@Override
+				public void visitCtWildcardReference(CtWildcardReference wildcardReference) {
+					if (wildcardReference.getBoundingType() instanceof CtTypeParameterReference) {
+						wildcardReference.setBoundingType(null);
+					}
+					super.visitCtWildcardReference(wildcardReference);
+				}
+			}.scan(assertRef);
+			specificMethod.setType(assertRef);
+			assertInterface.addMethod(specificMethod);
+		}
+	}
+
 	private static CtTypeReference<?> createWildcardedReference(CtType<?> type) {
 		// add the wildcard type parameter to the type reference
 		Factory factory = type.getFactory();
 		CtTypeReference<?> ctElement = type.getReference();
 		type.getFormalCtTypeParameters()
-				.forEach(ctTypeParameter -> ctElement.addActualTypeArgument(factory.createWildcardReference()));
+			.forEach(ctTypeParameter -> ctElement.addActualTypeArgument(factory.createWildcardReference()));
 		return ctElement;
 	}
 }
