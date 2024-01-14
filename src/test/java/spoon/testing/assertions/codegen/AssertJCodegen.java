@@ -34,6 +34,7 @@ public class AssertJCodegen {
 		for (CtType<?> type : allMetamodelInterfaces) {
 			if (!(type instanceof CtInterface<?>)) continue;
 			CtInterface<?> anInterface = createInterface(type);
+			//TODO:copy methods if interface is already present
 			writeType(anInterface, launcher);
 		}
 	}
@@ -63,8 +64,14 @@ public class AssertJCodegen {
 		CtInterface<?> ctInterface = factory.createInterface("spoon.testing.assertions." + type.getSimpleName() + "AssertInterface");
 		CtTypeReference<?> abstractAssertRef = factory.createCtTypeReference(AbstractAssert.class);
 		CtTypeParameter a = factory.createTypeParameter().setSuperclass(abstractAssertRef).setSimpleName("A");
-		// TODO (assertJ) add wildcards for type.getReference()
-		CtTypeParameter w = factory.createTypeParameter().setSuperclass(type.getReference()).setSimpleName("W");
+
+		// add the wildcard type parameter to the type reference
+		CtTypeReference<?> ctElement = type.getReference();
+		if(ctElement.getTypeDeclaration() != null) {
+			ctElement.getTypeDeclaration().getFormalCtTypeParameters().forEach(ctTypeParameter -> ctElement.addActualTypeArgument(factory.createWildcardReference()));
+		}
+		CtTypeParameter w = factory.createTypeParameter().setSuperclass(ctElement).setSimpleName("W");
+
 		abstractAssertRef
 			.addActualTypeArgument(a.getReference())
 			.addActualTypeArgument(w.getReference());
