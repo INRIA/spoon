@@ -1117,6 +1117,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.declaration.CtRecordComponent.class)) {
 			return createRecordComponent();
 		}
+		if (klass.equals(spoon.reflect.code.CtRecordPattern.class)) {
+			return createRecordPattern();
+		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
 

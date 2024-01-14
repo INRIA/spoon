@@ -41,6 +41,34 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	static class CtRecordPatternPatternListReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtRecordPattern element;
+
+		CtRecordPatternPatternListReplaceListener(spoon.reflect.code.CtRecordPattern element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setPatternList(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	static class CtRecordPatternRecordTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.code.CtRecordPattern element;
+
+		CtRecordPatternRecordTypeReplaceListener(spoon.reflect.code.CtRecordPattern element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtTypeReference replace) {
+			this.element.setRecordType(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	static class CtRecordRecordComponentsReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
 		private final spoon.reflect.declaration.CtRecord element;
 
@@ -2352,5 +2380,15 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceElementIfExist(casePattern.getGuard(), new spoon.support.visitor.replace.ReplacementVisitor.CtCasePatternGuardReplaceListener(casePattern));
 		replaceElementIfExist(casePattern.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(casePattern));
 		replaceInListIfExist(casePattern.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(casePattern));
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public void visitCtRecordPattern(spoon.reflect.code.CtRecordPattern recordPattern) {
+		replaceElementIfExist(recordPattern.getRecordType(), new spoon.support.visitor.replace.ReplacementVisitor.CtRecordPatternRecordTypeReplaceListener(recordPattern));
+		replaceInListIfExist(recordPattern.getPatternList(), new spoon.support.visitor.replace.ReplacementVisitor.CtRecordPatternPatternListReplaceListener(recordPattern));
+		replaceInListIfExist(recordPattern.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(recordPattern));
+		replaceElementIfExist(recordPattern.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(recordPattern));
+		replaceInListIfExist(recordPattern.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(recordPattern));
 	}
 }
