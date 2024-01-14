@@ -2,15 +2,15 @@ package spoon.testing.assertions.declaration;
 import org.assertj.core.api.AbstractAssert;
 import spoon.reflect.declaration.CtElement;
 public class CtElementAssert extends AbstractAssert<CtElementAssert, CtElement> {
-    public CtElementAssert hasParent(CtElement parent) {
-        isNotNull();
-        if (!super.actual.getParent().equals(parent)) {
-            failWithMessage("Expected parent to be <%s> but was <%s>", parent, super.actual.getParent());
-        }
-        return this;
-    }
+	public CtElementAssert hasParent(CtElement parent) {
+		isNotNull();
+		if (!super.actual.getParent().equals(parent)) {
+			failWithMessage("Expected parent to be <%s> but was <%s>", parent, super.actual.getParent());
+		}
+		return this;
+	}
 
-    CtElementAssert(CtElement actual) {
-        super(actual, CtElementAssert.class);
-    }
+	public CtElementAssert(CtElement actual) {
+		super(actual, CtElementAssert.class);
+	}
 }

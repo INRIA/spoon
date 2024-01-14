@@ -3,15 +3,15 @@ import org.assertj.core.api.AbstractAssert;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtRecord;
 public class CtRecordAssert extends AbstractAssert<CtRecordAssert, CtRecord> {
-    public CtRecordAssert hasParent(CtElement parent) {
-        isNotNull();
-        if (!super.actual.getParent().equals(parent)) {
-            failWithMessage("Expected parent to be <%s> but was <%s>", parent, super.actual.getParent());
-        }
-        return this;
-    }
+	public CtRecordAssert hasParent(CtElement parent) {
+		isNotNull();
+		if (!super.actual.getParent().equals(parent)) {
+			failWithMessage("Expected parent to be <%s> but was <%s>", parent, super.actual.getParent());
+		}
+		return this;
+	}
 
-    CtRecordAssert(CtRecord actual) {
-        super(actual, CtRecordAssert.class);
-    }
+	public CtRecordAssert(CtRecord actual) {
+		super(actual, CtRecordAssert.class);
+	}
 }

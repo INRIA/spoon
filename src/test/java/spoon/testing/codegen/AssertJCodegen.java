@@ -10,6 +10,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class AssertJCodegen {
             if(matchedType.isPresent()) {
                 CtType<?> presentType = matchedType.get();
                 Set<CtType<?>> allSuperTypes = getAllSuperTypes(ctType);
-                Set<String> executablesBySignature = newAssertionClass.getDeclaredExecutables().stream().map(v -> v.getSignature()).collect(Collectors.toSet());
+                Set<String> executablesBySignature = newAssertionClass.getDeclaredExecutables().stream().map(CtExecutableReference::getSignature).collect(Collectors.toSet());
 
                 for (CtType<?> superType : allSuperTypes) {
                     Optional<CtType<?>> superTypeOptional = findAlreadyGeneratedSuperType(superType, alreadyGeneratedTypes);
@@ -152,6 +153,7 @@ public class AssertJCodegen {
         method.setBody(codeBlock);
         @SuppressWarnings("rawtypes") CtConstructor constructor = factory.createConstructor(assertionClass, method);
         constructor.setComments(List.of());
+        constructor.setModifiers(Set.of(ModifierKind.PUBLIC));
         assertionClass.addConstructor(constructor);
     }
 

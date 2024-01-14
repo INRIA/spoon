@@ -218,6 +218,9 @@
             </format>
           </formats>
           <java>
+            <includes>
+              <include>src/test/java/spoon/testing/assertions/**/*.java</include>
+            </includes>
             <googleJavaFormat>
               <version>1.19.2</version>
               <style>AOSP</style>
