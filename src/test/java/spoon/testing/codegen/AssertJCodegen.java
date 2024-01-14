@@ -17,11 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AssertJCodegen {
@@ -73,6 +69,10 @@ public class AssertJCodegen {
                         .filter(v -> v.getType().isSubtypeOf(reference))
                         .filter(v -> !executablesBySignature.contains(v.getSignature()))
                         .forEach(newAssertionClass::addMethod);
+                SortedSet<CtMethod<?>> set = new TreeSet<>(Comparator.comparing(CtMethod::getSimpleName));
+                newAssertionClass.getMethods().stream().sorted(Comparator.comparing(CtMethod::getSimpleName)).forEach(set::add);
+                newAssertionClass.setMethods(Collections.emptySet());
+                newAssertionClass.setMethods(set);
             }
             // write the new assertion class to disk
             //TODO: /r/n vs /n

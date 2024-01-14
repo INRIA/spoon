@@ -200,15 +200,11 @@
         <artifactId>spotless-maven-plugin</artifactId>
         <version>2.41.1</version>
         <configuration>
-          <!-- optional: limit format enforcement to just the files changed by this feature branch -->
           <formats>
-            <!-- you can define as many formats as you want, each is independent -->
             <format>
-              <!-- define the files to apply to -->
               <includes>
                 <include>src/test/java/spoon/testing/assertions/**/*.java</include>
               </includes>
-              <!-- define the steps to apply to those files -->
               <trimTrailingWhitespace/>
               <endWithNewline/>
               <indent>
