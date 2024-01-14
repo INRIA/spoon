@@ -1,0 +1,8 @@
+package spoon.testing.assertions.declaration;
+import org.assertj.core.api.AbstractAssert;
+import spoon.reflect.declaration.CtProvidedService;
+public class CtProvidedServiceAssert extends AbstractAssert<CtProvidedServiceAssert, CtProvidedService> {
+	public CtProvidedServiceAssert(CtProvidedService actual) {
+		super(actual, CtProvidedServiceAssert.class);
+	}
+}

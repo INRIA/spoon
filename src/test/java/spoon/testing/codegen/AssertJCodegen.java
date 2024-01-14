@@ -12,7 +12,9 @@ import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.testing.assertions.declaration.CtModuleAssert;
 
+import javax.annotation.processing.Generated;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,6 +62,7 @@ public class AssertJCodegen {
                                 .filter(v -> !executablesBySignature.contains(v.getSignature()))
                                 .map(CtMethod::clone)
                                 .map(v -> v.<CtMethod<?>>setType(newAssertionClass.getReference()))
+                                .map(v -> v.<CtMethod<?>>addAnnotation(launcher.getFactory().Code().createAnnotation(launcher.getFactory().Type().createReference(Generated.class))))
                                 .forEach(newAssertionClass::addMethod);
                     }
                 }
