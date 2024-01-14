@@ -4,9 +4,11 @@ import org.checkerframework.checker.units.qual.N;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtTypePattern;
@@ -17,6 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RecordPatternTest {
 
@@ -149,5 +152,21 @@ public class RecordPatternTest {
 			)
 		);
 		pattern.assertMatches(assertInstanceOf(CtPattern.class, instanceOf.getRightHandOperand()));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"var", "final var"})
+	void testTypePatternWithVar(String var) {
+		// contract: type patterns in record patterns can use type inference
+		String pattern = "Simple(" + var + " value)";
+		CtBinaryOperator<?> instanceOf = createFromInstanceOf("record Simple(String s) {}", pattern);
+		CtRecordPattern recordPattern = assertInstanceOf(CtRecordPattern.class, instanceOf.getRightHandOperand());
+		List<CtPattern> patternList = recordPattern.getPatternList();
+		assertEquals(1, patternList.size());
+		CtTypePattern ctTypePattern = assertInstanceOf(CtTypePattern.class, patternList.get(0));
+		CtLocalVariable<?> variable = ctTypePattern.getVariable();
+		assertTrue(variable.isInferred());
+		assertEquals("String", variable.getType().getSimpleName());
+		assertEquals(pattern.contains("final"), variable.isFinal());
 	}
 }
