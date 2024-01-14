@@ -57,6 +57,8 @@ public class AssertJCodegen {
                     if(superTypeOptional.isPresent()) {
                         CtType<?> presentSuperType = superTypeOptional.get();
                         // copy all methods from the super type that are not already present in the new assertion class
+                        //TODO: replace instead of filter?
+                        //TODO: add link to topmost original method as comment
                         presentSuperType.getMethods().stream()
                                 .filter(v -> v.getType().isSubtypeOf(reference))
                                 .filter(v -> !executablesBySignature.contains(v.getSignature()))
