@@ -7,15 +7,20 @@ import spoon.Launcher;
 import spoon.metamodel.Metamodel;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.testing.assertions.SpoonAssert;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class AssertJCodegen {
 
@@ -28,15 +33,49 @@ public class AssertJCodegen {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setComplianceLevel(17);
-
+		Map<String, List<CtType<?>>> existingInterfaces = getExistingInterfaces();
 		Metamodel instance = Metamodel.getInstance();
 		Set<CtType<?>> allMetamodelInterfaces = Metamodel.getAllMetamodelInterfaces();
 		for (CtType<?> type : allMetamodelInterfaces) {
 			if (!(type instanceof CtInterface<?>)) continue;
 			CtInterface<?> anInterface = createInterface(type);
+			copyExistingMethods(anInterface, existingInterfaces);
 			//TODO:copy methods if interface is already present
 			writeType(anInterface, launcher);
 		}
+	}
+
+
+	/**
+	 * Copies existing methods from a given interface to another interface.
+	 *
+	 * @param anInterface         the interface to copy existing methods to
+	 * @param existingInterfaces a map of existing interfaces where the key is the qualified name of the interface and the value is a list of CtType objects representing the interfaces
+	 *
+	 */
+	private static void copyExistingMethods(CtInterface<?> anInterface, Map<String, List<CtType<?>>> existingInterfaces) {
+		Set<String> existingMethods = anInterface.getDeclaredExecutables().stream().map(CtExecutableReference::getSignature).collect(Collectors.toSet());
+		if (existingInterfaces.containsKey(anInterface.getQualifiedName())) {
+			List<CtType<?>> ctTypes = existingInterfaces.get(anInterface.getQualifiedName());
+			if (ctTypes.size() == 1) {
+				CtType<?> existingInterface = ctTypes.get(0);
+				existingInterface.getMethods().forEach(ctMethod -> {
+					if (!existingMethods.contains(ctMethod.getSignature())) {
+						anInterface.addMethod(ctMethod.clone());
+					}
+				});
+			}
+		}
+	}
+
+	private Map<String, List<CtType<?>>> getExistingInterfaces() {
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setComplianceLevel(17);
+		launcher.addInputResource("src/test/java/spoon/testing/assertions");
+		launcher.buildModel();
+		return launcher.getModel().getAllTypes().stream().filter(v -> v.getPackage().getQualifiedName().equals("spoon.testing.assertions")).collect(Collectors.groupingBy(CtTypeInformation::getQualifiedName));
 	}
 
 	private static void writeType(CtType<?> type, Launcher launcher) throws IOException {
