@@ -82,6 +82,7 @@ public class AssertJCodegen {
 		spoonAssertRef
 			.addActualTypeArgument(a.getReference())
 			.addActualTypeArgument(w.getReference());
+		ctInterface.setSuperInterfaces(Set.of(spoonAssertRef));
 		return ctInterface;
 	}
 }
