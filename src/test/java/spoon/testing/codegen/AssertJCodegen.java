@@ -1,6 +1,7 @@
 package spoon.testing.codegen;
 
 import org.assertj.core.api.AbstractAssert;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.metamodel.Metamodel;
@@ -32,6 +33,7 @@ public class AssertJCodegen {
     );
     private static final String GEN_ROOT = "src/test/java/spoon/testing/assertions";
     @Test
+    @Tag("codegen")
     void generateAssertionClasses() throws IOException {
         Launcher launcher = new Launcher();
         launcher.addInputResource(GEN_ROOT);
