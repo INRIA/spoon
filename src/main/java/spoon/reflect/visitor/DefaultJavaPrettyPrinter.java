@@ -2346,7 +2346,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void visitCtCasePattern(CtCasePattern casePattern) {
 		scan(casePattern.getPattern());
-		printer.writeSpace().writeKeyword("when").writeSpace();
-		scan(casePattern.getGuard());
+		if (casePattern.getGuard() != null) {
+			printer.writeSpace().writeKeyword("when").writeSpace();
+			scan(casePattern.getGuard());
+		}
 	}
 }

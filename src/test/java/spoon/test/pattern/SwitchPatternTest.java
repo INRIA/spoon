@@ -35,17 +35,19 @@ class SwitchPatternTest {
 	private static CtSwitch<?> createFromSwitchStatement(String cases) {
 		return createFromSwitchStatement(cases, true);
 	}
+
 	private static CtSwitch<?> createFromSwitchStatement(String cases, boolean def) {
-		return createModelFromString("""
-									class Foo {
-										void foo(Object arg) {
-											switch (arg) {
-												%s -> {}
-												%s
-											}
-									}
-						""".formatted(cases, def ? "default -> {}" : ""))
-						.getElements(new TypeFilter<>(CtSwitch.class)).iterator().next();
+		return createModelFromString(
+			"""
+				class Foo {
+					void foo(Object arg) {
+						switch (arg) {
+							%s -> {}
+							%s
+						}
+				}
+				""".formatted(cases, def ? "default -> {}" : ""))
+			.getElements(new TypeFilter<>(CtSwitch.class)).iterator().next();
 	}
 
 	@Test
@@ -56,6 +58,7 @@ class SwitchPatternTest {
 		assertThat(ctCase.getIncludesDefault()).isFalse();
 		CtExpression<?> caseExpression = ctCase.getCaseExpression();
 		assertThat(caseExpression).isInstanceOf(CtCasePattern.class);
+		assertThat(ctCase.toString()).containsPattern("case (java\\.lang\\.)?Integer i ->");
 	}
 
 	@Test
@@ -71,6 +74,7 @@ class SwitchPatternTest {
 
 		CtPattern pattern = ((CtCasePattern) caseExpression).getPattern();
 		assertThat(pattern).isInstanceOf(CtTypePattern.class);
+		assertThat(ctCase.toString()).containsPattern("case (java\\.lang\\.)?Integer i when i > 0 ->");
 	}
 
 	@Test
@@ -81,6 +85,7 @@ class SwitchPatternTest {
 		assertThat(ctCase.getIncludesDefault()).isFalse();
 		assertThat(ctCase.getCaseExpression()).isInstanceOf(CtLiteral.class);
 		assertThat(ctCase.getCaseExpression().getType()).isEqualTo(sw.getFactory().Type().nullType());
+		assertThat(ctCase.toString()).contains("case null ->");
 	}
 
 	@Test
@@ -91,6 +96,7 @@ class SwitchPatternTest {
 		List<? extends CtExpression<?>> caseExpressions = ctCase.getCaseExpressions();
 		assertThat(caseExpressions).hasSize(1);
 		assertThat(ctCase.getIncludesDefault()).isTrue();
+		assertThat(ctCase.toString()).contains("case null, default ->");
 	}
 
 	@Test
