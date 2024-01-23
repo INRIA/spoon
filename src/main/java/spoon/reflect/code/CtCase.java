@@ -9,6 +9,7 @@ package spoon.reflect.code;
 
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.path.CtRole;
 
 import java.util.List;
 
@@ -78,6 +79,21 @@ public interface CtCase<S> extends CtStatement, CtStatementList {
 	 */
 	@PropertySetter(role = CASE_KIND)
 	<T extends CtCase<S>> T setCaseKind(CaseKind kind);
+
+	/**
+	 * {@return whether this case includes a trailing {@code default}}
+	 */
+	@PropertyGetter(role = CtRole.DEFAULT_EXPRESSION)
+	boolean getIncludesDefault();
+
+	/**
+	 * Sets whether this case includes a trailing {@code default}.
+	 *
+	 * @param includesDefault whether this case includes a {@code default}.
+	 * @return this case.
+	 */
+	@PropertySetter(role = CtRole.DEFAULT_EXPRESSION)
+	CtCase<S> setIncludesDefault(boolean includesDefault);
 
 	@Override
 	CtCase<S> clone();

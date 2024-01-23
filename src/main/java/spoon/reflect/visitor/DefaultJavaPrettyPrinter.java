@@ -26,6 +26,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -624,10 +625,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			for (int i = 0; i < caseExpressions.size(); i++) {
 				CtExpression<E> caseExpression = caseExpressions.get(i);
 				// writing enum case expression
-				if (caseExpression instanceof CtFieldAccess) {
+				if (caseExpression instanceof CtFieldAccess<E> fieldAccess) {
 					final CtFieldReference variable = ((CtFieldAccess) caseExpression).getVariable();
 					// In noclasspath mode, we don't have always the type of the declaring type.
-					if (variable.getType() != null
+					if (fieldAccess.getTarget().isImplicit()
+							&& variable.getType() != null
 							&& variable.getDeclaringType() != null
 							&& variable.getType().getQualifiedName().equals(variable.getDeclaringType().getQualifiedName())) {
 						printer.writeIdentifier(variable.getSimpleName());
@@ -640,6 +642,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if (i != caseExpressions.size() - 1) {
 					printer.writeSeparator(",").writeSpace();
 				}
+			}
+			if (caseStatement.getIncludesDefault()) {
+				printer.writeSeparator(",")
+					.writeSpace()
+					.writeKeyword("default");
 			}
 		} else {
 			printer.writeKeyword("default");
@@ -2334,5 +2341,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		visitCtTypeReference(recordComponent.getType());
 		printer.writeSpace();
 		printer.writeIdentifier(recordComponent.getSimpleName());
+	}
+
+	@Override
+	public void visitCtCasePattern(CtCasePattern casePattern) {
+		scan(casePattern.getPattern());
+		if (casePattern.getGuard() != null) {
+			printer.writeSpace().writeKeyword("when").writeSpace();
+			scan(casePattern.getGuard());
+		}
 	}
 }

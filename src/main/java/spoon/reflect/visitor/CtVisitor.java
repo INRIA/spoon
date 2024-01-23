@@ -16,6 +16,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -550,10 +551,16 @@ public interface CtVisitor {
 	 * @param recordType the record to visit.
 	 */
 	void visitCtRecord(CtRecord recordType);
+
 	/**
 	 * Visits a record component.
 	 * @param recordComponent  the record component to visit.
 	 */
-
 	void visitCtRecordComponent(CtRecordComponent recordComponent);
+
+	/**
+	 * Visits a case pattern
+	 * @param casePattern the case pattern to visit.
+	 */
+	void visitCtCasePattern(CtCasePattern casePattern);
 }
