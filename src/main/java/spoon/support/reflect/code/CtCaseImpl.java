@@ -37,6 +37,9 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	@MetamodelPropertyField(role = CtRole.CASE_KIND)
 	CaseKind caseKind = CaseKind.COLON;
 
+	@MetamodelPropertyField(role = CtRole.DEFAULT_EXPRESSION)
+	private boolean includesDefault = false;
+
 	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCase(this);
@@ -107,6 +110,18 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.CASE_KIND, kind, this.caseKind);
 		caseKind = kind;
 		return (T) this;
+	}
+
+	@Override
+	public boolean getIncludesDefault() {
+		return this.includesDefault;
+	}
+
+	@Override
+	public CtCase<E> setIncludesDefault(boolean includesDefault) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.DEFAULT_EXPRESSION, includesDefault, this.includesDefault);
+		this.includesDefault = includesDefault;
+		return this;
 	}
 
 	@Override

@@ -77,6 +77,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtBreak.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtCFlowBreak.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtCase.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtCasePattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtCatch.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtCatchVariable.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtCodeElement.class));

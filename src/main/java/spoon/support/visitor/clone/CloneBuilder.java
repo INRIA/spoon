@@ -132,6 +132,7 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <E> void visitCtCase(spoon.reflect.code.CtCase<E> e) {
 		((spoon.reflect.code.CtCase<E>) (other)).setCaseKind(e.getCaseKind());
+		((spoon.reflect.code.CtCase<E>) (other)).setIncludesDefault(e.getIncludesDefault());
 		super.visitCtCase(e);
 	}
 

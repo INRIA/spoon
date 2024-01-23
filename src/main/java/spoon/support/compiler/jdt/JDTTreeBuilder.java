@@ -9,6 +9,10 @@ package spoon.support.compiler.jdt;
 
 import java.util.Set;
 
+import org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.eclipse.jdt.internal.compiler.ast.FakeDefaultLiteral;
+import org.eclipse.jdt.internal.compiler.ast.GuardedPattern;
+import org.eclipse.jdt.internal.compiler.ast.TypePattern;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedGenericMethodBinding;
 import org.slf4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
@@ -124,6 +128,7 @@ import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
+import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
@@ -137,6 +142,7 @@ import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.LiteralBase;
 import spoon.reflect.code.UnaryOperatorKind;
@@ -340,6 +346,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(CaseStatement caseStatement, BlockScope scope) {
+		Expression[] constantExpressions = caseStatement.constantExpressions;
+		if (constantExpressions != null && constantExpressions.length == 2 && constantExpressions[1] instanceof FakeDefaultLiteral) {
+			context.getCurrentElement();
+			CtCase<?> caseNullDefault = (CtCase<?>) context.getCurrentElement();
+			caseNullDefault.setIncludesDefault(true);
+		}
 	}
 
 	@Override
@@ -782,6 +794,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public void endVisit(CompilationUnitDeclaration compilationUnitDeclaration, CompilationUnitScope scope) {
 		context.compilationunitdeclaration = null;
 		context.compilationUnitSpoon = null;
+	}
+
+	@Override
+	public void endVisit(GuardedPattern guardedPattern, BlockScope scope) {
+		context.exit(guardedPattern);
 	}
 
 	@Override
@@ -1714,6 +1731,24 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		context.enter(factory.Core().createCase(), caseStatement);
 		return true;
+	}
+
+	@Override
+	public boolean visit(GuardedPattern guardedPattern, BlockScope scope) {
+		context.enter(factory.Core().createCasePattern(), guardedPattern);
+		return true;
+	}
+
+	@Override
+	public boolean visit(TypePattern anyPattern, BlockScope scope) {
+		CtTypePattern typePattern = factory.Core().createTypePattern();
+		context.enter(typePattern, anyPattern);
+		return true;
+	}
+
+	@Override
+	public void endVisit(TypePattern anyPattern, BlockScope scope) {
+		context.exit(anyPattern);
 	}
 
 	@Override
