@@ -18,7 +18,7 @@ jobs:
           with:
             fetch-depth: 0
         - name: 'Qodana Scan'
-          uses: JetBrains/qodana-action@a8363b702c2d2d49a77620bcd10541686df21307 # v2023.3.0
+          uses: JetBrains/qodana-action@e42ff2d2727091337983f607598abbbce4e25f1f # v2023.3.1
           with:
             args: --source-directory,./src/main/java , --fail-threshold, 0
             post-pr-comment: "false"
@@ -33,7 +33,7 @@ jobs:
           with:
             fetch-depth: 0
         - name: 'Qodana Scan (spoon-javadoc)'
-          uses: JetBrains/qodana-action@a8363b702c2d2d49a77620bcd10541686df21307 # v2023.3.0
+          uses: JetBrains/qodana-action@e42ff2d2727091337983f607598abbbce4e25f1f # v2023.3.1
           with:
             args: --source-directory,./spoon-javadoc/src/main/java , --fail-threshold, 0
             post-pr-comment: "false"
