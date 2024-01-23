@@ -153,3 +153,22 @@ jobs:
         run: nix develop ${{ env.NIX_OPTIONS }} --command true
       - name: Check maven pom quality
         run: nix develop ${{ env.NIX_OPTIONS }} --command maven-pom-quality
+
+  codegen:
+    runs-on: ubuntu-latest
+    name: Test with coverage
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+        with:
+          fetch-depth: 0
+      - name: Setup env
+        uses: ./.github/actions/setup-tests
+
+      - name: Time nix setup
+        run: nix develop ${{ env.NIX_OPTIONS }} --command true
+      - name: Run tests with coverage
+        run: nix develop ${{ env.NIX_OPTIONS }} --keep PR_NUMBER --keep GITHUB_TOKEN --command codegen
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
