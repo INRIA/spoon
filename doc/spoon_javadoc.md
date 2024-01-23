@@ -15,13 +15,13 @@ converting them into your own format.
 
 ### Installation
 
-To use spoon-javadoc, add the following dependency to your `pom.xml`:
-```xml
-<dependency>
-    <groupId>fr.inria.gforge.spoon</groupId>
-    <artifactId>spoon-javadoc</artifactId>
-    <version>$currentVersion</version>
-</dependency>
+On a Unix-like system, the following set of commands should be sufficient for
+getting spoon-javadoc up and running from scratch.
+
+```
+$ git clone https://github.com/INRIA/spoon.git
+$ cd spoon/spoon-pom
+$ mvn install
 ```
 
 ### Basic usage
