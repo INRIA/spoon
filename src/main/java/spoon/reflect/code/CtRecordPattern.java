@@ -26,19 +26,37 @@ import java.util.List;
  * </pre>
  */
 public interface CtRecordPattern extends CtPattern, CtExpression<Void> {
-	
+
+	/**
+	 * {@return the type of the deconstructed record}
+	 */
 	@PropertyGetter(role = CtRole.TYPE_REF)
 	CtTypeReference<?> getRecordType();
 
+	/**
+	 * Sets the type of the deconstructed record.
+	 * @param recordType the record type.
+	 */
 	@PropertySetter(role = CtRole.TYPE_REF)
 	CtRecordPattern setRecordType(CtTypeReference<?> recordType);
 
+	/**
+	 * {@return the inner patterns of this record pattern}
+	 */
 	@PropertyGetter(role = CtRole.PATTERN)
 	List<CtPattern> getPatternList();
 
+	/**
+	 * Sets the inner patterns of this record pattern.
+	 * @param patternList the list of inner patterns.
+	 */
 	@PropertySetter(role = CtRole.PATTERN)
 	CtRecordPattern setPatternList(List<CtPattern> patternList);
 
+	/**
+	 * Adds an inner patterns to the list of inner patterns of this record.
+	 * @param pattern the inner pattern.
+	 */
 	@PropertySetter(role = CtRole.PATTERN)
 	CtRecordPattern addPattern(CtPattern pattern);
 
