@@ -58,6 +58,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -702,6 +703,11 @@ public class Substitutor implements CtVisitor {
 
 	@Override
 	public void visitCtCasePattern(CtCasePattern casePattern) {
+		throw new NotImplementedException("Not implemented");
+	}
+
+	@Override
+	public void visitCtRecordPattern(CtRecordPattern recordPattern) {
 		throw new NotImplementedException("Not implemented");
 	}
 }
