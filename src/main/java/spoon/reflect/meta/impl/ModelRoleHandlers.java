@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.meta.impl;
 import java.lang.annotation.Annotation;
@@ -729,23 +729,6 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtCasePattern_PATTERN_RoleHandler extends SingleHandler<CtCasePattern, CtPattern> {
-		private CtCasePattern_PATTERN_RoleHandler() {
-			super(CtRole.PATTERN, CtCasePattern.class, CtPattern.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) (Object) (castTarget(element).getPattern()));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setPattern(castValue(value));
-		}
-	}
-
 	static class CtRecordPattern_PATTERN_RoleHandler extends ListHandler<CtRecordPattern, CtPattern> {
 		private CtRecordPattern_PATTERN_RoleHandler() {
 			super(CtRole.PATTERN, CtRecordPattern.class, CtPattern.class);
@@ -760,6 +743,23 @@ class ModelRoleHandlers {
 		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setPatternList(castValue(value));
+		}
+	}
+
+	static class CtCasePattern_PATTERN_RoleHandler extends SingleHandler<CtCasePattern, CtPattern> {
+		private CtCasePattern_PATTERN_RoleHandler() {
+			super(CtRole.PATTERN, CtCasePattern.class, CtPattern.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) (Object) (castTarget(element).getPattern()));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setPattern(castValue(value));
 		}
 	}
 

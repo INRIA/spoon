@@ -9,8 +9,24 @@ import spoon.support.UnsettableProperty;
 import java.util.List;
 
 // TODO (440) metamodel
-public interface CtRecordPattern extends CtPattern, CtExpression<Void> {
 
+/**
+ * This code element defines a record pattern, introduced in Java 21
+ * by <a href=https://openjdk.java.net/jeps/440>JEP 440</a>.
+ * <p>
+ * Example:
+ * <pre>
+ *     Object obj = null;
+ *     boolean longerThanTwo = false;
+ *     record MyRecord(String value) {}
+ *     // MyRecord(var string) is the record pattern
+ *     if (obj instanceof MyRecord(var string)) {
+ *         longerThanTwo = string.length() > 2;
+ *     }
+ * </pre>
+ */
+public interface CtRecordPattern extends CtPattern, CtExpression<Void> {
+	
 	@PropertyGetter(role = CtRole.TYPE_REF)
 	CtTypeReference<?> getRecordType();
 

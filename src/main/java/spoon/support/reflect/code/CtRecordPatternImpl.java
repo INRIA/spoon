@@ -11,11 +11,13 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import static spoon.reflect.path.CtRole.PATTERN;
+
 public class CtRecordPatternImpl extends CtExpressionImpl<Void> implements CtRecordPattern {
 
 	@MetamodelPropertyField(role = CtRole.TYPE_REF)
 	private CtTypeReference<?> recordType;
-	@MetamodelPropertyField(role = CtRole.PATTERN)
+	@MetamodelPropertyField(role = PATTERN)
 	private List<CtPattern> patternList = CtElementImpl.emptyList();
 
 	@Override
@@ -25,10 +27,11 @@ public class CtRecordPatternImpl extends CtExpressionImpl<Void> implements CtRec
 
 	@Override
 	public CtRecordPattern setRecordType(CtTypeReference<?> recordType) {
-		// TODO (440) model listener
 		if (recordType != null) {
 			recordType.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener()
+			.onObjectUpdate(this, CtRole.TYPE_REF, recordType, this.recordType);
 		this.recordType = recordType;
 		return this;
 	}
@@ -40,17 +43,17 @@ public class CtRecordPatternImpl extends CtExpressionImpl<Void> implements CtRec
 
 	@Override
 	public CtRecordPattern setPatternList(List<CtPattern> patternList) {
-		// TODO (440) model listener, validation?
-		this.patternList = new ArrayList<>(patternList);
-		for (CtPattern pattern : this.patternList) {
-			pattern.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener()
+			.onListDeleteAll(this, PATTERN, this.patternList, new ArrayList<>(this.patternList));
+		this.patternList.clear();
+		for (CtPattern pattern : patternList) {
+			addPattern(pattern);
 		}
 		return this;
 	}
 
 	@Override
 	public CtRecordPattern addPattern(CtPattern pattern) {
-		// TODO (440) model listener, validation?
 		if (pattern == null) {
 			return this;
 		}
@@ -58,6 +61,8 @@ public class CtRecordPatternImpl extends CtExpressionImpl<Void> implements CtRec
 			this.patternList = new ArrayList<>();
 		}
 		pattern.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener()
+			.onListAdd(this, PATTERN, this.patternList, pattern);
 		this.patternList.add(pattern);
 		return this;
 	}
