@@ -33,7 +33,7 @@ import spoon.reflect.code.CtComment;
  * <p>An example would be the text contained in this very Javadoc comment. At the moment of this
  * writing this comment does not contain any block tags (such as <code>@see AnotherClass</code>)
  *
- * @deprecated Use the new javadoc parser submodule, See <a href="https://spoon.gforge.inria.fr/spoon_javadoc.html">Javadoc Parser</a>.
+ * @deprecated Use the new javadoc parser submodule, see <a href="https://spoon.gforge.inria.fr/spoon_javadoc.html">Javadoc Parser</a>.
  */
 @Deprecated(forRemoval = true, since = "11.0.0")
 public class Javadoc implements Serializable {
