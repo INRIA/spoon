@@ -172,7 +172,7 @@ def command_compare_with_branch(target_branch: str) -> None:
     Compares the current branch with a given reference branch and prints a change summary.
     Exits with an error if the current branch has more violations than the passed target branch.
     """
-    # Switch to the root soquality check will run against the whole project
+    # Switch to the root, so the quality check will run against the whole project
     os.chdir(run_command(["git", "rev-parse", "--show-toplevel"]).strip())
 
     with temporary_path(suffix=".xml") as config_path:
