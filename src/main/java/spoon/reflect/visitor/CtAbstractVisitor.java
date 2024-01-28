@@ -42,6 +42,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
@@ -557,6 +558,11 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	@Override
 	public void visitCtCasePattern(CtCasePattern casePattern) {
+
+	}
+
+	@Override
+	public void visitCtRecordPattern(CtRecordPattern recordPattern) {
 
 	}
 }

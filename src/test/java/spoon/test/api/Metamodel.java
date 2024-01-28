@@ -396,6 +396,18 @@ public class Metamodel {
 
 			));
 
+			types.add(new Type("CtRecordPattern", spoon.reflect.code.CtRecordPattern.class, spoon.support.reflect.code.CtRecordPatternImpl.class, fm -> fm
+				.field(CtRole.IS_IMPLICIT, false, false)
+				.field(CtRole.CAST, true, true)
+				.field(CtRole.POSITION, false, false)
+				.field(CtRole.TYPE_REF, false, false)
+				.field(CtRole.PATTERN, false, false)
+				.field(CtRole.ANNOTATION, false, false)
+				.field(CtRole.TYPE, false, false)
+				.field(CtRole.COMMENT, false, false)
+
+			));
+
 			types.add(new Type("CtModuleRequirement", spoon.reflect.declaration.CtModuleRequirement.class, spoon.support.reflect.declaration.CtModuleRequirementImpl.class, fm -> fm
 				.field(CtRole.IS_IMPLICIT, false, false)
 				.field(CtRole.MODIFIER, false, false)

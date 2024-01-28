@@ -61,6 +61,7 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtPattern;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
@@ -418,16 +419,9 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
-		CtElement child = this.child;
-		// check if this is a type pattern, as it needs special treatment
-		// patterns are only allowed for instanceof and on the right hand
-		if (child instanceof CtLocalVariable && operator.getKind() == INSTANCEOF && operator.getLeftHandOperand() != null) {
-			CtTypePattern typePattern = child.getFactory().Core().createTypePattern();
-			typePattern.setVariable((CtLocalVariable<?>) child);
-			// as we create the type pattern just here, we need to set its source position - which is luckily the same
-			typePattern.setPosition(child.getPosition());
-			child = typePattern; // replace the local variable with a pattern (which is a CtExpression)
-		}
+		CtElement child = operator.getKind() == INSTANCEOF && operator.getLeftHandOperand() != null
+			? adjustIfLocalVariableToTypePattern(this.child)
+			: this.child;
 		if (child instanceof CtExpression) {
 			if (operator.getLeftHandOperand() == null) {
 				operator.setLeftHandOperand((CtExpression<?>) child);
@@ -463,6 +457,25 @@ public class ParentExiter extends CtInheritanceScanner {
 			}
 		}
 		super.visitCtBinaryOperator(operator);
+	}
+
+	/**
+	 * {@return the original element if it is not a local variable, a type pattern containing the local variable otherwise}
+	 *
+	 * @param original the original element
+	 */
+	private CtElement adjustIfLocalVariableToTypePattern(CtElement original) {
+		CtElement child = original;
+		// check if this is a type pattern, as it needs special treatment
+		// patterns are only allowed for instanceof and on the right hand
+		if (child instanceof CtLocalVariable) {
+			CtTypePattern typePattern = child.getFactory().Core().createTypePattern();
+			typePattern.setVariable((CtLocalVariable<?>) child);
+			// as we create the type pattern just here, we need to set its source position - which is luckily the same
+			typePattern.setPosition(child.getPosition());
+			child = typePattern; // replace the local variable with a pattern (which is a CtExpression)
+		}
+		return child;
 	}
 
 	@Override
@@ -1148,6 +1161,17 @@ public class ParentExiter extends CtInheritanceScanner {
 		}
 		super.visitCtRecord(recordType);
 	}
+
+	@Override
+	public void visitCtRecordPattern(CtRecordPattern pattern) {
+		CtElement child = adjustIfLocalVariableToTypePattern(this.child);
+		if (child instanceof CtTypeReference<?> typeReference) {
+			pattern.setRecordType(typeReference);
+		} else if (child instanceof CtPattern innerPattern) {
+			pattern.addPattern(innerPattern);
+		}
+	}
+
 	/**
 	 * Modifies the set of constructors of a {@link CtRecord} instance based on the properties of a new constructor.
 	 * <p>

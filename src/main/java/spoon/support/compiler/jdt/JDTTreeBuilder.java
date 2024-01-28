@@ -12,6 +12,7 @@ import java.util.Set;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.FakeDefaultLiteral;
 import org.eclipse.jdt.internal.compiler.ast.GuardedPattern;
+import org.eclipse.jdt.internal.compiler.ast.RecordPattern;
 import org.eclipse.jdt.internal.compiler.ast.TypePattern;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedGenericMethodBinding;
 import org.slf4j.Logger;
@@ -1882,6 +1883,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(RecordComponent recordComponent, BlockScope scope) {
 		context.enter(factory.Core().createRecordComponent().setSimpleName(String.valueOf(recordComponent.name)), recordComponent);
 		return super.visit(recordComponent, scope);
+	}
+
+
+	@Override
+	public void endVisit(RecordPattern recordPattern, BlockScope scope) {
+		context.exit(recordPattern);
+	}
+
+	@Override
+	public boolean visit(RecordPattern recordPattern, BlockScope scope) {
+		context.enter(factory.Core().createRecordPattern(), recordPattern);
+		return super.visit(recordPattern, scope);
 	}
 
 }
