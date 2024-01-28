@@ -1160,4 +1160,18 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		this.cloneHelper.tailor(casePattern, aCtCasePattern);
 		this.other = aCtCasePattern;
 	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtRecordPattern(spoon.reflect.code.CtRecordPattern recordPattern) {
+		spoon.reflect.code.CtRecordPattern aCtRecordPattern = recordPattern.getFactory().Core().createRecordPattern();
+		this.builder.copy(recordPattern, aCtRecordPattern);
+		aCtRecordPattern.setRecordType(this.cloneHelper.clone(recordPattern.getRecordType()));
+		aCtRecordPattern.setPatternList(this.cloneHelper.clone(recordPattern.getPatternList()));
+		aCtRecordPattern.setAnnotations(this.cloneHelper.clone(recordPattern.getAnnotations()));
+		aCtRecordPattern.setType(this.cloneHelper.clone(recordPattern.getType()));
+		aCtRecordPattern.setComments(this.cloneHelper.clone(recordPattern.getComments()));
+		this.cloneHelper.tailor(recordPattern, aCtRecordPattern);
+		this.other = aCtRecordPattern;
+	}
 }

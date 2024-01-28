@@ -47,6 +47,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
@@ -147,6 +148,7 @@ import spoon.support.reflect.code.CtLocalVariableImpl;
 import spoon.support.reflect.code.CtNewArrayImpl;
 import spoon.support.reflect.code.CtNewClassImpl;
 import spoon.support.reflect.code.CtOperatorAssignmentImpl;
+import spoon.support.reflect.code.CtRecordPatternImpl;
 import spoon.support.reflect.code.CtReturnImpl;
 import spoon.support.reflect.code.CtStatementListImpl;
 import spoon.support.reflect.code.CtSuperAccessImpl;
@@ -1115,6 +1117,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.declaration.CtRecordComponent.class)) {
 			return createRecordComponent();
 		}
+		if (klass.equals(spoon.reflect.code.CtRecordPattern.class)) {
+			return createRecordPattern();
+		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
 
@@ -1204,5 +1209,12 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		CtCasePattern casePattern = new CtCasePatternImpl();
 		casePattern.setFactory(getMainFactory());
 		return casePattern;
+	}
+
+	@Override
+	public CtRecordPattern createRecordPattern() {
+		CtRecordPattern recordPattern = new CtRecordPatternImpl();
+		recordPattern.setFactory(getMainFactory());
+		return recordPattern;
 	}
 }

@@ -42,6 +42,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
@@ -563,4 +564,10 @@ public interface CtVisitor {
 	 * @param casePattern the case pattern to visit.
 	 */
 	void visitCtCasePattern(CtCasePattern casePattern);
+
+	/**
+	 * Visits a record pattern.
+	 * @param recordPattern the record pattern to visit.
+	 */
+	void visitCtRecordPattern(CtRecordPattern recordPattern);
 }

@@ -47,6 +47,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -1089,6 +1090,17 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.TYPE, casePattern.getType());
 		scan(CtRole.COMMENT, casePattern.getComments());
 		exit(casePattern);
+	}
+
+	@Override
+	public void visitCtRecordPattern(CtRecordPattern recordPattern) {
+		enter(recordPattern);
+		scan(CtRole.TYPE_REF, recordPattern.getRecordType());
+		scan(CtRole.PATTERN, recordPattern.getPatternList());
+		scan(CtRole.ANNOTATION, recordPattern.getAnnotations());
+		scan(CtRole.TYPE, recordPattern.getType());
+		scan(CtRole.COMMENT, recordPattern.getComments());
+		exit(recordPattern);
 	}
 }
 

@@ -110,6 +110,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtOperatorAssignment.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtPattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtRHSReceiver.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtRecordPattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtResource.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtReturn.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtStatement.class));
