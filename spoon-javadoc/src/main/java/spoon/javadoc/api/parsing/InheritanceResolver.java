@@ -133,10 +133,9 @@ public class InheritanceResolver {
 	 * @return the new and completed javadoc
 	 */
 	public List<JavadocElement> completeJavadocWithInheritedTags(CtElement element, JavadocCommentView view) {
-		if (!(element instanceof CtMethod<?>)) {
+		if (!(element instanceof CtMethod<?> method)) {
 			return view.getElements();
 		}
-		CtMethod<?> method = (CtMethod<?>) element;
 		Set<String> paramsToFind = method.getParameters()
 			.stream()
 			.map(CtNamedElement::getSimpleName)
@@ -153,7 +152,7 @@ public class InheritanceResolver {
 		view.getBlockTagArguments(StandardJavadocTagType.EXCEPTION, JavadocText.class)
 			.forEach(it -> throwsToFind.remove(it.getText()));
 
-		boolean needsReturn = view.getBlockTag(StandardJavadocTagType.RETURN).isEmpty();
+		boolean needsReturn = needsReturn(view);
 		boolean needsBody = view.getBody().isEmpty();
 
 		InheritedJavadoc inheritedJavadoc = lookupInheritedDocForMethod(method);
@@ -183,7 +182,22 @@ public class InheritanceResolver {
 			.collect(Collectors.toList());
 	}
 
-	public static InheritedJavadoc lookupInheritedDocForMethod(CtMethod<?> method) {
+	private static boolean needsReturn(JavadocCommentView view) {
+		// Block tags are always allowed
+		if (!view.getBlockTag(StandardJavadocTagType.RETURN).isEmpty()) {
+			return false;
+		}
+		// As an inline tag, it may only occur at the beginning of a method's main description.
+		if (view.getBody().isEmpty()) {
+			return false;
+		}
+		if (!(view.getBody().get(0) instanceof JavadocInlineTag start)) {
+			return false;
+		}
+		return start.getTagType() != StandardJavadocTagType.RETURN;
+	}
+
+	private static InheritedJavadoc lookupInheritedDocForMethod(CtMethod<?> method) {
 		List<CtMethod<?>> targets = new InheritanceResolver()
 			.findSuperMethodsInCommentInheritanceOrder(method.getDeclaringType(), method);
 
