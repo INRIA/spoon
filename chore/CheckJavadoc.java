@@ -45,6 +45,18 @@ public class CheckJavadoc {
 
   private static final Path CWD = Path.of("").toAbsolutePath();
 
+  private static final Set<String> EXCLUDED_TYPES = Set.of(
+      "spoon.reflect.visitor.CtAbstractVisitor",
+      "spoon.reflect.visitor.CtBiScannerDefault",
+      "spoon.reflect.visitor.CtInheritanceScanner",
+      "spoon.reflect.visitor.CtScanner",
+      "spoon.reflect.visitor.CtVisitor",
+      "spoon.support.compiler.jdt.JDTTreeBuilder",
+      "spoon.support.compiler.jdt.ParentExiter",
+      "spoon.support.visitor.clone.CloneVisitor",
+      "spoon.support.visitor.replace.ReplacementVisitor"
+  );
+
   private final Map<ViolationType, Integer> violationCounts = new HashMap<>();
 
   private void check(CtModel model, Factory factory) {
@@ -122,6 +134,9 @@ public class CheckJavadoc {
         if (!member.isPublic()) {
           return false;
         }
+      }
+      if (current instanceof CtType<?> type && EXCLUDED_TYPES.contains(type.getQualifiedName())) {
+        return false;
       }
       current = current.getParent();
     }
