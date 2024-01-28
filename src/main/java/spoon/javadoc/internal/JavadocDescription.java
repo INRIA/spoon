@@ -20,7 +20,9 @@ package spoon.javadoc.internal;
 
 	/**
 	* A javadoc text, potentially containing inline tags.
+	* @deprecated Use the new javadoc parser submodule, see <a href="https://spoon.gforge.inria.fr/spoon_javadoc.html">Javadoc Parser</a>.
 	*/
+	@Deprecated(forRemoval = true, since = "11.0.0")
 	public class JavadocDescription implements Serializable {
 	private static final long serialVersionUID = 1L;
 
