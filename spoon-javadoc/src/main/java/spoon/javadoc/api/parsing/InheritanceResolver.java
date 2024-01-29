@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -139,14 +140,14 @@ public class InheritanceResolver {
 		Set<String> paramsToFind = method.getParameters()
 			.stream()
 			.map(CtNamedElement::getSimpleName)
-			.collect(Collectors.toCollection(HashSet::new));
+			.collect(Collectors.toCollection(LinkedHashSet::new)); // keep decl order
 		view.getBlockTagArguments(StandardJavadocTagType.PARAM, JavadocText.class)
 			.forEach(it -> paramsToFind.remove(it.getText()));
 
 		Set<String> throwsToFind = method.getThrownTypes()
 			.stream()
 			.map(CtTypeInformation::getQualifiedName)
-			.collect(Collectors.toCollection(HashSet::new));
+			.collect(Collectors.toCollection(LinkedHashSet::new)); // keep decl order
 		view.getBlockTagArguments(StandardJavadocTagType.THROWS, JavadocText.class)
 			.forEach(it -> throwsToFind.remove(it.getText()));
 		view.getBlockTagArguments(StandardJavadocTagType.EXCEPTION, JavadocText.class)
@@ -157,6 +158,7 @@ public class InheritanceResolver {
 
 		InheritedJavadoc inheritedJavadoc = lookupInheritedDocForMethod(method);
 
+		// Order by body -> param -> return -> throws
 		List<JavadocElement> newElements = new ArrayList<>();
 		if (needsBody) {
 			newElements.addAll(inheritedJavadoc.getBody());
@@ -165,13 +167,13 @@ public class InheritanceResolver {
 			.map(it -> inheritedJavadoc.getParams().get(it))
 			.filter(Objects::nonNull)
 			.forEach(newElements::add);
+		if (needsReturn && inheritedJavadoc.getReturnTag() != null) {
+			newElements.add(inheritedJavadoc.getReturnTag());
+		}
 		throwsToFind.stream()
 			.map(it -> inheritedJavadoc.getThrowsClauses().get(it))
 			.filter(Objects::nonNull)
 			.forEach(newElements::add);
-		if (needsReturn && inheritedJavadoc.getReturnTag() != null) {
-			newElements.add(inheritedJavadoc.getReturnTag());
-		}
 
 		List<JavadocElement> finalElements = new ArrayList<>(view.getElements());
 		finalElements.addAll(newElements);
@@ -189,10 +191,10 @@ public class InheritanceResolver {
 		}
 		// As an inline tag, it may only occur at the beginning of a method's main description.
 		if (view.getBody().isEmpty()) {
-			return false;
+			return true;
 		}
 		if (!(view.getBody().get(0) instanceof JavadocInlineTag start)) {
-			return false;
+			return true;
 		}
 		return start.getTagType() != StandardJavadocTagType.RETURN;
 	}
@@ -311,9 +313,12 @@ public class InheritanceResolver {
 						params.put(arg, tag);
 					});
 			}
-			if (tag.getTagType() == StandardJavadocTagType.THROWS) {
-				tag.getArgument(JavadocText.class)
-					.map(JavadocText::getText)
+			if (
+				tag.getTagType() == StandardJavadocTagType.THROWS
+				|| tag.getTagType() == StandardJavadocTagType.EXCEPTION
+			) {
+				tag.getArgument(JavadocReference.class)
+					.map(it -> it.getReference().toString())
 					.filter(missingThrowsClauses::contains)
 					.ifPresent(arg -> {
 						missingThrowsClauses.remove(arg);

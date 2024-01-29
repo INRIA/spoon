@@ -1,6 +1,7 @@
 package spoon.javadoc.api.elements;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import spoon.javadoc.api.JavadocTagType;
 
@@ -44,5 +45,25 @@ public class JavadocCommentView {
 		return elements.stream()
 			.filter(it -> !(it instanceof JavadocBlockTag))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		JavadocCommentView view = (JavadocCommentView) o;
+		return Objects.equals(elements, view.elements);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(elements);
+	}
+
+	@Override
+	public String toString() {
+		return "JavadocCommentView{" +
+		       "elements=" + elements +
+		       '}';
 	}
 }
