@@ -180,7 +180,7 @@
               ])
             else [ ];
           packages = with pkgs;
-            [ jdk maven test coverage mavenPomQuality javadocQuality reproducibleBuilds ]
+            [ jdk maven test codegen coverage mavenPomQuality javadocQuality reproducibleBuilds ]
             ++ (if extraChecks then [ gradle pythonEnv extra extraRemote jbang ] else [ ])
             ++ (if release then [ semver jreleaser ] else [ ]);
         };
