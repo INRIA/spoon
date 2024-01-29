@@ -23,6 +23,8 @@ import spoon.metamodel.MetamodelConcept;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnnotation;
@@ -318,44 +320,44 @@ public class AssertJCodegen {
 				continue;
 			}
 			String getter = method.getSimpleName();
-			CtCodeSnippetStatement codeSnippetStatement;
+			CtStatement returnStatement;
 			CtMethod<?> specificMethod = baseMethod.clone()
 				.setDefaultMethod(true)
 				.setSimpleName(getter);
+			CtExpression<?> actualGetter = actualGetter(assertInterface.getReference(), method.getDeclaringType().getReference(), getter);
 			CtTypeReference<?> assertRef = switch (entry.getValue().getContainerKind()) {
 				case SINGLE -> {
 					if (method.getType().equals(factory.Type().stringType())) {
-						codeSnippetStatement = factory.createCodeSnippetStatement("return org.assertj.core.api.Assertions.assertThat(actual()." + getter + "())");
+						returnStatement = returning("org.assertj.core.api.Assertions", "assertThat", actualGetter);
 						yield factory.createCtTypeReference(AbstractStringAssert.class)
 							.addActualTypeArgument(factory.createWildcardReference());
 					} else if (method.getType().isPrimitive()) {
-						codeSnippetStatement = factory.createCodeSnippetStatement("return org.assertj.core.api.Assertions.assertThat(actual()." + getter + "())");
+						returnStatement = returning("org.assertj.core.api.Assertions", "assertThat", actualGetter);
 						Class<?> actualClass = method.getType().getActualClass();
 						yield factory.createCtTypeReference(PRIMITIVE_TO_ASSERTJ_MAP.get(actualClass))
 							.addActualTypeArgument(factory.createWildcardReference());
 					} else if (method.getType().isSubtypeOf(factory.createCtTypeReference(CtElement.class))) {
-						String cast = "";
 						if (method.getType() instanceof CtTypeParameterReference tpr) {
 							CtTypeReference<?> boundingType = tpr.getBoundingType();
 							new MyCtScanner(factory).scan(boundingType);
-							cast = "(" + boundingType + ") ";
+							actualGetter.addTypeCast(boundingType.clone());
 						}
-						codeSnippetStatement = factory.createCodeSnippetStatement("return spoon.testing.assertions.SpoonAssertions.assertThat(" + cast + "actual()." + getter + "())");
+						returnStatement = returning("spoon.testing.assertions.SpoonAssertions", "assertThat", actualGetter);
 						CtInterface<?> ctInterface = map.get((CtInterface<?>) method.getType().getTypeErasure().getTypeDeclaration());
 						CtTypeReference<?> reference = ctInterface.getReference();
 						ctInterface.getFormalCtTypeParameters().forEach(__ -> reference.addActualTypeArgument(factory.createWildcardReference()));
 						yield reference;
 					}
-					codeSnippetStatement = factory.createCodeSnippetStatement("return org.assertj.core.api.Assertions.assertThatObject(actual()." + getter + "())");
+					returnStatement = returning("org.assertj.core.api.Assertions", "assertThatObject", actualGetter);
 					yield factory.createCtTypeReference(ObjectAssert.class)
 						.addActualTypeArgument(method.getType().clone());
 				}
 				case LIST -> {
-					codeSnippetStatement = factory.createCodeSnippetStatement("return org.assertj.core.api.Assertions.assertThat(actual()." + getter + "())");
+					returnStatement = returning("org.assertj.core.api.Assertions", "assertThat", actualGetter);
 					yield factory.createCtTypeReference(ListAssert.class);
 				}
 				case SET -> {
-					codeSnippetStatement = factory.createCodeSnippetStatement("return org.assertj.core.api.Assertions.assertThat(actual()." + getter + "())");
+					returnStatement = returning("org.assertj.core.api.Assertions", "assertThat", actualGetter);
 					CtTypeReference<?> ref = factory.createCtTypeReference(AbstractCollectionAssert.class);
 					CtTypeReference<?> e = method.getType().getActualTypeArguments().get(0);
 					ref.addActualTypeArgument(factory.createWildcardReference());
@@ -367,11 +369,11 @@ public class AssertJCodegen {
 					yield ref;
 				}
 				case MAP -> {
-					codeSnippetStatement = factory.createCodeSnippetStatement("return org.assertj.core.api.Assertions.assertThat(actual()." + getter + "())");
+					returnStatement = returning("org.assertj.core.api.Assertions", "assertThat", actualGetter);
 					yield factory.createCtTypeReference(MapAssert.class);
 				}
 			};
-			specificMethod.setBody(factory.createBlock().addStatement(codeSnippetStatement));
+			specificMethod.setBody(factory.createBlock().addStatement(returnStatement));
 
 			switch (entry.getValue().getContainerKind()) {
 				case LIST, MAP -> {
@@ -385,6 +387,31 @@ public class AssertJCodegen {
 			methods.add(specificMethod);
 		}
 		assertInterface.setMethods(methods);
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	private static CtStatement returning(String className, String methodName, CtExpression<?> argument) {
+		Factory factory = argument.getFactory();
+		CtTypeReference<?> type = factory.Type().createReference(className);
+		CtExecutableReference<?> method = factory.createExecutableReference()
+			.setDeclaringType(type.clone())
+			.setSimpleName(methodName);
+		CtInvocation<?> invocation = factory.createInvocation(factory.createTypeAccess(type.clone()), method, argument);
+		CtReturn aReturn = factory.createReturn();
+		aReturn.setReturnedExpression(invocation);
+		return aReturn;
+	}
+
+	private static CtExpression<?> actualGetter(CtTypeReference<?> declaringType, CtTypeReference<?> returnType, String getterName) {
+		Factory factory = declaringType.getFactory();
+		CtExecutableReference<?> actualCall = factory.createExecutableReference()
+			.setDeclaringType(factory.Type().createReference(SpoonAssert.class))
+			.setSimpleName("actual");
+		CtExecutableReference<?> getterCall = factory.createExecutableReference()
+			.setDeclaringType(returnType)
+			.setSimpleName(getterName);
+		CtInvocation<?> actualInvocation = factory.createInvocation(factory.createThisAccess(declaringType, true), actualCall);
+		return factory.createInvocation(actualInvocation, getterCall);
 	}
 
 	private static CtTypeReference<?> createWildcardedReference(CtType<?> type) {

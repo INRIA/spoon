@@ -103,415 +103,415 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 public final class SpoonAssertions {
-    public static CtProvidedServiceAssert assertThat(CtProvidedService ctProvidedService) {
-        return new CtProvidedServiceAssert(ctProvidedService);
-    }
-
-    public static CtConditionalAssert assertThat(CtConditional<?> ctConditional) {
-        return new CtConditionalAssert(ctConditional);
-    }
-
-    public static CtParameterAssert assertThat(CtParameter<?> ctParameter) {
-        return new CtParameterAssert(ctParameter);
-    }
-
-    public static CtLoopAssert assertThat(CtLoop ctLoop) {
-        return new CtLoopAssert(ctLoop);
-    }
-
-    public static CtWhileAssert assertThat(CtWhile ctWhile) {
-        return new CtWhileAssert(ctWhile);
-    }
-
-    public static CtTypeReferenceAssert assertThat(CtTypeReference<?> ctTypeReference) {
-        return new CtTypeReferenceAssert(ctTypeReference);
-    }
-
-    public static CtEnumValueAssert assertThat(CtEnumValue<?> ctEnumValue) {
-        return new CtEnumValueAssert(ctEnumValue);
-    }
-
-    public static CtCatchVariableReferenceAssert assertThat(CtCatchVariableReference<?> ctCatchVariableReference) {
-        return new CtCatchVariableReferenceAssert(ctCatchVariableReference);
-    }
-
-    public static CtContinueAssert assertThat(CtContinue ctContinue) {
-        return new CtContinueAssert(ctContinue);
-    }
-
-    public static CtInterfaceAssert assertThat(CtInterface<?> ctInterface) {
-        return new CtInterfaceAssert(ctInterface);
-    }
-
-    public static CtElementAssert assertThat(CtElement ctElement) {
-        return new CtElementAssert(ctElement);
-    }
-
-    public static CtAssignmentAssert assertThat(CtAssignment<?, ?> ctAssignment) {
-        return new CtAssignmentAssert(ctAssignment);
-    }
-
-    public static CtBinaryOperatorAssert assertThat(CtBinaryOperator<?> ctBinaryOperator) {
-        return new CtBinaryOperatorAssert(ctBinaryOperator);
-    }
-
-    public static CtForEachAssert assertThat(CtForEach ctForEach) {
-        return new CtForEachAssert(ctForEach);
-    }
-
-    public static CtConstructorAssert assertThat(CtConstructor<?> ctConstructor) {
-        return new CtConstructorAssert(ctConstructor);
-    }
-
-    public static CtModuleRequirementAssert assertThat(CtModuleRequirement ctModuleRequirement) {
-        return new CtModuleRequirementAssert(ctModuleRequirement);
-    }
-
-    public static CtSuperAccessAssert assertThat(CtSuperAccess<?> ctSuperAccess) {
-        return new CtSuperAccessAssert(ctSuperAccess);
-    }
-
-    public static CtTargetedExpressionAssert assertThat(CtTargetedExpression<?, ?> ctTargetedExpression) {
-        return new CtTargetedExpressionAssert(ctTargetedExpression);
-    }
-
-    public static CtAnonymousExecutableAssert assertThat(CtAnonymousExecutable ctAnonymousExecutable) {
-        return new CtAnonymousExecutableAssert(ctAnonymousExecutable);
-    }
-
-    public static CtNamedElementAssert assertThat(CtNamedElement ctNamedElement) {
-        return new CtNamedElementAssert(ctNamedElement);
-    }
-
-    public static CtPackageDeclarationAssert assertThat(CtPackageDeclaration ctPackageDeclaration) {
-        return new CtPackageDeclarationAssert(ctPackageDeclaration);
-    }
-
-    public static CtCommentAssert assertThat(CtComment ctComment) {
-        return new CtCommentAssert(ctComment);
-    }
-
-    public static CtArrayWriteAssert assertThat(CtArrayWrite<?> ctArrayWrite) {
-        return new CtArrayWriteAssert(ctArrayWrite);
-    }
-
-    public static CtFieldAccessAssert assertThat(CtFieldAccess<?> ctFieldAccess) {
-        return new CtFieldAccessAssert(ctFieldAccess);
-    }
-
-    public static CtWildcardReferenceAssert assertThat(CtWildcardReference ctWildcardReference) {
-        return new CtWildcardReferenceAssert(ctWildcardReference);
-    }
-
-    public static CtRecordComponentAssert assertThat(CtRecordComponent ctRecordComponent) {
-        return new CtRecordComponentAssert(ctRecordComponent);
-    }
-
-    public static CtThisAccessAssert assertThat(CtThisAccess<?> ctThisAccess) {
-        return new CtThisAccessAssert(ctThisAccess);
-    }
-
-    public static CtPackageReferenceAssert assertThat(CtPackageReference ctPackageReference) {
-        return new CtPackageReferenceAssert(ctPackageReference);
-    }
-
-    public static CtJavaDocAssert assertThat(CtJavaDoc ctJavaDoc) {
-        return new CtJavaDocAssert(ctJavaDoc);
-    }
-
-    public static CtArrayReadAssert assertThat(CtArrayRead<?> ctArrayRead) {
-        return new CtArrayReadAssert(ctArrayRead);
-    }
-
-    public static CtStatementListAssert assertThat(CtStatementList ctStatementList) {
-        return new CtStatementListAssert(ctStatementList);
-    }
-
-    public static CtVariableWriteAssert assertThat(CtVariableWrite<?> ctVariableWrite) {
-        return new CtVariableWriteAssert(ctVariableWrite);
-    }
-
-    public static CtCompilationUnitAssert assertThat(CtCompilationUnit ctCompilationUnit) {
-        return new CtCompilationUnitAssert(ctCompilationUnit);
-    }
-
-    public static CtParameterReferenceAssert assertThat(CtParameterReference<?> ctParameterReference) {
-        return new CtParameterReferenceAssert(ctParameterReference);
-    }
-
-    public static CtOperatorAssignmentAssert assertThat(CtOperatorAssignment<?, ?> ctOperatorAssignment) {
-        return new CtOperatorAssignmentAssert(ctOperatorAssignment);
-    }
-
-    public static CtAnnotationFieldAccessAssert assertThat(CtAnnotationFieldAccess<?> ctAnnotationFieldAccess) {
-        return new CtAnnotationFieldAccessAssert(ctAnnotationFieldAccess);
-    }
-
-    public static CtAnnotationMethodAssert assertThat(CtAnnotationMethod<?> ctAnnotationMethod) {
-        return new CtAnnotationMethodAssert(ctAnnotationMethod);
-    }
-
-    public static CtUnboundVariableReferenceAssert assertThat(CtUnboundVariableReference<?> ctUnboundVariableReference) {
-        return new CtUnboundVariableReferenceAssert(ctUnboundVariableReference);
-    }
-
-    public static CtArrayAccessAssert assertThat(CtArrayAccess<?, ?> ctArrayAccess) {
-        return new CtArrayAccessAssert(ctArrayAccess);
-    }
-
-    public static CtBlockAssert assertThat(CtBlock<?> ctBlock) {
-        return new CtBlockAssert(ctBlock);
-    }
-
-    public static CtPackageAssert assertThat(CtPackage ctPackage) {
-        return new CtPackageAssert(ctPackage);
-    }
-
-    public static CtTryWithResourceAssert assertThat(CtTryWithResource ctTryWithResource) {
-        return new CtTryWithResourceAssert(ctTryWithResource);
-    }
-
-    public static CtClassAssert assertThat(CtClass<?> ctClass) {
-        return new CtClassAssert(ctClass);
-    }
-
-    public static CtVariableReferenceAssert assertThat(CtVariableReference<?> ctVariableReference) {
-        return new CtVariableReferenceAssert(ctVariableReference);
-    }
-
-    public static CtSwitchAssert assertThat(CtSwitch<?> ctSwitch) {
-        return new CtSwitchAssert(ctSwitch);
-    }
-
-    public static CtYieldStatementAssert assertThat(CtYieldStatement ctYieldStatement) {
-        return new CtYieldStatementAssert(ctYieldStatement);
-    }
-
-    public static CtSynchronizedAssert assertThat(CtSynchronized ctSynchronized) {
-        return new CtSynchronizedAssert(ctSynchronized);
-    }
-
-    public static CtTryAssert assertThat(CtTry ctTry) {
-        return new CtTryAssert(ctTry);
-    }
-
-    public static CtAssertAssert assertThat(CtAssert<?> ctAssert) {
-        return new CtAssertAssert(ctAssert);
-    }
-
-    public static CtImportAssert assertThat(CtImport ctImport) {
-        return new CtImportAssert(ctImport);
-    }
-
-    public static CtInvocationAssert assertThat(CtInvocation<?> ctInvocation) {
-        return new CtInvocationAssert(ctInvocation);
-    }
-
-    public static CtTypeParameterReferenceAssert assertThat(CtTypeParameterReference ctTypeParameterReference) {
-        return new CtTypeParameterReferenceAssert(ctTypeParameterReference);
-    }
-
-    public static CtStatementAssert assertThat(CtStatement ctStatement) {
-        return new CtStatementAssert(ctStatement);
-    }
-
-    public static CtFieldWriteAssert assertThat(CtFieldWrite<?> ctFieldWrite) {
-        return new CtFieldWriteAssert(ctFieldWrite);
-    }
-
-    public static CtUnaryOperatorAssert assertThat(CtUnaryOperator<?> ctUnaryOperator) {
-        return new CtUnaryOperatorAssert(ctUnaryOperator);
-    }
-
-    public static CtVariableReadAssert assertThat(CtVariableRead<?> ctVariableRead) {
-        return new CtVariableReadAssert(ctVariableRead);
-    }
-
-    public static CtExecutableReferenceAssert assertThat(CtExecutableReference<?> ctExecutableReference) {
-        return new CtExecutableReferenceAssert(ctExecutableReference);
-    }
-
-    public static CtCodeSnippetExpressionAssert assertThat(CtCodeSnippetExpression<?> ctCodeSnippetExpression) {
-        return new CtCodeSnippetExpressionAssert(ctCodeSnippetExpression);
-    }
-
-    public static CtForAssert assertThat(CtFor ctFor) {
-        return new CtForAssert(ctFor);
-    }
-
-    public static CtTypeParameterAssert assertThat(CtTypeParameter ctTypeParameter) {
-        return new CtTypeParameterAssert(ctTypeParameter);
-    }
-
-    public static CtExecutableAssert assertThat(CtExecutable<?> ctExecutable) {
-        return new CtExecutableAssert(ctExecutable);
-    }
-
-    public static CtLocalVariableAssert assertThat(CtLocalVariable<?> ctLocalVariable) {
-        return new CtLocalVariableAssert(ctLocalVariable);
-    }
-
-    public static CtModuleAssert assertThat(CtModule ctModule) {
-        return new CtModuleAssert(ctModule);
-    }
-
-    public static CtIfAssert assertThat(CtIf ctIf) {
-        return new CtIfAssert(ctIf);
-    }
-
-    public static CtRecordAssert assertThat(CtRecord ctRecord) {
-        return new CtRecordAssert(ctRecord);
-    }
-
-    public static CtSwitchExpressionAssert assertThat(CtSwitchExpression<?, ?> ctSwitchExpression) {
-        return new CtSwitchExpressionAssert(ctSwitchExpression);
-    }
-
-    public static CtPackageExportAssert assertThat(CtPackageExport ctPackageExport) {
-        return new CtPackageExportAssert(ctPackageExport);
-    }
-
-    public static CtTypeAssert assertThat(CtType<?> ctType) {
-        return new CtTypeAssert(ctType);
-    }
-
-    public static CtCaseAssert assertThat(CtCase<?> ctCase) {
-        return new CtCaseAssert(ctCase);
-    }
-
-    public static CtModuleReferenceAssert assertThat(CtModuleReference ctModuleReference) {
-        return new CtModuleReferenceAssert(ctModuleReference);
-    }
-
-    public static CtCatchAssert assertThat(CtCatch ctCatch) {
-        return new CtCatchAssert(ctCatch);
-    }
-
-    public static CtConstructorCallAssert assertThat(CtConstructorCall<?> ctConstructorCall) {
-        return new CtConstructorCallAssert(ctConstructorCall);
-    }
-
-    public static CtMethodAssert assertThat(CtMethod<?> ctMethod) {
-        return new CtMethodAssert(ctMethod);
-    }
-
-    public static CtArrayTypeReferenceAssert assertThat(CtArrayTypeReference<?> ctArrayTypeReference) {
-        return new CtArrayTypeReferenceAssert(ctArrayTypeReference);
-    }
-
-    public static CtIntersectionTypeReferenceAssert assertThat(CtIntersectionTypeReference<?> ctIntersectionTypeReference) {
-        return new CtIntersectionTypeReferenceAssert(ctIntersectionTypeReference);
-    }
-
-    public static CtUsedServiceAssert assertThat(CtUsedService ctUsedService) {
-        return new CtUsedServiceAssert(ctUsedService);
-    }
-
-    public static CtLambdaAssert assertThat(CtLambda<?> ctLambda) {
-        return new CtLambdaAssert(ctLambda);
-    }
-
-    public static CtTypePatternAssert assertThat(CtTypePattern ctTypePattern) {
-        return new CtTypePatternAssert(ctTypePattern);
-    }
-
-    public static CtTypeAccessAssert assertThat(CtTypeAccess<?> ctTypeAccess) {
-        return new CtTypeAccessAssert(ctTypeAccess);
-    }
-
-    public static CtNewArrayAssert assertThat(CtNewArray<?> ctNewArray) {
-        return new CtNewArrayAssert(ctNewArray);
-    }
-
-    public static CtTextBlockAssert assertThat(CtTextBlock ctTextBlock) {
-        return new CtTextBlockAssert(ctTextBlock);
-    }
-
-    public static CtThrowAssert assertThat(CtThrow ctThrow) {
-        return new CtThrowAssert(ctThrow);
-    }
-
-    public static CtReferenceAssert assertThat(CtReference ctReference) {
-        return new CtReferenceAssert(ctReference);
-    }
-
-    public static CtCodeElementAssert assertThat(CtCodeElement ctCodeElement) {
-        return new CtCodeElementAssert(ctCodeElement);
-    }
-
-    public static CtJavaDocTagAssert assertThat(CtJavaDocTag ctJavaDocTag) {
-        return new CtJavaDocTagAssert(ctJavaDocTag);
-    }
-
-    public static CtLiteralAssert assertThat(CtLiteral<?> ctLiteral) {
-        return new CtLiteralAssert(ctLiteral);
-    }
-
-    public static CtFieldAssert assertThat(CtField<?> ctField) {
-        return new CtFieldAssert(ctField);
-    }
-
-    public static CtReturnAssert assertThat(CtReturn<?> ctReturn) {
-        return new CtReturnAssert(ctReturn);
-    }
-
-    public static CtFieldReadAssert assertThat(CtFieldRead<?> ctFieldRead) {
-        return new CtFieldReadAssert(ctFieldRead);
-    }
-
-    public static CtCodeSnippetStatementAssert assertThat(CtCodeSnippetStatement ctCodeSnippetStatement) {
-        return new CtCodeSnippetStatementAssert(ctCodeSnippetStatement);
-    }
-
-    public static CtDoAssert assertThat(CtDo ctDo) {
-        return new CtDoAssert(ctDo);
-    }
-
-    public static CtAnnotationAssert assertThat(CtAnnotation<?> ctAnnotation) {
-        return new CtAnnotationAssert(ctAnnotation);
-    }
-
-    public static CtVariableAccessAssert assertThat(CtVariableAccess<?> ctVariableAccess) {
-        return new CtVariableAccessAssert(ctVariableAccess);
-    }
-
-    public static CtBreakAssert assertThat(CtBreak ctBreak) {
-        return new CtBreakAssert(ctBreak);
-    }
-
-    public static CtExpressionAssert assertThat(CtExpression<?> ctExpression) {
-        return new CtExpressionAssert(ctExpression);
-    }
-
-    public static CtFieldReferenceAssert assertThat(CtFieldReference<?> ctFieldReference) {
-        return new CtFieldReferenceAssert(ctFieldReference);
-    }
-
-    public static CtEnumAssert assertThat(CtEnum<?> ctEnum) {
-        return new CtEnumAssert(ctEnum);
-    }
-
-    public static CtTypeMemberWildcardImportReferenceAssert assertThat(CtTypeMemberWildcardImportReference ctTypeMemberWildcardImportReference) {
-        return new CtTypeMemberWildcardImportReferenceAssert(ctTypeMemberWildcardImportReference);
-    }
-
-    public static CtNewClassAssert assertThat(CtNewClass<?> ctNewClass) {
-        return new CtNewClassAssert(ctNewClass);
-    }
-
-    public static CtLocalVariableReferenceAssert assertThat(CtLocalVariableReference<?> ctLocalVariableReference) {
-        return new CtLocalVariableReferenceAssert(ctLocalVariableReference);
-    }
-
-    public static CtAnnotationTypeAssert assertThat(CtAnnotationType<?> ctAnnotationType) {
-        return new CtAnnotationTypeAssert(ctAnnotationType);
-    }
-
-    public static CtCatchVariableAssert assertThat(CtCatchVariable<?> ctCatchVariable) {
-        return new CtCatchVariableAssert(ctCatchVariable);
-    }
-
-    public static CtExecutableReferenceExpressionAssert assertThat(CtExecutableReferenceExpression<?, ?> ctExecutableReferenceExpression) {
-        return new CtExecutableReferenceExpressionAssert(ctExecutableReferenceExpression);
-    }
+	public static CtProvidedServiceAssert assertThat(CtProvidedService ctProvidedService) {
+		return new CtProvidedServiceAssert(ctProvidedService);
+	}
+
+	public static CtConditionalAssert assertThat(CtConditional<?> ctConditional) {
+		return new CtConditionalAssert(ctConditional);
+	}
+
+	public static CtParameterAssert assertThat(CtParameter<?> ctParameter) {
+		return new CtParameterAssert(ctParameter);
+	}
+
+	public static CtLoopAssert assertThat(CtLoop ctLoop) {
+		return new CtLoopAssert(ctLoop);
+	}
+
+	public static CtWhileAssert assertThat(CtWhile ctWhile) {
+		return new CtWhileAssert(ctWhile);
+	}
+
+	public static CtTypeReferenceAssert assertThat(CtTypeReference<?> ctTypeReference) {
+		return new CtTypeReferenceAssert(ctTypeReference);
+	}
+
+	public static CtEnumValueAssert assertThat(CtEnumValue<?> ctEnumValue) {
+		return new CtEnumValueAssert(ctEnumValue);
+	}
+
+	public static CtCatchVariableReferenceAssert assertThat(CtCatchVariableReference<?> ctCatchVariableReference) {
+		return new CtCatchVariableReferenceAssert(ctCatchVariableReference);
+	}
+
+	public static CtContinueAssert assertThat(CtContinue ctContinue) {
+		return new CtContinueAssert(ctContinue);
+	}
+
+	public static CtInterfaceAssert assertThat(CtInterface<?> ctInterface) {
+		return new CtInterfaceAssert(ctInterface);
+	}
+
+	public static CtElementAssert assertThat(CtElement ctElement) {
+		return new CtElementAssert(ctElement);
+	}
+
+	public static CtAssignmentAssert assertThat(CtAssignment<?, ?> ctAssignment) {
+		return new CtAssignmentAssert(ctAssignment);
+	}
+
+	public static CtBinaryOperatorAssert assertThat(CtBinaryOperator<?> ctBinaryOperator) {
+		return new CtBinaryOperatorAssert(ctBinaryOperator);
+	}
+
+	public static CtForEachAssert assertThat(CtForEach ctForEach) {
+		return new CtForEachAssert(ctForEach);
+	}
+
+	public static CtConstructorAssert assertThat(CtConstructor<?> ctConstructor) {
+		return new CtConstructorAssert(ctConstructor);
+	}
+
+	public static CtModuleRequirementAssert assertThat(CtModuleRequirement ctModuleRequirement) {
+		return new CtModuleRequirementAssert(ctModuleRequirement);
+	}
+
+	public static CtSuperAccessAssert assertThat(CtSuperAccess<?> ctSuperAccess) {
+		return new CtSuperAccessAssert(ctSuperAccess);
+	}
+
+	public static CtTargetedExpressionAssert assertThat(CtTargetedExpression<?, ?> ctTargetedExpression) {
+		return new CtTargetedExpressionAssert(ctTargetedExpression);
+	}
+
+	public static CtAnonymousExecutableAssert assertThat(CtAnonymousExecutable ctAnonymousExecutable) {
+		return new CtAnonymousExecutableAssert(ctAnonymousExecutable);
+	}
+
+	public static CtNamedElementAssert assertThat(CtNamedElement ctNamedElement) {
+		return new CtNamedElementAssert(ctNamedElement);
+	}
+
+	public static CtPackageDeclarationAssert assertThat(CtPackageDeclaration ctPackageDeclaration) {
+		return new CtPackageDeclarationAssert(ctPackageDeclaration);
+	}
+
+	public static CtCommentAssert assertThat(CtComment ctComment) {
+		return new CtCommentAssert(ctComment);
+	}
+
+	public static CtArrayWriteAssert assertThat(CtArrayWrite<?> ctArrayWrite) {
+		return new CtArrayWriteAssert(ctArrayWrite);
+	}
+
+	public static CtFieldAccessAssert assertThat(CtFieldAccess<?> ctFieldAccess) {
+		return new CtFieldAccessAssert(ctFieldAccess);
+	}
+
+	public static CtWildcardReferenceAssert assertThat(CtWildcardReference ctWildcardReference) {
+		return new CtWildcardReferenceAssert(ctWildcardReference);
+	}
+
+	public static CtRecordComponentAssert assertThat(CtRecordComponent ctRecordComponent) {
+		return new CtRecordComponentAssert(ctRecordComponent);
+	}
+
+	public static CtThisAccessAssert assertThat(CtThisAccess<?> ctThisAccess) {
+		return new CtThisAccessAssert(ctThisAccess);
+	}
+
+	public static CtPackageReferenceAssert assertThat(CtPackageReference ctPackageReference) {
+		return new CtPackageReferenceAssert(ctPackageReference);
+	}
+
+	public static CtJavaDocAssert assertThat(CtJavaDoc ctJavaDoc) {
+		return new CtJavaDocAssert(ctJavaDoc);
+	}
+
+	public static CtArrayReadAssert assertThat(CtArrayRead<?> ctArrayRead) {
+		return new CtArrayReadAssert(ctArrayRead);
+	}
+
+	public static CtStatementListAssert assertThat(CtStatementList ctStatementList) {
+		return new CtStatementListAssert(ctStatementList);
+	}
+
+	public static CtVariableWriteAssert assertThat(CtVariableWrite<?> ctVariableWrite) {
+		return new CtVariableWriteAssert(ctVariableWrite);
+	}
+
+	public static CtCompilationUnitAssert assertThat(CtCompilationUnit ctCompilationUnit) {
+		return new CtCompilationUnitAssert(ctCompilationUnit);
+	}
+
+	public static CtParameterReferenceAssert assertThat(CtParameterReference<?> ctParameterReference) {
+		return new CtParameterReferenceAssert(ctParameterReference);
+	}
+
+	public static CtOperatorAssignmentAssert assertThat(CtOperatorAssignment<?, ?> ctOperatorAssignment) {
+		return new CtOperatorAssignmentAssert(ctOperatorAssignment);
+	}
+
+	public static CtAnnotationFieldAccessAssert assertThat(CtAnnotationFieldAccess<?> ctAnnotationFieldAccess) {
+		return new CtAnnotationFieldAccessAssert(ctAnnotationFieldAccess);
+	}
+
+	public static CtAnnotationMethodAssert assertThat(CtAnnotationMethod<?> ctAnnotationMethod) {
+		return new CtAnnotationMethodAssert(ctAnnotationMethod);
+	}
+
+	public static CtUnboundVariableReferenceAssert assertThat(CtUnboundVariableReference<?> ctUnboundVariableReference) {
+		return new CtUnboundVariableReferenceAssert(ctUnboundVariableReference);
+	}
+
+	public static CtArrayAccessAssert assertThat(CtArrayAccess<?, ?> ctArrayAccess) {
+		return new CtArrayAccessAssert(ctArrayAccess);
+	}
+
+	public static CtBlockAssert assertThat(CtBlock<?> ctBlock) {
+		return new CtBlockAssert(ctBlock);
+	}
+
+	public static CtPackageAssert assertThat(CtPackage ctPackage) {
+		return new CtPackageAssert(ctPackage);
+	}
+
+	public static CtTryWithResourceAssert assertThat(CtTryWithResource ctTryWithResource) {
+		return new CtTryWithResourceAssert(ctTryWithResource);
+	}
+
+	public static CtClassAssert assertThat(CtClass<?> ctClass) {
+		return new CtClassAssert(ctClass);
+	}
+
+	public static CtVariableReferenceAssert assertThat(CtVariableReference<?> ctVariableReference) {
+		return new CtVariableReferenceAssert(ctVariableReference);
+	}
+
+	public static CtSwitchAssert assertThat(CtSwitch<?> ctSwitch) {
+		return new CtSwitchAssert(ctSwitch);
+	}
+
+	public static CtYieldStatementAssert assertThat(CtYieldStatement ctYieldStatement) {
+		return new CtYieldStatementAssert(ctYieldStatement);
+	}
+
+	public static CtSynchronizedAssert assertThat(CtSynchronized ctSynchronized) {
+		return new CtSynchronizedAssert(ctSynchronized);
+	}
+
+	public static CtTryAssert assertThat(CtTry ctTry) {
+		return new CtTryAssert(ctTry);
+	}
+
+	public static CtAssertAssert assertThat(CtAssert<?> ctAssert) {
+		return new CtAssertAssert(ctAssert);
+	}
+
+	public static CtImportAssert assertThat(CtImport ctImport) {
+		return new CtImportAssert(ctImport);
+	}
+
+	public static CtInvocationAssert assertThat(CtInvocation<?> ctInvocation) {
+		return new CtInvocationAssert(ctInvocation);
+	}
+
+	public static CtTypeParameterReferenceAssert assertThat(CtTypeParameterReference ctTypeParameterReference) {
+		return new CtTypeParameterReferenceAssert(ctTypeParameterReference);
+	}
+
+	public static CtStatementAssert assertThat(CtStatement ctStatement) {
+		return new CtStatementAssert(ctStatement);
+	}
+
+	public static CtFieldWriteAssert assertThat(CtFieldWrite<?> ctFieldWrite) {
+		return new CtFieldWriteAssert(ctFieldWrite);
+	}
+
+	public static CtUnaryOperatorAssert assertThat(CtUnaryOperator<?> ctUnaryOperator) {
+		return new CtUnaryOperatorAssert(ctUnaryOperator);
+	}
+
+	public static CtVariableReadAssert assertThat(CtVariableRead<?> ctVariableRead) {
+		return new CtVariableReadAssert(ctVariableRead);
+	}
+
+	public static CtExecutableReferenceAssert assertThat(CtExecutableReference<?> ctExecutableReference) {
+		return new CtExecutableReferenceAssert(ctExecutableReference);
+	}
+
+	public static CtCodeSnippetExpressionAssert assertThat(CtCodeSnippetExpression<?> ctCodeSnippetExpression) {
+		return new CtCodeSnippetExpressionAssert(ctCodeSnippetExpression);
+	}
+
+	public static CtForAssert assertThat(CtFor ctFor) {
+		return new CtForAssert(ctFor);
+	}
+
+	public static CtTypeParameterAssert assertThat(CtTypeParameter ctTypeParameter) {
+		return new CtTypeParameterAssert(ctTypeParameter);
+	}
+
+	public static CtExecutableAssert assertThat(CtExecutable<?> ctExecutable) {
+		return new CtExecutableAssert(ctExecutable);
+	}
+
+	public static CtLocalVariableAssert assertThat(CtLocalVariable<?> ctLocalVariable) {
+		return new CtLocalVariableAssert(ctLocalVariable);
+	}
+
+	public static CtModuleAssert assertThat(CtModule ctModule) {
+		return new CtModuleAssert(ctModule);
+	}
+
+	public static CtIfAssert assertThat(CtIf ctIf) {
+		return new CtIfAssert(ctIf);
+	}
+
+	public static CtRecordAssert assertThat(CtRecord ctRecord) {
+		return new CtRecordAssert(ctRecord);
+	}
+
+	public static CtSwitchExpressionAssert assertThat(CtSwitchExpression<?, ?> ctSwitchExpression) {
+		return new CtSwitchExpressionAssert(ctSwitchExpression);
+	}
+
+	public static CtPackageExportAssert assertThat(CtPackageExport ctPackageExport) {
+		return new CtPackageExportAssert(ctPackageExport);
+	}
+
+	public static CtTypeAssert assertThat(CtType<?> ctType) {
+		return new CtTypeAssert(ctType);
+	}
+
+	public static CtCaseAssert assertThat(CtCase<?> ctCase) {
+		return new CtCaseAssert(ctCase);
+	}
+
+	public static CtModuleReferenceAssert assertThat(CtModuleReference ctModuleReference) {
+		return new CtModuleReferenceAssert(ctModuleReference);
+	}
+
+	public static CtCatchAssert assertThat(CtCatch ctCatch) {
+		return new CtCatchAssert(ctCatch);
+	}
+
+	public static CtConstructorCallAssert assertThat(CtConstructorCall<?> ctConstructorCall) {
+		return new CtConstructorCallAssert(ctConstructorCall);
+	}
+
+	public static CtMethodAssert assertThat(CtMethod<?> ctMethod) {
+		return new CtMethodAssert(ctMethod);
+	}
+
+	public static CtArrayTypeReferenceAssert assertThat(CtArrayTypeReference<?> ctArrayTypeReference) {
+		return new CtArrayTypeReferenceAssert(ctArrayTypeReference);
+	}
+
+	public static CtIntersectionTypeReferenceAssert assertThat(CtIntersectionTypeReference<?> ctIntersectionTypeReference) {
+		return new CtIntersectionTypeReferenceAssert(ctIntersectionTypeReference);
+	}
+
+	public static CtUsedServiceAssert assertThat(CtUsedService ctUsedService) {
+		return new CtUsedServiceAssert(ctUsedService);
+	}
+
+	public static CtLambdaAssert assertThat(CtLambda<?> ctLambda) {
+		return new CtLambdaAssert(ctLambda);
+	}
+
+	public static CtTypePatternAssert assertThat(CtTypePattern ctTypePattern) {
+		return new CtTypePatternAssert(ctTypePattern);
+	}
+
+	public static CtTypeAccessAssert assertThat(CtTypeAccess<?> ctTypeAccess) {
+		return new CtTypeAccessAssert(ctTypeAccess);
+	}
+
+	public static CtNewArrayAssert assertThat(CtNewArray<?> ctNewArray) {
+		return new CtNewArrayAssert(ctNewArray);
+	}
+
+	public static CtTextBlockAssert assertThat(CtTextBlock ctTextBlock) {
+		return new CtTextBlockAssert(ctTextBlock);
+	}
+
+	public static CtThrowAssert assertThat(CtThrow ctThrow) {
+		return new CtThrowAssert(ctThrow);
+	}
+
+	public static CtReferenceAssert assertThat(CtReference ctReference) {
+		return new CtReferenceAssert(ctReference);
+	}
+
+	public static CtCodeElementAssert assertThat(CtCodeElement ctCodeElement) {
+		return new CtCodeElementAssert(ctCodeElement);
+	}
+
+	public static CtJavaDocTagAssert assertThat(CtJavaDocTag ctJavaDocTag) {
+		return new CtJavaDocTagAssert(ctJavaDocTag);
+	}
+
+	public static CtLiteralAssert assertThat(CtLiteral<?> ctLiteral) {
+		return new CtLiteralAssert(ctLiteral);
+	}
+
+	public static CtFieldAssert assertThat(CtField<?> ctField) {
+		return new CtFieldAssert(ctField);
+	}
+
+	public static CtReturnAssert assertThat(CtReturn<?> ctReturn) {
+		return new CtReturnAssert(ctReturn);
+	}
+
+	public static CtFieldReadAssert assertThat(CtFieldRead<?> ctFieldRead) {
+		return new CtFieldReadAssert(ctFieldRead);
+	}
+
+	public static CtCodeSnippetStatementAssert assertThat(CtCodeSnippetStatement ctCodeSnippetStatement) {
+		return new CtCodeSnippetStatementAssert(ctCodeSnippetStatement);
+	}
+
+	public static CtDoAssert assertThat(CtDo ctDo) {
+		return new CtDoAssert(ctDo);
+	}
+
+	public static CtAnnotationAssert assertThat(CtAnnotation<?> ctAnnotation) {
+		return new CtAnnotationAssert(ctAnnotation);
+	}
+
+	public static CtVariableAccessAssert assertThat(CtVariableAccess<?> ctVariableAccess) {
+		return new CtVariableAccessAssert(ctVariableAccess);
+	}
+
+	public static CtBreakAssert assertThat(CtBreak ctBreak) {
+		return new CtBreakAssert(ctBreak);
+	}
+
+	public static CtExpressionAssert assertThat(CtExpression<?> ctExpression) {
+		return new CtExpressionAssert(ctExpression);
+	}
+
+	public static CtFieldReferenceAssert assertThat(CtFieldReference<?> ctFieldReference) {
+		return new CtFieldReferenceAssert(ctFieldReference);
+	}
+
+	public static CtEnumAssert assertThat(CtEnum<?> ctEnum) {
+		return new CtEnumAssert(ctEnum);
+	}
+
+	public static CtTypeMemberWildcardImportReferenceAssert assertThat(CtTypeMemberWildcardImportReference ctTypeMemberWildcardImportReference) {
+		return new CtTypeMemberWildcardImportReferenceAssert(ctTypeMemberWildcardImportReference);
+	}
+
+	public static CtNewClassAssert assertThat(CtNewClass<?> ctNewClass) {
+		return new CtNewClassAssert(ctNewClass);
+	}
+
+	public static CtLocalVariableReferenceAssert assertThat(CtLocalVariableReference<?> ctLocalVariableReference) {
+		return new CtLocalVariableReferenceAssert(ctLocalVariableReference);
+	}
+
+	public static CtAnnotationTypeAssert assertThat(CtAnnotationType<?> ctAnnotationType) {
+		return new CtAnnotationTypeAssert(ctAnnotationType);
+	}
+
+	public static CtCatchVariableAssert assertThat(CtCatchVariable<?> ctCatchVariable) {
+		return new CtCatchVariableAssert(ctCatchVariable);
+	}
+
+	public static CtExecutableReferenceExpressionAssert assertThat(CtExecutableReferenceExpression<?, ?> ctExecutableReferenceExpression) {
+		return new CtExecutableReferenceExpressionAssert(ctExecutableReferenceExpression);
+	}
 }
