@@ -106,6 +106,20 @@ jobs:
       - name: Trigger extra remote tasks
         if: github.repository == 'INRIA/spoon' && github.event_name == 'pull_request'
         run: nix develop ${{ env.NIX_OPTIONS }} .#extraChecks --command extra-remote
+
+  javadoc:
+    runs-on: ubuntu-latest
+    name: Javadoc quality
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+        with:
+          fetch-depth: 0
+      - name: Setup env
+        uses: ./.github/actions/setup-tests
+
+      - name: Time nix setup
+        run: nix develop ${{ env.NIX_OPTIONS }} .#extraChecks --command true
       - name: Run Javadoc quality check
         run: nix develop ${{ env.NIX_OPTIONS }} .#extraChecks --command javadoc-quality
 
