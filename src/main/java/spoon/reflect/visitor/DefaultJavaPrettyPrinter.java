@@ -629,7 +629,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if (caseExpression instanceof CtFieldAccess<E> fieldAccess) {
 					final CtFieldReference variable = ((CtFieldAccess) caseExpression).getVariable();
 					// In noclasspath mode, we don't have always the type of the declaring type.
-					if (fieldAccess.getTarget().isImplicit()
+					if ((fieldAccess.getTarget().isImplicit() || env.getComplianceLevel() < 21)
 							&& variable.getType() != null
 							&& variable.getDeclaringType() != null
 							&& variable.getType().getQualifiedName().equals(variable.getDeclaringType().getQualifiedName())) {
