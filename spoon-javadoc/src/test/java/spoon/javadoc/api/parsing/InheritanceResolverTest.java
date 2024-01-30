@@ -20,12 +20,14 @@ class InheritanceResolverTest {
 
 	@Test
 	void testInheritAll() {
+		// contract: If no javadoc is specified, everything is inherited
 		var view = inheritTestFromSuper("");
 		assertEquals(view.actual().getElements(), view.ref().getElements());
 	}
 
 	@Test
 	void testInheritDocBody() {
+		// contract: An inheritDoc tag is inherited (as is the rest implicitly)
 		var view = inheritTestFromSuper("""
 			/**
 			  * {@inheritDoc}
@@ -35,6 +37,7 @@ class InheritanceResolverTest {
 
 	@Test
 	void testInheritDocParam() {
+		// contract: An inheritDoc tag is inherited (as is the rest implicitly)
 		var view = inheritTestFromSuper("""
 			/**
 			  * @param a {@inheritDoc}
@@ -44,6 +47,7 @@ class InheritanceResolverTest {
 
 	@Test
 	void testInheritDocThrows() {
+		// contract: An inheritDoc tag is inherited (as is the rest implicitly)
 		var view = inheritTestFromSuper("""
 			/**
 			  * @throws IOException {@inheritDoc}
@@ -53,6 +57,7 @@ class InheritanceResolverTest {
 
 	@Test
 	void testInheritDocException() {
+		// contract: An inheritDoc tag is inherited for throws/exception (as is the rest implicitly)
 		var view = inheritTestFromSuper("""
 			/**
 			  * @exception IOException {@inheritDoc}
@@ -62,6 +67,7 @@ class InheritanceResolverTest {
 
 	@Test
 	void testInheritMultiple() {
+		// contract: Inheritance walks the super interfaces and extends in-order
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(17);
 		launcher.addInputResource("src/test/java/");
