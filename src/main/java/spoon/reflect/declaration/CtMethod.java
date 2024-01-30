@@ -61,5 +61,4 @@ public interface CtMethod<T> extends CtExecutable<T>, CtFormalTypeDeclarer, CtSh
 	 * If you want to rename the new method, use {@link Refactoring#changeMethodName(CtMethod, String)} (and not {@link #setSimpleName(String)}, which does not update the references)
 	 */
 	CtMethod<?> copyMethod();
-
 }

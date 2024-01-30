@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.meta.impl;
 import java.lang.annotation.Annotation;
@@ -127,7 +127,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getVariable())));
+			return ((U) (Object) (castTarget(element).getVariable()));
 		}
 
 		@Override
@@ -144,7 +144,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getVariable())));
+			return ((U) (Object) (castTarget(element).getVariable()));
 		}
 
 		@Override
@@ -161,7 +161,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getValue())));
+			return ((U) (Object) (castTarget(element).getValue()));
 		}
 
 		@Override
@@ -178,7 +178,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getValue())));
+			return ((U) (Object) (castTarget(element).getValue()));
 		}
 
 		@Override
@@ -195,7 +195,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getEnumValues())));
+			return ((U) (Object) (castTarget(element).getEnumValues()));
 		}
 
 		@Override
@@ -212,7 +212,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getValues())));
+			return ((U) (Object) (castTarget(element).getValues()));
 		}
 
 		@Override
@@ -229,7 +229,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getTypeReference())));
+			return ((U) (Object) (castTarget(element).getTypeReference()));
 		}
 
 		@Override
@@ -246,7 +246,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getFormalCtTypeParameters())));
+			return ((U) (Object) (castTarget(element).getFormalCtTypeParameters()));
 		}
 
 		@Override
@@ -263,7 +263,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getTypeMembers())));
+			return ((U) (Object) (castTarget(element).getTypeMembers()));
 		}
 
 		@Override
@@ -280,7 +280,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getActualTypeArguments())));
+			return ((U) (Object) (castTarget(element).getActualTypeArguments()));
 		}
 
 		@Override
@@ -297,7 +297,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getType())));
+			return ((U) (Object) (castTarget(element).getType()));
 		}
 
 		@Override
@@ -314,7 +314,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getType())));
+			return ((U) (Object) (castTarget(element).getType()));
 		}
 
 		@Override
@@ -331,7 +331,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getType())));
+			return ((U) (Object) (castTarget(element).getType()));
 		}
 
 		@Override
@@ -348,7 +348,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getComponentType())));
+			return ((U) (Object) (castTarget(element).getComponentType()));
 		}
 
 		@Override
@@ -365,7 +365,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getResources())));
+			return ((U) (Object) (castTarget(element).getResources()));
 		}
 
 		@Override
@@ -382,7 +382,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getThrownTypes())));
+			return ((U) (Object) (castTarget(element).getThrownTypes()));
 		}
 
 		@Override
@@ -399,7 +399,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getThenStatement())));
+			return ((U) (Object) (castTarget(element).getThenStatement()));
 		}
 
 		@Override
@@ -416,7 +416,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getThenExpression())));
+			return ((U) (Object) (castTarget(element).getThenExpression()));
 		}
 
 		@Override
@@ -433,7 +433,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getTargetLabel())));
+			return ((U) (Object) (castTarget(element).getTargetLabel()));
 		}
 
 		@Override
@@ -450,7 +450,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getTarget())));
+			return ((U) (Object) (castTarget(element).getTarget()));
 		}
 
 		@Override
@@ -467,7 +467,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getSuperclass())));
+			return ((U) (Object) (castTarget(element).getSuperclass()));
 		}
 	}
 
@@ -479,7 +479,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getSuperclass())));
+			return ((U) (Object) (castTarget(element).getSuperclass()));
 		}
 
 		@Override
@@ -496,7 +496,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getPackages())));
+			return ((U) (Object) (castTarget(element).getPackages()));
 		}
 
 		@Override
@@ -513,7 +513,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getRootPackage())));
+			return ((U) (Object) (castTarget(element).getRootPackage()));
 		}
 
 		@Override
@@ -530,7 +530,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getStatements())));
+			return ((U) (Object) (castTarget(element).getStatements()));
 		}
 
 		@Override
@@ -547,7 +547,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getValue())));
+			return ((U) (Object) (castTarget(element).getValue()));
 		}
 
 		@Override
@@ -564,7 +564,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getServiceType())));
+			return ((U) (Object) (castTarget(element).getServiceType()));
 		}
 
 		@Override
@@ -581,7 +581,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getServiceType())));
+			return ((U) (Object) (castTarget(element).getServiceType()));
 		}
 
 		@Override
@@ -598,7 +598,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getUsedServices())));
+			return ((U) (Object) (castTarget(element).getUsedServices()));
 		}
 
 		@Override
@@ -615,7 +615,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getRightHandOperand())));
+			return ((U) (Object) (castTarget(element).getRightHandOperand()));
 		}
 
 		@Override
@@ -632,7 +632,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getRequiredModules())));
+			return ((U) (Object) (castTarget(element).getRequiredModules()));
 		}
 
 		@Override
@@ -649,7 +649,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getRecordComponents())));
+			return ((U) (Object) (castTarget(element).getRecordComponents()));
 		}
 
 		@Override
@@ -666,7 +666,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getProvidedServices())));
+			return ((U) (Object) (castTarget(element).getProvidedServices()));
 		}
 
 		@Override
@@ -683,7 +683,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getPosition())));
+			return ((U) (Object) (castTarget(element).getPosition()));
 		}
 
 		@Override
@@ -700,7 +700,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getPermittedTypes())));
+			return ((U) (Object) (castTarget(element).getPermittedTypes()));
 		}
 
 		@Override
@@ -717,7 +717,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getParameters())));
+			return ((U) (Object) (castTarget(element).getParameters()));
 		}
 
 		@Override
@@ -734,7 +734,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getParameter())));
+			return ((U) (Object) (castTarget(element).getParameter()));
 		}
 
 		@Override
@@ -751,7 +751,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getPackage())));
+			return ((U) (Object) (castTarget(element).getPackage()));
 		}
 
 		@Override
@@ -768,7 +768,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getPackageReference())));
+			return ((U) (Object) (castTarget(element).getPackageReference()));
 		}
 
 		@Override
@@ -785,7 +785,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getReference())));
+			return ((U) (Object) (castTarget(element).getReference()));
 		}
 
 		@Override
@@ -802,7 +802,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getPackageDeclaration())));
+			return ((U) (Object) (castTarget(element).getPackageDeclaration()));
 		}
 
 		@Override
@@ -819,7 +819,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getKind())));
+			return ((U) (Object) (castTarget(element).getKind()));
 		}
 
 		@Override
@@ -836,7 +836,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getKind())));
+			return ((U) (Object) (castTarget(element).getKind()));
 		}
 
 		@Override
@@ -853,7 +853,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getKind())));
+			return ((U) (Object) (castTarget(element).getKind()));
 		}
 
 		@Override
@@ -870,7 +870,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isOpenedPackage())));
+			return ((U) (Object) (castTarget(element).isOpenedPackage()));
 		}
 
 		@Override
@@ -887,7 +887,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getOpenedPackages())));
+			return ((U) (Object) (castTarget(element).getOpenedPackages()));
 		}
 
 		@Override
@@ -904,7 +904,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getNestedTypes())));
+			return ((U) (Object) (castTarget(element).getNestedTypes()));
 		}
 
 		@Override
@@ -921,7 +921,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getAnonymousClass())));
+			return ((U) (Object) (castTarget(element).getAnonymousClass()));
 		}
 
 		@Override
@@ -938,7 +938,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getSimpleName())));
+			return ((U) (Object) (castTarget(element).getSimpleName()));
 		}
 
 		@Override
@@ -955,7 +955,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getSimpleName())));
+			return ((U) (Object) (castTarget(element).getSimpleName()));
 		}
 
 		@Override
@@ -972,7 +972,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getMultiTypes())));
+			return ((U) (Object) (castTarget(element).getMultiTypes()));
 		}
 
 		@Override
@@ -989,7 +989,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getTargetExport())));
+			return ((U) (Object) (castTarget(element).getTargetExport()));
 		}
 
 		@Override
@@ -1006,7 +1006,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getModuleReference())));
+			return ((U) (Object) (castTarget(element).getModuleReference()));
 		}
 
 		@Override
@@ -1023,7 +1023,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getModuleDirectives())));
+			return ((U) (Object) (castTarget(element).getModuleDirectives()));
 		}
 
 		@Override
@@ -1040,7 +1040,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getModifiers())));
+			return ((U) (Object) (castTarget(element).getModifiers()));
 		}
 	}
 
@@ -1052,7 +1052,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getRequiresModifiers())));
+			return ((U) (Object) (castTarget(element).getRequiresModifiers()));
 		}
 
 		@Override
@@ -1069,7 +1069,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isOpenModule())));
+			return ((U) (Object) (castTarget(element).isOpenModule()));
 		}
 
 		@Override
@@ -1086,7 +1086,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getModifiers())));
+			return ((U) (Object) (castTarget(element).getModifiers()));
 		}
 
 		@Override
@@ -1103,7 +1103,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getMethods())));
+			return ((U) (Object) (castTarget(element).getMethods()));
 		}
 
 		@Override
@@ -1120,7 +1120,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getBase())));
+			return ((U) (Object) (castTarget(element).getBase()));
 		}
 
 		@Override
@@ -1137,7 +1137,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getLeftHandOperand())));
+			return ((U) (Object) (castTarget(element).getLeftHandOperand()));
 		}
 
 		@Override
@@ -1154,7 +1154,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getLabel())));
+			return ((U) (Object) (castTarget(element).getLabel()));
 		}
 
 		@Override
@@ -1171,7 +1171,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getParam())));
+			return ((U) (Object) (castTarget(element).getParam()));
 		}
 
 		@Override
@@ -1188,7 +1188,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isVarArgs())));
+			return ((U) (Object) (castTarget(element).isVarArgs()));
 		}
 
 		@Override
@@ -1205,7 +1205,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isUpper())));
+			return ((U) (Object) (castTarget(element).isUpper()));
 		}
 
 		@Override
@@ -1222,7 +1222,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isStatic())));
+			return ((U) (Object) (castTarget(element).isStatic()));
 		}
 
 		@Override
@@ -1239,7 +1239,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isStatic())));
+			return ((U) (Object) (castTarget(element).isStatic()));
 		}
 
 		@Override
@@ -1256,7 +1256,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isShadow())));
+			return ((U) (Object) (castTarget(element).isShadow()));
 		}
 
 		@Override
@@ -1273,7 +1273,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isInferred())));
+			return ((U) (Object) (castTarget(element).isInferred()));
 		}
 
 		@Override
@@ -1290,7 +1290,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isInferred())));
+			return ((U) (Object) (castTarget(element).isInferred()));
 		}
 
 		@Override
@@ -1307,7 +1307,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isImplicit())));
+			return ((U) (Object) (castTarget(element).isImplicit()));
 		}
 
 		@Override
@@ -1324,7 +1324,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isFinal())));
+			return ((U) (Object) (castTarget(element).isFinal()));
 		}
 
 		@Override
@@ -1341,7 +1341,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isDefaultMethod())));
+			return ((U) (Object) (castTarget(element).isDefaultMethod()));
 		}
 
 		@Override
@@ -1358,7 +1358,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getSuperInterfaces())));
+			return ((U) (Object) (castTarget(element).getSuperInterfaces()));
 		}
 	}
 
@@ -1370,7 +1370,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getSuperInterfaces())));
+			return ((U) (Object) (castTarget(element).getSuperInterfaces()));
 		}
 
 		@Override
@@ -1387,7 +1387,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getReference())));
+			return ((U) (Object) (castTarget(element).getReference()));
 		}
 
 		@Override
@@ -1404,7 +1404,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getImplementationTypes())));
+			return ((U) (Object) (castTarget(element).getImplementationTypes()));
 		}
 
 		@Override
@@ -1421,7 +1421,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getForUpdate())));
+			return ((U) (Object) (castTarget(element).getForUpdate()));
 		}
 
 		@Override
@@ -1438,7 +1438,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getForInit())));
+			return ((U) (Object) (castTarget(element).getForInit()));
 		}
 
 		@Override
@@ -1455,7 +1455,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getVariable())));
+			return ((U) (Object) (castTarget(element).getVariable()));
 		}
 
 		@Override
@@ -1472,7 +1472,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getFinalizer())));
+			return ((U) (Object) (castTarget(element).getFinalizer()));
 		}
 
 		@Override
@@ -1489,7 +1489,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getFields())));
+			return ((U) (Object) (castTarget(element).getFields()));
 		}
 
 		@Override
@@ -1506,7 +1506,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getExpression())));
+			return ((U) (Object) (castTarget(element).getExpression()));
 		}
 
 		@Override
@@ -1523,7 +1523,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getLoopingExpression())));
+			return ((U) (Object) (castTarget(element).getLoopingExpression()));
 		}
 
 		@Override
@@ -1540,7 +1540,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getOperand())));
+			return ((U) (Object) (castTarget(element).getOperand()));
 		}
 
 		@Override
@@ -1557,7 +1557,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getThrownExpression())));
+			return ((U) (Object) (castTarget(element).getThrownExpression()));
 		}
 
 		@Override
@@ -1574,7 +1574,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getExpression())));
+			return ((U) (Object) (castTarget(element).getExpression()));
 		}
 
 		@Override
@@ -1591,7 +1591,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getReturnedExpression())));
+			return ((U) (Object) (castTarget(element).getReturnedExpression()));
 		}
 
 		@Override
@@ -1608,7 +1608,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getElements())));
+			return ((U) (Object) (castTarget(element).getElements()));
 		}
 
 		@Override
@@ -1625,7 +1625,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getExpression())));
+			return ((U) (Object) (castTarget(element).getExpression()));
 		}
 
 		@Override
@@ -1642,7 +1642,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getExpression())));
+			return ((U) (Object) (castTarget(element).getExpression()));
 		}
 
 		@Override
@@ -1659,7 +1659,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getExpression())));
+			return ((U) (Object) (castTarget(element).getExpression()));
 		}
 
 		@Override
@@ -1676,7 +1676,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getLoopingExpression())));
+			return ((U) (Object) (castTarget(element).getLoopingExpression()));
 		}
 
 		@Override
@@ -1693,7 +1693,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getCaseExpressions())));
+			return ((U) (Object) (castTarget(element).getCaseExpressions()));
 		}
 
 		@Override
@@ -1710,7 +1710,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getExpression())));
+			return ((U) (Object) (castTarget(element).getExpression()));
 		}
 
 		@Override
@@ -1727,7 +1727,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getIndexExpression())));
+			return ((U) (Object) (castTarget(element).getIndexExpression()));
 		}
 
 		@Override
@@ -1744,7 +1744,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getSelector())));
+			return ((U) (Object) (castTarget(element).getSelector()));
 		}
 
 		@Override
@@ -1761,7 +1761,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getExportedPackages())));
+			return ((U) (Object) (castTarget(element).getExportedPackages()));
 		}
 
 		@Override
@@ -1778,7 +1778,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getExecutable())));
+			return ((U) (Object) (castTarget(element).getExecutable()));
 		}
 
 		@Override
@@ -1795,7 +1795,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getExecutable())));
+			return ((U) (Object) (castTarget(element).getExecutable()));
 		}
 
 		@Override
@@ -1812,7 +1812,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getExtendedModifiers())));
+			return ((U) (Object) (castTarget(element).getExtendedModifiers()));
 		}
 	}
 
@@ -1824,7 +1824,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getElseStatement())));
+			return ((U) (Object) (castTarget(element).getElseStatement()));
 		}
 
 		@Override
@@ -1841,7 +1841,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getElseExpression())));
+			return ((U) (Object) (castTarget(element).getElseExpression()));
 		}
 
 		@Override
@@ -1858,7 +1858,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getRealName())));
+			return ((U) (Object) (castTarget(element).getRealName()));
 		}
 
 		@Override
@@ -1875,7 +1875,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getType())));
+			return ((U) (Object) (castTarget(element).getType()));
 		}
 
 		@Override
@@ -1892,7 +1892,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDimensionExpressions())));
+			return ((U) (Object) (castTarget(element).getDimensionExpressions()));
 		}
 
 		@Override
@@ -1909,7 +1909,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDefaultExpression())));
+			return ((U) (Object) (castTarget(element).getDefaultExpression()));
 		}
 
 		@Override
@@ -1926,7 +1926,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDefaultExpression())));
+			return ((U) (Object) (castTarget(element).getDefaultExpression()));
 		}
 
 		@Override
@@ -1943,7 +1943,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDeclaringType())));
+			return ((U) (Object) (castTarget(element).getDeclaringType()));
 		}
 
 		@Override
@@ -1960,7 +1960,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDeclaringType())));
+			return ((U) (Object) (castTarget(element).getDeclaringType()));
 		}
 
 		@Override
@@ -1977,7 +1977,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDeclaringType())));
+			return ((U) (Object) (castTarget(element).getDeclaringType()));
 		}
 
 		@Override
@@ -1994,7 +1994,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDeclaredTypeReferences())));
+			return ((U) (Object) (castTarget(element).getDeclaredTypeReferences()));
 		}
 
 		@Override
@@ -2011,7 +2011,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDeclaredTypes())));
+			return ((U) (Object) (castTarget(element).getDeclaredTypes()));
 		}
 	}
 
@@ -2023,7 +2023,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDeclaredModuleReference())));
+			return ((U) (Object) (castTarget(element).getDeclaredModuleReference()));
 		}
 
 		@Override
@@ -2040,7 +2040,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDeclaredModule())));
+			return ((U) (Object) (castTarget(element).getDeclaredModule()));
 		}
 	}
 
@@ -2052,7 +2052,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getImports())));
+			return ((U) (Object) (castTarget(element).getImports()));
 		}
 
 		@Override
@@ -2069,7 +2069,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getTypes())));
+			return ((U) (Object) (castTarget(element).getTypes()));
 		}
 
 		@Override
@@ -2086,7 +2086,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getConstructors())));
+			return ((U) (Object) (castTarget(element).getConstructors()));
 		}
 
 		@Override
@@ -2103,7 +2103,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getCondition())));
+			return ((U) (Object) (castTarget(element).getCondition()));
 		}
 
 		@Override
@@ -2120,7 +2120,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getCondition())));
+			return ((U) (Object) (castTarget(element).getCondition()));
 		}
 
 		@Override
@@ -2137,7 +2137,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getAssertExpression())));
+			return ((U) (Object) (castTarget(element).getAssertExpression()));
 		}
 
 		@Override
@@ -2154,7 +2154,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isCompactConstructor())));
+			return ((U) (Object) (castTarget(element).isCompactConstructor()));
 		}
 
 		@Override
@@ -2171,7 +2171,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getCommentType())));
+			return ((U) (Object) (castTarget(element).getCommentType()));
 		}
 
 		@Override
@@ -2188,7 +2188,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getTags())));
+			return ((U) (Object) (castTarget(element).getTags()));
 		}
 
 		@Override
@@ -2205,7 +2205,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getContent())));
+			return ((U) (Object) (castTarget(element).getContent()));
 		}
 
 		@Override
@@ -2222,7 +2222,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getContent())));
+			return ((U) (Object) (castTarget(element).getContent()));
 		}
 
 		@Override
@@ -2239,7 +2239,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getComments())));
+			return ((U) (Object) (castTarget(element).getComments()));
 		}
 
 		@Override
@@ -2256,7 +2256,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getCatchers())));
+			return ((U) (Object) (castTarget(element).getCatchers()));
 		}
 
 		@Override
@@ -2273,7 +2273,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getTypeCasts())));
+			return ((U) (Object) (castTarget(element).getTypeCasts()));
 		}
 
 		@Override
@@ -2290,7 +2290,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getCaseKind())));
+			return ((U) (Object) (castTarget(element).getCaseKind()));
 		}
 
 		@Override
@@ -2307,7 +2307,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getCases())));
+			return ((U) (Object) (castTarget(element).getCases()));
 		}
 
 		@Override
@@ -2324,7 +2324,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getBoundingType())));
+			return ((U) (Object) (castTarget(element).getBoundingType()));
 		}
 
 		@Override
@@ -2341,7 +2341,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getBounds())));
+			return ((U) (Object) (castTarget(element).getBounds()));
 		}
 
 		@Override
@@ -2358,7 +2358,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getBlock())));
+			return ((U) (Object) (castTarget(element).getBlock()));
 		}
 
 		@Override
@@ -2375,7 +2375,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getBody())));
+			return ((U) (Object) (castTarget(element).getBody()));
 		}
 
 		@Override
@@ -2392,7 +2392,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getAssignment())));
+			return ((U) (Object) (castTarget(element).getAssignment()));
 		}
 
 		@Override
@@ -2409,7 +2409,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getAssigned())));
+			return ((U) (Object) (castTarget(element).getAssigned()));
 		}
 
 		@Override
@@ -2426,7 +2426,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getParameters())));
+			return ((U) (Object) (castTarget(element).getParameters()));
 		}
 
 		@Override
@@ -2443,7 +2443,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getArguments())));
+			return ((U) (Object) (castTarget(element).getArguments()));
 		}
 
 		@Override
@@ -2460,7 +2460,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getAnnotationType())));
+			return ((U) (Object) (castTarget(element).getAnnotationType()));
 		}
 
 		@Override
@@ -2477,7 +2477,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getAnnotations())));
+			return ((U) (Object) (castTarget(element).getAnnotations()));
 		}
 
 		@Override
@@ -2494,7 +2494,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getAnonymousExecutables())));
+			return ((U) (Object) (castTarget(element).getAnonymousExecutables()));
 		}
 
 		@Override
@@ -2511,7 +2511,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getAccessedType())));
+			return ((U) (Object) (castTarget(element).getAccessedType()));
 		}
 
 		@Override

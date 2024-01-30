@@ -98,6 +98,7 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
@@ -2334,5 +2335,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		visitCtTypeReference(recordComponent.getType());
 		printer.writeSpace();
 		printer.writeIdentifier(recordComponent.getSimpleName());
+	}
+
+	@Override
+	public void visitCtReceiverParameter(CtReceiverParameter receiverParameter) {
+		elementPrinterHelper.writeComment(receiverParameter);
+		elementPrinterHelper.writeAnnotations(receiverParameter);
+		elementPrinterHelper.writeModifiers(receiverParameter);
+			scan(receiverParameter.getType());
+		// after an implicit type, there is no space because we dont print anything
+		printer.writeIdentifier(receiverParameter.getSimpleName());
 	}
 }

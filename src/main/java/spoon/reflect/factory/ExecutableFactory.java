@@ -15,6 +15,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -243,4 +244,9 @@ public class ExecutableFactory extends SubFactory {
 		return executableRef;
 	}
 
+	public CtReceiverParameter createReceiverParameter(CtTypeReference<?> type) {
+		CtReceiverParameter receiverParameter = factory.Core().createReceiverParameter();
+		receiverParameter.setType(type);
+		return receiverParameter;
+	}
 }

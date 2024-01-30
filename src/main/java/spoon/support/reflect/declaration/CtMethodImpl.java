@@ -13,6 +13,7 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
@@ -50,6 +51,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
+
 
 	public CtMethodImpl() {
 	}
@@ -297,4 +299,5 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	public CtMethod<?> copyMethod() {
 		return Refactoring.copyMethod(this);
 	}
+
 }
