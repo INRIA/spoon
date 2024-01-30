@@ -97,6 +97,7 @@ import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
@@ -207,6 +208,10 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (child instanceof CtBlock && !(e instanceof CtMethod || e instanceof CtConstructor)) {
 			e.setBody((CtBlock<R>) child);
 			return;
+		} else  if(child instanceof CtReceiverParameter) {
+			if(e instanceof  CtMethod) {
+				((CtMethod<?>) e).setReceiverParameter((CtReceiverParameter) child);
+			}
 		}
 		super.scanCtExecutable(e);
 	}

@@ -7,6 +7,7 @@
  */
 package spoon.reflect.declaration;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtBlock;
@@ -140,4 +141,9 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 
 	@Override
 	CtExecutable<R> clone();
+
+	CtExecutable<?> setReceiverParameter(CtReceiverParameter receiverParameter);
+
+	@Nullable
+	CtReceiverParameter getReceiverParameter();
 }

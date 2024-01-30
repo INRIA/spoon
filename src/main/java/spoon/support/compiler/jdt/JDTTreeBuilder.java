@@ -117,11 +117,13 @@ import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.ModuleBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ParameterizedGenericMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -161,6 +163,7 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -174,6 +177,7 @@ import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Set;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
@@ -958,6 +962,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		}
 		boolean isVar = argument.type != null && argument.type.isTypeNameVar(scope);
+		boolean isReceiver = CharOperation.charToString(argument.name).equals("this");
+		// we can also use an instanceof Receiver here
+		if (isReceiver) {
+			CtReceiverParameter receiverParameter = helper.createReceiverParameter(argument);
+			context.enter(receiverParameter, argument);
+			return true;
+		}
 		CtParameter<Object> p = helper.createParameter(argument);
 		if (isVar) {
 			p.setInferred(true);
@@ -1141,7 +1152,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(getFactory().Core().createBlock(), methodDeclaration);
 			context.exit(methodDeclaration);
 		}
-
+		//TODO: remove this code
 		// We consider the receiver as a standard argument (i.e. as a parameter)
 		Receiver receiver = methodDeclaration.receiver;
 		if (receiver != null) {
