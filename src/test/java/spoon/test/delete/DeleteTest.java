@@ -166,7 +166,7 @@ public class DeleteTest {
 		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
-		final CtMethod method = adobada.getMethod("m4", factory.Type().INTEGER_PRIMITIVE, factory.Type().FLOAT_PRIMITIVE, factory.Type().STRING);
+		final CtMethod method = adobada.getMethod("m4", factory.Type().integerPrimitiveType(), factory.Type().floatPrimitiveType(), factory.Type().stringType());
 
 		int n = adobada.getMethods().size();
 
@@ -182,7 +182,7 @@ public class DeleteTest {
 		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
-		final CtMethod method = adobada.getMethod("m4", factory.Type().INTEGER_PRIMITIVE, factory.Type().FLOAT_PRIMITIVE, factory.Type().STRING);
+		final CtMethod method = adobada.getMethod("m4", factory.Type().integerPrimitiveType(), factory.Type().floatPrimitiveType(), factory.Type().stringType());
 		final CtParameter param = (CtParameter) method.getParameters().get(1);
 
 		assertEquals(3, method.getParameters().size());
@@ -240,7 +240,7 @@ public class DeleteTest {
 		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
-		final CtMethod method = adobada.getMethod("m4", factory.Type().INTEGER_PRIMITIVE, factory.Type().FLOAT_PRIMITIVE, factory.Type().STRING);
+		final CtMethod method = adobada.getMethod("m4", factory.Type().integerPrimitiveType(), factory.Type().floatPrimitiveType(), factory.Type().stringType());
 		final CtIf anIf = method.getElements(new TypeFilter<>(CtIf.class)).get(0);
 
 		assertNotNull(anIf.getCondition());
@@ -255,7 +255,7 @@ public class DeleteTest {
 		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
-		final CtMethod method = adobada.getMethod("m4", factory.Type().INTEGER_PRIMITIVE, factory.Type().FLOAT_PRIMITIVE, factory.Type().STRING);
+		final CtMethod method = adobada.getMethod("m4", factory.Type().integerPrimitiveType(), factory.Type().floatPrimitiveType(), factory.Type().stringType());
 		final CtAssignment chainOfAssignment = method.getElements(new TypeFilter<>(CtAssignment.class)).get(0);
 
 		assertNotNull(chainOfAssignment.getAssignment());

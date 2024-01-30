@@ -1550,7 +1550,7 @@ public class PositionTest {
 
 		CtConstructor<?> untypedConstructor = untypedType.getConstructor();
 		CtConstructor<?> typedConstructor = typedType.getConstructor();
-		CtConstructor<?> untypedNoArgsConstructor = untypedNoArgsType.getConstructor(factory.Type().INTEGER_PRIMITIVE);
+		CtConstructor<?> untypedNoArgsConstructor = untypedNoArgsType.getConstructor(factory.Type().integerPrimitiveType());
 		CtConstructor<?> untypedSuperConstructor = untypedSuperType.getConstructor();
 		CtConstructor<?> typedSuperConstructor = typedSuperType.getConstructor();
 		CtInvocation<?> untypedInvocation = untypedConstructor.getBody().getStatement(0);

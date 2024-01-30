@@ -171,7 +171,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	@Override
 	@DerivedProperty
 	public CtTypeReference<Void> getType() {
-		return factory.Type().VOID_PRIMITIVE;
+		return factory.Type().voidPrimitiveType();
 	}
 
 	@Override

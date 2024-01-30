@@ -305,7 +305,7 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	private static CtTypeReference<?> getBound(CtTypeParameter typeParam) {
 		CtTypeReference<?> bound = typeParam.getSuperclass();
 		if (bound == null) {
-			bound = typeParam.getFactory().Type().OBJECT;
+			bound = typeParam.getFactory().Type().objectType();
 		}
 		return bound;
 	}

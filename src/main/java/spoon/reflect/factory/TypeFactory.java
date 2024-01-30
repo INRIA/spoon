@@ -62,34 +62,150 @@ public class TypeFactory extends SubFactory {
 			// TODO (leventov) it is questionable to me that nulltype should also be here
 			CtTypeReference.NULL_TYPE_NAME);
 
+	/**
+	 * @deprecated Use {@link #nullType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<?> NULL_TYPE = createReference(CtTypeReference.NULL_TYPE_NAME);
+	/**
+	 * @deprecated Use {@link #voidType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Void> VOID = createReference(Void.class);
+	/**
+	 * @deprecated Use {@link #stringType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<String> STRING = createReference(String.class);
+	/**
+	 * @deprecated Use {@link #booleanType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Boolean> BOOLEAN = createReference(Boolean.class);
+	/**
+	 * @deprecated Use {@link #byteType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Byte> BYTE = createReference(Byte.class);
+	/**
+	 * @deprecated Use {@link #characterType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Character> CHARACTER = createReference(Character.class);
+	/**
+	 * @deprecated Use {@link #integerType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Integer> INTEGER = createReference(Integer.class);
+	/**
+	 * @deprecated Use {@link #longType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Long> LONG = createReference(Long.class);
+	/**
+	 * @deprecated Use {@link #floatType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Float> FLOAT = createReference(Float.class);
+	/**
+	 * @deprecated Use {@link #doubleType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Double> DOUBLE = createReference(Double.class);
+	/**
+	 * @deprecated Use {@link #voidPrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Void> VOID_PRIMITIVE = createReference(void.class);
+	/**
+	 * @deprecated Use {@link #booleanPrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Boolean> BOOLEAN_PRIMITIVE = createReference(boolean.class);
+	/**
+	 * @deprecated Use {@link #bytePrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Byte> BYTE_PRIMITIVE = createReference(byte.class);
+	/**
+	 * @deprecated Use {@link #characterPrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Character> CHARACTER_PRIMITIVE = createReference(char.class);
+	/**
+	 * @deprecated Use {@link #integerPrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Integer> INTEGER_PRIMITIVE = createReference(int.class);
+	/**
+	 * @deprecated Use {@link #longPrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Long> LONG_PRIMITIVE = createReference(long.class);
+	/**
+	 * @deprecated Use {@link #floatPrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Float> FLOAT_PRIMITIVE = createReference(float.class);
+	/**
+	 * @deprecated Use {@link #doublePrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Double> DOUBLE_PRIMITIVE = createReference(double.class);
+	/**
+	 * @deprecated Use {@link #shortType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Short> SHORT = createReference(Short.class);
+	/**
+	 * @deprecated Use {@link #shortPrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Short> SHORT_PRIMITIVE = createReference(short.class);
+	/**
+	 * @deprecated Use {@link #dateType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Date> DATE = createReference(Date.class);
+	/**
+	 * @deprecated Use {@link #objectType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Object> OBJECT = createReference(Object.class);
+	/**
+	 * @deprecated Use {@link #createReference(Class) TypeFactory#createReference(Iterable.class)}  instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Iterable> ITERABLE = createReference(Iterable.class);
+	/**
+	 * @deprecated Use {@link #createReference(Class) TypeFactory#createReference(Collection.class)}  instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Collection> COLLECTION = createReference(Collection.class);
+	/**
+	 * @deprecated Use {@link #createReference(Class) TypeFactory#createReference(List.class)}  instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<List> LIST = createReference(List.class);
+	/**
+	 * @deprecated Use {@link #createReference(Class) TypeFactory#createReference(Set.class)}  instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Set> SET = createReference(Set.class);
+	/**
+	 * @deprecated Use {@link #createReference(Class) TypeFactory#createReference(Map.class)}  instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Map> MAP = createReference(Map.class);
+	/**
+	 * @deprecated Use {@link #createReference(Class) TypeFactory#createReference(Enum.class)}  instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Enum> ENUM = createReference(Enum.class);
+	/**
+	 * @deprecated Deprecated for removal without replacement.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<?> OMITTED_TYPE_ARG_TYPE = createReference(CtTypeReference.OMITTED_TYPE_ARG_NAME);
 
 	// This map MUST provide a useful computeIfAbsent method in the face of concurrency.
@@ -728,7 +844,7 @@ public class TypeFactory extends SubFactory {
 	 * Returns the default bounding type value
 	 */
 	public CtTypeReference getDefaultBoundingType() {
-		return OBJECT;
+		return objectType();
 	}
 
 	/**

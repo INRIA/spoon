@@ -696,7 +696,7 @@ public class CommentTest {
 		CtMethod method = f.Core().createMethod();
 		method.setSimpleName("newMethod");
 		method.setBody(f.Core().createBlock());
-		method.setType(f.Type().VOID_PRIMITIVE);
+		method.setType(f.Type().voidPrimitiveType());
 
 		type.addMethod(method);
 
@@ -710,7 +710,7 @@ public class CommentTest {
 
 		method.getBody().removeStatement(method.getBody().getStatement(0));
 
-		CtLocalVariable<Integer> i = f.Code().createLocalVariable(f.Type().INTEGER_PRIMITIVE, "i", null);
+		CtLocalVariable<Integer> i = f.Code().createLocalVariable(f.Type().integerPrimitiveType(), "i", null);
 		i.addComment(createFakeComment(f, "comment local variable"));
 		method.getBody().addStatement(i);
 

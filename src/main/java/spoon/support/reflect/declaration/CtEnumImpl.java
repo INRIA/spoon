@@ -212,7 +212,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 			valueOfMethod.addThrownType(
 				getFactory().Type().createReference(IllegalArgumentException.class));
 			valueOfMethod.setType(getReference());
-			factory.Method().createParameter(valueOfMethod, factory.Type().STRING, "name");
+			factory.Method().createParameter(valueOfMethod, factory.Type().stringType(), "name");
 		}
 		return valueOfMethod;
 	}
@@ -221,7 +221,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	public <R> CtMethod<R> getMethod(String name, CtTypeReference<?>... parameterTypes) {
 		if ("values".equals(name) && parameterTypes.length == 0) {
 			return valuesMethod();
-		} else if ("valueOf".equals(name) && parameterTypes.length == 1 && parameterTypes[0].equals(factory.Type().STRING)) {
+		} else if ("valueOf".equals(name) && parameterTypes.length == 1 && parameterTypes[0].equals(factory.Type().stringType())) {
 			return valueOfMethod();
 		} else {
 			return super.getMethod(name, parameterTypes);
@@ -236,7 +236,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 			return valuesMethod();
 		} else if ("valueOf".equals(name)
 			&& parameterTypes.length == 1
-			&& parameterTypes[0].equals(factory.Type().STRING)
+			&& parameterTypes[0].equals(factory.Type().stringType())
 			&& returnType.equals(factory.Type().createArrayReference(getReference()))) {
 			return valueOfMethod();
 		} else {
