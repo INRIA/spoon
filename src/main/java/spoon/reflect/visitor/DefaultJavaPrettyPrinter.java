@@ -797,6 +797,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 						printer.writeln();
 						scan(enumValue);
 					});
+			printer.writeln();
 		}
 
 		elementPrinterHelper.writeElementList(ctEnum.getTypeMembers());
