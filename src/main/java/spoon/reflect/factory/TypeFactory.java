@@ -216,154 +216,154 @@ public class TypeFactory extends SubFactory {
 	 * Returns a reference on the null type (type of null).
 	 */
 	public CtTypeReference<?> nullType() {
-		return NULL_TYPE.clone();
+		return ((CtTypeReference<?>) createReference(CtTypeReference.NULL_TYPE_NAME)).clone();
 	}
 
 	/**
 	 * Returns a reference on the void type.
 	 */
 	public CtTypeReference<Void> voidType() {
-		return VOID.clone();
+		return createReference(Void.class);
 	}
 
 	/**
 	 * Returns a reference on the void primitive type.
 	 */
 	public CtTypeReference<Void> voidPrimitiveType() {
-		return VOID_PRIMITIVE.clone();
+		return createReference(void.class);
 	}
 
 	/**
 	 * Returns a reference on the string type.
 	 */
 	public CtTypeReference<String> stringType() {
-		return STRING.clone();
+		return createReference(String.class);
 	}
 
 	/**
 	 * Returns a reference on the boolean type.
 	 */
 	public CtTypeReference<Boolean> booleanType() {
-		return BOOLEAN.clone();
+		return createReference(Boolean.class);
 	}
 
 	/**
 	 * Returns a reference on the boolean primitive type.
 	 */
 	public CtTypeReference<Boolean> booleanPrimitiveType() {
-		return BOOLEAN_PRIMITIVE.clone();
+		return createReference(boolean.class);
 	}
 
 	/**
 	 * Returns a reference on the byte type.
 	 */
 	public CtTypeReference<Byte> byteType() {
-		return BYTE.clone();
+		return createReference(Byte.class);
 	}
 
 	/**
 	 * Returns a reference on the byte primitive type.
 	 */
 	public CtTypeReference<Byte> bytePrimitiveType() {
-		return BYTE_PRIMITIVE.clone();
+		return createReference(byte.class);
 	}
 
 	/**
 	 * Returns a reference on the character type.
 	 */
 	public CtTypeReference<Character> characterType() {
-		return CHARACTER.clone();
+		return createReference(Character.class);
 	}
 
 	/**
 	 * Returns a reference on the character primitive type.
 	 */
 	public CtTypeReference<Character> characterPrimitiveType() {
-		return CHARACTER_PRIMITIVE.clone();
+		return createReference(char.class);
 	}
 
 	/**
 	 * Returns a reference on the integer type.
 	 */
 	public CtTypeReference<Integer> integerType() {
-		return INTEGER.clone();
+		return createReference(Integer.class);
 	}
 
 	/**
 	 * Returns a reference on the integer primitive type.
 	 */
 	public CtTypeReference<Integer> integerPrimitiveType() {
-		return INTEGER_PRIMITIVE.clone();
+		return createReference(int.class);
 	}
 
 	/**
 	 * Returns a reference on the long type.
 	 */
 	public CtTypeReference<Long> longType() {
-		return LONG.clone();
+		return createReference(Long.class);
 	}
 
 	/**
 	 * Returns a reference on the long primitive type.
 	 */
 	public CtTypeReference<Long> longPrimitiveType() {
-		return LONG_PRIMITIVE.clone();
+		return createReference(long.class);
 	}
 
 	/**
 	 * Returns a reference on the float type.
 	 */
 	public CtTypeReference<Float> floatType() {
-		return FLOAT.clone();
+		return createReference(Float.class);
 	}
 
 	/**
 	 * Returns a reference on the float primitive type.
 	 */
 	public CtTypeReference<Float> floatPrimitiveType() {
-		return FLOAT_PRIMITIVE.clone();
+		return createReference(float.class);
 	}
 
 	/**
 	 * Returns a reference on the double type.
 	 */
 	public CtTypeReference<Double> doubleType() {
-		return DOUBLE.clone();
+		return createReference(Double.class);
 	}
 
 	/**
 	 * Returns a reference on the double primitive type.
 	 */
 	public CtTypeReference<Double> doublePrimitiveType() {
-		return DOUBLE_PRIMITIVE.clone();
+		return createReference(double.class);
 	}
 
 	/**
 	 * Returns a reference on the short type.
 	 */
 	public CtTypeReference<Short> shortType() {
-		return SHORT.clone();
+		return createReference(Short.class);
 	}
 
 	/**
 	 * Returns a reference on the short primitive type.
 	 */
 	public CtTypeReference<Short> shortPrimitiveType() {
-		return SHORT_PRIMITIVE.clone();
+		return createReference(short.class);
 	}
 
 	/**
 	 * Returns a reference on the date type.
 	 */
 	public CtTypeReference<Date> dateType() {
-		return DATE.clone();
+		return createReference(Date.class);
 	}
 
 	/**
 	 * Returns a reference on the object type.
 	 */
 	public CtTypeReference<Object> objectType() {
-		return OBJECT.clone();
+		return createReference(Object.class);
 	}
 
 	/**
