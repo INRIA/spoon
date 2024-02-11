@@ -79,7 +79,44 @@ class InheritanceResolverTest {
 		));
 
 		List<JavadocElement> expected = List.of(
-			new JavadocText("Never used, shadowed by body in super int 1.\n\n"),
+			new JavadocText("A test."),
+			new JavadocBlockTag(
+				List.of(new JavadocText("a"), new JavadocText("the a param")),
+				StandardJavadocTagType.PARAM
+			),
+			new JavadocBlockTag(
+				List.of(new JavadocText("foo")),
+				StandardJavadocTagType.RETURN
+			),
+			new JavadocBlockTag(
+				List.of(
+					new JavadocReference(launcher.getFactory().createCtTypeReference(IOException.class)),
+					new JavadocText("never")
+				),
+				StandardJavadocTagType.THROWS
+			)
+		);
+
+		assertEquals(expected, view.getElements());
+	}
+
+	@Test
+	void testInheritMultiple22() {
+		// contract: Inheritance walks the super interfaces and extends in-order (but now for java 22)
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(17);
+		launcher.addInputResource("src/test/java/");
+		launcher.buildModel();
+
+		CtMethod<?> method = launcher.getFactory().Type().get(SubMultiSuper.class).getMethodsByName("test").get(0);
+		method.getFactory().getEnvironment().setComplianceLevel(22);
+
+		JavadocCommentView view = new JavadocCommentView(new InheritanceResolver().completeJavadocWithInheritedTags(
+			method, new JavadocCommentView(JavadocParser.forElement(method))
+		));
+
+		List<JavadocElement> expected = List.of(
+			new JavadocText("Never used in <22, shadowed by the interface."),
 			new JavadocBlockTag(
 				List.of(new JavadocText("a"), new JavadocText("the a param")),
 				StandardJavadocTagType.PARAM
@@ -181,7 +218,18 @@ class InheritanceResolverTest {
 		int test(int a) throws IOException;
 	}
 
-	private static class SubMultiSuper implements SuperInt2, SuperInt3, SuperInt4 {
+	private static class SubMultiSuperParent {
+		/**
+		 * Never used in <22, shadowed by the interface.
+		 */
+		public int test(int a) throws IOException {
+			return 0;
+		}
+	}
+
+	private static class SubMultiSuper extends SubMultiSuperParent
+		implements SuperInt2, SuperInt3, SuperInt4 {
+
 		@Override
 		public int test(int a) throws IOException {
 			return 0;

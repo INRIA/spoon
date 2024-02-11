@@ -64,11 +64,8 @@ public class InheritanceResolver {
 			if (method != null) {
 				methods.add(method);
 			}
-		}
-
-		// If Step 1 failed to find a documentation comment, then recursively apply this entire algorithm to each
-		// directly implemented (or extended) interface in the same order they were examined in Step 1.
-		for (CtType<?> type : superInterfaces) {
+			// Recursively find super methods in parent types. This is not the way it is
+			// specified in <22, but the way it works in the standard doclet.
 			methods.addAll(findSuperMethodsInCommentInheritanceOrder(type, target));
 		}
 
@@ -77,7 +74,15 @@ public class InheritanceResolver {
 			// but not an interface:
 
 			// If the superclass has a documentation comment for this method, then use it.
-			addSuperclassMethods(startType, target, methods);
+			List<CtMethod<?>> superclassMethods = new ArrayList<>();
+			addSuperclassMethods(startType, target, superclassMethods);
+
+			// From Java 22 onwards the direct superclass methods come first
+			if (startType.getFactory().getEnvironment().getComplianceLevel() >= 22) {
+				methods.addAll(0, superclassMethods);
+			} else {
+				methods.addAll(superclassMethods);
+			}
 		}
 
 		return methods;
