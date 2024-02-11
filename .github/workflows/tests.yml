@@ -156,7 +156,7 @@ jobs:
 
   codegen:
     runs-on: ubuntu-latest
-    name: Test with coverage
+    name: Codegeneration
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
@@ -167,8 +167,5 @@ jobs:
 
       - name: Time nix setup
         run: nix develop ${{ env.NIX_OPTIONS }} --command true
-      - name: Run tests with coverage
+      - name: Run codegen checks
         run: nix develop ${{ env.NIX_OPTIONS }} --keep PR_NUMBER --keep GITHUB_TOKEN --command codegen
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.number }}
