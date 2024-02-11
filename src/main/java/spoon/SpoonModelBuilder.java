@@ -253,6 +253,7 @@ public interface SpoonModelBuilder {
 
 	/**
 	 * Sets the module path that is used to build/compile the input sources.
+	 * This is the equivalent to the {@code --module-path} option of {@code javac} and {@code java} executables.
 	 *
 	 * @param sourceModulePath The new module path to be set. Each string element
 	 *                         should be the path to a directory or a module jar file.
