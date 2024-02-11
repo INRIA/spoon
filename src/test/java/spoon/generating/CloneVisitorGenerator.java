@@ -566,7 +566,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 * Check if the type is a subtype of CtElement.
 			 */
 			private boolean isSubTypeOfCtElement(CtTypeReference<?> type) {
-				if (!type.isPrimitive() && !type.equals(factory.Type().STRING)) {
+				if (!type.isPrimitive() && !type.equals(factory.Type().stringType())) {
 					if (type.isSubtypeOf(factory.Type().createReference(CtElement.class))) {
 						return true;
 					}

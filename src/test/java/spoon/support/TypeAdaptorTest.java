@@ -505,7 +505,7 @@ class TypeAdaptorTest {
 	void testArraySubtypingShadow() {
 		// contract: Array subtyping should hold for shadow types
 		Factory factory = new Launcher().getFactory();
-		CtTypeReference<Integer> intType = factory.Type().INTEGER;
+		CtTypeReference<Integer> intType = factory.Type().integerType();
 		CtArrayTypeReference<?> intArr = factory.createArrayReference(intType, 1);
 		CtArrayTypeReference<?> intArr2 = factory.createArrayReference(intType, 2);
 
@@ -582,7 +582,7 @@ class TypeAdaptorTest {
 		Factory factory = launcher.getFactory();
 
 		CtArrayTypeReference<?> fooArray = factory.createArrayReference(fooType, 1);
-		CtArrayTypeReference<?> intArray = factory.createArrayReference(factory.Type().INTEGER_PRIMITIVE, 1);
+		CtArrayTypeReference<?> intArray = factory.createArrayReference(factory.Type().integerPrimitiveType(), 1);
 		CtArrayTypeReference<?> objArray = factory.createArrayReference(factory.Type().objectType(), 1);
 
 		verifySubtype(fooArray, factory.createCtTypeReference(Object.class), true);

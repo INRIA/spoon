@@ -87,7 +87,7 @@ public class ProcessingTest {
 			assertEquals("int i = 0;", constructor.getBody().getStatement(1).toString(), "insert failed for constructor " + constructor.getSimpleName());
 		}
 
-		CtConstructor<?> constructor = type.getConstructor(type.getFactory().Type().INTEGER_PRIMITIVE);
+		CtConstructor<?> constructor = type.getConstructor(type.getFactory().Type().integerPrimitiveType());
 		String myBeforeStatementAsString = "int before";
 		for (CtSwitch<?> ctSwitch : constructor.getElements(new TypeFilter<CtSwitch<?>>(CtSwitch.class))) {
 			ctSwitch.insertBefore(type.getFactory().Code()
@@ -120,7 +120,7 @@ public class ProcessingTest {
 			assertEquals("int i = 0", constructor.getBody().getStatement(constructor.getBody().getStatements().size() - 1).toString(), "insert failed for constructor");
 		}
 
-		CtConstructor<?> constructor = type.getConstructor(type.getFactory().Type().INTEGER_PRIMITIVE);
+		CtConstructor<?> constructor = type.getConstructor(type.getFactory().Type().integerPrimitiveType());
 		String myBeforeStatementAsString = "int after";
 		for (CtSwitch<?> ctSwitch : constructor.getElements(new TypeFilter<CtSwitch<?>>(CtSwitch.class))) {
 			ctSwitch.insertAfter(type.getFactory().Code()

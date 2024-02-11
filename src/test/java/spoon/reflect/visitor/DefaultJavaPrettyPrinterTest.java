@@ -285,7 +285,7 @@ public class DefaultJavaPrettyPrinterTest {
             Factory factory = launcher.getFactory();
 
             CtArrayTypeReference<Integer> arrayTypeReference = factory.createArrayTypeReference();
-            arrayTypeReference.setComponentType(factory.Type().INTEGER_PRIMITIVE);
+            arrayTypeReference.setComponentType(factory.Type().integerPrimitiveType());
             CtNewArray<Integer> newArray = factory.createNewArray();
             newArray.setValueByRole(CtRole.TYPE, arrayTypeReference);
             List<CtLiteral<Integer>> elements = new ArrayList<>(List.of(factory.createLiteral(3)));

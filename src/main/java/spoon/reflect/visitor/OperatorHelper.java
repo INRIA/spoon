@@ -288,7 +288,7 @@ public final class OperatorHelper {
 		// if the operand is of type byte, short, or char, it is promoted to a value of type int by a widening
 		// primitive conversion (§5.1.2).
 		if (NUMBERS_PROMOTED_TO_INT.contains(operandType.getActualClass())) {
-			return Optional.of(operandType.getFactory().Type().INTEGER_PRIMITIVE);
+			return Optional.of(operandType.getFactory().Type().integerPrimitiveType());
 		}
 
 		// otherwise, the operand is not converted at all.
@@ -309,26 +309,26 @@ public final class OperatorHelper {
 			return Optional.empty();
 		}
 
-		CtTypeReference<?> doubleType = typeFactory.DOUBLE_PRIMITIVE;
+		CtTypeReference<?> doubleType = typeFactory.doublePrimitiveType();
 		// If either operand is of type double, the other is converted to double.
 		if (leftType.equals(doubleType) || rightType.equals(doubleType)) {
 			return Optional.of(doubleType);
 		}
 
 		// Otherwise, if either operand is of type float, the other is converted to float.
-		CtTypeReference<?> floatType = typeFactory.FLOAT_PRIMITIVE;
+		CtTypeReference<?> floatType = typeFactory.floatPrimitiveType();
 		if (leftType.equals(floatType) || rightType.equals(floatType)) {
 			return Optional.of(floatType);
 		}
 
 		// Otherwise, if either operand is of type long, the other is converted to long.
-		CtTypeReference<?> longType = typeFactory.LONG_PRIMITIVE;
+		CtTypeReference<?> longType = typeFactory.longPrimitiveType();
 		if (leftType.equals(longType) || rightType.equals(longType)) {
 			return Optional.of(longType);
 		}
 
 		// Otherwise, both operands are converted to type int.
-		return Optional.of(typeFactory.INTEGER_PRIMITIVE);
+		return Optional.of(typeFactory.integerPrimitiveType());
 	}
 
 	/**
@@ -359,7 +359,7 @@ public final class OperatorHelper {
 			// logical operators
 			case AND:
 			case OR: {
-				CtTypeReference<?> booleanType = typeFactory.BOOLEAN_PRIMITIVE;
+				CtTypeReference<?> booleanType = typeFactory.booleanPrimitiveType();
 				if (!left.getType().equals(booleanType) || !right.getType().equals(booleanType)) {
 					return Optional.empty();
 				}
@@ -401,7 +401,7 @@ public final class OperatorHelper {
 				// The equality operators may be used to compare two operands that are convertible (§5.1.8)
 				// to numeric type, or two operands of type boolean or Boolean, or two operands that are each
 				// of either reference type or the null type. All other cases result in a compile-time error.
-				CtTypeReference<?> booleanType = typeFactory.BOOLEAN_PRIMITIVE;
+				CtTypeReference<?> booleanType = typeFactory.booleanPrimitiveType();
 				return binaryNumericPromotion(left, right).or(() -> {
 					// check if both operands are of type boolean or Boolean
 					// if so they will be promoted to the primitive type boolean
@@ -415,7 +415,7 @@ public final class OperatorHelper {
 						// either operand to the type of the other by a casting conversion (§5.5).
 						// The run-time values of the two operands would necessarily be unequal
 						// (ignoring the case where both values are null).
-						CtTypeReference<?> nullType = typeFactory.NULL_TYPE;
+						CtTypeReference<?> nullType = typeFactory.nullType();
 						if (leftType.equals(nullType)) {
 							return Optional.of(rightType);
 						}
@@ -454,7 +454,7 @@ public final class OperatorHelper {
 					//
 					// If the type of either operand of a + operator is String, then the operation is
 					// string concatenation.
-					CtTypeReference<?> stringType = typeFactory.STRING;
+					CtTypeReference<?> stringType = typeFactory.stringType();
 					if (left.getType().equals(stringType) || right.getType().equals(stringType)) {
 						return Optional.of(stringType);
 					}
@@ -469,14 +469,14 @@ public final class OperatorHelper {
 				CtTypeReference<?> rightType = right.getType().unbox();
 
 				Set<CtTypeReference<?>> floatingPointNumbers = Set.of(
-					typeFactory.FLOAT_PRIMITIVE,
-					typeFactory.DOUBLE_PRIMITIVE
+					typeFactory.floatPrimitiveType(),
+					typeFactory.doublePrimitiveType()
 				);
 				if (floatingPointNumbers.contains(leftType) || floatingPointNumbers.contains(rightType)) {
 					return Optional.empty();
 				}
 
-				if (leftType.equals(rightType) && leftType.equals(typeFactory.BOOLEAN_PRIMITIVE)) {
+				if (leftType.equals(rightType) && leftType.equals(typeFactory.booleanPrimitiveType())) {
 					return Optional.of(leftType);
 				}
 
@@ -522,8 +522,8 @@ public final class OperatorHelper {
 				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.15.3
 				return unaryNumericPromotion(operand);
 			case NOT:
-				if (operand.getType().unbox().equals(typeFactory.BOOLEAN_PRIMITIVE)) {
-					return Optional.of(typeFactory.BOOLEAN_PRIMITIVE);
+				if (operand.getType().unbox().equals(typeFactory.booleanPrimitiveType())) {
+					return Optional.of(typeFactory.booleanPrimitiveType());
 				}
 
 				return Optional.empty();
