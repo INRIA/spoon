@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.code;
 
+import org.jspecify.annotations.Nullable;
 import spoon.LovecraftException;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
@@ -21,6 +22,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtTypedElement;
@@ -225,6 +227,16 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	@UnsettableProperty
 	public <C extends CtExecutable<T>> C setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
 		return (C) this;
+	}
+
+	@Override
+	public CtExecutable<?> setReceiverParameter(CtReceiverParameter receiverParameter) {
+		return this;
+	}
+
+	@Override
+	public @Nullable CtReceiverParameter getReceiverParameter() {
+		return null;
 	}
 
 	@Override

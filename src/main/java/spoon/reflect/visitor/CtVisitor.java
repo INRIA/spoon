@@ -563,4 +563,5 @@ public interface CtVisitor {
 	 * @param receiverParameter the receiver parameter to visit.
 	 */
 	void visitCtReceiverParameter(CtReceiverParameter receiverParameter);
+
 }

@@ -147,10 +147,17 @@ public class ElementPrinterHelper {
 	}
 
 	public void writeExecutableParameters(CtExecutable<?> executable) {
-		//TODO: printing
-		printList(executable.getParameters(), null,
-			false, "(", false, false, ",", true, false, ")",
-			p -> prettyPrinter.scan(p));
+		if(executable.getReceiverParameter() == null) {
+			printList(executable.getParameters(), null,
+					false, "(", false, false, ",", true, false, ")",
+					p -> prettyPrinter.scan(p));
+		} else {
+			printer.writeSeparator("(");
+			prettyPrinter.scan(executable.getReceiverParameter());
+			printList(executable.getParameters(), null,
+					false, ",", false, false, ",", true, false, ")",
+					p -> prettyPrinter.scan(p));
+		}
 	}
 
 	/** writes the thrown exception with a ListPrinter */

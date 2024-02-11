@@ -57,7 +57,6 @@ import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
@@ -754,22 +753,6 @@ public class JDTTreeBuilderHelper {
 		return p;
 	}
 
-	/**
-	 * Creates a receiver parameter for a method or constructor.
-	 *
-	 * @param argument the argument containing information about the parameter
-	 * @return the created CtReceiverParameter object
-	 */
-	CtReceiverParameter createReceiverParameter(Argument argument) {
-		CtReceiverParameter p = jdtTreeBuilder.getFactory().Core().createReceiverParameter();
-		p.setSimpleName("this");
-		p.setExtendedModifiers(getModifiers(argument.modifiers, false, ModifierTarget.PARAMETER));
-		if (argument.binding != null && argument.binding.type != null && argument.type == null) {
-			p.setType(jdtTreeBuilder.getReferencesBuilder().getTypeReference(argument.binding.type));
-			p.getType().setImplicit(argument.type == null);
-		}
-		return p;
-	}
 
 	/**
 	 * Creates an executable reference expression.

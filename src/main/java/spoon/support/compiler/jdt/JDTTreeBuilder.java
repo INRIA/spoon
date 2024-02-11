@@ -940,13 +940,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		}
 		boolean isVar = argument.type != null && argument.type.isTypeNameVar(scope);
-		boolean isReceiver = CharOperation.charToString(argument.name).equals("this");
-		// we can also use an instanceof Receiver here
-		if (isReceiver) {
-			CtReceiverParameter receiverParameter = helper.createReceiverParameter(argument);
-			context.enter(receiverParameter, argument);
-			return true;
-		}
 		CtParameter<Object> p = helper.createParameter(argument);
 		if (isVar) {
 			p.setInferred(true);
@@ -1134,11 +1127,24 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// We consider the receiver as a standard argument (i.e. as a parameter)
 		Receiver receiver = methodDeclaration.receiver;
 		if (receiver != null) {
+			CtReceiverParameter receiverParameter = factory.Core().createReceiverParameter();
+			receiverParameter.setSimpleName(CharOperation.charToString(receiver.name));
+			receiverParameter.setExtendedModifiers(getModifiers(receiver.modifiers, false, ModifierTarget.PARAMETER));
+			if (receiver.type != null) {
+				CtTypeReference<Object> typeReference = this.getReferencesBuilder().getTypeReference(receiver.type);
+				if(receiver.type.getTypeName().length == 1) {
+					typeReference.setSimplyQualified(true);
+				}
+				receiverParameter.setType(typeReference);
+			}
+			context.enter(receiverParameter, receiver);
 			receiver.traverse(this, methodDeclaration.scope);
+			context.exit(receiver);
 		}
 
 		return true;
 	}
+
 
 	@Override
 	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {

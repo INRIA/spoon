@@ -7,12 +7,13 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtReceiverParameter;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import java.util.Set;
@@ -77,4 +78,8 @@ public interface CtLambda<T> extends CtExpression<T>, CtExecutable<T> {
 	@Override
 	@UnsettableProperty
 	<T1 extends CtExecutable<T>> T1 setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
+
+	@UnsettableProperty
+	@Override
+	CtExecutable<?> setReceiverParameter(CtReceiverParameter receiverParameter);
 }

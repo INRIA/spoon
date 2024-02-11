@@ -2,6 +2,7 @@ package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtShadowable;
@@ -66,7 +67,7 @@ public class CtReceiverParameterImpl extends CtNamedElementImpl implements CtRec
 
     @Override
     public Set<CtExtendedModifier> getExtendedModifiers() {
-        return null;
+        return modifierHandler.getExtendedModifiers();
     }
 
     @Override
@@ -173,13 +174,21 @@ public class CtReceiverParameterImpl extends CtNamedElementImpl implements CtRec
 
     @Override
     public void accept(CtVisitor visitor) {
-    //TODO: implement
+        visitor.visitCtReceiverParameter(this);
     }
 
     @Override
     public CtVariableReference<Object> getReference() {
-
-        //TODO: implement
         return null;
+    }
+
+    @Override
+    public CtExecutable<?> getParent() {
+        return (CtExecutable<?>) super.getParent();
+    }
+
+    @Override
+    public CtReceiverParameter clone() {
+        return (CtReceiverParameter) super.clone();
     }
 }

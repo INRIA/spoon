@@ -22,7 +22,6 @@ public class ReceiverParameterTest {
         assertEquals(1, receiverParams.size());
         CtReceiverParameter next1 = receiverParams.iterator().next();
         assertEquals("this", next1.getSimpleName());
-        assertEquals("spoon.test.receiverparameter.SimpleReceiverParameter", next1.getType().getQualifiedName());
-        System.out.println(targetType);
+        assertEquals("receiver.SimpleReceiverParameter", next1.getType().getQualifiedName());
     }
 }
