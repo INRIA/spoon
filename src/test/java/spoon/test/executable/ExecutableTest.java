@@ -54,7 +54,7 @@ public class ExecutableTest {
 
 		for (CtAnonymousExecutable anonymousExecutable : anonymousExecutables) {
 			assertEquals("", anonymousExecutable.getSimpleName());
-			assertEquals(launcher.getFactory().Type().VOID_PRIMITIVE, anonymousExecutable.getType());
+			assertEquals(launcher.getFactory().Type().voidPrimitiveType(), anonymousExecutable.getType());
 			assertEquals(0, anonymousExecutable.getParameters().size());
 			assertEquals(0, anonymousExecutable.getThrownTypes().size());
 		}

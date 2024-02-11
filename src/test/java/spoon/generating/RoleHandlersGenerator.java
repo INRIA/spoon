@@ -133,7 +133,7 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 	private CtTypeReference<?> fixMainValueType(CtTypeReference<?> valueType) {
 		valueType = fixValueType(valueType);
 		if (valueType instanceof CtWildcardReference) {
-			return getFactory().Type().OBJECT;
+			return getFactory().Type().objectType();
 		}
 		return valueType;
 	}

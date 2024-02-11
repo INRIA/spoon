@@ -159,7 +159,7 @@ public class FactoryTest {
 		// if we change the implem, merge is impossible
 		CtField f = spoon.getFactory().Core().createField();
 		f.setSimpleName("foo");
-		f.setType(spoon.getFactory().Type().BYTE);
+		f.setType(spoon.getFactory().Type().byteType());
 		p.getElements(new NamedElementFilter<>(CtPackage.class, "testclasses")).get(0).getType("Foo").addField(f);
 		try {
 			model.getRootPackage().addPackage(p);

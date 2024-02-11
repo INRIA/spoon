@@ -326,11 +326,11 @@ public class ReplaceTest {
 		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
 		final CtMethod<?> aMethod = aTacos.getMethodsByName("m").get(0);
 
-		assertEquals(factory.Type().INTEGER_PRIMITIVE, aMethod.getType());
+		assertEquals(factory.Type().integerPrimitiveType(), aMethod.getType());
 
-		aMethod.getType().replace(factory.Type().DOUBLE_PRIMITIVE);
+		aMethod.getType().replace(factory.Type().doublePrimitiveType());
 
-		assertEquals(factory.Type().DOUBLE_PRIMITIVE, aMethod.getType());
+		assertEquals(factory.Type().doublePrimitiveType(), aMethod.getType());
 	}
 
 	@Test

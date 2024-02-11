@@ -338,7 +338,7 @@ public class EvalTest {
 			case LE:
 			case GT:
 			case GE:
-				return ctBinaryOperator.getFactory().Type().BOOLEAN_PRIMITIVE;
+				return ctBinaryOperator.getFactory().Type().booleanPrimitiveType();
 			case SL:
 			case SR:
 			case USR:
@@ -490,7 +490,7 @@ public class EvalTest {
 			String.format("type of '%s' is null after evaluation", ctBinaryOperator)
 		);
 		assertEquals(
-			ctBinaryOperator.getFactory().Type().INTEGER_PRIMITIVE,
+			ctBinaryOperator.getFactory().Type().integerPrimitiveType(),
 			evaluated.getType()
 		);
 		assertEquals(

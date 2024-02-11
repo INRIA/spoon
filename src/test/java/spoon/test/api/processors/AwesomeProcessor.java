@@ -18,7 +18,7 @@ public class AwesomeProcessor extends AbstractProcessor<CtClass<Bar>> {
 		// Creates new elements.
 		final CtMethod prepareMojito = element.getMethodsByName("doSomething").get(0);
 		prepareMojito.setSimpleName("prepareMojito");
-		prepareMojito.setType(getFactory().Type().VOID_PRIMITIVE);
+		prepareMojito.setType(getFactory().Type().voidPrimitiveType());
 		final CtBlock<Object> block = getFactory().Core().createBlock();
 		block.addStatement(
 				getFactory().Code()

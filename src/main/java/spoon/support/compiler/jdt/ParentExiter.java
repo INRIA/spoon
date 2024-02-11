@@ -446,7 +446,7 @@ public class ParentExiter extends CtInheritanceScanner {
 				op.setKind(BinaryOperatorKind.PLUS);
 				op.setLeftHandOperand(operator.getLeftHandOperand());
 				op.setRightHandOperand(operator.getRightHandOperand());
-				op.setType((CtTypeReference) operator.getFactory().Type().STRING.clone());
+				op.setType(operator.getFactory().Type().stringType());
 				operator.setLeftHandOperand(op);
 				operator.setRightHandOperand(((CtExpression<?>) child));
 				int[] lineSeparatorPositions = jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions();

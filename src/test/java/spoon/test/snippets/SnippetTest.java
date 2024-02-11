@@ -120,7 +120,7 @@ public class SnippetTest {
 		// contract: a snippet with return can be compiled.
 		CtElement el = SnippetCompilationHelper.compileStatement(
 				factory.Code().createCodeSnippetStatement("return 3"),
-				factory.Type().INTEGER
+				factory.Type().integerType()
 		);
 		assertTrue(CtReturn.class.isAssignableFrom(el.getClass()));
 		assertEquals("return 3", el.toString());

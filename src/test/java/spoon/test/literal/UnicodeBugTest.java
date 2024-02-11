@@ -33,7 +33,7 @@ public class UnicodeBugTest {
 	private class StringConcatProcessor extends AbstractProcessor<CtLiteral<?>> {
 		@Override
 		public boolean isToBeProcessed(CtLiteral<?> candidate) {
-			return candidate.getType().isSubtypeOf(getFactory().Type().STRING) &&
+			return candidate.getType().isSubtypeOf(getFactory().Type().stringType()) &&
 					candidate.getParent() instanceof CtBinaryOperator;
 		}
 

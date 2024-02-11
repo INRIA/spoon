@@ -278,7 +278,7 @@ public class CodeFactory extends SubFactory {
 	public CtTextBlock createTextBlock(String value) {
 		CtTextBlock textblock = factory.Core().createTextBlock();
 		textblock.setValue(value);
-		textblock.setType((CtTypeReference<String>) factory.Type().STRING);
+		textblock.setType(factory.Type().stringType());
 		return textblock;
 	}
 
