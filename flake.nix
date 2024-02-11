@@ -100,6 +100,12 @@
             mvn -f spoon-pom -B test-compile
             mvn -f spoon-pom -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
           '';
+          codegen = pkgs.writeScriptBin "codegen" ''
+           set -eu
+           mvn test -Dgroups=codegen
+           mvn spotless:apply
+           git diff --exit-code || "::error::Generated code is not up to date. Execute mvn test -Dgroups=codegen, mvn spotless:apply and commit your changes."
+           '';
           extra = pkgs.writeScriptBin "extra" (if !extraChecks then "exit 2" else ''
             set -eu
             # Use silent log config
@@ -174,7 +180,7 @@
               ])
             else [ ];
           packages = with pkgs;
-            [ jdk maven test coverage mavenPomQuality javadocQuality reproducibleBuilds ]
+            [ jdk maven test codegen coverage mavenPomQuality javadocQuality reproducibleBuilds ]
             ++ (if extraChecks then [ gradle pythonEnv extra extraRemote jbang ] else [ ])
             ++ (if release then [ semver jreleaser ] else [ ]);
         };

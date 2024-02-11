@@ -43,6 +43,7 @@ public interface CtRecordPattern extends CtPattern, CtExpression<Void> {
 	/**
 	 * Sets the type of the deconstructed record.
 	 * @param recordType the record type.
+	 * @return this pattern
 	 */
 	@PropertySetter(role = CtRole.TYPE_REF)
 	CtRecordPattern setRecordType(CtTypeReference<?> recordType);
@@ -56,6 +57,7 @@ public interface CtRecordPattern extends CtPattern, CtExpression<Void> {
 	/**
 	 * Sets the inner patterns of this record pattern.
 	 * @param patternList the list of inner patterns.
+	 * @return this pattern
 	 */
 	@PropertySetter(role = CtRole.PATTERN)
 	CtRecordPattern setPatternList(List<CtPattern> patternList);
@@ -63,6 +65,7 @@ public interface CtRecordPattern extends CtPattern, CtExpression<Void> {
 	/**
 	 * Adds an inner patterns to the list of inner patterns of this record.
 	 * @param pattern the inner pattern.
+	 * @return this pattern
 	 */
 	@PropertySetter(role = CtRole.PATTERN)
 	CtRecordPattern addPattern(CtPattern pattern);
