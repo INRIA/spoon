@@ -168,4 +168,4 @@ jobs:
       - name: Time nix setup
         run: nix develop ${{ env.NIX_OPTIONS }} --command true
       - name: Run codegen checks
-        run: nix develop ${{ env.NIX_OPTIONS }} --keep PR_NUMBER --keep GITHUB_TOKEN --command codegen
+        run: nix develop ${{ env.NIX_OPTIONS }}  --command codegen
