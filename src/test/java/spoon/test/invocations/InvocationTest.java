@@ -37,8 +37,7 @@ import java.util.List;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -130,6 +129,6 @@ public class InvocationTest {
 			.addArgumentAt(3, factory.createLiteral(7));
 
 		// assert
-		assertThat(addAllInv.toString(), equalTo("Collections.addAll(new ArrayList<Integer>(), 4, 99, 7, -2)"));
+		assertThat(addAllInv).printed().isEqualTo("Collections.addAll(new ArrayList<Integer>(), 4, 99, 7, -2)");
 	}
 }

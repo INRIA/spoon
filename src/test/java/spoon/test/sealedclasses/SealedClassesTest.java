@@ -13,11 +13,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtExtendedModifier;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
-import static org.hamcrest.core.IsCollectionContaining.hasItems;
-import static spoon.test.SpoonTestHelpers.contentEquals;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 public class SealedClassesTest {
 
@@ -31,7 +27,7 @@ public class SealedClassesTest {
 		CtSealable outer = (CtSealable) ctModel.getAllTypes().iterator().next();
 
 		for (CtTypeReference<?> permitted : outer.getPermittedTypes()) {
-			assertThat(permitted.isImplicit(), is(true));
+			assertThat(permitted).isImplicit().isTrue();
 		}
 	}
 
@@ -43,15 +39,15 @@ public class SealedClassesTest {
 		launcher.addInputResource("src/test/resources/sealedclasses/SealedClassWithNestedSubclasses.java");
 		CtModel ctModel = launcher.buildModel();
 		CtClass<?> outer = (CtClass<?>) ctModel.getAllTypes().iterator().next();
-		assertThat(outer.getExtendedModifiers(), hasItems(new CtExtendedModifier(ModifierKind.SEALED, false)));
+		assertThat(outer).getExtendedModifiers().contains(new CtExtendedModifier(ModifierKind.SEALED, false));
 
 		CtClass<?> nestedFinal = outer.getNestedType("NestedFinal");
-		assertThat(nestedFinal.getExtendedModifiers(), hasItem(new CtExtendedModifier(ModifierKind.FINAL, false)));
-		assertThat(outer.getPermittedTypes(), hasItem(nestedFinal.getReference()));
+		assertThat(nestedFinal).getExtendedModifiers().contains(new CtExtendedModifier(ModifierKind.FINAL, false));
+		assertThat(outer).getPermittedTypes().contains(nestedFinal.getReference());
 
 		CtType<?> nestedNonSealed = outer.getNestedType("NestedNonSealed");
-		assertThat(nestedNonSealed.getExtendedModifiers(), hasItem(new CtExtendedModifier(ModifierKind.NON_SEALED, false)));
-		assertThat(outer.getPermittedTypes(), hasItem(nestedNonSealed.getReference()));
+		assertThat(nestedNonSealed).getExtendedModifiers().contains(new CtExtendedModifier(ModifierKind.NON_SEALED, false));
+		assertThat(outer).getPermittedTypes().contains(nestedNonSealed.getReference());
 	}
 
 	@Test
@@ -63,12 +59,12 @@ public class SealedClassesTest {
 		CtModel ctModel = launcher.buildModel();
 		CtEnum<?> ctEnum = ctModel.getElements(new TypeFilter<CtEnum<?>>(CtEnum.class)).get(0);
 		// not final
-		assertThat(ctEnum.isFinal(), is(false));
+		assertThat(ctEnum).matches(CtEnum::isFinal);
 		// but (implicitly) sealed
-		assertThat(ctEnum.getExtendedModifiers(), contentEquals(
+		assertThat(ctEnum).getExtendedModifiers().contains(
 				new CtExtendedModifier(ModifierKind.PUBLIC, false),
 				new CtExtendedModifier(ModifierKind.SEALED, true)
-		));
+		);
 
 		// TODO the RHS type is wrong currently, see #4291
 /*		assertThat(ctEnum.getPermittedTypes(),
@@ -89,13 +85,13 @@ public class SealedClassesTest {
 		CtType<?> extendingClass = ctPackage.getType("ExtendingClass");
 		CtType<?> otherExtendingClass = ctPackage.getType("OtherExtendingClass");
 
-		assertThat(sealedClassWithPermits.getPermittedTypes().size(), is(2));
+		assertThat(sealedClassWithPermits).getPermittedTypes().hasSize(2);
 		for (CtTypeReference<?> permittedType : sealedClassWithPermits.getPermittedTypes()) {
 			// outer types are always explicit
-			assertThat(permittedType.isImplicit(), is(false));
+			assertThat(permittedType).isImplicit().isTrue();
 		}
-		assertThat(sealedClassWithPermits.getPermittedTypes(), hasItem(extendingClass.getReference()));
-		assertThat(sealedClassWithPermits.getPermittedTypes(), hasItem(otherExtendingClass.getReference()));
+		assertThat(sealedClassWithPermits).getPermittedTypes().contains(extendingClass.getReference());
+		assertThat(sealedClassWithPermits).getPermittedTypes().contains(otherExtendingClass.getReference());
 	}
 
 	private static Launcher createLauncher() {

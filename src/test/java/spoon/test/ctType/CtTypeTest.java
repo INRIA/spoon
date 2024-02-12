@@ -44,8 +44,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -284,10 +283,7 @@ public class CtTypeTest {
 		int expectedNumExecutablesInJDK8 = 13;
 		int expectedNumExecutablesPostJDK8 = 14;
 		int numExecutables = type.getAllExecutables().size();
-		assertThat(numExecutables, anyOf(
-				equalTo(expectedNumExecutablesInJDK8),
-				equalTo(expectedNumExecutablesPostJDK8))
-		);	
+		assertThat(numExecutables).isIn(expectedNumExecutablesInJDK8, expectedNumExecutablesPostJDK8);
 	}
 
 	/**
@@ -302,9 +298,9 @@ public class CtTypeTest {
 		launcher.run();
 
 		Collection<CtType<?>> types = launcher.getModel().getAllTypes();
-		assertThat(types.size(), is(1));
-		assertThat(types.stream().findFirst().get(), notNullValue());
-		assertThat(types.stream().findFirst().get().getQualifiedName(), is("keywordCompliance.enum.Foo"));
+		assertThat(types).hasSize(1);
+		assertThat(types.stream().findFirst()).isPresent();
+		assertThat(types.stream().findFirst().get().getQualifiedName()).isEqualTo("keywordCompliance.enum.Foo");
 	}
 
 	@Test

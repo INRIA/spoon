@@ -1,8 +1,7 @@
 package spoon.test.record;
 
 import static java.lang.System.lineSeparator;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -225,7 +224,7 @@ public class CtRecordTest {
 		String code = "src/test/resources/records/WithStaticInitializer.java";
 		CtModel model = assertDoesNotThrow(() -> createModelFromPath(code));
 		List<CtAnonymousExecutable> execs = model.getElements(new TypeFilter<>(CtAnonymousExecutable.class));
-		assertThat(execs.size(), equalTo(2));
+		assertThat(execs).hasSize(2);
 	}
 
 	@ModelTest(value = "./src/test/resources/records/MultipleConstructors.java", complianceLevel = 16)

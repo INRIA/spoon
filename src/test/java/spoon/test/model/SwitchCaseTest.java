@@ -8,8 +8,8 @@
 
 package spoon.test.model;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static com.google.common.base.Predicates.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -53,6 +54,7 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
+import spoon.testing.assertions.SpoonAssertions;
 import spoon.testing.utils.GitHubIssue;
 
 @DisplayName("Switchcase Tests")
@@ -165,9 +167,9 @@ public class SwitchCaseTest {
 			for (int i = 0; i < cases.size(); i++) {
 				CtCase<?> aCase = cases.get(i);
 				// make sure all are qualified when using toString (printer with ForceFullyQualifiedProcessor)
-				Assertions.assertThat(aCase.toString()).contains(expectedPrinterOutputForceFQP.get(i));
+				assertThat(aCase.toString()).contains(expectedPrinterOutputForceFQP.get(i));
 				// make sure the auto-import strips the package name but not the class name if not implicit
-				Assertions.assertThat(aCase.prettyprint()).contains(expectedPrinterOutputForcePretty.get(i));
+				assertThat(aCase.prettyprint()).contains(expectedPrinterOutputForcePretty.get(i));
 				assertEquals(StandardCopyOption.class.getName(), aCase.getCaseExpression().getType().getTypeDeclaration().getQualifiedName());
 			}
 		}
@@ -191,7 +193,7 @@ public class SwitchCaseTest {
 				20
 			);
 			CtSwitchExpression<?, ?> ctSwitch = model.getElements(new TypeFilter<CtSwitchExpression<?, ?>>(CtSwitchExpression.class)).get(0);
-			Assertions.assertThat(ctSwitch.toString()).contains(
+			assertThat(ctSwitch.toString()).contains(
 				"case ATOMIC_MOVE ->",
 				"case COPY_ATTRIBUTES ->",
 				"case REPLACE_EXISTING ->"
@@ -527,7 +529,7 @@ public class SwitchCaseTest {
 
 			ctCase.setCaseExpression(null);
 
-			assertThat(ctCase.getCaseExpressions().size(), equalTo(0));
+			assertThat(ctCase).getCaseExpressions().isEmpty();
 		}
 	}
 }

@@ -2,14 +2,18 @@ package spoon.test.annotation;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.testing.assertions.SpoonAssertions;
 import spoon.testing.utils.ModelTest;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static spoon.test.SpoonTestHelpers.containsRegexMatch;
+import java.lang.annotation.Annotation;
+
+import static com.google.common.base.Predicates.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 /**
  * @see <a href="https://docs.oracle.com/javase/specs/jls/se19/html/jls-4.html#jls-4.11">JLS 4.11</a>
@@ -34,15 +38,21 @@ class TypeUseAnnotationTest {
 				CtType<?> type = factory.Type().get("typeannotations.p01.ExtendsAndImplements");
 
 				// first, check the annotation of the extends type
-				assertThat(type.getSuperclass().getAnnotations().size(), equalTo(1));
-				assertThat(type.getSuperclass().getAnnotations().get(0).getType(), equalTo(typeUseARef(factory)));
-				assertThat(type.toString(), containsRegexMatch("extends java\\.lang\\.\\W*@.*TypeUseA\\W+Object"));
+				assertThat(type.getSuperclass().getAnnotations())
+						.map(ctAnnotation -> (CtTypeReference) ctAnnotation.getType())
+						.containsExactly(typeUseARef(factory));
+				assertThat(type)
+						.printed()
+						.containsPattern("extends java\\.lang\\.\\W*@.*TypeUseA\\W+Object");
 
 				// then, check the annotation of the implements type
 				CtTypeReference<?> superInterface = type.getSuperInterfaces().iterator().next();
-				assertThat(superInterface.getAnnotations().size(), equalTo(1));
-				assertThat(superInterface.getAnnotations().get(0).getType(), equalTo(typeUseBRef(factory)));
-				assertThat(type.toString(), containsRegexMatch("implements java\\.lang\\.\\W*@.*TypeUseB\\W+Cloneable"));
+				assertThat(superInterface.getAnnotations())
+						.map(ctAnnotation -> (CtTypeReference) ctAnnotation.getType())
+						.containsExactly(typeUseBRef(factory));
+				assertThat(type)
+						.printed()
+						.containsPattern("implements java\\.lang\\.\\W*@.*TypeUseB\\W+Cloneable");
 			}
 
 			@DisplayName("2. A type in the extends clause of an interface declaration (§9.1.3)")
@@ -52,9 +62,12 @@ class TypeUseAnnotationTest {
 				CtType<?> type = factory.Type().get("typeannotations.p02.InterfaceExtends");
 
 				CtTypeReference<?> superInterface = type.getSuperInterfaces().iterator().next();
-				assertThat(superInterface.getAnnotations().size(), equalTo(1));
-				assertThat(superInterface.getAnnotations().get(0).getType(), equalTo(typeUseARef(factory)));
-				assertThat(type.toString(), containsRegexMatch("extends java\\.lang\\.\\W*@.*TypeUseA\\W+Cloneable"));
+				assertThat(superInterface.getAnnotations())
+						.map(ctAnnotation -> (CtTypeReference) ctAnnotation.getType())
+						.containsExactly(typeUseARef(factory));
+				assertThat(type)
+						.printed()
+						.containsPattern("extends java\\.lang\\.\\W*@.*TypeUseA\\W+Cloneable");
 			}
 		}
 

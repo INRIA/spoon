@@ -1,14 +1,11 @@
 package spoon.test.prettyprinter;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +16,8 @@ import spoon.reflect.code.CtComment.CommentType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SniperInnerTypeTest {
 	private static final Path INPUT_PATH = Paths.get("src/test/java/");
@@ -62,12 +61,15 @@ public class SniperInnerTypeTest {
 		launcher.process();
 		launcher.prettyprint();
 		// Verify result file exist and is not empty
-		assertThat("Output file for " + path + " should exist", OUTPUT_PATH.resolve(path).toFile().exists(),
-				CoreMatchers.equalTo(true));
+		assertThat(OUTPUT_PATH.resolve(path))
+				.withFailMessage("Output file for %s should exist", path)
+				.exists();
 
 		String content = Files.readString(OUTPUT_PATH.resolve(path));
 
-		assertThat(content, CoreMatchers.notNullValue());
-		assertThat("Result class should not be empty", content.trim(), CoreMatchers.not(CoreMatchers.equalTo("")));
+		assertThat(content).isNotNull();
+		assertThat(content)
+				.withFailMessage("Result class should not be empty")
+				.isNotBlank();
 	}
 }

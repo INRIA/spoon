@@ -1,8 +1,6 @@
 package spoon.reflect.factory;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -25,8 +23,8 @@ class PackageFactoryTest {
 		CtPackage packageWithDuplicatedSimpleNames = factory.getOrCreate(nestedPackageName);
 		CtPackage topLevelPackage = factory.get(topLevelPackageName);
 
-		assertThat(topLevelPackage.getQualifiedName(), equalTo(topLevelPackageName));
-		assertThat(packageWithDuplicatedSimpleNames.getQualifiedName(), equalTo(nestedPackageName));
+		assertThat(topLevelPackage.getQualifiedName()).isEqualTo(topLevelPackageName);
+		assertThat(packageWithDuplicatedSimpleNames.getQualifiedName()).isEqualTo(nestedPackageName);
 
 		assertThat(topLevelPackage.getPackage(topLevelPackageName), sameInstance(packageWithDuplicatedSimpleNames));
 		assertThat(packageWithDuplicatedSimpleNames.getParent(), sameInstance(topLevelPackage));

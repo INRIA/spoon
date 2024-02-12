@@ -17,17 +17,6 @@
 package spoon.test.pkg;
 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -37,14 +26,7 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtCompilationUnit;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -58,16 +40,17 @@ import spoon.test.pkg.testclasses.Foo;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static spoon.testing.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -171,9 +154,9 @@ public class PackageTest {
 
 		List<CtCompilationUnit> compilationUnits = new ArrayList<>(launcher.getFactory().CompilationUnit().getMap().values());
 
-		org.hamcrest.MatcherAssert.assertThat(compilationUnits.size(), equalTo(2));
+		assertThat(compilationUnits).hasSize(2);
 		compilationUnits.forEach(
-				cu -> org.hamcrest.MatcherAssert.assertThat(cu.getFile().getName(), equalTo("package-info.java")));
+				cu -> assertThat(cu.getFile().getName()).isEqualTo("package-info.java"));
 	}
 	
 	@Test

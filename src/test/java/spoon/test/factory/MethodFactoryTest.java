@@ -12,8 +12,7 @@ import spoon.test.factory.testclasses4.Bar;
 
 import java.lang.reflect.Method;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 public class MethodFactoryTest {
 
@@ -30,7 +29,7 @@ public class MethodFactoryTest {
 
         actualCreatedReference = methodFactory.createReference(foo);
 
-        assertThat(actualCreatedReference, is(expectedReference));
+        assertThat(actualCreatedReference).isEqualTo(expectedReference);
     }
 
     @Test
@@ -56,6 +55,6 @@ public class MethodFactoryTest {
         actualCreatedReference = methodFactory.createReference(testMethod);
 
         // assert
-        assertThat(actualCreatedReference, is(expectedReference));
+        assertThat(actualCreatedReference).isEqualTo(expectedReference);
     }
 }

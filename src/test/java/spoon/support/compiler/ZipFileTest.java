@@ -14,8 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.StringContains.containsString;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ZipFileTest {
@@ -30,8 +29,8 @@ class ZipFileTest {
 		CtType<?> type = launcher.getFactory().Type().get("a.Test");
 		CtMethod<?> method = type.getMethod("foo");
 		assertNotNull(method.getOriginalSourceFragment().getSourceCode());
-		assertThat(method.getOriginalSourceFragment().getSourceCode(), containsString("/**"));
-		assertThat(method.getOriginalSourceFragment().getSourceCode(), containsString("foo()"));
+		assertThat(method.getOriginalSourceFragment().getSourceCode()).contains("/**");
+		assertThat(method.getOriginalSourceFragment().getSourceCode()).contains("foo()");
 	}
 
 	private Path createZip(Path tempDir) throws IOException {

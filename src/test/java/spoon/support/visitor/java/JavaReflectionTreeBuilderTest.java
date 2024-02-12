@@ -16,43 +16,8 @@
  */
 package spoon.support.visitor.java;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static spoon.testing.utils.ModelUtils.createFactory;
-import java.io.File;
-import java.io.ObjectInputStream;
-import java.io.Serial;
-import java.lang.annotation.Retention;
-import java.net.CookieManager;
-import java.net.URLClassLoader;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import com.mysema.query.support.ProjectableQuery;
+import org.assertj.core.api.InstanceOfAssertFactory;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -63,32 +28,9 @@ import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.metamodel.Metamodel;
 import spoon.metamodel.MetamodelConcept;
-import spoon.reflect.code.CtConditional;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtLambda;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.*;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtAnnotationMethod;
-import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtRecord;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeMember;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtElementPathBuilder;
@@ -115,7 +57,25 @@ import spoon.test.pkg.PackageTest;
 import spoon.test.pkg.cyclic.Outside;
 import spoon.test.pkg.cyclic.direct.Cyclic;
 import spoon.test.pkg.cyclic.indirect.Indirect;
+import spoon.testing.assertions.SpoonAssertions;
 import spoon.testing.utils.GitHubIssue;
+
+import java.io.File;
+import java.io.ObjectInputStream;
+import java.io.Serial;
+import java.lang.annotation.Retention;
+import java.net.CookieManager;
+import java.net.URLClassLoader;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.time.format.TextStyle;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class JavaReflectionTreeBuilderTest {
 
@@ -817,17 +777,27 @@ public class JavaReflectionTreeBuilderTest {
 		assertNotNull(ctString);
 
 		// ConstDesc is sealed
-		assertThat(ctConstantDesc.getExtendedModifiers(), hasItem(CtExtendedModifier.explicit(ModifierKind.SEALED)));
-		// DynamicConstDesc and String are permitted types
-		assertThat(ctConstantDesc.getPermittedTypes(), hasItems(ctDynamicConstantDesc.getReference(), ctString.getReference()));
-		// EnumDesc extends DynamicConstantDesc, so it should not be added to the permitted types of ConstantDesc
-		assertThat(ctConstantDesc.getPermittedTypes(), not(hasItem(ctEnumDesc.getReference())));
+		assertThat(ctConstantDesc).getExtendedModifiers()
+						.containsOnly(CtExtendedModifier.explicit(ModifierKind.SEALED));
+		assertThat(ctConstantDesc)
+						.getPermittedTypes()
+						// DynamicConstDesc and String are permitted types
+						.contains(ctDynamicConstantDesc.getReference(), ctString.getReference())
+						// EnumDesc extends DynamicConstantDesc, so it should not be added
+						// to the permitted types of ConstantDesc
+						.doesNotContain(ctEnumDesc.getReference());
 		// DynamicConstDesc is non-sealed
-		assertThat(ctDynamicConstantDesc.getExtendedModifiers(), hasItem(CtExtendedModifier.explicit(ModifierKind.NON_SEALED)));
+		assertThat(ctDynamicConstantDesc)
+				.getExtendedModifiers()
+				.contains(CtExtendedModifier.explicit(ModifierKind.NON_SEALED));
 		// EnumDesc extends DynamicConstDesc which is non-sealed, so it is not non-sealed itself
-		assertThat(ctEnumDesc.getModifiers(), not(hasItem(ModifierKind.NON_SEALED)));
+		assertThat(ctEnumDesc)
+				.getModifiers()
+				.doesNotContain(ModifierKind.NON_SEALED);
 		// String is final and not sealed, so neither sealed nor non-sealed should be applied
-		assertThat(ctString.getModifiers(), not(hasItems(ModifierKind.SEALED, ModifierKind.NON_SEALED)));
+		assertThat(ctString)
+				.getModifiers()
+				.doesNotContain(ModifierKind.SEALED, ModifierKind.NON_SEALED);
 	}
 
 	@Test
@@ -854,10 +824,15 @@ public class JavaReflectionTreeBuilderTest {
 		for (String inner : inners) {
 			current = current.getNestedType(inner);
 		}
-		assertThat(current, instanceOf(CtClass.class));
-		CtClass<?> asClass = (CtClass<?>) current;
-		assertThat(asClass.getConstructors().size(), equalTo(1));
-		assertThat(asClass.getConstructors().iterator().next().getParameters().size(), equalTo(inners.size()));
+		assertThat(current)
+				.isInstanceOf(CtClass.class)
+				.asInstanceOf(new InstanceOfAssertFactory<>(CtClass.class, SpoonAssertions::assertThat))
+				.getConstructors()
+				.hasSize(1)
+				.first()
+				.asInstanceOf(new InstanceOfAssertFactory<>(CtConstructor.class, SpoonAssertions::assertThat))
+				.getParameters()
+				.hasSize(inners.size());
 	}
 
 	@Test
@@ -876,7 +851,7 @@ public class JavaReflectionTreeBuilderTest {
 		CtMethod<?> method = test.getMethodsByName("foo").get(0);
 		CtParameter<?> parameter = method.getParameters().get(0);
 
-		assertThat(parameter.getSimpleName(), is("bar"));
+		assertThat(parameter).getSimpleName().isEqualTo("bar");
 	}
 
 	@Test
@@ -897,11 +872,13 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals(1, inner.getConstructors().length);
 		assertEquals(1, inner.getConstructors()[0].getParameterCount());
 
-		assertThat(ctInner.getConstructors(), hasSize(1));
-		assertThat(
-			ctInner.getConstructors().iterator().next().getParameters(),
-			hasSize(1)
-		);
+		assertThat(ctInner)
+				.getConstructors()
+				.hasSize(1)
+				.first()
+				.asInstanceOf(new InstanceOfAssertFactory<>(CtConstructor.class, SpoonAssertions::assertThat))
+				.getParameters()
+				.hasSize(1);
 	}
 
 	@Test
@@ -922,11 +899,13 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals(1, inner.getConstructors().length);
 		assertEquals(2, inner.getConstructors()[0].getParameterCount());
 
-		assertThat(ctInner.getConstructors(), hasSize(1));
-		assertThat(
-			ctInner.getConstructors().iterator().next().getParameters(),
-			hasSize(1)
-		);
+		assertThat(ctInner)
+				.getConstructors()
+				.hasSize(1)
+				.first()
+				.asInstanceOf(new InstanceOfAssertFactory<>(CtConstructor.class, SpoonAssertions::assertThat))
+				.getParameters()
+				.hasSize(1);
 	}
 
 	@ParameterizedTest

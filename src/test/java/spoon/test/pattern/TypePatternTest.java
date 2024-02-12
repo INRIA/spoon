@@ -22,12 +22,11 @@ import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.code.CtTypePatternImpl;
 import spoon.testing.utils.ModelTest;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 public class TypePatternTest {
 
@@ -80,6 +79,6 @@ public class TypePatternTest {
 		CtType<?> x = factory.Type().get("X");
 		CtTypePattern typePattern = x.getElements(new TypeFilter<>(CtTypePattern.class)).get(0);
 		assertTrue(typePattern.getPosition().isValidPosition());
-		assertThat(typePattern.getPosition(), equalTo(typePattern.getVariable().getPosition()));
+		assertThat(typePattern).getPosition().isEqualTo(typePattern.getVariable().getPosition());
 	}
 }

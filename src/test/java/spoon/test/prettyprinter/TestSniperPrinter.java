@@ -70,13 +70,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -407,10 +402,8 @@ public class TestSniperPrinter {
 		try {
 			launcher.createPrettyPrinter().calculate(cu, cu.getDeclaredTypes());
 		} catch (SpoonException e) {
-			assertThat(e.getMessage(), containsString(
-					"This typically means that the Sniper printer was set after building the model."));
-			assertThat(e.getMessage(), containsString(
-					"It must be set before building the model."));
+			assertThat(e.getMessage()).contains("This typically means that the Sniper printer was set after building the model.");
+			assertThat(e.getMessage()).contains("It must be set before building the model.");
 		}
 	}
 
@@ -428,7 +421,7 @@ public class TestSniperPrinter {
 
 		final String expectedFieldSource = "int newFieldAtTop = 2;";
 		BiConsumer<CtType<?>, String> assertTopAddedFieldOnSeparateLine = (type, result) ->
-				assertThat(result, containsString("{\n    " + expectedFieldSource));
+				assertThat(result).contains("{\n    " + expectedFieldSource);
 
 		// it doesn't matter which test resource is used, as long as it has a non-empty class
 		String nonEmptyClass = "TypeMemberComments";
@@ -447,7 +440,7 @@ public class TestSniperPrinter {
 
 		final String expectedClassSource = "class Nested {}";
 		BiConsumer<CtType<?>, String> assertTopAddedClassOnSeparateLine = (type, result) ->
-				assertThat(result, containsString("{\n    " + expectedClassSource));
+				assertThat(result).contains("{\n    " + expectedClassSource);
 
 		// it doesn't matter which test resource is used, as long as it has a non-empty class
 		String nonEmptyClass = "TypeMemberComments";
@@ -472,7 +465,7 @@ public class TestSniperPrinter {
 
 		final String expectedVariableSource = "int localVar = 2;";
 		BiConsumer<CtType<?>, String> assertTopAddedVariableOnSeparateLine = (type, result) ->
-				assertThat(result, containsString("{\n        " + expectedVariableSource));
+				assertThat(result).contains("{\n        " + expectedVariableSource);
 
 		// the test resource must have a class with a non-empty method
 		String classWithNonEmptyMethod = "methodimport.ClassWithStaticMethod";
@@ -491,9 +484,9 @@ public class TestSniperPrinter {
 			type.getNestedType("NonStaticInnerClass").addModifier(ModifierKind.STATIC);
 		};
 		BiConsumer<CtType<?>, String> assertCommentsCorrectlyPrinted = (type, result) -> {
-		    assertThat(result, containsString("// field comment\n"));
-			assertThat(result, containsString("// method comment\n"));
-			assertThat(result, containsString("// nested type comment\n"));
+			assertThat(result).contains("// field comment\n");
+			assertThat(result).contains("// method comment\n");
+			assertThat(result).contains("// nested type comment\n");
 		};
 
 		testSniper("TypeMemberComments", addModifiers, assertCommentsCorrectlyPrinted);
@@ -513,7 +506,7 @@ public class TestSniperPrinter {
 		};
 
 		BiConsumer<CtType<?>, String> assertCommentCorrectlyPrinted = (type, result) -> {
-			assertThat(result, containsString("// field comment\n"));
+			assertThat(result).contains("// field comment\n");
 		};
 
 		testSniper("TypeMemberComments", removeModifier, assertCommentCorrectlyPrinted);
@@ -534,7 +527,7 @@ public class TestSniperPrinter {
 		};
 
 		BiConsumer<CtType<?>, String> assertCommentCorrectlyPrinted = (type, result) -> {
-			assertThat(result, containsString("// " + commentContent + "\n"));
+			assertThat(result).contains("// " + commentContent + "\n");
 		};
 
 		testSniper("TypeMemberComments", enactModifications, assertCommentCorrectlyPrinted);
@@ -551,12 +544,11 @@ public class TestSniperPrinter {
 		};
 
 		BiConsumer<CtType<?>, String> assertFieldCommentPrinted = (type, result) ->
-			assertThat(result, allOf(
-						containsString("// field comment\n    int NON_FINAL_FIELD"),
-						containsString("// method comment\n    void nonStaticMethod"),
-						containsString("// nested type comment\n    class NonStaticInnerClass")
-					)
-			);
+			assertThat(result).contains(
+						"// field comment\n    int NON_FINAL_FIELD",
+						"// method comment\n    void nonStaticMethod",
+						"// nested type comment\n    class NonStaticInnerClass"
+					);
 
 		testSniper("TypeMemberComments", removeTypeMemberModifiers, assertFieldCommentPrinted);
 	}
@@ -573,9 +565,11 @@ public class TestSniperPrinter {
 			cu.getImports().add(factory.createImport(arrayListRef));
 		};
 		BiConsumer<CtType<?>, String> assertImportsPrintedCorrectly = (type, result) -> {
-			assertThat(result, anyOf(
-					containsString("import java.util.Set;\nimport java.util.ArrayList;\n"),
-					containsString("import java.util.ArrayList;\nimport java.util.Set;\n")));
+			assertThat(result)
+					.containsAnyOf(
+							"import java.util.Set;\nimport java.util.ArrayList;\n",
+							"import java.util.ArrayList;\nimport java.util.Set;\n"
+					);
 		};
 
 		testSniper("ClassWithSingleImport", addArrayListImport, assertImportsPrintedCorrectly);
@@ -594,7 +588,7 @@ public class TestSniperPrinter {
 			cu.getImports().add(factory.createImport(arrayListRef));
 		};
 		BiConsumer<CtType<?>, String> assertImportsPrintedCorrectly = (type, result) -> {
-			assertThat(result, containsString("\nimport java.util.ArrayList;\n"));
+			assertThat(result).contains("\nimport java.util.ArrayList;\n");
 		};
 
 		testSniper("visibility.YamlRepresenter", addArrayListImport, assertImportsPrintedCorrectly);
@@ -612,16 +606,16 @@ public class TestSniperPrinter {
 					.addStatement(0, fact.createCodeSnippetStatement("System.out.println(z);"));
 		};
 		BiConsumer<CtType<?>, String> assertTabs = (type, result) -> {
-			assertThat(result, containsString("\n\tint z = 3;"));
-			assertThat(result, containsString("\n\t\tSystem"));
+			assertThat(result).contains("\n\tint z = 3;");
+			assertThat(result).contains("\n\t\tSystem");
 		};
 		BiConsumer<CtType<?>, String> assertTwoSpaces = (type, result) -> {
-		    assertThat(result, containsString("\n  int z = 3;"));
-		    assertThat(result, containsString("\n    System"));
+			assertThat(result).contains("\n  int z = 3;");
+			assertThat(result).contains("\n    System");
 		};
 		BiConsumer<CtType<?>, String> assertFourSpaces = (type, result) -> {
-			assertThat(result, containsString("\n    int z = 3;"));
-			assertThat(result, containsString("\n        System"));
+			assertThat(result).contains("\n    int z = 3;");
+			assertThat(result).contains("\n        System");
 		};
 
 		testSniper("indentation.Tabs", addElements, assertTabs);
@@ -641,11 +635,11 @@ public class TestSniperPrinter {
 		final String newField = "int z = 2;";
 
 		BiConsumer<CtType<?>, String> assertTabs = (type, result) ->
-				assertThat(result, containsString("\n\t" + newField));
+				assertThat(result).contains("\n\t" + newField);
 		BiConsumer<CtType<?>, String> assertTwoSpaces = (type, result) ->
-				assertThat(result, containsString("\n  " + newField));
+				assertThat(result).contains("\n  " + newField);
 		BiConsumer<CtType<?>, String> assertFourSpaces = (type, result) ->
-				assertThat(result, containsString("\n    " + newField));
+				assertThat(result).contains("\n    " + newField);
 
 		testSniper("indentation.singletypemember.Tabs", addElement, assertTabs);
 		testSniper("indentation.singletypemember.TwoSpaces", addElement, assertTwoSpaces);
@@ -662,7 +656,7 @@ public class TestSniperPrinter {
 			fact.createField(type, new HashSet<>(), fact.Type().integerPrimitiveType(), "z", fact.createLiteral(3));
 		};
 		testSniper("indentation.NoTypeMembers", addField, (type, result) -> {
-			assertThat(result, containsString("\n\tint z = 3;"));
+			assertThat(result).contains("\n\tint z = 3;");
 		});
 	}
 
@@ -680,7 +674,7 @@ public class TestSniperPrinter {
 			method.getBody().addStatement(nestedOps);
 		};
 		BiConsumer<CtType<?>, String> assertCorrectlyPrinted =
-				(type, result) -> assertThat(result, containsString(declaration));
+				(type, result) -> assertThat(result).contains(declaration);
 
 		testSniper("methodimport.ClassWithStaticMethod", addNestedOperator, assertCorrectlyPrinted);
 	}
@@ -709,7 +703,7 @@ public class TestSniperPrinter {
 				.getEnvironment()
 				.createPrettyPrinter().printTypes(classWithStaticMethodImport);
 
-		assertThat(output, containsString("import static methodimport.ClassWithStaticMethod.staticMethod;"));
+		assertThat(output).contains("import static methodimport.ClassWithStaticMethod.staticMethod;");
 	}
 
 	@Test
@@ -734,7 +728,7 @@ public class TestSniperPrinter {
 				.getEnvironment()
 				.createPrettyPrinter().printTypes(classWithStaticMethodImport);
 
-		assertThat(output, containsString("import static methodimport.ClassWithStaticMethod.staticMethod;"));
+		assertThat(output).contains("import static methodimport.ClassWithStaticMethod.staticMethod;");
 	}
 
 	@Test
@@ -764,7 +758,7 @@ public class TestSniperPrinter {
 			ctFor.getForInit().forEach(CtElement::delete);
 		};
 		BiConsumer<CtType<?>, String> assertNotStaticFindFirstIsEmpty = (type, result) ->
-            assertThat(result, containsString("for (; i < 10; i++)"));
+				assertThat(result).contains("for (; i < 10; i++)");
 
 		testSniper("ForLoop", deleteForUpdate, assertNotStaticFindFirstIsEmpty);
 	}
@@ -779,7 +773,7 @@ public class TestSniperPrinter {
 			ctFor.getForUpdate().forEach(CtElement::delete);
 		};
 		BiConsumer<CtType<?>, String> assertNotStaticFindFirstIsEmpty = (type, result) ->
-				assertThat(result, containsString("for (int i = 0; i < 10;)"));
+				assertThat(result).contains("for (int i = 0; i < 10;)");
 
 		testSniper("ForLoop", deleteForUpdate, assertNotStaticFindFirstIsEmpty);
 	}
@@ -793,7 +787,7 @@ public class TestSniperPrinter {
 		Consumer<CtType<?>> deleteForUpdate = type -> {};
 
 		BiConsumer<CtType<?>, String> assertContainsSuperWithUnaryOperator = (type, result) ->
-				assertThat(result, containsString("super.a(-x);"));
+				assertThat(result).contains("super.a(-x);");
 
 		testSniper("superCall.SuperCallSniperTestClass", deleteForUpdate, assertContainsSuperWithUnaryOperator);
 	}
@@ -808,7 +802,7 @@ public class TestSniperPrinter {
 						.forEachRemaining(TestSniperPrinter::markElementForSniperPrinting);
 
 		BiConsumer<CtType<?>, String> assertPrintsRoundBracketsCorrectly = (type, result) ->
-				assertThat(result, containsString("((double) (3 / 2)) / 2"));
+				assertThat(result).contains("((double) (3 / 2)) / 2");
 
 		testSniper("ArithmeticExpression", noOpModifyFieldAssignment, assertPrintsRoundBracketsCorrectly);
 	}
@@ -821,7 +815,7 @@ public class TestSniperPrinter {
 		};
 
 		BiConsumer<CtType<?>, String> assertDoesNotContainAnnotation = (type, result) ->
-				assertThat(result, not(containsString("@abc.def.xyz")));
+				assertThat(result).doesNotContain("@abc.def.xyz");
 
 		testSniper("sniperPrinter.DeleteAnnotation", deleteAnnotation, assertDoesNotContainAnnotation);
 	}
@@ -836,7 +830,7 @@ public class TestSniperPrinter {
 		};
 
 		BiConsumer<CtType<?>, String> assertContainsSpaceAfterFinal = (type, result) ->
-				assertThat(result, containsString("private static final java.lang.Integer x;"));
+				assertThat(result).contains("private static final java.lang.Integer x;");
 
 		testSniper("sniperPrinter.SpaceAfterFinal", modifyField, assertContainsSpaceAfterFinal);
 	}
@@ -856,7 +850,7 @@ public class TestSniperPrinter {
 				assertTrue(new TypeAdaptor(bottom).isOverriding(bottomFoo, topFoo));
 			},
 			// Did not reformat body
-			(type, result) -> assertThat(result, containsString("System. out. println(1+2\n"))
+				(type, result) -> assertThat(result).contains("System. out. println(1+2\n")
 		);
 	}
 
@@ -873,8 +867,8 @@ public class TestSniperPrinter {
 					TestSniperPrinter.markElementForSniperPrinting(getTryWithResource(type));
 
 			BiConsumer<CtType<?>, String> assertPrintsResourcesCorrectly = (type, result) ->
-					assertThat(result, containsString(" try (ZipFile zf = new ZipFile(zipFileName);\n" +
-							"             BufferedWriter writer = newBufferedWriter(outputFilePath, charset))"));
+					assertThat(result).contains(" try (ZipFile zf = new ZipFile(zipFileName);\n" +
+							"             BufferedWriter writer = newBufferedWriter(outputFilePath, charset))");
 
 			testSniper("sniperPrinter.tryWithResource.PrintOnce", noOpModifyTryWithResource, assertPrintsResourcesCorrectly);
 		}
@@ -886,8 +880,8 @@ public class TestSniperPrinter {
 					TestSniperPrinter.markElementForSniperPrinting(getTryWithResource(type));
 
 			BiConsumer<CtType<?>, String> assertPrintsResourcesCorrectly = (type, result) ->
-					assertThat(result, containsString(" try (ZipFile zf = new ZipFile(zipFileName);\n" +
-							"             BufferedWriter writer = newBufferedWriter(outputFilePath, charset);)"));
+					assertThat(result).contains(" try (ZipFile zf = new ZipFile(zipFileName);\n" +
+							"             BufferedWriter writer = newBufferedWriter(outputFilePath, charset);)");
 
 			testSniper("sniperPrinter.tryWithResource.RetainSemiColon", noOpModifyTryWithResource, assertPrintsResourcesCorrectly);
 		}
@@ -907,7 +901,7 @@ public class TestSniperPrinter {
 
 		private BiConsumer<CtType<?>, String> assertPrintsBracketForArrayInitialisation(String arrayDeclaration) {
 			return (type, result) ->
-					assertThat(result, containsString(arrayDeclaration));
+					assertThat(result).contains(arrayDeclaration);
 		}
 
 		@Test

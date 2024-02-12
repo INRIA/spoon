@@ -50,8 +50,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -252,7 +251,7 @@ public class MethodReferenceTest {
 	public void testGetGenericExecutableReference() throws Exception {
 		CtType<?> classCloud = ModelUtils.buildClass(Cloud.class);
 		List<CtMethod<?>> methods = classCloud.getMethodsByName("method");
-		assertThat(methods.size(), is(3));
+		assertThat(methods).hasSize(3);
 
 		int n = 0;
 		for (CtMethod<?> method1 : classCloud.getMethodsByName("method")) {
@@ -261,7 +260,7 @@ public class MethodReferenceTest {
 			assertNotNull(method);
 			assertEquals("method", method.getName());
 			List<CtParameter<?>> parameters = method1.getParameters();
-			assertThat(parameters.size(), is(2));
+			assertThat(parameters).hasSize(2);
 
 			//check that we have found the method with correct parameters
 			for (int i = 0; i < parameters.size(); i++) {
@@ -283,7 +282,7 @@ public class MethodReferenceTest {
 			assertSame(method1, execRef.getDeclaration());
 		}
 
-		assertThat(n, is(2*3));
+		assertThat(n).isEqualTo(2 * 3);
 	}
 
 	private void assertTypedBy(Class<?> expected, CtTypeReference<?> type) {
@@ -321,7 +320,7 @@ public class MethodReferenceTest {
 	public void testReferenceBuilderWithComplexGenerics() throws Exception {
 		CtType<?> classCloud = ModelUtils.buildClass(AssertJ.class);
 		List<CtMethod<?>> methods = classCloud.getMethodsByName("assertThat");
-		assertThat(methods.size(), is(1));
+		assertThat(methods).hasSize(1);
 
 		CtMethod method1 = methods.get(0);
 
@@ -330,7 +329,7 @@ public class MethodReferenceTest {
 		assertNotNull(method);
 		assertEquals("assertThat", method.getName());
 		List<CtParameter<?>> parameters = method1.getParameters();
-		assertThat(parameters.size(), is(1));
+		assertThat(parameters).hasSize(1);
 
 		//check that we have found the method with correct parameters
 		CtTypeReference<?> paramTypeRef = parameters.get(0).getType();

@@ -29,8 +29,7 @@ import spoon.support.compiler.FileSystemFolder;
 import spoon.support.compiler.FilteringFolder;
 import spoon.support.compiler.VirtualFolder;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -58,8 +57,8 @@ public class ResourceTest {
 		String entry1 = "src/test/resources/spoon/test/api/CommentedClass.java";
 		FileSystemFile file1 = new FileSystemFile(new File(entry1));
 
-		assertThat(fileSystemFolder.getAllFiles().contains(file), is(true));
-		assertThat(fileSystemFolder.getAllFiles().contains(file1), is(true));
+		assertThat(fileSystemFolder.getAllFiles()).contains(file);
+		assertThat(fileSystemFolder.getAllFiles()).contains(file1);
 	}
 
 	@Test

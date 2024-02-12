@@ -16,10 +16,9 @@
  */
 package spoon.test.ctCase;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 
 import java.util.List;
@@ -95,8 +94,8 @@ public class CtCaseTest {
 		// assert
 		assertEquals(firstStatementToBeInserted, testCase.getStatement(0));
 		assertEquals(secondStatementToBeInserted, testCase.getStatement(1));
-		assertThat(firstStatementToBeInserted.getParent(), is(testCase));
-		assertThat(secondStatementToBeInserted.getParent(), is(testCase));
+		assertThat(firstStatementToBeInserted.getParent()).isEqualTo(testCase);
+		assertThat(secondStatementToBeInserted.getParent()).isEqualTo(testCase);
 	}
 
 	@Test
@@ -107,11 +106,11 @@ public class CtCaseTest {
 		CtStatement testStatement = factory.Code().createCodeSnippetStatement("int hello = 1;").compile();
 		CtCase<?> testCase = factory.createCase();
 		testCase.addStatement(testStatement);
-		assertThat(testCase.getStatements().size(), is(1));
+		assertThat(testCase).getStatements().hasSize(1);
 
 		testCase.removeStatement(testStatement);
 
-		assertThat(testCase.getStatements().size(), is(0));
+		assertThat(testCase).getStatements().isEmpty();
 	}
 
 	@Test
@@ -125,8 +124,8 @@ public class CtCaseTest {
 
 		testCase.insertBegin(statementToBeInserted);
 
-		assertThat(testCase.getStatement(0), is(statementToBeInserted));
-		assertThat(statementToBeInserted.getParent(), is(testCase));
+		assertThat(testCase.getStatement(0)).isEqualTo(statementToBeInserted);
+		assertThat(statementToBeInserted.getParent()).isEqualTo(testCase);
 	}
 
 	@Test
@@ -141,8 +140,8 @@ public class CtCaseTest {
 		testCase.insertEnd(statementToBeInserted);
 
 		int lastStatementIndex = testCase.getStatements().size() - 1;
-		assertThat(testCase.getStatement(lastStatementIndex), is(statementToBeInserted));
-		assertThat(statementToBeInserted.getParent(), is(testCase));
+		assertThat(testCase.getStatement(lastStatementIndex)).isEqualTo(statementToBeInserted);
+		assertThat(statementToBeInserted.getParent()).isEqualTo(testCase);
 	}
 
 	@Test
@@ -169,8 +168,8 @@ public class CtCaseTest {
 		int secondLastStatementIndex = lastStatementIndex - 1;
 		assertEquals(firstStatementToBeInserted, testCase.getStatement(secondLastStatementIndex));
 		assertEquals(secondStatementToBeInserted, testCase.getStatement(lastStatementIndex));
-		assertThat(firstStatementToBeInserted.getParent(), is(testCase));
-		assertThat(secondStatementToBeInserted.getParent(), is(testCase));
+		assertThat(firstStatementToBeInserted.getParent()).isEqualTo(testCase);
+		assertThat(secondStatementToBeInserted.getParent()).isEqualTo(testCase);
 	}
 
 	private <T extends CtElement> List<T> elementsOfType(Class<T> type, Factory factory) {

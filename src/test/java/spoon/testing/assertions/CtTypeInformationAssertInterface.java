@@ -2,6 +2,7 @@ package spoon.testing.assertions;
 import java.util.Collection;
 import org.assertj.core.api.AbstractCollectionAssert;
 import org.assertj.core.api.AbstractObjectAssert;
+import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
 import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.ModifierKind;
@@ -17,5 +18,10 @@ public interface CtTypeInformationAssertInterface<A extends AbstractObjectAssert
 
 	default CtTypeReferenceAssertInterface<?, ?> getSuperclass() {
 		return SpoonAssertions.assertThat(actual().getSuperclass());
+	}
+
+	default AbstractStringAssert<?> getQualifiedName() {
+		self().isNotNull();
+		return Assertions.assertThat(actual().getQualifiedName());
 	}
 }

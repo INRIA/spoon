@@ -25,7 +25,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.test.interfaces.testclasses.InterfaceWithDefaultMethods;
 import spoon.reflect.declaration.CtInterface;
 import spoon.test.interfaces.testclasses.ExtendsStaticMethodInterface;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.reflect.declaration.ModifierKind;
@@ -45,9 +44,7 @@ import java.util.stream.Collectors;
 import java.util.Collection;
 import java.io.File;
 
-import static spoon.test.SpoonTestHelpers.contentEquals;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -157,20 +154,25 @@ public class InterfaceTest {
 		CtModel model = SpoonTestHelpers.createModelFromString(code, 16);
 		CtBlock<?> block = SpoonTestHelpers.getBlock(model);
 
-		assertThat("The local interface does not exist in the model", block.getStatements().size(), is(1));
+		assertThat(block).getStatements()
+				.withFailMessage("The local interface does not exist in the model")
+				.hasSize(1);
 
 		CtStatement statement = block.getStatement(0);
 		Assertions.assertTrue(statement instanceof CtInterface<?>);
 		CtInterface<?> interfaceType = (CtInterface<?>) statement;
 
-		assertThat(interfaceType.isLocalType(), is(true));
-		assertThat(interfaceType.getSimpleName(), is("1MyInterface"));
-		assertThat(interfaceType.getFields().size(), is(1));
-		assertThat(interfaceType.getMethods().size(), is(1));
-		MatcherAssert.assertThat(interfaceType.getExtendedModifiers(), contentEquals(
-				CtExtendedModifier.implicit(ModifierKind.STATIC),
-				CtExtendedModifier.implicit(ModifierKind.ABSTRACT)
-		));
+		assertThat(interfaceType)
+				.nested(a -> {
+					a.getSimpleName().isEqualTo("1MyInterface");
+					a.getFields().hasSize(1);
+					a.getMethods().hasSize(1);
+					a.getExtendedModifiers().containsOnly(
+							CtExtendedModifier.implicit(ModifierKind.STATIC),
+							CtExtendedModifier.implicit(ModifierKind.ABSTRACT)
+					);
+				})
+				.matches(CtInterface::isLocalType);
 	}
 
 	@org.junit.jupiter.api.Test
@@ -178,10 +180,10 @@ public class InterfaceTest {
 		// contract: a simple interface has the correct modifiers applied
 		// see https://docs.oracle.com/javase/specs/jls/se17/html/jls-9.html#jls-9.1.1
 		CtType<?> emptyInterface = build("spoon.test.interfaces.testclasses", "EmptyInterface");
-		assertThat(emptyInterface.getExtendedModifiers(), contentEquals(
+		assertThat(emptyInterface).getExtendedModifiers().containsOnly(
 				CtExtendedModifier.implicit(ModifierKind.ABSTRACT),
 				CtExtendedModifier.explicit(ModifierKind.PUBLIC)
-		));
+		);
 	}
 
 	@ModelTest("src/test/resources/nestedInInterface")

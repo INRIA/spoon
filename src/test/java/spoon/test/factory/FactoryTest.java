@@ -45,8 +45,7 @@ import spoon.test.SpoonTestHelpers;
 import spoon.test.factory.testclasses.Foo;
 
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -188,7 +187,7 @@ public class FactoryTest {
 		CtPackage packageInNamedModule = launcher.getFactory().Package().get(packageName);
 
 		assertNotNull(packageInNamedModule);
-		assertThat(packageInNamedModule.getQualifiedName(), equalTo(packageName));
+		assertThat(packageInNamedModule.getQualifiedName()).isEqualTo(packageName);
 	}
 
 

@@ -54,9 +54,7 @@ import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.LineSeparatorExtension;
 
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -376,7 +374,7 @@ public class TryCatchTest {
 
 		CtCatch targetCatch = catches.get(0);
 		List<CtTypeReference<?>> paramTypes = targetCatch.getParameter().getMultiTypes();
-		assertThat(paramTypes.size(), equalTo(2));
+		assertThat(paramTypes).hasSize(2);
 		assertTrue(paramTypes.get(0).isSimplyQualified(), "first type reference is fully qualified");
 		assertTrue(paramTypes.get(1).isSimplyQualified(), "second type reference is fully qualified");
 	}
@@ -393,7 +391,7 @@ public class TryCatchTest {
 
 		CtCatch targetCatch = catches.get(0);
 		List<CtTypeReference<?>> paramTypes = targetCatch.getParameter().getMultiTypes();
-		assertThat(paramTypes.size(), equalTo(2));
+		assertThat(paramTypes).hasSize(2);
 		assertTrue(paramTypes.get(0).isSimplyQualified(), "first type reference should be unqualified");
 		assertFalse(paramTypes.get(1).isSimplyQualified(), "second type reference should be qualified");
 	}
@@ -411,10 +409,10 @@ public class TryCatchTest {
 
 		CtLocalVariableReference<?> varRef = model.filterChildren(CtLocalVariableReference.class::isInstance).first();
 
-		assertThat(varRef.getType().getQualifiedName(), equalTo("NonClosableGenericInTryWithResources.GenericType"));
+		assertThat(varRef.getType().getQualifiedName()).isEqualTo("NonClosableGenericInTryWithResources.GenericType");
 
 		// We don't extract the type arguments
-		assertThat(varRef.getType().getActualTypeArguments().size(), equalTo(0));
+		assertThat(varRef.getType().getActualTypeArguments()).isEmpty();
 	}
 
 	@ExtendWith(LineSeparatorExtension.class)

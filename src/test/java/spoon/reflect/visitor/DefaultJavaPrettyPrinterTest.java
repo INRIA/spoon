@@ -5,6 +5,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -45,16 +46,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static spoon.test.SpoonTestHelpers.containsRegexMatch;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 public class DefaultJavaPrettyPrinterTest {
 
@@ -83,7 +79,7 @@ public class DefaultJavaPrettyPrinterTest {
         // should match the input
         CtExpression<?> expr = createLauncherWithOptimizeParenthesesPrinter()
                 .getFactory().createCodeSnippetExpression(rawExpression).compile();
-        assertThat(expr.toString(), equalTo(rawExpression));
+        assertThat(expr).printed().isEqualTo(rawExpression);
     }
 
     @ParameterizedTest
@@ -100,7 +96,7 @@ public class DefaultJavaPrettyPrinterTest {
         // pretty-printed output should match the input
         CtStatement statement = createLauncherWithOptimizeParenthesesPrinter()
                 .getFactory().createCodeSnippetStatement(rawStatement).compile();
-        assertThat(statement.toString(), equalTo(rawStatement));
+        assertThat(statement).printed().isEqualTo(rawStatement);
     }
 
     private static Launcher createLauncherWithOptimizeParenthesesPrinter() {
@@ -125,9 +121,10 @@ public class DefaultJavaPrettyPrinterTest {
                 .getPosition().getCompilationUnit();
 
         PrettyPrinter autoImportPrettyPrinter = launcher.getEnvironment().createPrettyPrinterAutoImport();
-        String output = autoImportPrettyPrinter.prettyprint(cu);
 
-        assertThat(output, not(containsString("import java.util.function.IntFunction;")));
+        assertThat(cu)
+                .printed(autoImportPrettyPrinter)
+                .doesNotContain("import java.util.function.IntFunction;");
     }
 
     @Test
@@ -141,14 +138,17 @@ public class DefaultJavaPrettyPrinterTest {
         CtCompilationUnit cu = launcher.getFactory().Type().get("LocalTypesHolder")
                 .getPosition().getCompilationUnit();
 
-        String output = cu.prettyprint();
         // local classes will always have a leading space, without leading digits
-        assertThat(output, containsString(" MyClass"));
-        assertThat(output, containsString(" MyEnum"));
-        assertThat(output, containsString(" MyInterface"));
-        // the code does not contain a 1, which would be the prefix of the local types' binary names
-        // in the given code snippet
-        assertThat(output, not(containsString("1")));
+        assertThat(cu)
+                .prettyPrinted()
+                .contains( // contains all
+                        " MyClass",
+                        " MyEnum",
+                        " MyInterface"
+                )
+                // the code does not contain a 1, which would be the prefix of the local types' binary names
+                // in the given code snippet
+                .doesNotContain("1");
     }
 
     @Test
@@ -160,6 +160,7 @@ public class DefaultJavaPrettyPrinterTest {
                 .setElseStatement(launcher.getFactory().createBlock());
         assertDoesNotThrow(() -> ctIf.toString());
     }
+
     @Test
     void testEmptyIfBlocksWithCommentsArePrintedWithoutError() {
         // contract: empty if blocks don't crash the DJJP
@@ -190,7 +191,7 @@ public class DefaultJavaPrettyPrinterTest {
         String code = SpoonTestHelpers.wrapLocal(line);
         CtModel model = SpoonTestHelpers.createModelFromString(code, 8);
         CtType<?> first = model.getAllTypes().iterator().next();
-        assertThat(first.toString(), containsString(line));
+        assertThat(first).printed().contains(line);
     }
 
     @Test
@@ -205,17 +206,23 @@ public class DefaultJavaPrettyPrinterTest {
         exeExpression.getExecutable().setSimpleName("binarySearch");
         exeExpression.setTarget(factory.createTypeAccess(typeReference));
         // if no type parameters are given, no < and no > should be printed
-        assertThat(exeExpression.toString(), not(anyOf(containsString("<"), containsString(">"))));
+        assertThat(exeExpression)
+                .printed()
+                .doesNotContain("<", ">");
 
         exeExpression.getExecutable().addActualTypeArgument(factory.Type().integerType());
-        // with type parameters, the < and > should be printed
-        assertThat(exeExpression.toString(), allOf(containsString("<"), containsString(">")));
-        // the type parameter should appear
-        assertThat(exeExpression.toString(), containsString("Integer"));
+        assertThat(exeExpression)
+                .printed()
+                // with type parameters, the < and > should be printed
+                .contains("<", ">")
+                // with type parameters, the < and > should be printed
+                .contains("Integer");
 
         exeExpression.getExecutable().addActualTypeArgument(factory.Type().integerType());
         // more than one parameter type should be separated (with .* to allow imports)
-        assertThat(exeExpression.toString(), containsRegexMatch("<(.*)Integer, (.*)Integer>"));
+        assertThat(exeExpression)
+                .printed()
+                .containsPattern("<(.*)Integer, (.*)Integer>");
 
         // remove type arguments again, we want to try something else
         exeExpression.getExecutable().setActualTypeArguments(null);
@@ -226,7 +233,9 @@ public class DefaultJavaPrettyPrinterTest {
                 .orElseThrow();
         complexTypeReference.addActualTypeArgument(complexTypeReference.clone().setSimpleName("Comhyperbola"));
         exeExpression.getExecutable().addActualTypeArgument(complexTypeReference);
-        assertThat(exeExpression.toString(), containsRegexMatch("<(.*)Comparable<(.*)Integer, (.*)Comhyperbola<(.*)Integer>>>"));
+        assertThat(exeExpression)
+                .printed()
+                .containsPattern("<(.*)Comparable<(.*)Integer, (.*)Comhyperbola<(.*)Integer>>>");
     }
 
     @ParameterizedTest
@@ -235,14 +244,15 @@ public class DefaultJavaPrettyPrinterTest {
         // contract: sealed types are printed correctly
         String printed = sealedType.toString();
         // the sealed keyword is always required
-        assertThat(printed, containsString("sealed"));
+
+        assertThat(printed).contains("sealed");
         if (explicitPermitted.isEmpty()) {
             // the permits keyword should only exist if explicit permitted types are printed
-            assertThat(printed, not(containsString("permits")));
+            assertThat(printed).doesNotContain("permits");
         } else {
-            assertThat(printed, containsString("permits"));
+            assertThat(printed).contains("permits");
             for (String permitted : explicitPermitted) {
-                assertThat(printed, containsRegexMatch("\\s" + permitted));
+                assertThat(printed).containsPattern("\\s" + permitted);
             }
         }
     }
@@ -253,7 +263,9 @@ public class DefaultJavaPrettyPrinterTest {
         Launcher launcher = new Launcher();
         CtClass<?> ctClass = launcher.getFactory().Class().create("MyClass");
         ctClass.addModifier(ModifierKind.NON_SEALED);
-        assertThat(ctClass.toString(), containsString("non-sealed "));
+        assertThat(ctClass)
+                .printed()
+                .contains("non-sealed ");
     }
 
     static class SealedTypesProvider implements ArgumentsProvider {
@@ -266,10 +278,10 @@ public class DefaultJavaPrettyPrinterTest {
             launcher.buildModel();
             Factory factory = launcher.getFactory();
             return Stream.of(
-                Arguments.of(factory.Type().get("SealedClassWithPermits"), List.of("ExtendingClass", "OtherExtendingClass")),
-                Arguments.of(factory.Type().get("SealedInterfaceWithPermits"), List.of("ExtendingClass", "OtherExtendingClass")),
-                Arguments.of(factory.Type().get("SealedClassWithNestedSubclasses"), List.of()), // implicit
-                Arguments.of(factory.Type().get("SealedInterfaceWithNestedSubclasses"), List.of()) // implicit
+                    Arguments.of(factory.Type().get("SealedClassWithPermits"), List.of("ExtendingClass", "OtherExtendingClass")),
+                    Arguments.of(factory.Type().get("SealedInterfaceWithPermits"), List.of("ExtendingClass", "OtherExtendingClass")),
+                    Arguments.of(factory.Type().get("SealedClassWithNestedSubclasses"), List.of()), // implicit
+                    Arguments.of(factory.Type().get("SealedInterfaceWithNestedSubclasses"), List.of()) // implicit
             );
         }
     }
@@ -296,7 +308,7 @@ public class DefaultJavaPrettyPrinterTest {
             String actualStringRepresentation = localVariable.toString();
 
             // assert
-            assertThat(actualStringRepresentation, equalTo("int[] intArray = new int[]{ 3 }"));
+            assertThat(actualStringRepresentation).isEqualTo("int[] intArray = new int[]{ 3 }");
         }
 
         @Test
@@ -321,8 +333,8 @@ public class DefaultJavaPrettyPrinterTest {
             String actualStringRepresentation = localVariable.toString();
 
             // assert
-            assertThat(actualStringRepresentation,
-                    equalTo("spoon.reflect.declaration.CtElement spoonElements[] = new spoon.reflect.declaration.CtElement[]{ 1.0F }"));
+            assertThat(actualStringRepresentation).
+                    isEqualTo("spoon.reflect.declaration.CtElement spoonElements[] = new spoon.reflect.declaration.CtElement[]{ 1.0F }");
         }
     }
 
@@ -330,13 +342,16 @@ public class DefaultJavaPrettyPrinterTest {
     void testKeepGenericType(Factory factory) {
         // contract: generic type parameters can appear in instanceof expressions if they are only carried over
         CtType<?> x = factory.Type().get("InstanceofGenerics");
-        String printed = x.toString();
-        assertThat(printed, containsString("Set<T>"));
-        assertThat(printed, containsString("List<T> list"));
-        assertThat(printed, containsRegexMatch("Collection<.*String>"));
-        assertThat(printed, containsRegexMatch("List<.*List<T>>"));
-        assertThat(printed, containsRegexMatch("List<.*List<\\? extends T>>"));
-        assertThat(printed, containsRegexMatch("List<.*List<\\? super T>>"));
+        assertThat(x)
+                .printed()
+                .contains(
+                        "Set<T>",
+                        "List<T> list"
+                )
+                .containsPattern("Collection<.*String>")
+                .containsPattern("List<.*List<T>>")
+                .containsPattern("List<.*List<\\? extends T>>")
+                .containsPattern("List<.*List<\\? super T>>");
     }
 
     @Test
@@ -354,16 +369,20 @@ public class DefaultJavaPrettyPrinterTest {
         SpoonModelBuilder spoonModelBuilder = launcherForCompilingPrettyPrintedString.createCompiler(SpoonResourceHelper.resources("spooned/TypeCastOnFieldRead.java"));
 
         // assert
-        assertThat(spoonModelBuilder.build(), equalTo(true));
+        assertThat(spoonModelBuilder.build()).isTrue();
 
-        CtLocalVariable<Integer> localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
-        assertThat(localVariable.toString(), equalTo("int myInt = (int) myDouble"));
+        List<CtLocalVariable<?>> elements = model.getElements(new TypeFilter<>(CtLocalVariable.class));
+        assertThat(elements.get(0))
+                .printed()
+                .isEqualTo("int myInt = (int) myDouble");
 
-        CtLocalVariable<Integer> localVariable2 = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(1);
-        assertThat(localVariable2.toString(), equalTo("int myInt2 = ((java.lang.Double) myDouble).intValue()"));
+        assertThat(elements.get(1))
+                .printed()
+                .isEqualTo("int myInt2 = ((java.lang.Double) myDouble).intValue()");
 
-        CtLocalVariable<Integer> localVariable3 = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(2);
-        assertThat(localVariable3.toString(), equalTo("double withoutTypeCast = myDoubleObject.doubleValue()"));
+        assertThat(elements.get(2))
+                .printed()
+                .isEqualTo("double withoutTypeCast = myDoubleObject.doubleValue()");
     }
 
     @Test
@@ -380,17 +399,17 @@ public class DefaultJavaPrettyPrinterTest {
         SpoonModelBuilder spoonModelBuilder = launcherForCompilingPrettyPrintedString.createCompiler(SpoonResourceHelper.resources("spooned/ShadowFieldRead.java", "spooned/A.java", "spooned/C.java"));
 
         // assert
-        assertThat(spoonModelBuilder.build(), equalTo(true));
+        assertThat(spoonModelBuilder.build()).isTrue();
 
         CtLocalVariable<Integer> localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(1);
-        assertThat(localVariable.toString(), equalTo("int fieldReadOfA = ((A) c).a.i"));
+        assertThat(localVariable).isEqualTo("int fieldReadOfA = ((A) c).a.i");
     }
 
     @ParameterizedTest(name = "Printing literal ''{0}'' throws an error")
     @ValueSource(doubles = {
-        Double.NEGATIVE_INFINITY,
-        Double.POSITIVE_INFINITY,
-        Double.NaN
+            Double.NEGATIVE_INFINITY,
+            Double.POSITIVE_INFINITY,
+            Double.NaN
     })
     void throwsExceptionWhenPrintingInvalidFloatingLiteral(double value) {
         // contract: Printing invalid floating literals throws an exception
@@ -407,16 +426,16 @@ public class DefaultJavaPrettyPrinterTest {
         java.lang.@TypeUseAnnotation String ignored;
 
         CtTypeReference<?> type = factory.Type()
-          .get(getClass().getName())
-          .getMethodsByName("printAnnotationsInOrphanTypeReference")
-          .get(0)
-          .getElements(new TypeFilter<>(CtLocalVariable.class))
-          .get(0)
-          .getType();
+                .get(getClass().getName())
+                .getMethodsByName("printAnnotationsInOrphanTypeReference")
+                .get(0)
+                .getElements(new TypeFilter<>(CtLocalVariable.class))
+                .get(0)
+                .getType();
 
         assertEquals(
-          "java.lang.@spoon.reflect.visitor.DefaultJavaPrettyPrinterTest.TypeUseAnnotation String",
-          type.toString().replace(System.lineSeparator(), " ")
+                "java.lang.@spoon.reflect.visitor.DefaultJavaPrettyPrinterTest.TypeUseAnnotation String",
+                type.toString().replace(System.lineSeparator(), " ")
         );
     }
 

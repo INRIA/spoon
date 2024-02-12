@@ -23,8 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ParallelProcessorTest {
@@ -76,7 +75,7 @@ public class ParallelProcessorTest {
 
 		int sequentialCount = singleThreadCounter.get();
 		int parallelCount = IntStream.range(0, atomicCounter.length()).map(atomicCounter::get).sum();
-		assertThat(parallelCount, equalTo(sequentialCount));
+		assertThat(parallelCount).isEqualTo(sequentialCount);
 	}
 
 	@Test
@@ -101,7 +100,7 @@ public class ParallelProcessorTest {
 			}
 		}).noClasspath(true).outputDirectory(outputFolder.toFile()).buildModel();
 
-		assertThat(atomicCounter.get(0), equalTo(singleThreadCounter.get()));
+		assertThat(atomicCounter.get(0)).isEqualTo(singleThreadCounter.get());
 	}
 
 	@Test
@@ -125,7 +124,7 @@ public class ParallelProcessorTest {
 
 		int sequentialCount = singleThreadCounter.get();
 		int parallelCount = IntStream.range(0, atomicCounter.length()).map(atomicCounter::get).sum();
-		assertThat(parallelCount, equalTo(sequentialCount));
+		assertThat(parallelCount).isEqualTo(sequentialCount);
 	}
 
 	@Test
@@ -157,8 +156,8 @@ public class ParallelProcessorTest {
 
 		int sequentialCount = singleThreadCounter.get();
 		int parallelCount = IntStream.range(0, atomicCounter.length()).map(atomicCounter::get).sum();
-		assertThat(parallelCount, equalTo(sequentialCount));
-		assertThat(atomicCounter.get(expectedUnusedCounterIdx), equalTo(0));
+		assertThat(parallelCount).isEqualTo(sequentialCount);
+		assertThat(atomicCounter.get(expectedUnusedCounterIdx)).isZero();
 	}
 
 	@Test
@@ -251,7 +250,7 @@ public class ParallelProcessorTest {
 
 		int sequentialCount = singleThreadCounter.get();
 		int parallelCount = IntStream.range(0, counters.length()).map(counters::get).sum();
-		assertThat(parallelCount, equalTo(sequentialCount));
+		assertThat(parallelCount).isEqualTo(sequentialCount);
 	}
 
 	private static Processor<CtElement> createSlowIncrementingProcessor(

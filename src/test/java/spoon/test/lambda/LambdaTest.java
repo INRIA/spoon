@@ -60,8 +60,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -69,6 +67,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class LambdaTest {
@@ -566,7 +565,7 @@ public class LambdaTest {
 		lambda.addParameterAt(1, third);
 		lambda.addParameterAt(0, first);
 
-		assertThat(lambda.getParameters(), equalTo(Arrays.asList(first, second, third)));
+		assertThat(lambda).getParameters().containsExactly(first, second, third);
 	}
 
 	@Test
@@ -593,6 +592,6 @@ public class LambdaTest {
 		parameter.setType(stringType);
 		lambda.addParameter(parameter);
 		lambda.setExpression(factory.createCodeSnippetExpression("x"));
-		assertThat(lambda.toString(), equalTo("x -> x"));
+		assertThat(lambda).printed().isEqualTo("x -> x");
 	}
 }

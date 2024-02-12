@@ -57,8 +57,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -318,7 +317,7 @@ public class TestModule {
 
 		CompilationUnit[] cu = batchCompiler.getCompilationUnits();
 		Set<String> list = Arrays.stream(cu).map(CompilationUnit::getModuleName).map(String::copyValueOf).collect(Collectors.toSet());
-		assertThat(list, is(Set.of("foo", "bar")));
+		assertThat(list).containsOnly("foo", "bar");
 	}
 
 	@Test

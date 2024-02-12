@@ -23,8 +23,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 public class CtConstructorCallTest {
 
@@ -38,12 +37,11 @@ public class CtConstructorCallTest {
         CtConstructorCall<?> call = factory.createConstructorCall(
                 factory.createCtTypeReference(Object.class), argumentToBeRemoved, additionalArgument
         );
-        assertThat(call.getArguments().size(), is(2));
+        assertThat(call).getArguments().hasSize(2);
 
         call.removeArgument(argumentToBeRemoved);
 
-        assertThat(call.getArguments().size(), is(1));
-        assertThat(call.getArguments().get(0), is(additionalArgument));
+        assertThat(call).getArguments().containsExactly(additionalArgument);
     }
 
     @Test
@@ -56,11 +54,10 @@ public class CtConstructorCallTest {
         CtConstructorCall<?> call = factory.createConstructorCall(factory.createCtTypeReference(Object.class));
         call.addActualTypeArgument(typeToBeRemoved);
         call.addActualTypeArgument(additionalType);
-        assertThat(call.getActualTypeArguments().size(), is(2));
+        assertThat(call).getActualTypeArguments().hasSize(2);
 
         call.removeActualTypeArgument(typeToBeRemoved);
 
-        assertThat(call.getActualTypeArguments().size(), is(1));
-        assertThat(call.getActualTypeArguments().get(0), is(additionalType));
+        assertThat(call).getActualTypeArguments().containsExactly(additionalType);
     }
 }

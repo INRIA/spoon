@@ -19,16 +19,7 @@ package spoon.test.snippets;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResource;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCodeSnippetExpression;
-import spoon.reflect.code.CtCodeSnippetStatement;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -38,14 +29,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.compiler.VirtualFile;
 
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class SnippetTest {
@@ -240,7 +225,7 @@ public class SnippetTest {
 		body.addStatement(0,factory.createCodeSnippetStatement("int x"));
 		snippetClass.compileAndReplaceSnippets();
 		assertTrue(body.getStatements().get(0) instanceof CtLocalVariable);
-		assertEquals(1,body.getStatements().size()); 
+		assertEquals(1,body.getStatements().size());
 	}
 
 	@Test
@@ -251,7 +236,7 @@ public class SnippetTest {
 		CtCodeSnippetExpression<Integer> one = factory.createCodeSnippetExpression("1");
 		CtCodeSnippetExpression<Integer> two = factory.createCodeSnippetExpression("2");
 
-		assertThat(one.equals(two), is(false));
+        assertThat(one).isNotEqualTo(two);
 	}
 
 	@Test
@@ -263,7 +248,7 @@ public class SnippetTest {
 		CtCodeSnippetExpression<Integer> one = factory.createCodeSnippetExpression("1");
 		CtCodeSnippetExpression<Integer> alsoOne = factory.createCodeSnippetExpression("1");
 
-		assertThat(one.equals(alsoOne), is(true));
+        assertThat(one).isEqualTo(alsoOne);
 	}
 
 	@Test
@@ -274,7 +259,7 @@ public class SnippetTest {
 		CtCodeSnippetStatement intDeclaration = factory.createCodeSnippetStatement("int a;");
 		CtCodeSnippetStatement doubleDeclaration = factory.createCodeSnippetStatement("double a;");
 
-		assertThat(intDeclaration.equals(doubleDeclaration), is(false));
+        assertThat(intDeclaration).isNotEqualTo(doubleDeclaration);
 	}
 
 	@Test
@@ -286,6 +271,6 @@ public class SnippetTest {
 		CtCodeSnippetStatement intDeclaration = factory.createCodeSnippetStatement("int a;");
 		CtCodeSnippetStatement alsoIntDeclaration = factory.createCodeSnippetStatement("int a;");
 
-		assertThat(intDeclaration.equals(alsoIntDeclaration), is(true));
+        assertThat(intDeclaration).isEqualTo(alsoIntDeclaration);
 	}
 }

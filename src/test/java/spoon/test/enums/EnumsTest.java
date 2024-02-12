@@ -17,6 +17,9 @@
 package spoon.test.enums;
 
 import org.apache.commons.lang3.StringUtils;
+import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.assertj.core.api.InstanceOfAssertFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,18 +30,8 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtNewClass;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.code.*;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -49,27 +42,21 @@ import spoon.test.enums.testclasses.Burritos;
 import spoon.test.enums.testclasses.EnumWithMembers;
 import spoon.test.enums.testclasses.NestedEnums;
 import spoon.test.enums.testclasses.Regular;
+import spoon.testing.assertions.SpoonAssertions;
 import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static spoon.test.SpoonTestHelpers.containsRegexMatch;
-import static spoon.test.SpoonTestHelpers.contentEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class EnumsTest {
@@ -82,24 +69,33 @@ public class EnumsTest {
 		// - the order of enum values
 		// - the amount of overall fields
 		CtEnum<Regular> enumeration = build("spoon.test.enums.testclasses", "Regular");
-		assertThat(enumeration.getSimpleName(), is("Regular"));
-		assertThat(enumeration.getEnumValues().size(), is(Regular.values().length));
-		assertThat(map(CtEnumValue::getSimpleName, enumeration.getEnumValues()), is(Arrays.asList("A", "B", "C")));
-		assertThat(enumeration.getFields().size(), is(5));
+		assertThat(enumeration)
+				.nested(a -> {
+					a.getSimpleName().isEqualTo("Regular");
+					a.getEnumValues().hasSize(Regular.values().length);
+					a.getEnumValues().map(CtEnumValue::getSimpleName).isEqualTo(List.of("A", "B", "C"));
+					a.getFields().hasSize(5);
+				});
 	}
 
 	@Test
 	void testAnnotationsOnEnum() throws Exception {
 		// contract: an annotation on an enum value is represented in the spoon model
 		final CtEnum<?> foo = build("spoon.test.enums.testclasses", "Foo");
-		assertThat(foo.getEnumValues().size(), is(1));
-		CtEnumValue<?> value = foo.getEnumValues().get(0);
-		assertThat(value.getAnnotations().size(), is(1));
-		assertThat(map(AnnotationTest::getActualClassFromAnnotation, value.getAnnotations()), hasItem(Deprecated.class));
+		assertThat(foo)
+				.nested(a -> {
+					a.getEnumValues().hasSize(1)
+							.first(new InstanceOfAssertFactory<>(CtEnumValue.class, SpoonAssertions::assertThat))
+							.getAnnotations().hasSize(1)
+										.map(AnnotationTest::getActualClassFromAnnotation)
+										.asInstanceOf(InstanceOfAssertFactories.LIST)
+										.contains(Deprecated.class);
+				})
+				.prettyPrinted()
+				// finding with a regex to avoid printer-specific output
+				.containsPattern("@(java\\.lang\\.)?Deprecated\\W+Bar");
 		assertSame(Deprecated.class, AnnotationTest.getActualClassFromAnnotation(
 				foo.getFields().get(0).getAnnotations().get(0)));
-		// finding with a regex to avoid printer-specific output
-		assertThat(foo.prettyprint(), containsRegexMatch("@(java\\.lang\\.)?Deprecated\\W+Bar"));
 	}
 
 	private static <I, O> List<O> map(Function<I, O> function, List<I> input) {
@@ -111,7 +107,7 @@ public class EnumsTest {
 		// contract: an enum without values contains a ; before any other members
 		final Factory factory = build(Burritos.class);
 		final CtType<Burritos> burritos = factory.Type().get(Burritos.class);
-		assertThat(burritos.prettyprint(), containsRegexMatch("Burritos \\{\\W+;"));
+		assertThat(burritos).prettyPrinted().containsPattern("Burritos \\{\\W+;");
 	}
 
 	@Test
@@ -130,11 +126,14 @@ public class EnumsTest {
 	@ArgumentsSource(NestedEnumTypeProvider.class)
 	void testNestedPrivateEnumValues(CtEnum<?> type) {
 		// contract: enum values have correct modifiers matching the produced bytecode
-		assertThat(type.getField("VALUE").getExtendedModifiers(), contentEquals(
-				CtExtendedModifier.implicit(ModifierKind.PUBLIC),
-				CtExtendedModifier.implicit(ModifierKind.STATIC),
-				CtExtendedModifier.implicit(ModifierKind.FINAL)
-		));
+		assertThat(type).isNotNull()
+				.hasField("VALUE")
+				.getExtendedModifiers()
+				.containsOnly(
+						CtExtendedModifier.implicit(ModifierKind.PUBLIC),
+						CtExtendedModifier.implicit(ModifierKind.STATIC),
+						CtExtendedModifier.implicit(ModifierKind.FINAL)
+				);
 	}
 
 	@Test
@@ -176,7 +175,7 @@ public class EnumsTest {
 
 		List<CtEnumValue<?>> enumValues = model.getElements(new TypeFilter<>(CtEnumValue.class));
 
-		assertThat(enumValues.size(), is(4));
+		assertThat(enumValues).hasSize(4);
 
 		for (int i = 0; i < 3; i++) {
 			CtEnumValue<?> ctEnumValue = enumValues.get(i);
@@ -212,10 +211,12 @@ public class EnumsTest {
 		// contract: enum modifiers are applied correctly (JLS 8.9)
 		// package-level enum, isn't static but implicitly final
 		CtType<?> publicFinalEnum = build("spoon.test.enums.testclasses", "Burritos");
-		assertThat(publicFinalEnum.getExtendedModifiers(), contentEquals(
-				CtExtendedModifier.explicit(ModifierKind.PUBLIC),
-				CtExtendedModifier.implicit(ModifierKind.FINAL)
-		));
+		assertThat(publicFinalEnum)
+				.getExtendedModifiers()
+				.containsOnly(
+						CtExtendedModifier.explicit(ModifierKind.PUBLIC),
+						CtExtendedModifier.implicit(ModifierKind.FINAL)
+				);
 	}
 
 	@Test
@@ -223,9 +224,7 @@ public class EnumsTest {
 		// contract: enum modifiers are applied correctly (JLS 8.9)
 		// pre Java 17, enums aren't implicitly final if an enum value declares an anonymous type
 		CtType<?> publicEnum = build("spoon.test.enums.testclasses", "AnonEnum");
-		assertThat(publicEnum.getExtendedModifiers(), contentEquals(
-				CtExtendedModifier.explicit(ModifierKind.PUBLIC)
-		));
+		assertThat(publicEnum).getExtendedModifiers().containsOnly(CtExtendedModifier.explicit(ModifierKind.PUBLIC));
 	}
 
 	@Test
@@ -238,10 +237,10 @@ public class EnumsTest {
 		launcher.getEnvironment().setComplianceLevel(17);
 		launcher.buildModel();
 		CtType<?> publicEnum = launcher.getFactory().Type().get("spoon.test.enums.testclasses.AnonEnum");
-		assertThat(publicEnum.getExtendedModifiers(), contentEquals(
+		assertThat(publicEnum).getExtendedModifiers().containsOnly(
 				new CtExtendedModifier(ModifierKind.PUBLIC, false),
 				new CtExtendedModifier(ModifierKind.SEALED, true)
-		));
+		);
 	}
 
 	@Test
@@ -251,10 +250,12 @@ public class EnumsTest {
 		// get the '{ }' of 'A { }'
 		CtExpression<?> defaultExpression = publicEnum.getEnumValues().get(0).getDefaultExpression();
 		// it has to be a CtNewClass, otherwise it wouldn't declare an anonymous type
-		assertTrue(defaultExpression instanceof CtNewClass);
-		assertThat(((CtNewClass<?>) defaultExpression).getAnonymousClass().getExtendedModifiers(), contentEquals(
-				CtExtendedModifier.implicit(ModifierKind.FINAL)
-		));
+		assertThat(defaultExpression)
+				.isInstanceOf(CtNewClass.class)
+				.asInstanceOf(new InstanceOfAssertFactory<>(CtNewClass.class, SpoonAssertions::assertThat))
+				.getAnonymousClass()
+				.getExtendedModifiers()
+				.containsOnly(CtExtendedModifier.implicit(ModifierKind.FINAL));
 	}
 
 	@Test
@@ -270,20 +271,23 @@ public class EnumsTest {
 		CtModel model = SpoonTestHelpers.createModelFromString(code, 16);
 		CtBlock<?> block = SpoonTestHelpers.getBlock(model);
 
-		assertThat("The local enum does not exist in the model", block.getStatements().size(), is(1));
+		assertEquals(1, block.getStatements().size(), "The local enum does not exist in the model");
 
 		CtStatement statement = block.getStatement(0);
-		Assertions.assertTrue(statement instanceof CtEnum<?>);
-		CtEnum<?> enumType = (CtEnum<?>) statement;
 
-		assertThat(enumType.isLocalType(), is(true));
-		assertThat(enumType.getSimpleName(), is("1MyEnum"));
-		assertThat(enumType.getEnumValues().size(), is(2));
-		assertThat(enumType.getMethods().size(), is(1));
-		assertThat(enumType.getExtendedModifiers(), contentEquals(
-				CtExtendedModifier.implicit(ModifierKind.STATIC),
-				CtExtendedModifier.implicit(ModifierKind.FINAL)
-		));
+		assertThat(statement)
+				.isInstanceOf(CtEnum.class)
+				.asInstanceOf(new InstanceOfAssertFactory<>(CtEnum.class, SpoonAssertions::assertThat))
+				.matches(CtEnum::isLocalType, "is local type")
+				.nested(a -> {
+					a.getSimpleName().isEqualTo("1MyEnum");
+					a.getEnumValues().hasSize(2);
+					a.getMethods().hasSize(1);
+					a.getExtendedModifiers().containsOnly(
+							CtExtendedModifier.implicit(ModifierKind.STATIC),
+							CtExtendedModifier.implicit(ModifierKind.FINAL)
+					);
+				});
 	}
 
 	@Test
@@ -293,8 +297,8 @@ public class EnumsTest {
 		CtEnum<?> myEnum = (CtEnum<?>) Launcher.parseClass("enum Foo { CONSTANT; }");
 		CtConstructor<?> constructor = myEnum.getConstructors().iterator().next();
 
-		assertThat(constructor.isImplicit(), is(true));
-		
+		assertThat(constructor).isImplicit().isTrue();
+
 		for (CtStatement statement : constructor.getBody().getStatements()) {
 			if (!(statement instanceof CtInvocation)) {
 				continue;
@@ -303,7 +307,7 @@ public class EnumsTest {
 			if (!executable.getDeclaringType().getQualifiedName().equals("java.lang.Enum")) {
 				continue;
 			}
-			assertThat(executable.getSimpleName(), not(is("<init>")));
+			assertThat(executable).getSimpleName().isNotEqualTo("<init>");
 		}
 	}
 

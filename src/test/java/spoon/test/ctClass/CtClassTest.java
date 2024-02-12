@@ -22,9 +22,6 @@ import java.util.Set;
 
 import java.util.concurrent.TimeUnit;
 
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -38,13 +35,7 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.cu.position.NoSourcePosition;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -55,17 +46,14 @@ import spoon.test.ctClass.testclasses.AnonymousClass;
 import spoon.test.ctClass.testclasses.Foo;
 import spoon.test.ctClass.testclasses.Pozole;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static spoon.test.SpoonTestHelpers.contentEquals;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -232,9 +220,9 @@ public class CtClassTest {
 		final String type2 = aClass2.getSuperclass().getQualifiedName();
 
 		CtField field = aClass2.getField("transporteurRadioGroup");
-		assertThat(field.getType().getQualifiedName(), is("android.widget.RadioGroup"));
+		assertThat(field.getType()).getQualifiedName().isEqualTo("android.widget.RadioGroup");
 
-		assertThat(type2, is("com.cristal.ircica.applicationcolis.userinterface.fragments.CompletableFragment"));
+		assertThat(type2).isEqualTo("com.cristal.ircica.applicationcolis.userinterface.fragments.CompletableFragment");
 	}
 
 	@Test
@@ -299,7 +287,7 @@ public class CtClassTest {
 		launcher.run();
 
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("spoon.test.ctClass.testclasses.issue1306.internal.BooleanArraysBaseTest");
-		assertThat(aClass, notNullValue());
+		assertThat(aClass).isNotNull();
 
 		canBeBuilt("./target/issue1306", 8, true);
 	}
@@ -374,8 +362,8 @@ public class CtClassTest {
 				+ "T.Entry<String, String> entry; }");
 
 		CtField<?> field = cls.getField("entry");
-		assertThat(field.getType().getQualifiedName(), equalTo("T$Entry"));
-		assertThat(field.getType().isSimplyQualified(), is(false));
+		assertThat(field).getType().getQualifiedName().isEqualTo("T$Entry");
+		assertThat(field.getType().isSimplyQualified()).isFalse();
 	}
 
 	@Test
@@ -410,16 +398,21 @@ public class CtClassTest {
 		CtModel model = SpoonTestHelpers.createModelFromString(code, 5);
 		CtBlock<?> block = SpoonTestHelpers.getBlock(model);
 
-		MatcherAssert.assertThat("The local class does not exist in the model", block.getStatements().size(), CoreMatchers.is(1));
+		assertThat(block.getStatements())
+				.withFailMessage("The local class does not exist in the model")
+				.hasSize(1);
 
 		CtStatement statement = block.getStatement(0);
 		Assertions.assertTrue(statement instanceof CtClass<?>);
 		CtClass<?> clazz = (CtClass<?>) statement;
 
-		MatcherAssert.assertThat(clazz.isLocalType(), CoreMatchers.is(true));
-		MatcherAssert.assertThat(clazz.getSimpleName(), CoreMatchers.is("1MyClass"));
-		MatcherAssert.assertThat(clazz.getFields().size(), CoreMatchers.is(1));
-		MatcherAssert.assertThat(clazz.getMethods().size(), CoreMatchers.is(1));
-		MatcherAssert.assertThat(clazz.getExtendedModifiers(), contentEquals());
+		assertThat(clazz)
+				.nested(a -> {
+					a.getSimpleName().isEqualTo("1MyClass");
+					a.getFields().hasSize(1);
+					a.getMethods().hasSize(1);
+					a.getExtendedModifiers().isEmpty();
+				})
+				.matches(CtTypeInformation::isLocalType);
 	}
 }

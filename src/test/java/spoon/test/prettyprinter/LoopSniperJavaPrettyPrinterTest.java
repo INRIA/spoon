@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -17,8 +16,6 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLoop;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
-
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class LoopSniperJavaPrettyPrinterTest {
 

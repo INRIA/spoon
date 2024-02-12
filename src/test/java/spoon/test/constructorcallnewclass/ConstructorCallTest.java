@@ -39,13 +39,10 @@ import spoon.support.comparator.DeepRepresentationComparator;
 import spoon.test.constructorcallnewclass.testclasses.Foo;
 import spoon.test.constructorcallnewclass.testclasses.Panini;
 
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 public class ConstructorCallTest {
 	private List<CtConstructorCall<?>> constructorCalls;
@@ -208,7 +205,7 @@ public class ConstructorCallTest {
 			.addArgumentAt(1, factory.createLiteral(1.4));
 
 		// assert
-		assertThat(newLinkedHashMap.toString(), equalTo("new LinkedHashMap(10, 1.4, true)"));
+		assertThat(newLinkedHashMap).printed().isEqualTo("new LinkedHashMap(10, 1.4, true)");
 	}
 
 	private CtTypeReference<?> getConstructorCallTypeFrom(String simpleName, String sourceFile) {
@@ -231,8 +228,8 @@ public class ConstructorCallTest {
 		CtModel model = launcher.buildModel();
 		for (CtConstructorCall<?> ctConstructorCall : model
 				.getElements(new TypeFilter<>(CtConstructorCall.class))) {
-			assertThat(ctConstructorCall.getExecutable().getType().getSimpleName(), not(equalTo("Object")));
-			assertThat(ctConstructorCall.getType(), not(ctConstructorCall.getFactory().Type().objectType()));
+			assertThat(ctConstructorCall.getExecutable().getType()).getSimpleName().isNotEqualTo("Object");
+			assertThat(ctConstructorCall.getType()).isNotEqualTo(ctConstructorCall.getFactory().Type().objectType());
 		}
 	}
 }

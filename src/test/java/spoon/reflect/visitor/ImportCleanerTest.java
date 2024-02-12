@@ -10,8 +10,7 @@ import spoon.reflect.declaration.CtType;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ImportCleanerTest {
 
@@ -75,7 +74,7 @@ public class ImportCleanerTest {
 
 		// assert
 		Set<String> importsAfter = getTextualImports(cu);
-		assertThat(importsAfter, equalTo(importsBefore));
+		assertThat(importsAfter).isEqualTo(importsBefore);
 	}
 
 	private static Set<String> getTextualImports(CtCompilationUnit cu) {

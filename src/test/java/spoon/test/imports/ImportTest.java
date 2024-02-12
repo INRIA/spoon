@@ -95,14 +95,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class ImportTest {
@@ -664,7 +659,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
-		assertThat(mm.toString(), containsString("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();"));
+		assertThat(mm).printed().contains("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();");
 	}
 
 	@Test
@@ -681,7 +676,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
-		assertThat(printByPrinter(mm), containsString("new StaticNested2<K>();"));
+		assertThat(printByPrinter(mm)).contains("new StaticNested2<K>();");
 	}
 
 	private Factory getFactory(String...inputs) {
@@ -761,21 +756,13 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertThat(
-				"The file should not contain a static import to the inner enum method values",
-				output,
-				not(containsString("import static spoon.test.imports.testclasses.StaticImportsFromEnum$DataElement.values;"))
-		);
-		assertThat(
-				"The file should not contain a static import to the inner enum method values of a distinct interface",
-				output,
-				not(containsString("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.values;"))
-		);
-		assertThat(
-				"The file should not contain a static import to the inner enum value",
-				output,
-				not(containsString("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.Lip;"))
-		);
+		assertThat(output)
+				.withFailMessage("The file should not contain a static import to the inner enum method values")
+				.doesNotContain("import static spoon.test.imports.testclasses.StaticImportsFromEnum$DataElement.values;")
+				.withFailMessage("The file should not contain a static import to the inner enum method values of a distinct interface")
+				.doesNotContain("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.values;")
+				.withFailMessage("The file should not contain a static import to the inner enum value")
+				.doesNotContain("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.Lip;");
 		canBeBuilt(outputDir, 7);
 	}
 
@@ -797,8 +784,11 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertThat("The file should not contain the import of enum", output, not(containsString("import spoon.reflect.path.CtRole;")));
-		assertThat("The file should contain the static import of enum field", output, not(containsString("import spoon.reflect.path.CtRole.NAME;")));
+		assertThat(output)
+				.withFailMessage("The file should not contain the import of enum")
+				.doesNotContain("import spoon.reflect.path.CtRole;")
+				.withFailMessage("The file should contain the static import of enum field")
+				.doesNotContain("import spoon.reflect.path.CtRole.NAME;");
 		canBeBuilt(outputDir, 7);
 	}
 
@@ -819,7 +809,9 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertThat("The file should not contain a static import for NOFOLLOW_LINKS", output, not(containsString("import static java.nio.file.LinkOption.NOFOLLOW_LINKS;")));
+		assertThat(output)
+				.withFailMessage("The file should not contain a static import for NOFOLLOW_LINKS")
+				.doesNotContain("import static java.nio.file.LinkOption.NOFOLLOW_LINKS;");
 		canBeBuilt(outputDir, 7);
 	}
 
@@ -854,20 +846,25 @@ public class ImportTest {
 			return ((CtType)e).getQualifiedName();
 		}).list();
 		//contract: includingSelf(true) should return input type too
-		assertThat(result, hasItem(clientClass.getQualifiedName()));
-		assertThat(result, hasItem(childClass.getQualifiedName()));
-		assertThat(result, hasItem(superClass.getQualifiedName()));
-		assertThat(result, hasItem(Object.class.getName()));
+		assertThat(result).contains(
+				clientClass.getQualifiedName(),
+				childClass.getQualifiedName(),
+				superClass.getQualifiedName(),
+				Object.class.getName()
+		);
 
 		result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(false)).map(e->{
 			assertTrue(e instanceof CtType);
 			return ((CtType)e).getQualifiedName();
 		}).list();
 		//contract: includingSelf(false) should return input type too
-		assertThat(result, not(hasItem(clientClass.getQualifiedName())));
-		assertThat(result, hasItem(childClass.getQualifiedName()));
-		assertThat(result, hasItem(superClass.getQualifiedName()));
-		assertThat(result, hasItem(Object.class.getName()));
+		assertThat(result)
+				.doesNotContain(clientClass.getQualifiedName())
+				.contains(
+						childClass.getQualifiedName(),
+						superClass.getQualifiedName(),
+						Object.class.getName()
+				);
 
 		//contract: returnTypeReferences(true) returns CtTypeReferences
 		result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true).returnTypeReferences(true)).map(e->{
@@ -875,10 +872,13 @@ public class ImportTest {
 			return ((CtTypeReference)e).getQualifiedName();
 		}).list();
 		//contract: includingSelf(false) should return input type too
-		assertThat(result, hasItem(clientClass.getQualifiedName()));
-		assertThat(result, hasItem(childClass.getQualifiedName()));
-		assertThat(result, hasItem(superClass.getQualifiedName()));
-		assertThat(result, hasItem(Object.class.getName()));
+		assertThat(result)
+				.contains(
+						clientClass.getQualifiedName(),
+						childClass.getQualifiedName(),
+						superClass.getQualifiedName(),
+						Object.class.getName()
+				);
 
 		//contract: the mapping can be started on type reference too
 		result = clientClass.getReference().map(new SuperInheritanceHierarchyFunction().includingSelf(true).returnTypeReferences(true)).map(e->{
@@ -886,10 +886,13 @@ public class ImportTest {
 			return ((CtTypeReference)e).getQualifiedName();
 		}).list();
 		//contract: includingSelf(false) should return input type too
-		assertThat(result, hasItem(clientClass.getQualifiedName()));
-		assertThat(result, hasItem(childClass.getQualifiedName()));
-		assertThat(result, hasItem(superClass.getQualifiedName()));
-		assertThat(result, hasItem(Object.class.getName()));
+		assertThat(result)
+				.contains(
+						clientClass.getQualifiedName(),
+						childClass.getQualifiedName(),
+						superClass.getQualifiedName(),
+						Object.class.getName()
+				);
 
 		//contract: super type of Object is nothing
 		List<CtTypeReference<?>> typeResult = clientClass.getFactory().Type().objectType().map(new SuperInheritanceHierarchyFunction().includingSelf(false).returnTypeReferences(true)).list();
@@ -920,10 +923,13 @@ public class ImportTest {
 			assertTrue(e instanceof CtType);
 			return ((CtType)e).getQualifiedName();
 		}).list();
-		assertThat(result, hasItem(clientClass.getQualifiedName()));
-		assertThat(result, hasItem(childClass.getQualifiedName()));
-		assertThat(result, hasItem(superClass.getQualifiedName()));
-		assertThat(result, hasItem(Object.class.getName()));
+		assertThat(result)
+				.contains(
+						clientClass.getQualifiedName(),
+						childClass.getQualifiedName(),
+						superClass.getQualifiedName(),
+						Object.class.getName()
+				);
 
 		//contract: if listener skips ALL, then skipped element and all super classes are not returned
 		result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true).setListener(new CtScannerListener() {
@@ -943,10 +949,15 @@ public class ImportTest {
 			assertTrue(e instanceof CtType);
 			return ((CtType)e).getQualifiedName();
 		}).list();
-		assertThat(result, hasItem(clientClass.getQualifiedName()));
-		assertThat(result, hasItem(childClass.getQualifiedName()));
-		assertThat(result, not(hasItem(superClass.getQualifiedName())));
-		assertThat(result, not(hasItem(Object.class.getName())));
+		assertThat(result)
+				.contains(
+						clientClass.getQualifiedName(),
+						childClass.getQualifiedName()
+				)
+				.doesNotContain(
+						superClass.getQualifiedName(),
+						Object.class.getName()
+				);
 
 		//contract: if listener skips CHIDLREN, then skipped element is returned but all super classes are not returned
 		result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true).setListener(new CtScannerListener() {
@@ -966,10 +977,13 @@ public class ImportTest {
 			assertTrue(e instanceof CtType);
 			return ((CtType)e).getQualifiedName();
 		}).list();
-		assertThat(result, hasItem(clientClass.getQualifiedName()));
-		assertThat(result, hasItem(childClass.getQualifiedName()));
-		assertThat(result, hasItem(superClass.getQualifiedName()));
-		assertThat(result, not(hasItem(Object.class.getName())));
+		assertThat(result)
+				.contains(
+						clientClass.getQualifiedName(),
+						childClass.getQualifiedName(),
+						superClass.getQualifiedName()
+				)
+				.doesNotContain(Object.class.getName());
 	}
 
 	@Test
@@ -1045,14 +1059,13 @@ public class ImportTest {
 		Path output = tempDir.resolve(path);
 		String code = Files.readString(output);
 
-		// the ArrayList is imported and used in short mode
-		assertThat(code, containsString("import java.util.ArrayList"));
-
-		// no fully qualified usage
-		assertThat(code, not(containsString("new java.util.ArrayList")));
-
-		// sanity check: the actual code
-		assertThat(code, containsString("ArrayList<String> list = new ArrayList<>()"));
+		assertThat(code)
+				// the ArrayList is imported and used in short mode
+				.contains("import java.util.ArrayList")
+				// no fully qualified usage
+				.doesNotContain("new java.util.ArrayList")
+				// sanity check: the actual code
+				.contains("ArrayList<String> list = new ArrayList<>()");
 	}
 
 	@Test
@@ -1072,11 +1085,11 @@ public class ImportTest {
 
 		String codeA = Files.readString(pathA);
 
-		assertThat(codeA, containsString("import java.util.List;"));
+		assertThat(codeA).contains("import java.util.List;");
 
 		String codeB = Files.readString(pathB);
 
-		assertThat(codeB, containsString("import java.awt.List;"));
+		assertThat(codeB).contains("import java.awt.List;");
 	}
 
 	@Test
@@ -1101,8 +1114,11 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertThat("The file should contain a static import ", output, containsString("import static spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite;"));
-		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.add(suite());"));
+		assertThat(output)
+				.withFailMessage("The file should contain a static import ")
+				.contains("import static spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite;")
+				.withFailMessage("The call to the last EnumTestSuite should be in FQN")
+				.contains("suite.add(suite());");
 
 		canBeBuilt(outputDir, 7);
 	}
@@ -1130,8 +1146,11 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertThat("The file should not contain a static import ", output, not(containsString("import static")));
-		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.add(spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite());"));
+		assertThat(output)
+				.withFailMessage("The file should not contain a static import ")
+				.doesNotContain("import static")
+				.withFailMessage("The call to the last EnumTestSuite should be in FQN")
+				.contains("suite.add(spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite());");
 
 		canBeBuilt(outputDir, 3);
 	}
@@ -1159,8 +1178,11 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertThat("The file should not contain a static import ", output, not(containsString("import static spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite;")));
-		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.add(spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite());"));
+		assertThat(output)
+				.withFailMessage("The file should not contain a static import ")
+				.doesNotContain("import static spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite;")
+				.withFailMessage("The call to the last EnumTestSuite should be in FQN")
+				.contains("suite.add(spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite());");
 
 		canBeBuilt(outputDir, 3);
 	}
@@ -1308,7 +1330,7 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertThat(output, containsString("import spoon.test.imports.testclasses.withgenerics.Target;"));
+		assertThat(output).contains("import spoon.test.imports.testclasses.withgenerics.Target;");
 	}
 
 	@Test
@@ -1484,7 +1506,9 @@ public class ImportTest {
 		String printedElement = element.prettyprint();
 		//check that element is printed same like it would be done by printer
 		//but we have to ignore indentation first
-		assertThat(removeIndentation(printedCU), containsString(removeIndentation(printedElement)));
+		assertThat(element.getPosition().getCompilationUnit())
+				.printed(pp)
+				.satisfies(s -> assertThat(removeIndentation(printedCU)).contains(removeIndentation(printedElement)));
 		return printedElement;
 	}
 
@@ -1554,8 +1578,8 @@ public class ImportTest {
 			toPrint.add(element);
 			prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 			String output = prettyPrinter.getResult();
-			assertThat(output, containsString("import java.util.ArrayList;"));
-			assertThat(output, containsString("import spoon.SpoonException;"));
+			assertThat(output).contains("import java.util.ArrayList;");
+			assertThat(output).contains("import spoon.SpoonException;");
 		}
 		{
 			// FQN
@@ -1570,8 +1594,8 @@ public class ImportTest {
 			toPrint.add(element);
 			prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 			String output = prettyPrinter.getResult();
-			assertThat(output, containsString("import java.util.ArrayList;"));
-			assertThat(output, containsString("import spoon.SpoonException;"));
+			assertThat(output).contains("import java.util.ArrayList;");
+			assertThat(output).contains("import spoon.SpoonException;");
 		}
 	}
 
@@ -1748,17 +1772,17 @@ public class ImportTest {
 		{
 			DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(type.getFactory().getEnvironment());
 			printer.calculate(type.getPosition().getCompilationUnit(), Arrays.asList(type));
-			assertThat(printer.getResult(), containsString("import java.util.List;"));
+			assertThat(printer.getResult()).contains("import java.util.List;");
 		}
 
 		//delete first statement of method m
 		type.getMethodsByName("m").get(0).getBody().getStatement(0).delete();
 		//check that there is still javadoc comment which contains "List"
-		assertThat(type.getMethodsByName("m").get(0).getComments().toString(), containsString("List"));
+		assertThat(type.getMethodsByName("m").get(0).getComments().toString()).contains("List");
 		{
 			PrettyPrinter printer = type.getFactory().getEnvironment().createPrettyPrinter();
 			printer.calculate(type.getPosition().getCompilationUnit(), Arrays.asList(type));
-			assertThat(printer.getResult(), not(containsString("import java.util.List;")));
+			assertThat(printer.getResult()).doesNotContain("import java.util.List;");
 		}
 	}
 
@@ -1790,38 +1814,31 @@ public class ImportTest {
 		CtInvocation<?> staticOuterInvocation = method.getBody().getStatement(2);
 		CtInvocation<?> staticInvocation = method.getBody().getStatement(3);
 
-		assertThat(actualThisInvocation.getTarget().isImplicit(), is(true));
-		assertThat(actualThisInvocation.getTarget(), is(instanceOf(CtThisAccess.class)));
+		assertThat(actualThisInvocation).getTarget().isImplicit().isTrue();
+		assertThat(actualThisInvocation).getTarget().isInstanceOf(CtThisAccess.class);
 		assertThat(
 			((CtTypeAccess<?>) ((CtThisAccess<?>) actualThisInvocation.getTarget()).getTarget())
 				.getAccessedType()
-				.getQualifiedName(),
-			is("Test$Inner")
-		);
+				.getQualifiedName()).isEqualTo("Test$Inner");
 
-		assertThat(outerThisInvocation.getTarget().isImplicit(), is(true));
-		assertThat(outerThisInvocation.getTarget(), is(instanceOf(CtThisAccess.class)));
+		assertThat(outerThisInvocation).getTarget().isImplicit().isTrue();
+		assertThat(outerThisInvocation).getTarget().isInstanceOf(CtThisAccess.class);
 		assertThat(
 			((CtTypeAccess<?>) ((CtThisAccess<?>) outerThisInvocation.getTarget()).getTarget())
 				.getAccessedType()
-				.getQualifiedName(),
-			is("Test")
-		);
+				.getQualifiedName()).isEqualTo("Test");
 
-		assertThat(staticOuterInvocation.getTarget().isImplicit(), is(true));
-		assertThat(staticOuterInvocation.getTarget(), is(instanceOf(CtTypeAccess.class)));
+		assertThat(staticOuterInvocation).getTarget().isImplicit().isTrue();
+		assertThat(staticOuterInvocation).getTarget().isInstanceOf(CtTypeAccess.class);
 		assertThat(
-			((CtTypeAccess<?>) staticOuterInvocation.getTarget()).getAccessedType().getQualifiedName(),
-			is("Test")
-		);
+			((CtTypeAccess<?>) staticOuterInvocation.getTarget()).getAccessedType().getQualifiedName())
+				.isEqualTo("Test");
 
-		assertThat(staticInvocation.getTarget().isImplicit(), is(true));
-		assertThat(staticInvocation.getTarget(), is(instanceOf(CtTypeAccess.class)));
+		assertThat(staticInvocation).getTarget().isImplicit().isTrue();
+		assertThat(staticInvocation).getTarget().isInstanceOf(CtTypeAccess.class);
 		assertThat(
-			((CtTypeAccess<?>) staticInvocation.getTarget()).getAccessedType().getQualifiedName(),
-			is("java.lang.System")
-		);
-
+			((CtTypeAccess<?>) staticInvocation.getTarget()).getAccessedType().getQualifiedName())
+				.isEqualTo("java.lang.System");
 	}
 
 	@Test
@@ -1874,10 +1891,10 @@ public class ImportTest {
 
 		// assert
 		List<CtImport> imports = mainType.getPosition().getCompilationUnit().getImports();
-		assertThat(imports, hasSize(2));
+		assertThat(imports).hasSize(2);
 
 		CtImport import0 = imports.get(0);
-		assertThat(import0.getReference().getSimpleName(), is("InnerClass"));
+		assertThat(import0).getReference().getSimpleName().isEqualTo("InnerClass");
 	}
 
 	@ModelTest(value = {"src/test/resources/static-method-and-type"}, autoImport = true)
@@ -1890,14 +1907,14 @@ public class ImportTest {
 
 		// assert
 		List<CtImport> imports = mainType.getPosition().getCompilationUnit().getImports();
-		assertThat(imports, hasSize(2));
+		assertThat(imports).hasSize(2);
 
 		CtImport import0 = imports.get(0);
-		assertThat(import0.getImportKind(), is(CtImportKind.METHOD));
-		assertThat(import0.getReference().getSimpleName(), is("foo"));
+		assertThat(import0.getImportKind()).isEqualTo(CtImportKind.METHOD);
+		assertThat(import0).getReference().getSimpleName().isEqualTo("foo");
 
 		CtImport import1 = imports.get(1);
-		assertThat(import1.getImportKind(), is(CtImportKind.TYPE));
-		assertThat(import1.getReference().getSimpleName(), is("foo"));
+		assertThat(import1.getImportKind()).isEqualTo(CtImportKind.TYPE);
+		assertThat(import1).getReference().getSimpleName().isEqualTo("foo");
 	}
 }

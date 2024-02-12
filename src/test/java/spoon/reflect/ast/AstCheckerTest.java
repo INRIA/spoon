@@ -54,8 +54,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AstCheckerTest {
@@ -67,7 +66,7 @@ public class AstCheckerTest {
 		List<CtComment> comments = model.getElements(new TypeFilter<>(CtComment.class));
 
 		// assert
-		assertThat(comments.size(), equalTo(4));
+		assertThat(comments).hasSize(4);
 	}
 
 	@Test
@@ -88,9 +87,9 @@ public class AstCheckerTest {
 		CtExpression<?> secondOperand = ((CtBinaryOperator<?>)binaryOperator.getLeftHandOperand()).getRightHandOperand();
 		CtExpression<?> thirdOperand = binaryOperator.getRightHandOperand();
 
-		assertThat(firstOperand, equalTo(factory.createLiteral("a")));
-		assertThat(secondOperand, equalTo(factory.createLiteral("b")));
-		assertThat(thirdOperand, equalTo(factory.createLiteral("c")));
+		assertThat(firstOperand).isEqualTo(factory.createLiteral("a"));
+		assertThat(secondOperand).isEqualTo(factory.createLiteral("b"));
+		assertThat(thirdOperand).isEqualTo(factory.createLiteral("c"));
 	}
 
 	@Test

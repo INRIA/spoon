@@ -47,8 +47,7 @@ import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 import spoon.test.api.testclasses.Bar;
 
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -148,7 +147,7 @@ public class TestCompilationUnit {
 		CtType<?> expectedType = launcher.getFactory().Type().get("fr.simplemodule.pack.SimpleClass");
 		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(expectedType);
 
-		assertThat(cu.getDeclaredTypes(), equalTo(Collections.singletonList(expectedType)));
+		assertThat(cu.getDeclaredTypes()).containsExactly(expectedType);
 	}
 
 

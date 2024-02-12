@@ -24,8 +24,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -129,9 +128,8 @@ class JDTTreeBuilderQueryTest {
 		Set<ModifierKind> modifiers = JDTTreeBuilderQuery.getModifiers(datum.modifier, false, targets.get(modifierKind))
 				.stream()
 				.map(CtExtendedModifier::getKind).collect(Collectors.toSet());
-		assertThat("The modifier " + modifierKind + " was not extracted from the bitfield",
-				firstOrNull(modifiers), is(modifierKind));
-
+		assertThat(modifiers)
+				.containsOnly(modifierKind);
 	}
 
 	@ParameterizedTest

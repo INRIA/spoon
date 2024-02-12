@@ -43,8 +43,7 @@ import spoon.test.constructor.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
 
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -192,7 +191,7 @@ public class ConstructorTest {
 		constructor.addParameterAt(1, third);
 		constructor.addParameterAt(0, first);
 
-		assertThat(constructor.getParameters(), equalTo(Arrays.asList(first, second, third)));
+		assertThat(constructor.getParameters()).containsExactly(first, second, third);
 	}
 
 	@Test
@@ -229,7 +228,7 @@ public class ConstructorTest {
 		constructor.addFormalCtTypeParameterAt(0, first);
 		constructor.addFormalCtTypeParameterAt(2, third);
 
-		assertThat(constructor.getFormalCtTypeParameters(), equalTo(Arrays.asList(first, second, third)));
+		assertThat(constructor.getFormalCtTypeParameters()).containsExactly(first, second, third);
 	}
 
 	@Test

@@ -16,6 +16,7 @@
  */
 package spoon.test.method;
 
+import org.assertj.core.api.Assertions;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtParameter;
@@ -40,15 +41,10 @@ import java.util.Set;
 import java.util.ConcurrentModificationException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.buildClass;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -176,7 +172,7 @@ public class MethodTest {
 		method.addParameterAt(1, third);
 		method.addParameterAt(0, first);
 
-		assertThat(method.getParameters(), equalTo(Arrays.asList(first, second, third)));
+		assertThat(method).getParameters().containsExactly(first, second, third);
 	}
 
 	@Test
@@ -213,7 +209,7 @@ public class MethodTest {
 		method.addFormalCtTypeParameterAt(0, first);
 		method.addFormalCtTypeParameterAt(2, third);
 
-		assertThat(method.getFormalCtTypeParameters(), equalTo(Arrays.asList(first, second, third)));
+		assertThat(method).getFormalCtTypeParameters().containsExactly(first, second, third);
 	}
 
 	@Test
@@ -233,7 +229,7 @@ public class MethodTest {
 		// contract: getTopDefinitions should find top-level definitions only
 		CtMethod<?> method = factory.Interface().get(Hierarchy.D.class).getMethods().iterator().next();
 		List<CtMethod<?>> topDefinitions = new ArrayList<>(method.getTopDefinitions());
-		assertThat(topDefinitions.size(), equalTo(2));
+		assertThat(topDefinitions).hasSize(2);
 		CtMethod<?> m0 = topDefinitions.get(0);
 		CtMethod<?> m1 = topDefinitions.get(1);
 		// two distinct elements
@@ -243,8 +239,8 @@ public class MethodTest {
 		assertThat(m0.getDeclaringType().getSimpleName(), anyOf(equalTo("A1"), equalTo("A2")));
 		assertThat(m1.getDeclaringType().getSimpleName(), anyOf(equalTo("A1"), equalTo("A2")));
 		// top-level definitions don't have top-level definitions
-		assertThat(m0.getTopDefinitions().size(), equalTo(0));
-		assertThat(m1.getTopDefinitions().size(), equalTo(0));
+		assertThat(m0.getTopDefinitions()).isEmpty();
+		assertThat(m1.getTopDefinitions()).isEmpty();
 	}
 
 	@ModelTest("src/test/resources/signature-polymorphic-methods/SignaturePolymorphicMethods.java")
@@ -252,14 +248,14 @@ public class MethodTest {
 		// contract: calls to signature-polymorphic methods should be equal to their declaration signature
 		CtType<?> type = factory.Type().get("SignaturePolymorphicMethods");
 		Set<CtMethod<?>> methods = type.getMethods();
-		assertThat(methods.size(), equalTo(4));
+		assertThat(methods).hasSize(4);
 		for (CtMethod<?> method : methods) {
 			// MethodHandle#invoke and MethodHandle#invokeExact have the declaration signature (Object[])Object
 			CtInvocation<?> invocation = method.getBody().getElements(new TypeFilter<>(CtInvocation.class)).get(0);
-			assertThat(invocation.getType(), equalTo(factory.Type().objectType()));
+			assertThat(invocation).getType().isEqualTo(factory.Type().objectType());
 			List<CtTypeReference<?>> parameters = invocation.getExecutable().getParameters();
-			assertThat(parameters.size(), equalTo(1));
-			assertThat(parameters.get(0), equalTo(factory.Type().createArrayReference(factory.Type().objectType())));
+			assertThat(parameters.size()).isEqualTo(1);
+			assertThat(parameters.get(0)).isEqualTo(factory.Type().createArrayReference(factory.Type().objectType()));
 		}
 	}
 }

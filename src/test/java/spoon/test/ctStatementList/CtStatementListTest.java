@@ -22,10 +22,8 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.factory.Factory;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 public class CtStatementListTest {
     private static CtStatementList getStatementListInitializedWithOneStatement() {
@@ -59,8 +57,8 @@ public class CtStatementListTest {
         assertEquals(firstStatementToBeInserted, statementAtTheBeginningAfterInsertion);
         assertEquals(secondStatementToBeInserted, secondStatementAtTheBeginningOfTheListAfterInsertion);
 
-        assertThat(firstStatementToBeInserted.getParent(), is(mainStatementList));
-        assertThat(secondStatementToBeInserted.getParent(), is(mainStatementList));
+        assertThat(firstStatementToBeInserted.getParent()).isEqualTo(mainStatementList);
+        assertThat(secondStatementToBeInserted.getParent()).isEqualTo(mainStatementList);
     }
 
     @Test
@@ -74,8 +72,8 @@ public class CtStatementListTest {
         statementList.insertBegin(statementToBeInserted);
 
         CtStatement statementAtTheBeginningAfterInsertion = statementList.getStatements().get(0);
-        assertThat(statementAtTheBeginningAfterInsertion, is(statementToBeInserted));
-        assertThat(statementAtTheBeginningAfterInsertion.getParent(), is(statementList));
+        assertThat(statementAtTheBeginningAfterInsertion).isEqualTo(statementToBeInserted);
+        assertThat(statementAtTheBeginningAfterInsertion.getParent()).isEqualTo(statementList);
     }
 
     @Test
@@ -83,11 +81,11 @@ public class CtStatementListTest {
         // contract: removeStatement removes a statement form a StatementList having a single statement
 
         CtStatementList statementList = getStatementListInitializedWithOneStatement();
-        assertThat(statementList.getStatements().size(), is(1));
+        assertThat(statementList).getStatements().hasSize(1);
 
         statementList.removeStatement(statementList.getStatements().get(0));
 
-        assertThat(statementList.getStatements().size(), is(0));
+        assertThat(statementList).getStatements().isEmpty();
     }
 
     @Test
@@ -101,8 +99,8 @@ public class CtStatementListTest {
         statementList.insertEnd(statementToBeInserted);
 
         int lastStatementIndex = statementList.getStatements().size() - 1;
-        assertThat(statementList.getStatement(lastStatementIndex), is(statementToBeInserted));
-        assertThat(statementToBeInserted.getParent(), is(statementList));
+        assertThat((CtStatement) statementList.getStatement(lastStatementIndex)).isEqualTo(statementToBeInserted);
+        assertThat(statementToBeInserted.getParent()).isEqualTo(statementList);
     }
 
     @Test
@@ -126,9 +124,9 @@ public class CtStatementListTest {
         // assert
         int lastStatementIndex = mainStatementList.getStatements().size() - 1;
         int secondLastStatementIndex = lastStatementIndex - 1;
-        assertThat(mainStatementList.getStatement(secondLastStatementIndex), is(firstStatementToBeInserted));
-        assertThat(mainStatementList.getStatement(lastStatementIndex), is(secondStatementToBeInserted));
-        assertThat(firstStatementToBeInserted.getParent(), is(mainStatementList));
-        assertThat(secondStatementToBeInserted.getParent(), is(mainStatementList));
+        assertThat(mainStatementList.getStatement(secondLastStatementIndex)).isEqualTo(firstStatementToBeInserted);
+        assertThat(mainStatementList.getStatement(lastStatementIndex)).isEqualTo(secondStatementToBeInserted);
+        assertThat(firstStatementToBeInserted.getParent()).isEqualTo(mainStatementList);
+        assertThat(secondStatementToBeInserted.getParent()).isEqualTo(mainStatementList);
     }
 }

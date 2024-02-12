@@ -1,6 +1,5 @@
 package spoon.test.prettyprinter;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -56,6 +54,6 @@ public class SniperAnnotatedEnumTest {
         CoreMatchers.equalTo(true));
 
     String content = Files.readString(OUTPUT_PATH.resolve(path));
-    assertThat(content.trim(), CoreMatchers.containsString("/* test */public enum"));
+    assertThat(content.trim()).contains("/* test */public enum");
   }
 }

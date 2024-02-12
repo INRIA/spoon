@@ -16,10 +16,7 @@
  */
 package spoon.test;
 
-import org.hamcrest.Matcher;
 import spoon.Launcher;
-import spoon.testing.matchers.ContentEqualsMatcher;
-import spoon.testing.matchers.RegexFindMatcher;
 import spoon.metamodel.Metamodel;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
@@ -33,12 +30,8 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.compiler.VirtualFile;
 
-import javax.annotation.RegEx;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
@@ -189,16 +182,5 @@ public class SpoonTestHelpers {
 				localDeclarationSnippet +
 				"	}\n" +
 				"}";
-	}
-
-	/** @see RegexFindMatcher */
-	public static Matcher<String> containsRegexMatch(@RegEx String regex) {
-		return new RegexFindMatcher(Pattern.compile(regex));
-	}
-
-	/** @see ContentEqualsMatcher */
-	@SafeVarargs
-	public static <T extends Collection<E>, E> Matcher<T> contentEquals(E... elements) {
-		return new ContentEqualsMatcher<>(Arrays.asList(elements));
 	}
 }

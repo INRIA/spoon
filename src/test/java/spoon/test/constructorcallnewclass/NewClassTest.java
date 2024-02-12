@@ -37,17 +37,13 @@ import spoon.test.constructorcallnewclass.testclasses.Bar;
 import spoon.test.constructorcallnewclass.testclasses.Foo;
 import spoon.test.constructorcallnewclass.testclasses.Foo2;
 
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
@@ -227,7 +223,7 @@ public class NewClassTest {
 				.getFactory()
 				.Type()
 				.get("BadAnonymousClassOfNestedType$GenericType");
-		assertThat(anonymousClass.getQualifiedName(), startsWith("BadAnonymousClassOfNestedType"));
-		assertThat(anonymousClass.getSuperclass().getTypeDeclaration(), equalTo(expectedSuperclass));
+		assertThat(anonymousClass).getQualifiedName().startsWith("BadAnonymousClassOfNestedType");
+		assertThat(anonymousClass.getSuperclass().getTypeDeclaration()).isEqualTo(expectedSuperclass);
 	}
 }

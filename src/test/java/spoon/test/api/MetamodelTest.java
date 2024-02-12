@@ -46,14 +46,7 @@ import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtNewArray;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeMember;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.meta.ContainerKind;
@@ -73,9 +66,7 @@ import spoon.support.adaption.TypeAdaptor;
 import spoon.template.Parameter;
 
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -94,7 +85,12 @@ public class MetamodelTest {
 		interfaces.addInputResource("src/main/java/spoon/reflect/code");
 		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
 		interfaces.buildModel();
-		assertThat(Metamodel.getAllMetamodelInterfaces().stream().map(x -> x.getQualifiedName()).collect(Collectors.toSet()), equalTo(interfaces.getModel().getAllTypes().stream().map(x -> x.getQualifiedName()).collect(Collectors.toSet())));
+		assertThat(toQualifiedNames(Metamodel.getAllMetamodelInterfaces()))
+				.isEqualTo(toQualifiedNames(interfaces.getModel().getAllTypes()));
+	}
+
+	private static Set<String> toQualifiedNames(Collection<CtType<?>> types) {
+		return types.stream().map(CtTypeInformation::getQualifiedName).collect(Collectors.toSet());
 	}
 
 	@Test

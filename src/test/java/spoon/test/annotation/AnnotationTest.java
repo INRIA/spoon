@@ -104,9 +104,7 @@ import spoon.test.annotation.testclasses.shadow.DumbKlass;
 import spoon.test.annotation.testclasses.spring.AliasFor;
 import spoon.test.annotation.testclasses.typeandfield.SimpleClass;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -1142,30 +1140,30 @@ public class AnnotationTest {
 		spoon.buildModel();
 
 		List<CtMethod> methods = factory.getModel().getElements(new NamedElementFilter<>(CtMethod.class, "setField"));
-		assertThat(methods.size(), is(1));
+		assertThat(methods).hasSize(1);
 
 		CtMethod methodSet = methods.get(0);
-		assertThat(methodSet.getSimpleName(), is("setField"));
+		assertThat(methodSet.getSimpleName()).isEqualTo("setField");
 
 		List<CtParameter> parameters = methodSet.getParameters();
 
-		assertThat(parameters.size(), is(1));
+		assertThat(parameters.size()).isEqualTo(1);
 
 		CtParameter thisParameter = parameters.get(0);
-		assertThat(thisParameter.getSimpleName(), is("this"));
+		assertThat(thisParameter.getSimpleName()).isEqualTo("this");
 
 
 		CtTypeReference thisParamType = thisParameter.getType();
-		assertThat(thisParamType.getSimpleName(), is("Initializer"));
+		assertThat(thisParamType.getSimpleName()).isEqualTo("Initializer");
 
 		List<CtAnnotation<?>> annotations = thisParameter.getType().getAnnotations();
-		assertThat(annotations.size(), is(2));
+		assertThat(annotations).hasSize(2);
 
 		CtAnnotation unknownInit = annotations.get(0);
 		CtAnnotation raw = annotations.get(1);
 
-		assertThat(unknownInit.getAnnotationType().getSimpleName(), is("UnknownInitialization"));
-		assertThat(raw.getAnnotationType().getSimpleName(), is("Raw"));
+		assertThat(unknownInit.getAnnotationType().getSimpleName()).isEqualTo("UnknownInitialization");
+		assertThat(raw.getAnnotationType().getSimpleName()).isEqualTo("Raw");
 	}
 
 	@Test
@@ -1179,13 +1177,13 @@ public class AnnotationTest {
 
 		List<CtMethod> methods = factory.getModel().getElements(new NamedElementFilter<>(CtMethod.class, "bidule"));
 
-		assertThat(methods.size(), is(1));
+		assertThat(methods).hasSize(1);
 
-		CtAnnotation anno1 = factory.Annotation().annotate(methods.get(0), TypeAnnotation.class).addValue("params", new String[] { "test"});
-		assertThat(anno1.getValue("params").getType(), is(factory.Type().createReference(String[].class)));
+		CtAnnotation anno1 = factory.Annotation().annotate(methods.get(0), TypeAnnotation.class).addValue("params", new String[]{"test"});
+		assertThat(anno1.getValue("params").getType()).isEqualTo(factory.Type().createReference(String[].class));
 
 		CtAnnotation anno = factory.Annotation().annotate(methods.get(0), TypeAnnotation.class).addValue("params", new String[0]);
-		assertThat(anno.getValue("params").getType(), is(factory.Type().createReference(String[].class)));
+		assertThat(anno.getValue("params").getType()).isEqualTo(factory.Type().createReference(String[].class));
 	}
 
 	@Test
@@ -1201,7 +1199,7 @@ public class AnnotationTest {
 		for (CtAnnotation annotation : overrideAnnotations) {
 			CtTypeReference typeRef = annotation.getAnnotationType();
 			if ("Override".equals(typeRef.getSimpleName())) {
-				assertThat(typeRef.getQualifiedName(), is("java.lang.Override"));
+				assertThat(typeRef.getQualifiedName()).isEqualTo("java.lang.Override");
 			}
 		}
 	}

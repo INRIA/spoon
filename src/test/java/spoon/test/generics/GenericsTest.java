@@ -94,10 +94,6 @@ import spoon.test.generics.testclasses3.ClassThatDefinesANewTypeArgument;
 import spoon.test.generics.testclasses3.Foo;
 import spoon.test.generics.testclasses3.GenericConstructor;
 
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -105,6 +101,7 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.buildNoClasspath;
@@ -1571,10 +1568,10 @@ public class GenericsTest {
 				"	BiFunction<Integer[], Integer, Integer> field = Arrays::<Integer>binarySearch;\n" +
 				"}");
 		CtField<?> field = parsed.getField("field");
-		assertThat(field.getDefaultExpression(), instanceOf(CtExecutableReferenceExpression.class));
+		assertThat(field).getDefaultExpression().isInstanceOf(CtExecutableReferenceExpression.class);
 		CtExecutableReferenceExpression<?, ?> expression = (CtExecutableReferenceExpression<?, ?>) field.getDefaultExpression();
-		assertThat(expression.getExecutable().getActualTypeArguments().size(), equalTo(1));
-		assertThat(expression.getExecutable().getActualTypeArguments().get(0).toString(), equalTo("java.lang.Integer"));
+		assertThat(expression).getExecutable().getActualTypeArguments().map(Object::toString)
+						.containsExactly("java.lang.Integer");
 	}
 
 	@Test
