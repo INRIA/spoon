@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -63,11 +64,8 @@ public class InheritanceResolver {
 			if (method != null) {
 				methods.add(method);
 			}
-		}
-
-		// If Step 1 failed to find a documentation comment, then recursively apply this entire algorithm to each
-		// directly implemented (or extended) interface in the same order they were examined in Step 1.
-		for (CtType<?> type : superInterfaces) {
+			// Recursively find super methods in parent types. This is not the way it is
+			// specified in <22, but the way it works in the standard doclet.
 			methods.addAll(findSuperMethodsInCommentInheritanceOrder(type, target));
 		}
 
@@ -76,7 +74,15 @@ public class InheritanceResolver {
 			// but not an interface:
 
 			// If the superclass has a documentation comment for this method, then use it.
-			addSuperclassMethods(startType, target, methods);
+			List<CtMethod<?>> superclassMethods = new ArrayList<>();
+			addSuperclassMethods(startType, target, superclassMethods);
+
+			// From Java 22 onwards the direct superclass methods come first
+			if (startType.getFactory().getEnvironment().getComplianceLevel() >= 22) {
+				methods.addAll(0, superclassMethods);
+			} else {
+				methods.addAll(superclassMethods);
+			}
 		}
 
 		return methods;
@@ -133,31 +139,31 @@ public class InheritanceResolver {
 	 * @return the new and completed javadoc
 	 */
 	public List<JavadocElement> completeJavadocWithInheritedTags(CtElement element, JavadocCommentView view) {
-		if (!(element instanceof CtMethod<?>)) {
+		if (!(element instanceof CtMethod<?> method)) {
 			return view.getElements();
 		}
-		CtMethod<?> method = (CtMethod<?>) element;
 		Set<String> paramsToFind = method.getParameters()
 			.stream()
 			.map(CtNamedElement::getSimpleName)
-			.collect(Collectors.toCollection(HashSet::new));
+			.collect(Collectors.toCollection(LinkedHashSet::new)); // keep decl order
 		view.getBlockTagArguments(StandardJavadocTagType.PARAM, JavadocText.class)
 			.forEach(it -> paramsToFind.remove(it.getText()));
 
 		Set<String> throwsToFind = method.getThrownTypes()
 			.stream()
 			.map(CtTypeInformation::getQualifiedName)
-			.collect(Collectors.toCollection(HashSet::new));
+			.collect(Collectors.toCollection(LinkedHashSet::new)); // keep decl order
 		view.getBlockTagArguments(StandardJavadocTagType.THROWS, JavadocText.class)
 			.forEach(it -> throwsToFind.remove(it.getText()));
 		view.getBlockTagArguments(StandardJavadocTagType.EXCEPTION, JavadocText.class)
 			.forEach(it -> throwsToFind.remove(it.getText()));
 
-		boolean needsReturn = view.getBlockTag(StandardJavadocTagType.RETURN).isEmpty();
+		boolean needsReturn = needsReturn(view);
 		boolean needsBody = view.getBody().isEmpty();
 
 		InheritedJavadoc inheritedJavadoc = lookupInheritedDocForMethod(method);
 
+		// Order by body -> param -> return -> throws
 		List<JavadocElement> newElements = new ArrayList<>();
 		if (needsBody) {
 			newElements.addAll(inheritedJavadoc.getBody());
@@ -166,13 +172,13 @@ public class InheritanceResolver {
 			.map(it -> inheritedJavadoc.getParams().get(it))
 			.filter(Objects::nonNull)
 			.forEach(newElements::add);
+		if (needsReturn && inheritedJavadoc.getReturnTag() != null) {
+			newElements.add(inheritedJavadoc.getReturnTag());
+		}
 		throwsToFind.stream()
 			.map(it -> inheritedJavadoc.getThrowsClauses().get(it))
 			.filter(Objects::nonNull)
 			.forEach(newElements::add);
-		if (needsReturn && inheritedJavadoc.getReturnTag() != null) {
-			newElements.add(inheritedJavadoc.getReturnTag());
-		}
 
 		List<JavadocElement> finalElements = new ArrayList<>(view.getElements());
 		finalElements.addAll(newElements);
@@ -183,7 +189,22 @@ public class InheritanceResolver {
 			.collect(Collectors.toList());
 	}
 
-	public static InheritedJavadoc lookupInheritedDocForMethod(CtMethod<?> method) {
+	private static boolean needsReturn(JavadocCommentView view) {
+		// Block tags are always allowed
+		if (!view.getBlockTag(StandardJavadocTagType.RETURN).isEmpty()) {
+			return false;
+		}
+		// As an inline tag, it may only occur at the beginning of a method's main description.
+		if (view.getBody().isEmpty()) {
+			return true;
+		}
+		if (!(view.getBody().get(0) instanceof JavadocInlineTag start)) {
+			return true;
+		}
+		return start.getTagType() != StandardJavadocTagType.RETURN;
+	}
+
+	private static InheritedJavadoc lookupInheritedDocForMethod(CtMethod<?> method) {
 		List<CtMethod<?>> targets = new InheritanceResolver()
 			.findSuperMethodsInCommentInheritanceOrder(method.getDeclaringType(), method);
 
@@ -297,9 +318,12 @@ public class InheritanceResolver {
 						params.put(arg, tag);
 					});
 			}
-			if (tag.getTagType() == StandardJavadocTagType.THROWS) {
-				tag.getArgument(JavadocText.class)
-					.map(JavadocText::getText)
+			if (
+				tag.getTagType() == StandardJavadocTagType.THROWS
+				|| tag.getTagType() == StandardJavadocTagType.EXCEPTION
+			) {
+				tag.getArgument(JavadocReference.class)
+					.map(it -> it.getReference().toString())
 					.filter(missingThrowsClauses::contains)
 					.ifPresent(arg -> {
 						missingThrowsClauses.remove(arg);
