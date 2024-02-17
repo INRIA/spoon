@@ -91,6 +91,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	private int warningCount = 0;
 
 	private String[] sourceClasspath = null;
+	private List<String> sourceModulePath = List.of();
 
 	private boolean preserveLineNumbers = false;
 
@@ -487,6 +488,16 @@ private transient  ClassLoader inputClassloader;
 		verifySourceClasspath(sourceClasspath);
 		this.sourceClasspath = sourceClasspath;
 		this.inputClassloader = null;
+	}
+
+	@Override
+	public List<String> getSourceModulePath() {
+		return this.sourceModulePath;
+	}
+
+	@Override
+	public void setSourceModulePath(List<String> sourceModulePath) {
+		this.sourceModulePath = List.copyOf(sourceModulePath); // implicit null check on list and its elements
 	}
 
 	private void verifySourceClasspath(String[] sourceClasspath) throws InvalidClassPathException {
