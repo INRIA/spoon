@@ -233,11 +233,11 @@ public class MethodTest {
 		CtMethod<?> m0 = topDefinitions.get(0);
 		CtMethod<?> m1 = topDefinitions.get(1);
 		// two distinct elements
-		assertThat(m0, not(sameInstance(m1)));
+		assertThat(m0).isNotSameAs(m1);
 		// A1 and A2 declare the top-level methods
-		assertThat(m0.getDeclaringType(), not(equalTo(m1.getDeclaringType())));
-		assertThat(m0.getDeclaringType().getSimpleName(), anyOf(equalTo("A1"), equalTo("A2")));
-		assertThat(m1.getDeclaringType().getSimpleName(), anyOf(equalTo("A1"), equalTo("A2")));
+		assertThat(m0.getDeclaringType()).isNotEqualTo(m1.getDeclaringType());
+		assertThat(m0.getDeclaringType().getSimpleName()).isIn("A1", "A2");
+		assertThat(m1.getDeclaringType().getSimpleName()).isIn("A1", "A2");
 		// top-level definitions don't have top-level definitions
 		assertThat(m0.getTopDefinitions()).isEmpty();
 		assertThat(m1.getTopDefinitions()).isEmpty();

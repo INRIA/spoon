@@ -1,7 +1,5 @@
 package spoon.testing.assertions;
 
-import org.assertj.core.api.Assertions;
-
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;

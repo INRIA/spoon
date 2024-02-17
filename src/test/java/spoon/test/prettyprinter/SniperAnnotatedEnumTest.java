@@ -18,6 +18,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.testing.utils.GitHubIssue;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class SniperAnnotatedEnumTest {
   private static final Path INPUT_PATH = Paths.get("src/test/java/");
   private static final Path OUTPUT_PATH = Paths.get("target/test-output");
@@ -50,8 +52,9 @@ public class SniperAnnotatedEnumTest {
     launcher.process();
     launcher.prettyprint();
     // Verify result file exists and is not empty
-    assertThat("Output file for " + path + " should exist", OUTPUT_PATH.resolve(path).toFile().exists(),
-        CoreMatchers.equalTo(true));
+    assertThat(OUTPUT_PATH.resolve(path))
+            .withFailMessage("Output file for " + path + " should exist")
+            .exists();
 
     String content = Files.readString(OUTPUT_PATH.resolve(path));
     assertThat(content.trim()).contains("/* test */public enum");

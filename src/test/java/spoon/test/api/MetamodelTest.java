@@ -685,26 +685,39 @@ public class MetamodelTest {
 		assertEquals(1, typeMembers.size());
 		assertEquals(1, ctClass.getTypeMembers().size());
 		assertSame(ctClass, field1.getDeclaringType());
-		assertThat(Arrays.asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+		assertThat(ctClass.filterChildren(new TypeFilter<>(CtField.class)).map((CtField<?> e) -> e.getSimpleName()).list())
+				.hasSize(1)
+				.containsExactly("field1");
 		//contract: call of add on RoleHandler collection adds the item into real collection too
 		typeMembers.add(field2);
 		assertSame(ctClass, field2.getDeclaringType());
-		assertThat(Arrays.asList("field1", "field2"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+		assertThat(ctClass.filterChildren(new TypeFilter<>(CtField.class)).map((CtField<?> e) -> e.getSimpleName()).list())
+				.hasSize(2)
+				.containsExactly("field1", "field2");
 		//contract: call of set on RoleHandler collection replaces the item in real collection
 		typeMembers.set(0, field3);
 		assertSame(ctClass, field3.getDeclaringType());
-		assertThat(Arrays.asList("field3", "field2"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+		assertThat(ctClass.filterChildren(new TypeFilter<>(CtField.class)).map((CtField<?> e) -> e.getSimpleName()).list())
+				.hasSize(2)
+				.containsExactly("field3", "field2");
 		typeMembers.set(1, field1);
-		assertThat(Arrays.asList("field3", "field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+		assertThat(ctClass.filterChildren(new TypeFilter<>(CtField.class)).map((CtField<?> e) -> e.getSimpleName()).list())
+				.hasSize(2)
+				.containsExactly("field3", "field1");
 		//contract: call of remove(int) on RoleHandler collection removes the item in real collection
 		assertSame(field3, typeMembers.remove(0));
-		assertThat(Arrays.asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+		assertThat(ctClass.filterChildren(new TypeFilter<>(CtField.class)).map((CtField<?> e) -> e.getSimpleName()).list())
+				.hasSize(1)
+				.containsExactly("field1");
 		//contract: call of remove(Object) which does not exist does nothing
 		assertFalse(typeMembers.remove(field2));
-		assertThat(Arrays.asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+		assertThat(ctClass.filterChildren(new TypeFilter<>(CtField.class)).map((CtField<?> e) -> e.getSimpleName()).list())
+				.hasSize(1)
+				.containsExactly("field1");
 		//contract: call of remove(Object) on RoleHandler collection removes the item in real collection
 		assertTrue(typeMembers.remove(field1));
-		assertThat(Arrays.asList(), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+		assertThat(ctClass.filterChildren(new TypeFilter<>(CtField.class)).map((CtField<?> e) -> e.getSimpleName()).list())
+				.isEmpty();
 	}
 
 	@Test

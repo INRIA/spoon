@@ -18,6 +18,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class SniperAssertTest {
 	private static final Path INPUT_PATH = Paths.get("src/test/java/");
 	private static final Path OUTPUT_PATH = Paths.get("target/test-output");
@@ -54,13 +56,16 @@ public class SniperAssertTest {
 		launcher.process();
 		launcher.prettyprint();
 		// Verify result file exist and is not empty
-		assertThat("Output file for " + path + " should exist", OUTPUT_PATH.resolve(path).toFile().exists(),
-				CoreMatchers.equalTo(true));
+		assertThat(OUTPUT_PATH.resolve(path))
+				.withFailMessage("Output file for " + path + " should exist")
+				.exists();
 
 		String content = Files.readString(OUTPUT_PATH.resolve(path));
 
-		assertThat(content, CoreMatchers.notNullValue());
-		assertThat("Result class should not be empty", content.trim(), CoreMatchers.not(CoreMatchers.equalTo("")));
-		assertThat("Should contain assert with semicolon", content.trim(), CoreMatchers.containsString("assert true;"));
+		assertThat(content)
+				.withFailMessage("Result class should not be empty")
+				.isNotBlank()
+				.withFailMessage("Should contain assert with semicolon")
+				.contains("assert true;");
 	}
 }

@@ -63,6 +63,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -464,7 +465,7 @@ public class TryCatchTest {
 				.addCatcherAt(1, second);
 
 			// assert
-			assertThat(tryStatement.getCatchers(), contains(first, second, third));
+			assertThat(tryStatement).getCatchers().containsExactly(first, second, third);
 		}
 
 		@Test

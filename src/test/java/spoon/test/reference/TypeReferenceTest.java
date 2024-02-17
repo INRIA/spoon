@@ -68,7 +68,7 @@ import spoon.test.reference.testclasses.ParamRefs;
 import spoon.test.reference.testclasses.SuperAccess;
 import spoon.testing.utils.ModelUtils;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -76,6 +76,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -769,17 +770,17 @@ public class TypeReferenceTest {
 		CtModel model = SpoonTestHelpers.createModelFromString(code, 8);
 		CtBlock<?> block = SpoonTestHelpers.getBlock(model);
 		CtStatement ctStatement = block.getStatements().get(0);
-		assertThat(ctStatement, is(instanceOf(CtClass.class)));
+		assertThat(ctStatement).isInstanceOf(CtClass.class);
 		// the class has to be a local type
 		CtClass<?> asClass = (CtClass<?>) ctStatement;
-		assertThat(asClass.isLocalType(), is(true));
+		assertThat(asClass.isLocalType()).isTrue();
 		// its reference has to be a local type
 		CtTypeReference<?> reference = asClass.getReference();
-		assertThat(reference.isLocalType(), is(true));
+		assertThat(reference.isLocalType()).isTrue();
 		// if only the reference exists, it should still be a local type
 		asClass.delete();
-		assertThat(reference.getDeclaration(), nullValue());
-		assertThat(reference.isLocalType(), is(true));
+		assertThat(reference.getDeclaration()).isNull();
+		assertThat(reference.isLocalType()).isTrue();
 	}
 
 	@ParameterizedTest
@@ -791,14 +792,14 @@ public class TypeReferenceTest {
 		CtModel model = SpoonTestHelpers.createModelFromString(code, 8);
 		// the class has to be a non-local type
 		CtClass<?> asClass = (CtClass<?>) model.getAllTypes().iterator().next();
-		assertThat(asClass.isLocalType(), is(false));
+		assertThat(asClass.isLocalType()).isFalse();
 		// its reference has to be a non-local type
 		CtTypeReference<?> reference = asClass.getReference();
-		assertThat(reference.isLocalType(), is(false));
+		assertThat(reference.isLocalType()).isFalse();
 		// if only the reference exists, it should still be a non-local type
 		asClass.delete();
-		assertThat(reference.getDeclaration(), nullValue());
-		assertThat(reference.isLocalType(), is(false));
+		assertThat(reference.getDeclaration()).isNull();
+		assertThat(reference.isLocalType()).isFalse();
 	}
 
 	@Test

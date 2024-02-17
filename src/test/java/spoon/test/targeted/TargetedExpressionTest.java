@@ -17,6 +17,7 @@
 package spoon.test.targeted;
 
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
@@ -52,15 +53,19 @@ import spoon.test.targeted.testclasses.InternalSuperCall;
 import spoon.test.targeted.testclasses.Pozole;
 import spoon.test.targeted.testclasses.SuperClass;
 import spoon.test.targeted.testclasses.Tapas;
+import spoon.testing.assertions.SpoonAssertions;
 import spoon.testing.utils.ModelTest;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
@@ -401,29 +406,25 @@ public class TargetedExpressionTest {
 		final List<CtInvocation<?>> elements = innerInvMethod.getElements(new TypeFilter<>(CtInvocation.class));
 		assertEquals(8, elements.size());
 		expectedThisAccess.setType(expectedInnerClass);
-		assertThat(elements.get(0).getTarget().isImplicit(), is(true));
-		assertThat(elements.get(0).getTarget(), is(instanceOf(CtThisAccess.class)));
+		assertThat(elements.get(0).getTarget().isImplicit()).isTrue();;
+		assertThat(elements.get(0).getTarget()).isInstanceOf(CtThisAccess.class);
 		assertThat(
 			((CtTypeAccess<?>) ((CtThisAccess<?>) elements.get(0).getTarget()).getTarget())
 				.getAccessedType()
-				.getQualifiedName(),
-			is("spoon.test.targeted.testclasses.Foo")
-		);
-		assertThat(elements.get(0).getExecutable().getSimpleName(), is("inv"));
+				.getQualifiedName()).isEqualTo("spoon.test.targeted.testclasses.Foo");
+		assertThat(elements.get(0).getExecutable()).getSimpleName().isEqualTo("inv");
 		expectedThisAccess.setType(expectedType);
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("this.inv()"), elements.get(1));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(fooTypeAccess).result("spoon.test.targeted.testclasses.Foo.staticMethod()"), elements.get(2));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(fooTypeAccess).result("spoon.test.targeted.testclasses.Foo.staticMethod()"), elements.get(3));
 		expectedSuperThisAccess.setType(expectedInnerClass);
-		assertThat(elements.get(4).getTarget().isImplicit(), is(true));
-		assertThat(elements.get(4).getTarget(), is(instanceOf(CtThisAccess.class)));
+		assertThat(elements.get(4).getTarget().isImplicit()).isTrue();
+		assertThat(elements.get(4).getTarget()).isInstanceOf(CtThisAccess.class);
 		assertThat(
 			((CtTypeAccess<?>) ((CtThisAccess<?>) elements.get(4).getTarget()).getTarget())
 				.getAccessedType()
-				.getQualifiedName(),
-			is("spoon.test.targeted.testclasses.Foo")
-		);
-		assertThat(elements.get(4).getExecutable().getSimpleName(), is("superMethod"));
+				.getQualifiedName()).isEqualTo("spoon.test.targeted.testclasses.Foo");
+		assertThat(elements.get(4).getExecutable()).getSimpleName().isEqualTo("superMethod");
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedSuperClassType).target(expectedThisAccess).result("this.superMethod()"), elements.get(5));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("method()"), elements.get(6));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("this.method()"), elements.get(7));

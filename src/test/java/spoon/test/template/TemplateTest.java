@@ -16,6 +16,7 @@
  */
 package spoon.test.template;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
@@ -77,6 +78,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -446,7 +448,8 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
-			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			assertThat(klass.filterChildren(matcher).map(this::getMethodName).list())
+					.containsExactly("foo", "fbar");
 			matcher.forEachMatch(klass, (match) -> {
 				assertTrue(checkParameters("foo", match, "_col_", "new java.util.ArrayList<>()")
 						|| checkParameters("fbar", match, "_col_", "l")
@@ -460,7 +463,8 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher2")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
-			assertThat(asList("bou", "bov"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			assertThat(klass.filterChildren(matcher).map(this::getMethodName).list())
+					.containsExactly("bou", "bov");
 			matcher.forEachMatch(klass, (match) -> {
 				assertTrue(checkParameters("bov", match, "_col_", "new java.util.ArrayList<>()")
 						|| checkParameters("bou", match, "_col_", "new java.util.ArrayList<>()"));
@@ -473,7 +477,8 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher3")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
-			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			assertThat(klass.filterChildren(matcher).map(this::getMethodName).list())
+					.containsExactly("foo","fbar");
 			matcher.forEachMatch(klass, (match) -> {
 				assertTrue(checkParameters("foo", match, "_x_", "new java.util.ArrayList<>().size()")
 						||checkParameters("fbar", match, "_x_", "l.size()")
@@ -487,7 +492,8 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher4")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(3, matcher.find(klass).size());
-			assertThat(asList("foo","foo2","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			assertThat(klass.filterChildren(matcher).map(this::getMethodName).list())
+					.containsExactly("foo","foo2","fbar");
 			matcher.forEachMatch(klass, (match) -> {
 				assertTrue(
 						checkParameters("foo", match,
@@ -509,7 +515,8 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher5")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(6, matcher.find(klass).size());
-			assertThat(asList("foo","foo2","fbar","baz","bou","bov"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			assertThat(klass.filterChildren(matcher).map(this::getMethodName).list())
+					.containsExactly("foo","foo2","fbar","baz","bou","bov");
 			matcher.forEachMatch(klass, (match) -> {
 				assertTrue(
 						checkParameters("foo", match,
@@ -546,7 +553,8 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher6")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(6, matcher.find(klass).size());
-			assertThat(asList("foo","foo2","fbar","baz","bou","bov"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			assertThat(klass.filterChildren(matcher).map(this::getMethodName).list())
+					.containsExactly("foo","foo2","fbar","baz","bou","bov");
 			matcher.forEachMatch(klass, (match) -> {
 				assertTrue(
 						checkParameters("foo", match,
@@ -583,7 +591,8 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher7")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(1, matcher.find(klass).size());
-			assertThat(asList("bos"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			assertThat(klass.filterChildren(matcher).map(this::getMethodName).list())
+					.containsExactly("bos");
 			matcher.forEachMatch(klass, (match) -> {
 				assertTrue(
 						checkParameters("bos", match,

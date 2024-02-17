@@ -17,6 +17,8 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLoop;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class LoopSniperJavaPrettyPrinterTest {
 
 	private static final Path INPUT_PATH = Paths.get("src/test/java/");
@@ -61,15 +63,14 @@ public class LoopSniperJavaPrettyPrinterTest {
 		launcher.run();
 
 		// Verify result file exist and is not empty
-		assertThat("Output file for " + path + " should exist",
-				OUTPUT_PATH.resolve(path).toFile().exists(), CoreMatchers.equalTo(true));
+		assertThat(OUTPUT_PATH.resolve(path))
+				.withFailMessage("Output file for " + path + " should exist")
+				.exists();
 
 		String content = new String(Files.readAllBytes(OUTPUT_PATH.resolve(path)),
 				StandardCharsets.UTF_8);
 
-		assertThat(content, CoreMatchers.notNullValue());
-		assertThat("Result class should not be empty", content.trim(),
-				CoreMatchers.not(CoreMatchers.equalTo("")));
+		assertThat(content).isNotBlank();
 	}
 
 	public class LoopProcessor extends AbstractProcessor<CtLoop> {

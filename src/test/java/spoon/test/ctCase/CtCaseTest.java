@@ -124,7 +124,7 @@ public class CtCaseTest {
 
 		testCase.insertBegin(statementToBeInserted);
 
-		assertThat(testCase.getStatement(0)).isEqualTo(statementToBeInserted);
+		assertThat(testCase).getStatements().first().isEqualTo(statementToBeInserted);
 		assertThat(statementToBeInserted.getParent()).isEqualTo(testCase);
 	}
 
@@ -139,8 +139,7 @@ public class CtCaseTest {
 
 		testCase.insertEnd(statementToBeInserted);
 
-		int lastStatementIndex = testCase.getStatements().size() - 1;
-		assertThat(testCase.getStatement(lastStatementIndex)).isEqualTo(statementToBeInserted);
+		assertThat(testCase).getStatements().last().isEqualTo(statementToBeInserted);
 		assertThat(statementToBeInserted.getParent()).isEqualTo(testCase);
 	}
 

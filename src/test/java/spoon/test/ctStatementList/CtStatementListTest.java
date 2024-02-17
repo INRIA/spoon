@@ -122,11 +122,11 @@ public class CtStatementListTest {
         mainStatementList.insertEnd(statementList);
 
         // assert
-        int lastStatementIndex = mainStatementList.getStatements().size() - 1;
-        int secondLastStatementIndex = lastStatementIndex - 1;
-        assertThat(mainStatementList.getStatement(secondLastStatementIndex)).isEqualTo(firstStatementToBeInserted);
-        assertThat(mainStatementList.getStatement(lastStatementIndex)).isEqualTo(secondStatementToBeInserted);
-        assertThat(firstStatementToBeInserted.getParent()).isEqualTo(mainStatementList);
-        assertThat(secondStatementToBeInserted.getParent()).isEqualTo(mainStatementList);
+        int secondLastStatementIndex = mainStatementList.getStatements().size() - 2;
+        assertThat(mainStatementList).nested(a -> {
+            a.getStatements().last().isEqualTo(firstStatementToBeInserted);
+            a.getStatements().element(secondLastStatementIndex).isEqualTo(secondStatementToBeInserted);
+            a.isEqualTo(secondStatementToBeInserted.getParent());
+        });
     }
 }

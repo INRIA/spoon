@@ -26,8 +26,8 @@ class PackageFactoryTest {
 		assertThat(topLevelPackage.getQualifiedName()).isEqualTo(topLevelPackageName);
 		assertThat(packageWithDuplicatedSimpleNames.getQualifiedName()).isEqualTo(nestedPackageName);
 
-		assertThat(topLevelPackage.getPackage(topLevelPackageName), sameInstance(packageWithDuplicatedSimpleNames));
-		assertThat(packageWithDuplicatedSimpleNames.getParent(), sameInstance(topLevelPackage));
+		assertThat(topLevelPackage.getPackage(topLevelPackageName)).isSameAs(packageWithDuplicatedSimpleNames);
+		assertThat(packageWithDuplicatedSimpleNames.getParent()).isSameAs(topLevelPackage);
 	}
 	
 	@Test

@@ -64,6 +64,7 @@ import spoon.test.compilation.testclasses.IBar;
 import spoon.test.compilation.testclasses.Ifoo;
 import spoon.testing.utils.ModelUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -523,7 +524,7 @@ public class CompilationTest {
 		compiler.compile(SpoonModelBuilder.InputType.FILES);
 		System.setProperty("user.dir", userDir);
 
-		assertThat(tempDirPath.toFile().listFiles().length, not(0));
+		assertThat(tempDirPath.toFile().listFiles().length).isNotZero();
 	}
 	
 	@Test
