@@ -66,7 +66,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
 	@Override
 	protected boolean buildSources(JDTBuilder jdtBuilder) {
-		return buildUnitsAndModel(jdtBuilder, sources, getSourceClasspath(), "snippet ");
+		return buildUnitsAndModel(jdtBuilder, sources, getSourceClasspath(), getSourceModulePath(), "snippet ");
 	}
 
 	@Override
