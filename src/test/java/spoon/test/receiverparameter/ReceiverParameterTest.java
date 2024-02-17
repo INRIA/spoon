@@ -17,7 +17,6 @@ public class ReceiverParameterTest {
     )
     void simpleParameter(CtModel model) {
         CtType<?> targetType = model.getAllTypes().iterator().next();
-        targetType.getMethods().forEach(System.out::println);
         List<CtReceiverParameter> receiverParams = targetType.getElements(new TypeFilter<>(CtReceiverParameter.class));
         assertEquals(1, receiverParams.size());
         CtReceiverParameter next1 = receiverParams.iterator().next();
