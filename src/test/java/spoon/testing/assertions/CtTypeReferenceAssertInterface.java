@@ -6,7 +6,7 @@ import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
-interface CtTypeReferenceAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtTypeReference<?>> extends CtTypeInformationAssertInterface<A, W> , SpoonAssert<A, W> , CtActualTypeContainerAssertInterface<A, W> , CtReferenceAssertInterface<A, W> , CtShadowableAssertInterface<A, W> {
+public interface CtTypeReferenceAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtTypeReference<?>> extends CtTypeInformationAssertInterface<A, W> , SpoonAssert<A, W> , CtActualTypeContainerAssertInterface<A, W> , CtReferenceAssertInterface<A, W> , CtShadowableAssertInterface<A, W> {
 	default CtTypeReferenceAssertInterface<?, ?> getDeclaringType() {
 		return SpoonAssertions.assertThat(actual().getDeclaringType());
 	}

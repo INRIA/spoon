@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ListAssert;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.reference.CtModuleReference;
-interface CtPackageExportAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtPackageExport> extends SpoonAssert<A, W> , CtModuleDirectiveAssertInterface<A, W> {
+public interface CtPackageExportAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtPackageExport> extends SpoonAssert<A, W> , CtModuleDirectiveAssertInterface<A, W> {
 	default CtPackageReferenceAssertInterface<?, ?> getPackageReference() {
 		return SpoonAssertions.assertThat(actual().getPackageReference());
 	}

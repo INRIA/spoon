@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ListAssert;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtExpression;
-interface CtAbstractInvocationAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtAbstractInvocation<?>> extends CtElementAssertInterface<A, W> , SpoonAssert<A, W> {
+public interface CtAbstractInvocationAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtAbstractInvocation<?>> extends CtElementAssertInterface<A, W> , SpoonAssert<A, W> {
 	default ListAssert<CtExpression<?>> getArguments() {
 		return Assertions.assertThat(actual().getArguments());
 	}

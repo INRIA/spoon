@@ -119,10 +119,6 @@ public class AssertJCodegen {
 			// TODO remove SpoonAssert interface if unneeded
 
 			writeType(assertInterface, launcher);
-			CtClass<?> impl = Metamodel.getImplementationOfInterface(modelInterface);
-			if (impl == null) {
-				continue;
-			}
 			CtClass<?> anAssert = createAssert(modelInterface, assertInterface);
 			assertClasses.add(new AssertModelPair(anAssert, modelInterface));
 			writeType(anAssert, launcher);
@@ -195,11 +191,11 @@ public class AssertJCodegen {
 	}
 
 	private static void writeType(CtType<?> type, Launcher launcher) throws IOException {
+		System.out.println(type.toStringWithImports());
 		String targetLocation = GEN_ROOT + "/" + type.getQualifiedName().replace(".", "/") + ".java";
 		Path path = Path.of(targetLocation);
 		Files.createDirectories(path.getParent());
 		Files.writeString(path.toAbsolutePath(), launcher.createPrettyPrinter().printTypes(type));
-		System.out.println(type.toStringWithImports());
 	}
 
 	private CtClass<?> createAssert(CtInterface<?> modelInterface, CtInterface<?> assertInterface) {
@@ -287,8 +283,9 @@ public class AssertJCodegen {
 
 	CtInterface<?> createInterface(CtType<?> type) {
 		Factory factory = type.getFactory();
-		CtInterface<?> ctInterface =
-			factory.createInterface("spoon.testing.assertions." + type.getSimpleName() + "AssertInterface");
+		CtInterface<?> ctInterface = factory
+				.createInterface("spoon.testing.assertions." + type.getSimpleName() + "AssertInterface")
+				.addModifier(ModifierKind.PUBLIC);
 		CtTypeReference<?> abstractAssertRef = factory.createCtTypeReference(ASSERT_J_SUPERCLASS);
 		CtTypeParameter a =
 			factory.createTypeParameter().setSuperclass(abstractAssertRef).setSimpleName("A");

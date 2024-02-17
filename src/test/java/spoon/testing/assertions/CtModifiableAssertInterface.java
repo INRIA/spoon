@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.reflect.CtExtendedModifier;
-interface CtModifiableAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtModifiable> extends CtElementAssertInterface<A, W> , SpoonAssert<A, W> {
+public interface CtModifiableAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtModifiable> extends CtElementAssertInterface<A, W> , SpoonAssert<A, W> {
 	default AbstractCollectionAssert<?, Collection<? extends CtExtendedModifier>, CtExtendedModifier, ?> getExtendedModifiers() {
 		return Assertions.assertThat(actual().getExtendedModifiers());
 	}
