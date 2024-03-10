@@ -7,15 +7,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import java.util.Set;
-
-import org.eclipse.jdt.internal.compiler.ast.Expression;
-import org.eclipse.jdt.internal.compiler.ast.FakeDefaultLiteral;
-import org.eclipse.jdt.internal.compiler.ast.GuardedPattern;
-import org.eclipse.jdt.internal.compiler.ast.RecordPattern;
-import org.eclipse.jdt.internal.compiler.ast.TypePattern;
-import org.eclipse.jdt.internal.compiler.lookup.ParameterizedGenericMethodBinding;
-import org.slf4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
@@ -48,13 +39,16 @@ import org.eclipse.jdt.internal.compiler.ast.DoStatement;
 import org.eclipse.jdt.internal.compiler.ast.DoubleLiteral;
 import org.eclipse.jdt.internal.compiler.ast.EqualExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
+import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral;
+import org.eclipse.jdt.internal.compiler.ast.FakeDefaultLiteral;
 import org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
 import org.eclipse.jdt.internal.compiler.ast.FloatLiteral;
 import org.eclipse.jdt.internal.compiler.ast.ForStatement;
 import org.eclipse.jdt.internal.compiler.ast.ForeachStatement;
+import org.eclipse.jdt.internal.compiler.ast.GuardedPattern;
 import org.eclipse.jdt.internal.compiler.ast.IfStatement;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
@@ -86,6 +80,7 @@ import org.eclipse.jdt.internal.compiler.ast.QualifiedThisReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.Receiver;
 import org.eclipse.jdt.internal.compiler.ast.RecordComponent;
+import org.eclipse.jdt.internal.compiler.ast.RecordPattern;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
@@ -104,6 +99,7 @@ import org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
 import org.eclipse.jdt.internal.compiler.ast.TryStatement;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
+import org.eclipse.jdt.internal.compiler.ast.TypePattern;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnaryExpression;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
@@ -963,9 +959,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		boolean isVar = argument.type != null && argument.type.isTypeNameVar(scope);
 		boolean isReceiver = CharOperation.charToString(argument.name).equals("this");
+		;
 		// we can also use an instanceof Receiver here
-		if (isReceiver) {
-			CtReceiverParameter receiverParameter = helper.createReceiverParameter(argument);
+		if (argument instanceof Receiver receiver) {
+			CtReceiverParameter receiverParameter = helper.createReceiverParameter(receiver);
 			context.enter(receiverParameter, argument);
 			return true;
 		}

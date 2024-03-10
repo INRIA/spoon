@@ -20,6 +20,7 @@ import org.eclipse.jdt.internal.compiler.ast.PackageVisibilityStatement;
 import org.eclipse.jdt.internal.compiler.ast.ProvidesStatement;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.Receiver;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.RequiresStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
@@ -760,7 +761,7 @@ public class JDTTreeBuilderHelper {
 	 * @param argument the argument containing information about the parameter
 	 * @return the created CtReceiverParameter object
 	 */
-	CtReceiverParameter createReceiverParameter(Argument argument) {
+	CtReceiverParameter createReceiverParameter(Receiver argument) {
 		CtReceiverParameter p = jdtTreeBuilder.getFactory().Core().createReceiverParameter();
 		if (argument.type != null) {
 			p.setType(jdtTreeBuilder.getReferencesBuilder().getTypeReference(argument.type));

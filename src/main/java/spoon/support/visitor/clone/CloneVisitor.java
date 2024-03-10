@@ -1,10 +1,3 @@
-/*
- * SPDX-License-Identifier: (MIT OR CECILL-C)
- *
- * Copyright (C) 2006-2023 INRIA and contributors
- *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
- */
 /* SPDX-License-Identifier: (MIT OR CECILL-C)
 
 Copyright (C) 2006-2023 INRIA and contributors
@@ -242,6 +235,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.declaration.CtConstructor<T> aCtConstructor = c.getFactory().Core().createConstructor();
 		this.builder.copy(c, aCtConstructor);
 		aCtConstructor.setAnnotations(this.cloneHelper.clone(c.getAnnotations()));
+		aCtConstructor.setReceiverParameter(this.cloneHelper.clone(c.getReceiverParameter()));
 		aCtConstructor.setParameters(this.cloneHelper.clone(c.getParameters()));
 		aCtConstructor.setThrownTypes(this.cloneHelper.clone(c.getThrownTypes()));
 		aCtConstructor.setFormalCtTypeParameters(this.cloneHelper.clone(c.getFormalCtTypeParameters()));
@@ -505,6 +499,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtMethod.setAnnotations(this.cloneHelper.clone(m.getAnnotations()));
 		aCtMethod.setFormalCtTypeParameters(this.cloneHelper.clone(m.getFormalCtTypeParameters()));
 		aCtMethod.setType(this.cloneHelper.clone(m.getType()));
+		aCtMethod.setReceiverParameter(this.cloneHelper.clone(m.getReceiverParameter()));
 		aCtMethod.setParameters(this.cloneHelper.clone(m.getParameters()));
 		aCtMethod.setThrownTypes(this.cloneHelper.clone(m.getThrownTypes()));
 		aCtMethod.setBody(this.cloneHelper.clone(m.getBody()));

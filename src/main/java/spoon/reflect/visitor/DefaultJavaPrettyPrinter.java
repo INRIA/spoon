@@ -2365,7 +2365,25 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void visitCtReceiverParameter(CtReceiverParameter receiverParameter) {
 		elementPrinterHelper.writeComment(receiverParameter);
 		elementPrinterHelper.writeAnnotations(receiverParameter);
+
+		printer.writeIdentifier(receiverParameter.getType().getSimpleName());
+		printer.writeSpace();
+		boolean isInnerClass = receiverParameter.getType().getTopLevelType().equals(receiverParameter.getParent(CtType.class));
+		boolean isConstructor = receiverParameter.getParent() instanceof CtConstructor;
 		// after an implicit type, there is no space because we dont print anything
-		printer.writeIdentifier("this");
+		if (isConstructor && isInnerClass) {
+			// inside a ctor of an inner class, the identifier is $SimpleName.this
+			printer.writeSeparator(receiverParameter.getType().getSimpleName() + ".this");
+		} else {
+			printer.writeSeparator("this");
+		}
+	}
+
+	class Foo {
+		class Bar {
+			public Bar(Foo Foo.this) {
+
+			}
+		}
 	}
 }

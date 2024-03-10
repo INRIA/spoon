@@ -1,9 +1,18 @@
-/*
- * SPDX-License-Identifier: (MIT OR CECILL-C)
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
  */
 package spoon.reflect.visitor;
 /**
@@ -242,6 +251,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		spoon.reflect.declaration.CtConstructor other = ((spoon.reflect.declaration.CtConstructor) (this.stack.peek()));
 		enter(c);
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, c.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.RECEIVER_PARAMETER, c.getReceiverParameter(), other.getReceiverParameter());
 		biScan(spoon.reflect.path.CtRole.PARAMETER, c.getParameters(), other.getParameters());
 		biScan(spoon.reflect.path.CtRole.THROWN, c.getThrownTypes(), other.getThrownTypes());
 		biScan(spoon.reflect.path.CtRole.TYPE_PARAMETER, c.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
@@ -484,6 +494,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, m.getAnnotations(), other.getAnnotations());
 		biScan(spoon.reflect.path.CtRole.TYPE_PARAMETER, m.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
 		biScan(spoon.reflect.path.CtRole.TYPE, m.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.RECEIVER_PARAMETER, m.getReceiverParameter(), other.getReceiverParameter());
 		biScan(spoon.reflect.path.CtRole.PARAMETER, m.getParameters(), other.getParameters());
 		biScan(spoon.reflect.path.CtRole.THROWN, m.getThrownTypes(), other.getThrownTypes());
 		biScan(spoon.reflect.path.CtRole.BODY, m.getBody(), other.getBody());
