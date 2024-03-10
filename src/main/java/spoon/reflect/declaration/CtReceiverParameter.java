@@ -8,24 +8,14 @@
 package spoon.reflect.declaration;
 
 
-import spoon.reflect.code.CtExpression;
-import spoon.support.UnsettableProperty;
-import spoon.support.reflect.CtExtendedModifier;
+import spoon.reflect.reference.CtTypeReference;
 
-import java.util.Set;
-
-public interface CtReceiverParameter extends CtVariable<Object>, CtShadowable {
+public interface CtReceiverParameter extends CtTypedElement<Object>, CtShadowable, CtElement {
 
     @Override
-    @UnsettableProperty
-    <C extends CtVariable<Object>> C setDefaultExpression(CtExpression<Object> assignedExpression);
+    CtTypeReference<Object> getType();
 
     @Override
-    @UnsettableProperty
-    <C extends CtModifiable> C setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers);
+    CtReceiverParameter clone();
 
-
-    @Override
-    @UnsettableProperty
-    <T extends CtNamedElement> T setSimpleName(String simpleName);
 }

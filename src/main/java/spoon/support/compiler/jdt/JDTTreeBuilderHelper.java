@@ -762,8 +762,6 @@ public class JDTTreeBuilderHelper {
 	 */
 	CtReceiverParameter createReceiverParameter(Argument argument) {
 		CtReceiverParameter p = jdtTreeBuilder.getFactory().Core().createReceiverParameter();
-		p.setSimpleName("this");
-		p.setExtendedModifiers(getModifiers(argument.modifiers, false, ModifierTarget.PARAMETER));
 		if (argument.binding != null && argument.binding.type != null && argument.type == null) {
 			p.setType(jdtTreeBuilder.getReferencesBuilder().getTypeReference(argument.binding.type));
 			p.getType().setImplicit(argument.type == null);

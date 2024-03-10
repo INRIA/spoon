@@ -1126,9 +1126,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	@Override
 	public void visitCtReceiverParameter(CtReceiverParameter e) {
-		scanCtNamedElement(e);
-		scanCtVariable(e);
-		scanCtModifiable(e);
 		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);

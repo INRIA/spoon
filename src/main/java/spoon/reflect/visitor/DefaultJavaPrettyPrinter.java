@@ -2365,9 +2365,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void visitCtReceiverParameter(CtReceiverParameter receiverParameter) {
 		elementPrinterHelper.writeComment(receiverParameter);
 		elementPrinterHelper.writeAnnotations(receiverParameter);
-		elementPrinterHelper.writeModifiers(receiverParameter);
-			scan(receiverParameter.getType());
 		// after an implicit type, there is no space because we dont print anything
-		printer.writeIdentifier(receiverParameter.getSimpleName());
+		printer.writeIdentifier("this");
 	}
 }
