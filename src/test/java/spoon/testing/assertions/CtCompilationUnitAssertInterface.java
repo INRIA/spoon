@@ -6,7 +6,7 @@ import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
-interface CtCompilationUnitAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtCompilationUnit> extends CtElementAssertInterface<A, W> , SpoonAssert<A, W> {
+public interface CtCompilationUnitAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtCompilationUnit> extends CtElementAssertInterface<A, W> , SpoonAssert<A, W> {
 	default CtModuleAssertInterface<?, ?> getDeclaredModule() {
 		return SpoonAssertions.assertThat(actual().getDeclaredModule());
 	}

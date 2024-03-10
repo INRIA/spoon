@@ -1,4 +1,4 @@
 package spoon.testing.assertions;
 import org.assertj.core.api.AbstractObjectAssert;
 import spoon.reflect.declaration.CtAnnotationType;
-interface CtAnnotationTypeAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtAnnotationType<?>> extends SpoonAssert<A, W> , CtTypeAssertInterface<A, W> {}
+public interface CtAnnotationTypeAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtAnnotationType<?>> extends SpoonAssert<A, W> , CtTypeAssertInterface<A, W> {}

@@ -1,7 +1,7 @@
 package spoon.testing.assertions;
 import org.assertj.core.api.AbstractObjectAssert;
 import spoon.reflect.code.CtSynchronized;
-interface CtSynchronizedAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtSynchronized> extends SpoonAssert<A, W> , CtStatementAssertInterface<A, W> {
+public interface CtSynchronizedAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtSynchronized> extends SpoonAssert<A, W> , CtStatementAssertInterface<A, W> {
 	default CtBlockAssertInterface<?, ?> getBlock() {
 		return SpoonAssertions.assertThat(actual().getBlock());
 	}

@@ -7,7 +7,7 @@ import org.assertj.core.api.ListAssert;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
-interface CtClassAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtClass<?>> extends CtSealableAssertInterface<A, W> , SpoonAssert<A, W> , CtStatementAssertInterface<A, W> , CtTypeAssertInterface<A, W> {
+public interface CtClassAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtClass<?>> extends CtSealableAssertInterface<A, W> , SpoonAssert<A, W> , CtStatementAssertInterface<A, W> , CtTypeAssertInterface<A, W> {
 	default ListAssert<CtAnonymousExecutable> getAnonymousExecutables() {
 		return Assertions.assertThat(actual().getAnonymousExecutables());
 	}

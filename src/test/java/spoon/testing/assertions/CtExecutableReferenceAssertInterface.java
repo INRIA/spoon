@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ListAssert;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
-interface CtExecutableReferenceAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtExecutableReference<?>> extends SpoonAssert<A, W> , CtActualTypeContainerAssertInterface<A, W> , CtReferenceAssertInterface<A, W> {
+public interface CtExecutableReferenceAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtExecutableReference<?>> extends SpoonAssert<A, W> , CtActualTypeContainerAssertInterface<A, W> , CtReferenceAssertInterface<A, W> {
 	default CtTypeReferenceAssertInterface<?, ?> getDeclaringType() {
 		return SpoonAssertions.assertThat(actual().getDeclaringType());
 	}
