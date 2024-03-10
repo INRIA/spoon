@@ -1154,6 +1154,18 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	@java.lang.Override
+	public void visitCtReceiverParameter(spoon.reflect.declaration.CtReceiverParameter receiverParameter) {
+		spoon.reflect.declaration.CtReceiverParameter aCtReceiverParameter = receiverParameter.getFactory().Core().createReceiverParameter();
+		this.builder.copy(receiverParameter, aCtReceiverParameter);
+		aCtReceiverParameter.setAnnotations(this.cloneHelper.clone(receiverParameter.getAnnotations()));
+		aCtReceiverParameter.setType(this.cloneHelper.clone(receiverParameter.getType()));
+		aCtReceiverParameter.setComments(this.cloneHelper.clone(receiverParameter.getComments()));
+		this.cloneHelper.tailor(receiverParameter, aCtReceiverParameter);
+		this.other = aCtReceiverParameter;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
 	public void visitCtCasePattern(spoon.reflect.code.CtCasePattern casePattern) {
 		spoon.reflect.code.CtCasePattern aCtCasePattern = casePattern.getFactory().Core().createCasePattern();
 		this.builder.copy(casePattern, aCtCasePattern);
