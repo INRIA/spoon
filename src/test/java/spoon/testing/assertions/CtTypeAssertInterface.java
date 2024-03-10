@@ -10,7 +10,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
-interface CtTypeAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtType<?>> extends CtTypeInformationAssertInterface<A, W> , SpoonAssert<A, W> , CtNamedElementAssertInterface<A, W> , CtFormalTypeDeclarerAssertInterface<A, W> , CtShadowableAssertInterface<A, W> , CtTypeMemberAssertInterface<A, W> {
+public interface CtTypeAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtType<?>> extends CtTypeInformationAssertInterface<A, W> , SpoonAssert<A, W> , CtNamedElementAssertInterface<A, W> , CtFormalTypeDeclarerAssertInterface<A, W> , CtShadowableAssertInterface<A, W> , CtTypeMemberAssertInterface<A, W> {
 	default ListAssert<CtField<?>> getFields() {
 		return Assertions.assertThat(actual().getFields());
 	}

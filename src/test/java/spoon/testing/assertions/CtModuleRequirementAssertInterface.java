@@ -4,7 +4,7 @@ import org.assertj.core.api.AbstractCollectionAssert;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.Assertions;
 import spoon.reflect.declaration.CtModuleRequirement;
-interface CtModuleRequirementAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtModuleRequirement> extends SpoonAssert<A, W> , CtModuleDirectiveAssertInterface<A, W> {
+public interface CtModuleRequirementAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtModuleRequirement> extends SpoonAssert<A, W> , CtModuleDirectiveAssertInterface<A, W> {
 	default CtModuleReferenceAssertInterface<?, ?> getModuleReference() {
 		return SpoonAssertions.assertThat(actual().getModuleReference());
 	}

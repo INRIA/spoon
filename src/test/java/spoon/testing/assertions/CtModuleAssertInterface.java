@@ -9,7 +9,7 @@ import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtUsedService;
-interface CtModuleAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtModule> extends SpoonAssert<A, W> , CtNamedElementAssertInterface<A, W> {
+public interface CtModuleAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtModule> extends SpoonAssert<A, W> , CtNamedElementAssertInterface<A, W> {
 	default ListAssert<CtPackageExport> getExportedPackages() {
 		return Assertions.assertThat(actual().getExportedPackages());
 	}

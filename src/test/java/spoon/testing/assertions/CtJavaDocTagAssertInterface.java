@@ -4,7 +4,7 @@ import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ObjectAssert;
 import spoon.reflect.code.CtJavaDocTag;
-interface CtJavaDocTagAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtJavaDocTag> extends CtElementAssertInterface<A, W> , SpoonAssert<A, W> {
+public interface CtJavaDocTagAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtJavaDocTag> extends CtElementAssertInterface<A, W> , SpoonAssert<A, W> {
 	default AbstractStringAssert<?> getContent() {
 		return Assertions.assertThat(actual().getContent());
 	}

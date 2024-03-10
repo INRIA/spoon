@@ -2,7 +2,7 @@ package spoon.testing.assertions;
 import org.assertj.core.api.AbstractObjectAssert;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
-interface CtIfAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtIf> extends SpoonAssert<A, W> , CtStatementAssertInterface<A, W> {
+public interface CtIfAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtIf> extends SpoonAssert<A, W> , CtStatementAssertInterface<A, W> {
 	default CtExpressionAssertInterface<?, ?> getCondition() {
 		return SpoonAssertions.assertThat(actual().getCondition());
 	}

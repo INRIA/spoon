@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ListAssert;
 import spoon.reflect.code.CtAbstractSwitch;
 import spoon.reflect.code.CtCase;
-interface CtAbstractSwitchAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtAbstractSwitch<?>> extends CtElementAssertInterface<A, W> , SpoonAssert<A, W> {
+public interface CtAbstractSwitchAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtAbstractSwitch<?>> extends CtElementAssertInterface<A, W> , SpoonAssert<A, W> {
 	default ListAssert<CtCase<?>> getCases() {
 		return Assertions.assertThat(actual().getCases());
 	}
