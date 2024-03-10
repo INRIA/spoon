@@ -19,6 +19,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 
@@ -32,6 +33,7 @@ public class CtReceiverParameterImpl extends CtNamedElementImpl implements CtRec
     private final CtModifierHandler modifierHandler = new CtModifierHandler(this);
     @MetamodelPropertyField(role = CtRole.IS_SHADOW)
     boolean isShadow;
+
     @Override
     public Set<ModifierKind> getModifiers() {
         return modifierHandler.getModifiers();
@@ -137,6 +139,7 @@ public class CtReceiverParameterImpl extends CtNamedElementImpl implements CtRec
     }
 
     @Override
+    @UnsettableProperty
     public <C extends CtVariable<Object>> C setDefaultExpression(CtExpression<Object> assignedExpression) {
         return (C) this;
     }
@@ -180,13 +183,17 @@ public class CtReceiverParameterImpl extends CtNamedElementImpl implements CtRec
 
     @Override
     public void accept(CtVisitor visitor) {
-    //TODO: implement
+     visitor.visitCtReceiverParameter(this);
     }
 
     @Override
     public CtVariableReference<Object> getReference() {
-
         //TODO: implement
         return null;
+    }
+
+    @Override
+    public CtReceiverParameter clone() {
+        return (CtReceiverParameter) super.clone();
     }
 }
