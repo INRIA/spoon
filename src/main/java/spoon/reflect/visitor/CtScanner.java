@@ -388,6 +388,7 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtConstructor(final CtConstructor<T> c) {
 		enter(c);
 		scan(CtRole.ANNOTATION, c.getAnnotations());
+		scan(CtRole.RECEIVER_PARAMETER, c.getReceiverParameter());
 		scan(CtRole.PARAMETER, c.getParameters());
 		scan(CtRole.THROWN, c.getThrownTypes());
 		scan(CtRole.TYPE_PARAMETER, c.getFormalCtTypeParameters());
@@ -588,6 +589,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.ANNOTATION, m.getAnnotations());
 		scan(CtRole.TYPE_PARAMETER, m.getFormalCtTypeParameters());
 		scan(CtRole.TYPE, m.getType());
+		scan(CtRole.RECEIVER_PARAMETER, m.getReceiverParameter());
 		scan(CtRole.PARAMETER, m.getParameters());
 		scan(CtRole.THROWN, m.getThrownTypes());
 		scan(CtRole.BODY, m.getBody());
