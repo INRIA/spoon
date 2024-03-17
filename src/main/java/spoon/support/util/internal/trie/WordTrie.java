@@ -1,3 +1,10 @@
+/*
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
+ * Copyright (C) 2006-2019 INRIA and contributors
+ *
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ */
 package spoon.support.util.internal.trie;
 
 import java.lang.reflect.Array;
@@ -36,7 +43,11 @@ public class WordTrie<T> {
 	}
 
 	public Optional<T> findMatch(String input) {
-		return findMatch(input.toCharArray(), 0, input.length());
+		return findMatch(input.toCharArray());
+	}
+
+	public Optional<T> findMatch(char[] input) {
+		return findMatch(input, 0, input.length);
 	}
 
 	public Optional<T> findMatch(char[] input, int start, int end) {

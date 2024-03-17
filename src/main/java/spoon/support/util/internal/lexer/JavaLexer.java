@@ -1,3 +1,10 @@
+/*
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
+ * Copyright (C) 2006-2019 INRIA and contributors
+ *
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ */
 package spoon.support.util.internal.lexer;
 
 import spoon.reflect.declaration.ModifierKind;
@@ -21,16 +28,14 @@ public class JavaLexer {
 					.collect(Collectors.toMap(ModifierKind::toString, Function.identity()))
 	);
 	private final char[] content;
-	private final int start;
-	private final int end;
+	private final CharStream charStream;
 	private int nextPos;
 
 	public JavaLexer(char[] content, int start, int end) {
-		this.content = content;
-		this.start = start;
-		this.end = end;
-		this.nextPos = this.start;
-	}
+		this.charStream = new CharStream(content, start, end);
+		this.content = this.charStream.readAll();
+		this.nextPos = 0;
+    }
 
 	/**
 	 * @return {@code null} if no more tokens can be lexed in the range of this lexer.
@@ -51,18 +56,18 @@ public class JavaLexer {
 			case ';':
 			case ',':
 			case '@':
-				return new Token(TokenType.SEPARATOR, pos, this.nextPos);
+				return createToken(TokenType.SEPARATOR, pos);
 			case '.':
 				if (hasMore(2) && peek() == '.' && peek(1) == '.') {
 					skip(2);
 				}
-				return new Token(TokenType.SEPARATOR, pos, this.nextPos);
+				return createToken(TokenType.SEPARATOR, pos);
 			case ':':
 				if (hasMore() && peek() == ':') {
 					next();
-					return new Token(TokenType.SEPARATOR, pos, this.nextPos);
+					return createToken(TokenType.SEPARATOR, pos);
 				}
-				return new Token(TokenType.OPERATOR, pos, this.nextPos);
+				return createToken(TokenType.OPERATOR, pos);
 			case '/': // no comment, already skipped
 			case '=':
 			case '*':
@@ -88,11 +93,15 @@ public class JavaLexer {
 				return lexStringLiteral(pos);
 			case '~':
 			case '?':
-				return new Token(TokenType.OPERATOR, pos, this.nextPos);
+				return createToken(TokenType.OPERATOR, pos);
 			default:
 				skip(-1); // reset to previous
 				return lexLiteralOrKeywordOrIdentifier();
 		}
+	}
+
+	private Token createToken(TokenType type, int pos) {
+		return new Token(type, this.charStream.remapPosition(pos), this.charStream.remapPosition(this.nextPos));
 	}
 
 	private Token angleBracket(int pos, int found, int maxFound, char bracket) {
@@ -100,14 +109,14 @@ public class JavaLexer {
 			char peek = peek();
 			if (peek == '=') {
 				next();
-				return new Token(TokenType.OPERATOR, pos, this.nextPos);
+				return createToken(TokenType.OPERATOR, pos);
 			}
 			if (peek == bracket && found < maxFound) {
 				next();
 				return angleBracket(pos, found + 1, maxFound, bracket);
 			}
 		}
-		return new Token(TokenType.OPERATOR, pos, this.nextPos);
+		return createToken(TokenType.OPERATOR, pos);
 	}
 
 	private void skipUntilLineBreak() {
@@ -149,12 +158,17 @@ public class JavaLexer {
 			}
 			Optional<ModifierKind> match = MODIFIER_TRIE.findMatch(this.content, pos, this.nextPos);
 			if (match.isPresent()) {
-				return new Token(TokenType.KEYWORD, pos, this.nextPos);
+				return createToken(TokenType.KEYWORD, pos);
 			}
-			return new Token(TokenType.IDENTIFIER, pos, this.nextPos);
+			// special case: non-sealed is not a valid java identifier, but a keyword
+			if (hasMore("-sealed".length()) && isNon(pos, this.content) && peek() == '-' && isDashSealed(content, pos)) {
+				skip("-sealed".length());
+				return createToken(TokenType.KEYWORD, pos);
+			}
+			return createToken(TokenType.IDENTIFIER, pos);
 		} else if (Character.isDigit(next)) {
 			readNumericLiteral(next);
-			return new Token(TokenType.LITERAL, pos, this.nextPos);
+			return createToken(TokenType.LITERAL, pos);
 		}
 		return null;
 	}
@@ -253,7 +267,7 @@ public class JavaLexer {
 					next(); // assuming the string is correct, we're skipping every escapable char, including "
 				}
 			} else if (next() == '"') {
-				return new Token(TokenType.LITERAL, pos, this.nextPos);
+				return createToken(TokenType.LITERAL, pos);
 			}
 		}
 		return null;
@@ -269,7 +283,7 @@ public class JavaLexer {
 				}
 			} else if (peek() == '"' && peek(1) == '"' && peek(2) == '"') {
 				skip(3);
-				return new Token(TokenType.LITERAL, pos, this.nextPos);
+				return createToken(TokenType.LITERAL, pos);
 			} else {
 				next();
 			}
@@ -285,7 +299,7 @@ public class JavaLexer {
 				continue; // "unsafe" check, assuming there is a closing '
 			} else if (peek == '\'') {
 				next();
-				return new Token(TokenType.LITERAL, startPos, this.nextPos);
+				return createToken(TokenType.LITERAL, startPos);
 			}
 			next();
 		}
@@ -296,7 +310,7 @@ public class JavaLexer {
 		if (hasMore() && peek() == nextForDouble) {
 			next();
 		}
-		return new Token(TokenType.OPERATOR, startPos, this.nextPos);
+		return createToken(TokenType.OPERATOR, startPos);
 	}
 
 	private Token singleOrDoubleOperator(int startPos, char... anyNext) {
@@ -309,7 +323,7 @@ public class JavaLexer {
 				}
 			}
 		}
-		return new Token(TokenType.OPERATOR, startPos, this.nextPos);
+		return createToken(TokenType.OPERATOR, startPos);
 	}
 
 	private void skip(int i) {
@@ -333,13 +347,38 @@ public class JavaLexer {
 	}
 
 	private boolean hasMore(int i) {
-		return this.nextPos + i < this.end;
+		return this.nextPos + i < this.content.length;
+	}
+
+	private static boolean isNon(int pos, char[] content) {
+		return content.length - pos >= 3 && content[pos++] == 'n' && content[pos++] == 'o' && content[pos] == 'n';
+	}
+
+	private static boolean isDashSealed(char[] content, int pos) {
+		return content[pos++] == '-' &&
+				content[pos++] == 's' &&
+				content[pos++] == 'e' &&
+				content[pos++] == 'a' &&
+				content[pos++] == 'l' &&
+				content[pos++] == 'e' &&
+				content[pos] == 'd';
 	}
 
 	static volatile Token store;
 	static volatile char[] lastContent;
 
 	public static void main(String[] args) throws IOException {
+		if (true) {
+			char[] content = "\\u0022Hello, World\", this \\u002b that".toCharArray();
+			// char[] content = "\\u007b".toCharArray();
+			JavaLexer lexer = new JavaLexer(content, 0, content.length);
+			Token token;
+			while ((token = lexer.lex()) != null) {
+				System.out.println(token.formatted(content));
+			}
+
+			return;
+		}
 		Path all = Path.of("src/main/java");
 		Path guava = Path.of("C:\\Users\\Hannes\\Desktop\\deleteme\\guava");
 		Path jdk = Path.of("C:\\Users\\Hannes\\Desktop\\deleteme\\jdk");
@@ -410,7 +449,7 @@ public class JavaLexer {
 					retry = true;
 				} else if (peek(1) == '*') {
 					if (!skipUntil("*/")) {
-						this.nextPos = this.end; //
+						this.nextPos = this.content.length; //
 						return false;
 					}
 					retry = true;
@@ -421,7 +460,7 @@ public class JavaLexer {
 	}
 
 	int indexOf(char c, int start) {
-		for (int i = start; i < this.end; i++) {
+		for (int i = start; i < this.content.length; i++) {
 			if (this.content[i] == c) {
 				return i;
 			}

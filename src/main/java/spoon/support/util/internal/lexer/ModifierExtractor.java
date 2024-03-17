@@ -1,3 +1,10 @@
+/*
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
+ * Copyright (C) 2006-2019 INRIA and contributors
+ *
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ */
 package spoon.support.util.internal.lexer;
 
 import spoon.reflect.cu.SourcePosition;
@@ -31,8 +38,8 @@ public class ModifierExtractor {
 			if (lex == null) {
 				return;
 			}
-			lex = fixupNonSealed(lex, lexer, content);
-			Optional<ModifierKind> match = modifierTrie.findMatch(content, lex.start(), lex.end());
+			char[] decodedContent = new CharStream(content, lex.start(), lex.end()).readAll();
+			Optional<ModifierKind> match = modifierTrie.findMatch(decodedContent);
 			if (match.isPresent()) {
 				CtExtendedModifier modifier = modifiers.remove(match.get());
 				if (modifier != null) {
@@ -40,32 +47,5 @@ public class ModifierExtractor {
 				}
 			}
 		}
-	}
-
-	private Token fixupNonSealed(Token start, JavaLexer lexer, char[] content) {
-		int nextStart = start.end();
-		if (isNon(start, content) && nextStart + "sealed".length() < content.length) {
-			if (isDashSealed(content, nextStart)) {
-				lexer.lex(); // skip -
-				lexer.lex(); // skip sealed
-				return new Token(TokenType.KEYWORD, start.start(), start.end() + "-sealed".length());
-			}
-		}
-		return start;
-	}
-
-	private static boolean isNon(Token token, char[] content) {
-		int pos = token.start();
-		return token.length() == 3 && content[pos++] == 'n' && content[pos++] == 'o' && content[pos] == 'n';
-	}
-
-	private static boolean isDashSealed(char[] content, int pos) {
-		return content[pos++] == '-' &&
-				content[pos++] == 's' &&
-				content[pos++] == 'e' &&
-				content[pos++] == 'a' &&
-				content[pos++] == 'l' &&
-				content[pos++] == 'e' &&
-				content[pos] == 'd';
 	}
 }
