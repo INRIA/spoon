@@ -778,7 +778,7 @@ public class JavaReflectionTreeBuilderTest {
 
 		// ConstDesc is sealed
 		assertThat(ctConstantDesc).getExtendedModifiers()
-						.containsOnly(CtExtendedModifier.explicit(ModifierKind.SEALED));
+						.contains(CtExtendedModifier.explicit(ModifierKind.SEALED));
 		assertThat(ctConstantDesc)
 						.getPermittedTypes()
 						// DynamicConstDesc and String are permitted types

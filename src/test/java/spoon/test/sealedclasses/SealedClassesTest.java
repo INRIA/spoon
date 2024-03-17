@@ -13,6 +13,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtExtendedModifier;
 
+import java.util.function.Predicate;
+
 import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 public class SealedClassesTest {
@@ -59,7 +61,7 @@ public class SealedClassesTest {
 		CtModel ctModel = launcher.buildModel();
 		CtEnum<?> ctEnum = ctModel.getElements(new TypeFilter<CtEnum<?>>(CtEnum.class)).get(0);
 		// not final
-		assertThat(ctEnum).matches(CtEnum::isFinal);
+		assertThat(ctEnum).matches(Predicate.not(CtEnum::isFinal));
 		// but (implicitly) sealed
 		assertThat(ctEnum).getExtendedModifiers().contains(
 				new CtExtendedModifier(ModifierKind.PUBLIC, false),
@@ -88,7 +90,7 @@ public class SealedClassesTest {
 		assertThat(sealedClassWithPermits).getPermittedTypes().hasSize(2);
 		for (CtTypeReference<?> permittedType : sealedClassWithPermits.getPermittedTypes()) {
 			// outer types are always explicit
-			assertThat(permittedType).isImplicit().isTrue();
+			assertThat(permittedType).isImplicit().isFalse();
 		}
 		assertThat(sealedClassWithPermits).getPermittedTypes().contains(extendingClass.getReference());
 		assertThat(sealedClassWithPermits).getPermittedTypes().contains(otherExtendingClass.getReference());

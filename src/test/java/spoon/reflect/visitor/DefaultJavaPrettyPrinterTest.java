@@ -402,7 +402,7 @@ public class DefaultJavaPrettyPrinterTest {
         assertThat(spoonModelBuilder.build()).isTrue();
 
         CtLocalVariable<Integer> localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(1);
-        assertThat(localVariable).isEqualTo("int fieldReadOfA = ((A) c).a.i");
+        assertThat(localVariable).printed().isEqualTo("int fieldReadOfA = ((A) c).a.i");
     }
 
     @ParameterizedTest(name = "Printing literal ''{0}'' throws an error")

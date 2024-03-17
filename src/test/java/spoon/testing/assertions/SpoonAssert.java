@@ -20,5 +20,10 @@ public interface SpoonAssert<SELF, ACTUAL> {
 		return self();
 	}
 
+	default SELF isEqualTo(Object expected) {
+		assertThat(actual()).isEqualTo(expected);
+		return self();
+	}
+
 	void failWithMessage(String errorMessage, Object... arguments);
 }
