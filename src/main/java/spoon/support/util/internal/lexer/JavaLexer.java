@@ -7,8 +7,7 @@
  */
 package spoon.support.util.internal.lexer;
 
-import spoon.reflect.declaration.ModifierKind;
-import spoon.support.util.internal.trie.WordTrie;
+import spoon.support.util.internal.trie.Trie;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,9 +22,9 @@ import java.util.stream.Stream;
 
 public class JavaLexer {
 	private static final char CHAR_ESCAPE_CHAR_CHAR = '\\';
-	private static final WordTrie<ModifierKind> MODIFIER_TRIE = WordTrie.ofWords(
-			Arrays.stream(ModifierKind.values())
-					.collect(Collectors.toMap(ModifierKind::toString, Function.identity()))
+	private static final Trie<JavaKeyword> KEYWORD_TRIE = Trie.ofWords(
+			Arrays.stream(JavaKeyword.values())
+					.collect(Collectors.toMap(JavaKeyword::toString, Function.identity()))
 	);
 	private final char[] content;
 	private final CharStream charStream;
@@ -156,12 +155,15 @@ public class JavaLexer {
 			while (hasMore() && Character.isJavaIdentifierPart(peek())) {
 				next();
 			}
-			Optional<ModifierKind> match = MODIFIER_TRIE.findMatch(this.content, pos, this.nextPos);
+			Optional<JavaKeyword> match = KEYWORD_TRIE.findMatch(this.content, pos, this.nextPos);
 			if (match.isPresent()) {
 				return createToken(TokenType.KEYWORD, pos);
 			}
 			// special case: non-sealed is not a valid java identifier, but a keyword
-			if (hasMore("-sealed".length()) && isNon(pos, this.content) && peek() == '-' && isDashSealed(content, pos)) {
+			if (hasMore("sealed".length())
+					&& isNon(pos, this.content)
+					&& isDashSealed(content, pos + 3) // skip the non
+			) {
 				skip("-sealed".length());
 				return createToken(TokenType.KEYWORD, pos);
 			}
@@ -369,7 +371,9 @@ public class JavaLexer {
 
 	public static void main(String[] args) throws IOException {
 		if (true) {
-			char[] content = "\\u0022Hello, World\", this \\u002b that".toCharArray();
+			char[] content = """
+					public void \\ud801\\udc00method() {};
+					""".toCharArray();
 			// char[] content = "\\u007b".toCharArray();
 			JavaLexer lexer = new JavaLexer(content, 0, content.length);
 			Token token;
@@ -377,11 +381,11 @@ public class JavaLexer {
 				System.out.println(token.formatted(content));
 			}
 
-			return;
+			// return;
 		}
 		Path all = Path.of("src/main/java");
-		Path guava = Path.of("C:\\Users\\Hannes\\Desktop\\deleteme\\guava");
-		Path jdk = Path.of("C:\\Users\\Hannes\\Desktop\\deleteme\\jdk");
+		// Path guava = Path.of("~/IdeaProjects/jdk");
+		Path jdk = Path.of("/home/hannes/IdeaProjects/jdk");
 		Path other = Path.of("src/");
 		class C {
 			private final Path file;

@@ -10,7 +10,7 @@ package spoon.support.util.internal.lexer;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.reflect.CtExtendedModifier;
-import spoon.support.util.internal.trie.WordTrie;
+import spoon.support.util.internal.trie.Trie;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -20,7 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ModifierExtractor {
-	private final WordTrie<ModifierKind> modifierTrie = WordTrie.ofWords(
+	private static final Trie<ModifierKind> MODIFIER_TRIE = Trie.ofWords(
 			Arrays.stream(ModifierKind.values())
 					.collect(Collectors.toMap(ModifierKind::toString, Function.identity()))
 	);
@@ -38,8 +38,11 @@ public class ModifierExtractor {
 			if (lex == null) {
 				return;
 			}
+			if (lex.type() != TokenType.KEYWORD) {
+				continue;
+			}
 			char[] decodedContent = new CharStream(content, lex.start(), lex.end()).readAll();
-			Optional<ModifierKind> match = modifierTrie.findMatch(decodedContent);
+			Optional<ModifierKind> match = MODIFIER_TRIE.findMatch(decodedContent);
 			if (match.isPresent()) {
 				CtExtendedModifier modifier = modifiers.remove(match.get());
 				if (modifier != null) {

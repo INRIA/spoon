@@ -14,6 +14,7 @@ import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.MapAssert;
 import org.assertj.core.api.ObjectAssert;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -79,6 +80,7 @@ public class AssertJCodegen {
 	}
 
 	@Test
+	@Disabled
 	@Tag("codegen")
 	void generateCode() throws IOException {
 		Launcher launcher = new Launcher();

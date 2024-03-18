@@ -1,5 +1,6 @@
 package spoon.support.util.internal.lexer;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -23,14 +24,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.anEmptyMap;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ModifierExtractorTest {
 	private static final Map<String, ModifierKind> LOOKUP = Arrays.stream(ModifierKind.values())
@@ -66,9 +60,8 @@ class ModifierExtractorTest {
 		extractor.collectModifiers(chars, 0, chars.length, modifier, SimpleSourcePosition::new);
 
 		// assert
-		assertThat(modifier, is(anEmptyMap()));
-		assertThat(extended.getPosition(), is(instanceOf(SimpleSourcePosition.class)));
-		assertThat(extended.getPosition(), is(equalTo(new SimpleSourcePosition(0, input.length() - 1))));
+		assertThat(modifier).isEmpty();
+		assertThat(extended.getPosition()).isEqualTo(new SimpleSourcePosition(0, input.length() - 1));
 	}
 
 	static Stream<Arguments> modifiers() {
@@ -90,7 +83,7 @@ class ModifierExtractorTest {
 		extractor.collectModifiers(chars, 0, input.length(), allModifiers, SimpleSourcePosition::new);
 
 		// assert
-		assertThat(allModifiers, is(anEmptyMap()));
+		assertThat(allModifiers).isEmpty();
 	}
 
 	static Stream<Arguments> mixedContents() {
@@ -143,8 +136,9 @@ class ModifierExtractorTest {
 		extractor.collectModifiers(chars, 0, input.length(), allModifiers, SimpleSourcePosition::new);
 
 		// assert
-		assertThat(allModifiers.keySet(), not(hasItem(ModifierKind.PUBLIC))); // public should be removed
-		assertThat(allModifiers.keySet(), hasItem(ModifierKind.FINAL)); // final shouldn't be removed
+		assertThat(allModifiers)
+				.doesNotContainKeys(ModifierKind.PUBLIC) // public should be removed
+				.containsKey(ModifierKind.FINAL); // final shouldn't be removed
 	}
 
 	@ParameterizedTest
@@ -174,7 +168,7 @@ class ModifierExtractorTest {
 		extractor.collectModifiers(chars, 0, input.length(), allModifiers, createAndAdd);
 
 		// assert
-		assertThat(foundStartPositions, is(empty()));
+		assertThat(foundStartPositions).isEmpty();
 	}
 
 	static class SimpleSourcePosition implements SourcePosition {

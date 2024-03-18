@@ -322,8 +322,8 @@ public class PositionBuilder {
 				modifiersSourceEnd = findPrevNonWhitespace(contents, modifiersSourceStart - 1,
 											findPrevWhitespace(contents, modifiersSourceStart - 1,
 												findPrevNonWhitespace(contents, modifiersSourceStart - 1, sourceStart - 1)));
-				if (e instanceof CtModifiable) {
-					setModifiersPosition((CtModifiable) e, modifiersSourceStart, modifiersSourceEnd);
+				if (e instanceof CtModifiable modifiable) {
+					setModifiersPosition(modifiable, modifiersSourceStart, modifiersSourceEnd);
 				}
 				if (modifiersSourceEnd < modifiersSourceStart) {
 					//there is no modifier
@@ -579,13 +579,15 @@ public class PositionBuilder {
 				continue;
 			}
 			if (explicitModifiersByKind.put(modifier.getKind(), modifier) != null) {
-				throw new SpoonException("The modifier " + modifier.getKind().toString() + " found twice");
+				throw new SpoonException("The modifier " + modifier.getKind().toString() + " was found twice");
 			}
 		}
 
-		//move end after the last char
-		end++;
-		extractor.collectModifiers(contents, start, end, explicitModifiersByKind,
+		extractor.collectModifiers(
+				contents,
+				start,
+				Math.max(start, end) + 1, //move end after the last char
+				explicitModifiersByKind,
 				(modStart, modEnd) -> cf.createSourcePosition(cu, modStart, modEnd, cu.getLineSeparatorPositions())
 		);
 		if (!explicitModifiersByKind.isEmpty()) {

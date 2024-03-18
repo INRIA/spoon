@@ -24,22 +24,28 @@ public class CharStream {
     public char[] readAll() {
         char[] chars = new char[this.end - this.start]; // approximate
         int t = 0;
+        boolean escape = false;
         for (int i = this.start; i < this.end; i++, t++) {
-            if (this.content[i] != '\\') {
-                chars[t] = this.content[i];
-            } else if (this.end > i + 5 && this.content[i + 1] == 'u') {
+            if (!escape && this.content[i] == '\\' && this.end > i + 5 && this.content[i + 1] == 'u') {
                 int utf16 = parseHex(i + 2);
-                if (utf16 < 0) {
-                    chars[t] = '\\';
-                } else {
+                if (utf16 >= 0) {
                     chars[t] = (char) utf16;
                     i += 5;
                     if (this.positionRemap == null) {
                         this.positionRemap = createPositionRemap(chars);
                     }
                     this.positionRemap[t] = 6;
+                    continue;
                 }
             }
+            if (this.content[i] == '\\') {
+                if (escape) {
+                    escape = false;
+                } else if (this.end > i + 1 && this.content[i + 1] == '\\') {
+                    escape = true;
+                }
+            }
+            chars[t] = this.content[i];
         }
         if (t == chars.length) {
             return chars;
@@ -52,7 +58,7 @@ public class CharStream {
 
     public int remapPosition(int index) {
         if (this.positionRemap == null) {
-            return index;
+            return index + this.start;
         }
         if (index == 0) {
             return this.start;

@@ -7,29 +7,13 @@
  */
 package spoon.support.util.internal.lexer;
 
-public final class Token {
+/**
+ * @param start the inclusive start position
+ * @param end   the exclusive end position
+ */
+public record Token(TokenType type, int start, int end) {
 	private static final int COLUMN_WIDTH = 8;
-	private final TokenType type;
-	private final int start; // inclusive
-	private final int end; // exclusive
 
-	public Token(TokenType type, int start, int end) {
-		this.type = type;
-		this.start = start;
-		this.end = end;
-	}
-
-	public TokenType type() {
-		return this.type;
-	}
-
-	public int start() {
-		return this.start;
-	}
-
-	public int end() {
-		return this.end;
-	}
 
 	public int length() {
 		return end - start;
