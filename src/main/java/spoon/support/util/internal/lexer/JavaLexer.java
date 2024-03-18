@@ -20,6 +20,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.Character.isJavaIdentifierPart;
+
 public class JavaLexer {
 	private static final char CHAR_ESCAPE_CHAR_CHAR = '\\';
 	private static final Trie<JavaKeyword> KEYWORD_TRIE = Trie.ofWords(
@@ -152,7 +154,7 @@ public class JavaLexer {
 		int pos = this.nextPos;
 		char next = next(); // assuming next is available
 		if (Character.isJavaIdentifierStart(next)) {
-			while (hasMore() && Character.isJavaIdentifierPart(peek())) {
+			while (hasMore() && isJavaIdentifierPart(peek())) {
 				next();
 			}
 			Optional<JavaKeyword> match = KEYWORD_TRIE.findMatch(this.content, pos, this.nextPos);
@@ -160,11 +162,9 @@ public class JavaLexer {
 				return createToken(TokenType.KEYWORD, pos);
 			}
 			// special case: non-sealed is not a valid java identifier, but a keyword
-			if (hasMore("sealed".length())
-					&& isNon(pos, this.content)
-					&& isDashSealed(content, pos + 3) // skip the non
+			if (isNonSealed(pos)
 			) {
-				skip("-sealed".length());
+				skip("sealed".length() + 1); // move behind
 				return createToken(TokenType.KEYWORD, pos);
 			}
 			return createToken(TokenType.IDENTIFIER, pos);
@@ -173,6 +173,18 @@ public class JavaLexer {
 			return createToken(TokenType.LITERAL, pos);
 		}
 		return null;
+	}
+
+	private boolean isNonSealed(int pos) {
+		int requiredForNonSealed = "sealed".length();
+		boolean startsWithNonSealed = hasMore(requiredForNonSealed)
+				&& isNon(pos, this.content)
+				&& isDashSealed(content, this.nextPos);
+		if (startsWithNonSealed) {
+			return !hasMore(requiredForNonSealed + 1)
+					|| !isJavaIdentifierPart(peek(requiredForNonSealed + 1));
+		}
+		return false;
 	}
 
 	private void readNumericLiteral(char first) {
