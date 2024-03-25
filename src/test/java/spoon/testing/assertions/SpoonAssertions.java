@@ -1,4 +1,6 @@
 package spoon.testing.assertions;
+import spoon.reflect.code.CtAbstractInvocation;
+import spoon.reflect.code.CtAbstractSwitch;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -7,7 +9,9 @@ import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtBreak;
+import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
@@ -31,6 +35,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.code.CtLabelledFlowBreak;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -39,6 +44,10 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtRecordPattern;
+import spoon.reflect.code.CtPattern;
+import spoon.reflect.code.CtRHSReceiver;
+import spoon.reflect.code.CtRecordPattern;
+import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -65,6 +74,7 @@ import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -72,11 +82,15 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.declaration.CtMultiTypedElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
@@ -86,9 +100,16 @@ import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
+import spoon.reflect.declaration.CtSealable;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeInformation;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtUsedService;
+import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -106,12 +127,28 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 public final class SpoonAssertions {
+	public static CtAbstractInvocationAssert assertThat(CtAbstractInvocation<?> ctAbstractInvocation) {
+		return new CtAbstractInvocationAssert(ctAbstractInvocation);
+	}
+
+	public static CtResourceAssert assertThat(CtResource<?> ctResource) {
+		return new CtResourceAssert(ctResource);
+	}
+
 	public static CtProvidedServiceAssert assertThat(CtProvidedService ctProvidedService) {
 		return new CtProvidedServiceAssert(ctProvidedService);
 	}
 
+	public static CtAbstractSwitchAssert assertThat(CtAbstractSwitch<?> ctAbstractSwitch) {
+		return new CtAbstractSwitchAssert(ctAbstractSwitch);
+	}
+
 	public static CtConditionalAssert assertThat(CtConditional<?> ctConditional) {
 		return new CtConditionalAssert(ctConditional);
+	}
+
+	public static CtCFlowBreakAssert assertThat(CtCFlowBreak ctCFlowBreak) {
+		return new CtCFlowBreakAssert(ctCFlowBreak);
 	}
 
 	public static CtParameterAssert assertThat(CtParameter<?> ctParameter) {
@@ -174,6 +211,10 @@ public final class SpoonAssertions {
 		return new CtModuleRequirementAssert(ctModuleRequirement);
 	}
 
+	public static CtRHSReceiverAssert assertThat(CtRHSReceiver<?> ctRHSReceiver) {
+		return new CtRHSReceiverAssert(ctRHSReceiver);
+	}
+
 	public static CtSuperAccessAssert assertThat(CtSuperAccess<?> ctSuperAccess) {
 		return new CtSuperAccessAssert(ctSuperAccess);
 	}
@@ -188,6 +229,14 @@ public final class SpoonAssertions {
 
 	public static CtNamedElementAssert assertThat(CtNamedElement ctNamedElement) {
 		return new CtNamedElementAssert(ctNamedElement);
+	}
+
+	public static CtSealableAssert assertThat(CtSealable ctSealable) {
+		return new CtSealableAssert(ctSealable);
+	}
+
+	public static CtModifiableAssert assertThat(CtModifiable ctModifiable) {
+		return new CtModifiableAssert(ctModifiable);
 	}
 
 	public static CtPackageDeclarationAssert assertThat(CtPackageDeclaration ctPackageDeclaration) {
@@ -206,8 +255,16 @@ public final class SpoonAssertions {
 		return new CtFieldAccessAssert(ctFieldAccess);
 	}
 
+	public static CtCodeSnippetAssert assertThat(CtCodeSnippet ctCodeSnippet) {
+		return new CtCodeSnippetAssert(ctCodeSnippet);
+	}
+
 	public static CtWildcardReferenceAssert assertThat(CtWildcardReference ctWildcardReference) {
 		return new CtWildcardReferenceAssert(ctWildcardReference);
+	}
+
+	public static CtTypeInformationAssert assertThat(CtTypeInformation ctTypeInformation) {
+		return new CtTypeInformationAssert(ctTypeInformation);
 	}
 
 	public static CtRecordComponentAssert assertThat(CtRecordComponent ctRecordComponent) {
@@ -266,6 +323,10 @@ public final class SpoonAssertions {
 		return new CtUnboundVariableReferenceAssert(ctUnboundVariableReference);
 	}
 
+	public static CtLabelledFlowBreakAssert assertThat(CtLabelledFlowBreak ctLabelledFlowBreak) {
+		return new CtLabelledFlowBreakAssert(ctLabelledFlowBreak);
+	}
+
 	public static CtArrayAccessAssert assertThat(CtArrayAccess<?, ?> ctArrayAccess) {
 		return new CtArrayAccessAssert(ctArrayAccess);
 	}
@@ -280,6 +341,10 @@ public final class SpoonAssertions {
 
 	public static CtTryWithResourceAssert assertThat(CtTryWithResource ctTryWithResource) {
 		return new CtTryWithResourceAssert(ctTryWithResource);
+	}
+
+	public static CtActualTypeContainerAssert assertThat(CtActualTypeContainer ctActualTypeContainer) {
+		return new CtActualTypeContainerAssert(ctActualTypeContainer);
 	}
 
 	public static CtClassAssert assertThat(CtClass<?> ctClass) {
@@ -346,6 +411,10 @@ public final class SpoonAssertions {
 		return new CtCodeSnippetExpressionAssert(ctCodeSnippetExpression);
 	}
 
+	public static CtTypedElementAssert assertThat(CtTypedElement<?> ctTypedElement) {
+		return new CtTypedElementAssert(ctTypedElement);
+	}
+
 	public static CtForAssert assertThat(CtFor ctFor) {
 		return new CtForAssert(ctFor);
 	}
@@ -354,12 +423,20 @@ public final class SpoonAssertions {
 		return new CtTypeParameterAssert(ctTypeParameter);
 	}
 
+	public static CtFormalTypeDeclarerAssert assertThat(CtFormalTypeDeclarer ctFormalTypeDeclarer) {
+		return new CtFormalTypeDeclarerAssert(ctFormalTypeDeclarer);
+	}
+
 	public static CtExecutableAssert assertThat(CtExecutable<?> ctExecutable) {
 		return new CtExecutableAssert(ctExecutable);
 	}
 
 	public static CtLocalVariableAssert assertThat(CtLocalVariable<?> ctLocalVariable) {
 		return new CtLocalVariableAssert(ctLocalVariable);
+	}
+
+	public static CtMultiTypedElementAssert assertThat(CtMultiTypedElement ctMultiTypedElement) {
+		return new CtMultiTypedElementAssert(ctMultiTypedElement);
 	}
 
 	public static CtModuleAssert assertThat(CtModule ctModule) {
@@ -384,6 +461,10 @@ public final class SpoonAssertions {
 
 	public static CtTypeAssert assertThat(CtType<?> ctType) {
 		return new CtTypeAssert(ctType);
+	}
+
+	public static CtVariableAssert assertThat(CtVariable<?> ctVariable) {
+		return new CtVariableAssert(ctVariable);
 	}
 
 	public static CtCaseAssert assertThat(CtCase<?> ctCase) {
@@ -422,6 +503,10 @@ public final class SpoonAssertions {
 		return new CtLambdaAssert(ctLambda);
 	}
 
+	public static CtPatternAssert assertThat(CtPattern ctPattern) {
+		return new CtPatternAssert(ctPattern);
+	}
+
 	public static CtTypePatternAssert assertThat(CtTypePattern ctTypePattern) {
 		return new CtTypePatternAssert(ctTypePattern);
 	}
@@ -430,8 +515,16 @@ public final class SpoonAssertions {
 		return new CtTypeAccessAssert(ctTypeAccess);
 	}
 
+	public static CtBodyHolderAssert assertThat(CtBodyHolder ctBodyHolder) {
+		return new CtBodyHolderAssert(ctBodyHolder);
+	}
+
 	public static CtNewArrayAssert assertThat(CtNewArray<?> ctNewArray) {
 		return new CtNewArrayAssert(ctNewArray);
+	}
+
+	public static CtShadowableAssert assertThat(CtShadowable ctShadowable) {
+		return new CtShadowableAssert(ctShadowable);
 	}
 
 	public static CtTextBlockAssert assertThat(CtTextBlock ctTextBlock) {
@@ -506,6 +599,10 @@ public final class SpoonAssertions {
 		return new CtCasePatternAssert(ctCasePattern);
 	}
 
+	public static CtModuleDirectiveAssert assertThat(CtModuleDirective ctModuleDirective) {
+		return new CtModuleDirectiveAssert(ctModuleDirective);
+	}
+
 	public static CtTypeMemberWildcardImportReferenceAssert assertThat(CtTypeMemberWildcardImportReference ctTypeMemberWildcardImportReference) {
 		return new CtTypeMemberWildcardImportReferenceAssert(ctTypeMemberWildcardImportReference);
 	}
@@ -516,6 +613,10 @@ public final class SpoonAssertions {
 
 	public static CtLocalVariableReferenceAssert assertThat(CtLocalVariableReference<?> ctLocalVariableReference) {
 		return new CtLocalVariableReferenceAssert(ctLocalVariableReference);
+	}
+
+	public static CtTypeMemberAssert assertThat(CtTypeMember ctTypeMember) {
+		return new CtTypeMemberAssert(ctTypeMember);
 	}
 
 	public static CtAnnotationTypeAssert assertThat(CtAnnotationType<?> ctAnnotationType) {

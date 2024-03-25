@@ -7,7 +7,7 @@ import org.assertj.core.api.ObjectAssert;
 import spoon.reflect.code.CaseKind;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
-interface CtCaseAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtCase<?>> extends SpoonAssert<A, W> , CtStatementAssertInterface<A, W> , CtStatementListAssertInterface<A, W> {
+public interface CtCaseAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtCase<?>> extends SpoonAssert<A, W> , CtStatementAssertInterface<A, W> , CtStatementListAssertInterface<A, W> {
 	default ListAssert<CtExpression<?>> getCaseExpressions() {
 		return Assertions.assertThat(actual().getCaseExpressions());
 	}

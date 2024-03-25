@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ObjectAssert;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
-interface CtBinaryOperatorAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtBinaryOperator<?>> extends SpoonAssert<A, W> , CtExpressionAssertInterface<A, W> {
+public interface CtBinaryOperatorAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtBinaryOperator<?>> extends SpoonAssert<A, W> , CtExpressionAssertInterface<A, W> {
 	default ObjectAssert<BinaryOperatorKind> getKind() {
 		return Assertions.assertThatObject(actual().getKind());
 	}

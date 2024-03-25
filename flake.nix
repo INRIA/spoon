@@ -102,9 +102,9 @@
           '';
           codegen = pkgs.writeScriptBin "codegen" ''
            set -eu
-           mvn test -Dgroups=codegen
+           mvn test -Dtest=spoon.testing.assertions.codegen.AssertJCodegen
            mvn spotless:apply
-           git diff --exit-code || "::error::Generated code is not up to date. Execute mvn test -Dgroups=codegen, mvn spotless:apply and commit your changes."
+           git diff --exit-code || echo "::error::Generated code is not up to date. Execute mvn test -Dtest=spoon.testing.assertions.codegen.AssertJCodegen, mvn spotless:apply and commit your changes."
            '';
           extra = pkgs.writeScriptBin "extra" (if !extraChecks then "exit 2" else ''
             set -eu

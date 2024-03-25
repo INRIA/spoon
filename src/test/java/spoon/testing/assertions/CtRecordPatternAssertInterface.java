@@ -5,7 +5,7 @@ import org.assertj.core.api.ListAssert;
 import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.reference.CtTypeReference;
-interface CtRecordPatternAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtRecordPattern> extends SpoonAssert<A, W> , CtExpressionAssertInterface<A, W> , CtPatternAssertInterface<A, W> {
+public interface CtRecordPatternAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtRecordPattern> extends SpoonAssert<A, W> , CtExpressionAssertInterface<A, W> , CtPatternAssertInterface<A, W> {
 	default ListAssert<CtPattern> getPatternList() {
 		return Assertions.assertThat(actual().getPatternList());
 	}

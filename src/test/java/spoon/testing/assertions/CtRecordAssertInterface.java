@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.reference.CtTypeReference;
-interface CtRecordAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtRecord> extends SpoonAssert<A, W> , CtClassAssertInterface<A, W> {
+public interface CtRecordAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtRecord> extends SpoonAssert<A, W> , CtClassAssertInterface<A, W> {
 	default AbstractCollectionAssert<?, Collection<? extends CtTypeReference<?>>, CtTypeReference<?>, ?> getPermittedTypes() {
 		return Assertions.assertThat(actual().getPermittedTypes());
 	}

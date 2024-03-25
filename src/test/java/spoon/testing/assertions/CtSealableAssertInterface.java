@@ -5,7 +5,7 @@ import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.Assertions;
 import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.reference.CtTypeReference;
-interface CtSealableAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtSealable> extends SpoonAssert<A, W> {
+public interface CtSealableAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtSealable> extends SpoonAssert<A, W> {
 	default AbstractCollectionAssert<?, Collection<? extends CtTypeReference<?>>, CtTypeReference<?>, ?> getPermittedTypes() {
 		return Assertions.assertThat(actual().getPermittedTypes());
 	}

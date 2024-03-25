@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ListAssert;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
-interface CtTypeMemberWildcardImportReferenceAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtTypeMemberWildcardImportReference> extends SpoonAssert<A, W> , CtReferenceAssertInterface<A, W> {
+public interface CtTypeMemberWildcardImportReferenceAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtTypeMemberWildcardImportReference> extends SpoonAssert<A, W> , CtReferenceAssertInterface<A, W> {
 	default ListAssert<CtAnnotation<? extends Annotation>> getAnnotations() {
 		return Assertions.assertThat(actual().getAnnotations());
 	}

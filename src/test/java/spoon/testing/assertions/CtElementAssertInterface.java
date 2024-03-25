@@ -9,7 +9,7 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
-interface CtElementAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtElement> extends SpoonAssert<A, W> {
+public interface CtElementAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtElement> extends SpoonAssert<A, W> {
 	default ListAssert<CtAnnotation<? extends Annotation>> getAnnotations() {
 		return Assertions.assertThat(actual().getAnnotations());
 	}

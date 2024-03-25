@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ObjectAssert;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
-interface CtUnaryOperatorAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtUnaryOperator<?>> extends SpoonAssert<A, W> , CtStatementAssertInterface<A, W> , CtExpressionAssertInterface<A, W> {
+public interface CtUnaryOperatorAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtUnaryOperator<?>> extends SpoonAssert<A, W> , CtStatementAssertInterface<A, W> , CtExpressionAssertInterface<A, W> {
 	default ObjectAssert<UnaryOperatorKind> getKind() {
 		return Assertions.assertThatObject(actual().getKind());
 	}
