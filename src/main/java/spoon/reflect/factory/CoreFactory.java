@@ -655,5 +655,9 @@ public interface CoreFactory {
 	 */
 	CtRecordPattern createRecordPattern();
 
+	/**
+	 * Creates a receiver parameter.
+	 * @return the created receiver parameter.
+	 */
 	CtReceiverParameter createReceiverParameter();
 }
