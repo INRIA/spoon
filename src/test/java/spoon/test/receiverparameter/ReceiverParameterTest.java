@@ -19,6 +19,7 @@ public class ReceiverParameterTest {
         value = "src/test/resources/receiver/SimpleReceiverParameter.java"
     )
     void simpleParameter(CtModel model) {
+        // contract: receiver parameter is correctly parsed and can be accessed from the model
         CtType<?> targetType = model.getAllTypes().iterator().next();
         List<CtReceiverParameter> receiverParams = targetType.getElements(new TypeFilter<>(CtReceiverParameter.class));
         assertEquals(1, receiverParams.size());
@@ -32,6 +33,7 @@ public class ReceiverParameterTest {
             value = "src/test/resources/receiver/InnerClassCtor.java"
     )
     void innerClassCtor(CtModel model) {
+        // contract: constructor of inner class can have receiver parameter with their outer class type
         CtType<?> targetType = model.getAllTypes().iterator().next();
         List<CtReceiverParameter> receiverParams = targetType.getElements(new TypeFilter<>(CtReceiverParameter.class));
         assertEquals(1, receiverParams.size());
