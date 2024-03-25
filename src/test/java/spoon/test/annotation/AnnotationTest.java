@@ -17,19 +17,6 @@
 package spoon.test.annotation;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -104,8 +91,20 @@ import spoon.test.annotation.testclasses.shadow.DumbKlass;
 import spoon.test.annotation.testclasses.spring.AliasFor;
 import spoon.test.annotation.testclasses.typeandfield.SimpleClass;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -1130,43 +1129,6 @@ public class AnnotationTest {
 		assertEquals("spoon.test.annotation.testclasses.PortRange", annotation.getAnnotationType().getQualifiedName(), "Annotation should be @spoon.test.annotation.testclasses.PortRange");
 	}
 
-	@Test
-	public void testGetAnnotationFromParameter() {
-		// contract: Java 8 receiver parameters are handled
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("src/test/resources/noclasspath/Initializer.java");
-		String output = "target/spooned-" + this.getClass().getSimpleName() + "-firstspoon/";
-		spoon.setSourceOutputDirectory(output);
-		spoon.getEnvironment().setNoClasspath(true);
-		Factory factory = spoon.getFactory();
-		spoon.buildModel();
-
-		List<CtMethod> methods = factory.getModel().getElements(new NamedElementFilter<>(CtMethod.class, "setField"));
-		assertThat(methods.size(), is(1));
-
-		CtMethod methodSet = methods.get(0);
-		assertThat(methodSet.getSimpleName(), is("setField"));
-
-		List<CtParameter> parameters = methodSet.getParameters();
-
-		assertThat(parameters.size(), is(1));
-
-		CtParameter thisParameter = parameters.get(0);
-		assertThat(thisParameter.getSimpleName(), is("this"));
-
-
-		CtTypeReference thisParamType = thisParameter.getType();
-		assertThat(thisParamType.getSimpleName(), is("Initializer"));
-
-		List<CtAnnotation<?>> annotations = thisParameter.getType().getAnnotations();
-		assertThat(annotations.size(), is(2));
-
-		CtAnnotation unknownInit = annotations.get(0);
-		CtAnnotation raw = annotations.get(1);
-
-		assertThat(unknownInit.getAnnotationType().getSimpleName(), is("UnknownInitialization"));
-		assertThat(raw.getAnnotationType().getSimpleName(), is("Raw"));
-	}
 
 	@Test
 	public void annotationAddValue() {

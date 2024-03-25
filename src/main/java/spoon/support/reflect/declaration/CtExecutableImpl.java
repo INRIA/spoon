@@ -198,7 +198,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	}
 
 	public CtExecutable<?> setReceiverParameter(CtReceiverParameter receiverParameter) {
-		if(receiverParameter == null) {
+		if (receiverParameter == null) {
 			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.RECEIVER_PARAMETER, receiverParameter, this.receiverParameter);
