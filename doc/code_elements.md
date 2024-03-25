@@ -571,3 +571,16 @@ int x = switch(i) { // <-- switch expression
    }
 
 ```
+
+### CtReceiverParameter
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtReceiverParameter.html)
+
+```java
+
+    // here is the receiver parameter of a method Foo
+    class Foo {
+       void bar(Foo this) {
+       }
+    }
+
+```

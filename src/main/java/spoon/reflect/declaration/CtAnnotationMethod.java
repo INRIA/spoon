@@ -7,6 +7,7 @@
  */
 package spoon.reflect.declaration;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
@@ -54,4 +55,10 @@ public interface CtAnnotationMethod<T> extends CtMethod<T> {
 	@Override
 	@UnsettableProperty
 	<T1 extends CtExecutable<T>> T1 setParameters(List<CtParameter<?>> parameters);
+	@UnsettableProperty
+	CtExecutable<?> setReceiverParameter(CtReceiverParameter receiverParameter);
+
+	@UnsettableProperty
+	@Nullable
+	CtReceiverParameter getReceiverParameter();
 }

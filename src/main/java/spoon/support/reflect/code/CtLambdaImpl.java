@@ -289,11 +289,13 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
+	@UnsettableProperty
 	public CtExecutable<?> setReceiverParameter(CtReceiverParameter receiverParameter) {
 		return this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public @Nullable CtReceiverParameter getReceiverParameter() {
 		return null;
 	}
