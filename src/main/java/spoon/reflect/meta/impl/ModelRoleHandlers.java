@@ -6,7 +6,7 @@
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.meta.impl;
-import java.lang.annotation.Annotation;
+
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CaseKind;
 import spoon.reflect.code.CtAbstractInvocation;
@@ -113,6 +113,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.reflect.CtExtendedModifier;
+
+import java.lang.annotation.Annotation;
 /**
  * Contains implementations of {@link RoleHandler}s for all {@link CtRole}s of all model elements
  */

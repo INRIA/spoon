@@ -17,44 +17,44 @@ import spoon.reflect.visitor.CtVisitor;
 
 public class CtReceiverParameterImpl extends CtElementImpl implements CtReceiverParameter   {
 
-    @MetamodelPropertyField(role = CtRole.TYPE)
-    private CtTypeReference<Object> type;
-    @MetamodelPropertyField(role = CtRole.IS_SHADOW)
-    boolean isShadow;
+	@MetamodelPropertyField(role = CtRole.TYPE)
+	private CtTypeReference<Object> type;
+	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
+	boolean isShadow;
 
-    public boolean isShadow() {
-        return isShadow;
-    }
+	public boolean isShadow() {
+		return isShadow;
+	}
 
 
-    @Override
-    public <C extends CtShadowable> C setShadow(boolean isShadow) {
-        getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_SHADOW, isShadow, this.isShadow);
-        this.isShadow = isShadow;
-        return (C) this;
-    }
-    @Override
-    public CtTypeReference<Object> getType() {
-        return type;
-    }
+	@Override
+	public <C extends CtShadowable> C setShadow(boolean isShadow) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_SHADOW, isShadow, this.isShadow);
+		this.isShadow = isShadow;
+		return (C) this;
+	}
+	@Override
+	public CtTypeReference<Object> getType() {
+		return type;
+	}
 
-    @Override
-    public <C extends CtTypedElement> C setType(CtTypeReference type) {
-        if (type != null) {
-            type.setParent(this);
-        }
-        getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.TYPE, type, this.type);
-        this.type = type;
-        return (C) this;
-    }
+	@Override
+	public <C extends CtTypedElement> C setType(CtTypeReference type) {
+		if (type != null) {
+			type.setParent(this);
+		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.TYPE, type, this.type);
+		this.type = type;
+		return (C) this;
+	}
 
-    @Override
-    public void accept(CtVisitor visitor) {
-     visitor.visitCtReceiverParameter(this);
-    }
+	@Override
+	public void accept(CtVisitor visitor) {
+	 visitor.visitCtReceiverParameter(this);
+	}
 
-    @Override
-    public CtReceiverParameter clone() {
-        return (CtReceiverParameter) super.clone();
-    }
+	@Override
+	public CtReceiverParameter clone() {
+		return (CtReceiverParameter) super.clone();
+	}
 }

@@ -655,5 +655,5 @@ public interface CoreFactory {
 	 */
 	CtRecordPattern createRecordPattern();
 
-    CtReceiverParameter createReceiverParameter();
+	CtReceiverParameter createReceiverParameter();
 }

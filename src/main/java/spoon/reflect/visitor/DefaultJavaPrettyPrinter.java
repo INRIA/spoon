@@ -2378,12 +2378,4 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeSeparator("this");
 		}
 	}
-
-	class Foo {
-		class Bar {
-			public Bar(Foo Foo.this) {
-
-			}
-		}
-	}
 }

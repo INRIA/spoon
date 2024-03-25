@@ -148,7 +148,7 @@ public class ElementPrinterHelper {
 
 	public void writeExecutableParameters(CtExecutable<?> executable) {
 		List<CtElement> parameters = new ArrayList<>();
-		if(executable.getReceiverParameter()!= null) {
+		if (executable.getReceiverParameter() != null) {
 			parameters.add(executable.getReceiverParameter());
 		}
 		parameters.addAll(executable.getParameters());
