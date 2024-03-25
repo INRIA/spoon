@@ -9,6 +9,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeElement;
@@ -37,6 +38,7 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -81,6 +83,7 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
@@ -153,6 +156,10 @@ public final class SpoonAssertions {
 
 	public static CtBinaryOperatorAssert assertThat(CtBinaryOperator<?> ctBinaryOperator) {
 		return new CtBinaryOperatorAssert(ctBinaryOperator);
+	}
+
+	public static CtRecordPatternAssert assertThat(CtRecordPattern ctRecordPattern) {
+		return new CtRecordPatternAssert(ctRecordPattern);
 	}
 
 	public static CtForEachAssert assertThat(CtForEach ctForEach) {
@@ -245,6 +252,10 @@ public final class SpoonAssertions {
 
 	public static CtAnnotationFieldAccessAssert assertThat(CtAnnotationFieldAccess<?> ctAnnotationFieldAccess) {
 		return new CtAnnotationFieldAccessAssert(ctAnnotationFieldAccess);
+	}
+
+	public static CtReceiverParameterAssert assertThat(CtReceiverParameter ctReceiverParameter) {
+		return new CtReceiverParameterAssert(ctReceiverParameter);
 	}
 
 	public static CtAnnotationMethodAssert assertThat(CtAnnotationMethod<?> ctAnnotationMethod) {
@@ -489,6 +500,10 @@ public final class SpoonAssertions {
 
 	public static CtEnumAssert assertThat(CtEnum<?> ctEnum) {
 		return new CtEnumAssert(ctEnum);
+	}
+
+	public static CtCasePatternAssert assertThat(CtCasePattern ctCasePattern) {
+		return new CtCasePatternAssert(ctCasePattern);
 	}
 
 	public static CtTypeMemberWildcardImportReferenceAssert assertThat(CtTypeMemberWildcardImportReference ctTypeMemberWildcardImportReference) {

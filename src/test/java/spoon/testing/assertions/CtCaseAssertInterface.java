@@ -1,4 +1,5 @@
 package spoon.testing.assertions;
+import org.assertj.core.api.AbstractBooleanAssert;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ListAssert;
@@ -13,5 +14,9 @@ interface CtCaseAssertInterface<A extends AbstractObjectAssert<A, W>, W extends 
 
 	default ObjectAssert<CaseKind> getCaseKind() {
 		return Assertions.assertThatObject(actual().getCaseKind());
+	}
+
+	default AbstractBooleanAssert<?> getIncludesDefault() {
+		return Assertions.assertThat(actual().getIncludesDefault());
 	}
 }

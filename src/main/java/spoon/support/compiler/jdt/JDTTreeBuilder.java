@@ -958,8 +958,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		}
 		boolean isVar = argument.type != null && argument.type.isTypeNameVar(scope);
-		boolean isReceiver = CharOperation.charToString(argument.name).equals("this");
-		;
 		// we can also use an instanceof Receiver here
 		if (argument instanceof Receiver receiver) {
 			CtReceiverParameter receiverParameter = helper.createReceiverParameter(receiver);
@@ -1149,8 +1147,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(getFactory().Core().createBlock(), methodDeclaration);
 			context.exit(methodDeclaration);
 		}
-		//TODO: remove this code
-		// We consider the receiver as a standard argument (i.e. as a parameter)
 		Receiver receiver = methodDeclaration.receiver;
 		if (receiver != null) {
 			receiver.traverse(this, methodDeclaration.scope);
@@ -1184,7 +1180,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// Create block
 		context.enter(factory.Core().createBlock(), constructorDeclaration);
 		context.exit(constructorDeclaration);
-
+		Receiver receiver = constructorDeclaration.receiver;
+		if (receiver != null) {
+			receiver.traverse(this, constructorDeclaration.scope);
+		}
 		return true;
 	}
 

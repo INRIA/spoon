@@ -1,10 +1,12 @@
 package spoon.test.receiverparameter;
 
 import spoon.reflect.CtModel;
-import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.testing.assertions.SpoonAssertions;
 import spoon.testing.utils.ModelTest;
 
 import java.util.List;
@@ -20,9 +22,9 @@ public class ReceiverParameterTest {
         CtType<?> targetType = model.getAllTypes().iterator().next();
         List<CtReceiverParameter> receiverParams = targetType.getElements(new TypeFilter<>(CtReceiverParameter.class));
         assertEquals(1, receiverParams.size());
-        CtReceiverParameter next1 = receiverParams.iterator().next();
-        assertEquals("receiver.SimpleReceiverParameter", next1.getType().getQualifiedName());
-        // TODO: toString
+        CtReceiverParameter receiverParam = receiverParams.iterator().next();
+        assertEquals("receiver.SimpleReceiverParameter", receiverParam.getType().getQualifiedName());
+        SpoonAssertions.assertThat(receiverParam.getType()).extracting(CtTypeInformation::getQualifiedName).isEqualTo("receiver.SimpleReceiverParameter");
     }
 
 
@@ -34,9 +36,9 @@ public class ReceiverParameterTest {
         List<CtReceiverParameter> receiverParams = targetType.getElements(new TypeFilter<>(CtReceiverParameter.class));
         assertEquals(1, receiverParams.size());
         CtReceiverParameter next1 = receiverParams.iterator().next();
-        assertEquals("receiver.SimpleReceiverParameter", next1.getType().getQualifiedName());
-        CtMethod<?> ctMethod = targetType.getMethods().stream().filter(v -> v.getReceiverParameter() != null).findFirst().get();
-        System.out.println(ctMethod.toString());
-        //TODO fix name
+        assertEquals("receiver.Outer", next1.getType().getQualifiedName());
+        CtConstructor<?> ctConstructor = targetType.getElements(new TypeFilter<>(CtConstructor.class)).stream().filter(v -> v.getReceiverParameter() != null).findFirst().get();
+        SpoonAssertions.assertThat(ctConstructor).isNotNull();
+        SpoonAssertions.assertThat(ctConstructor.getReceiverParameter()).isNotNull();
     }
 }

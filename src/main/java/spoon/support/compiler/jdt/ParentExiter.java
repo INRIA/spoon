@@ -208,10 +208,8 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (child instanceof CtBlock && !(e instanceof CtMethod || e instanceof CtConstructor)) {
 			e.setBody((CtBlock<R>) child);
 			return;
-		} else  if(child instanceof CtReceiverParameter) {
-			if(e instanceof  CtMethod) {
-				((CtMethod<?>) e).setReceiverParameter((CtReceiverParameter) child);
-			}
+		} else if(child instanceof CtReceiverParameter) {
+				e.setReceiverParameter((CtReceiverParameter) child);
 		}
 		super.scanCtExecutable(e);
 	}

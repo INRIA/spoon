@@ -12,6 +12,7 @@ import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
@@ -142,8 +143,10 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	@Override
 	CtExecutable<R> clone();
 
+	@PropertySetter(role = CtRole.RECEIVER_PARAMETER)
 	CtExecutable<?> setReceiverParameter(CtReceiverParameter receiverParameter);
 
+	@PropertyGetter(role = CtRole.RECEIVER_PARAMETER)
 	@Nullable
 	CtReceiverParameter getReceiverParameter();
 }
