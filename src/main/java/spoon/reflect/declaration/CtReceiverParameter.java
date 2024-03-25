@@ -9,7 +9,17 @@ package spoon.reflect.declaration;
 
 
 import spoon.reflect.reference.CtTypeReference;
-
+/**
+ * This element represents a class declaration.
+ *
+ * <pre>
+ * // Foo this is a receiver parameter
+ * class Foo {
+ *   void bar(Foo this) {
+ *   }
+ * }
+ * </pre>
+ */
 public interface CtReceiverParameter extends CtTypedElement<Object>, CtShadowable, CtElement {
 
     @Override
