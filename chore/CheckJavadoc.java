@@ -1,6 +1,6 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
-//DEPS fr.inria.gforge.spoon:spoon-core:LATEST
-//DEPS fr.inria.gforge.spoon:spoon-javadoc:LATEST
+//DEPS fr.inria.gforge.spoon:spoon-core:RELEASE
+//DEPS fr.inria.gforge.spoon:spoon-javadoc:RELEASE
 //DEPS org.slf4j:slf4j-nop:1.7.36
 //JAVA 17+
 
