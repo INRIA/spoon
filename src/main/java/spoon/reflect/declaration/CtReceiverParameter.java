@@ -22,10 +22,10 @@ import spoon.reflect.reference.CtTypeReference;
  */
 public interface CtReceiverParameter extends CtTypedElement<Object>, CtShadowable, CtElement {
 
-    @Override
-    CtTypeReference<Object> getType();
+	@Override
+	CtTypeReference<Object> getType();
 
-    @Override
-    CtReceiverParameter clone();
+	@Override
+	CtReceiverParameter clone();
 
 }
