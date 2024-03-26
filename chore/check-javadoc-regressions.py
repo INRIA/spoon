@@ -86,6 +86,7 @@ def run_quality_check(config_path: Path, target_branch: Optional[str] = None) ->
 
     return run_command([
         "jbang",
+        "--verbose",
         str(check_path)
     ])
 
