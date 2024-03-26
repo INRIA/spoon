@@ -217,8 +217,8 @@ public class JDTTreeBuilderHelper {
 				// find executable's corresponding jdt element
 				AbstractMethodDeclaration executableJDT = null;
 				for (final ASTPair astPair : contextBuilder.getAllContexts()) {
-					if (astPair.element == executable) {
-						executableJDT = (AbstractMethodDeclaration) astPair.node;
+					if (astPair.element() == executable) {
+						executableJDT = (AbstractMethodDeclaration) astPair.node();
 					}
 				}
 				assert executableJDT != null;
