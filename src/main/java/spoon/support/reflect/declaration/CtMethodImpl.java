@@ -51,6 +51,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
+
 	public CtMethodImpl() {
 	}
 
@@ -297,4 +298,5 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	public CtMethod<?> copyMethod() {
 		return Refactoring.copyMethod(this);
 	}
+
 }

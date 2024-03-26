@@ -7,8 +7,10 @@
  */
 package spoon.reflect.code;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
@@ -77,4 +79,11 @@ public interface CtLambda<T> extends CtExpression<T>, CtExecutable<T> {
 	@Override
 	@UnsettableProperty
 	<T1 extends CtExecutable<T>> T1 setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
+
+	@UnsettableProperty
+	CtExecutable<?> setReceiverParameter(CtReceiverParameter receiverParameter);
+
+	@UnsettableProperty
+	@Nullable
+	CtReceiverParameter getReceiverParameter();
 }

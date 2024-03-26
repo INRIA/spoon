@@ -7,7 +7,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import java.util.Arrays;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
@@ -21,6 +20,7 @@ import org.eclipse.jdt.internal.compiler.ast.PackageVisibilityStatement;
 import org.eclipse.jdt.internal.compiler.ast.ProvidesStatement;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.Receiver;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.RequiresStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
@@ -58,6 +58,7 @@ import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
@@ -76,6 +77,7 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -749,6 +751,20 @@ public class JDTTreeBuilderHelper {
 			if (p.getType() instanceof CtArrayTypeReference) {
 				((CtArrayTypeReference) p.getType()).getComponentType().setImplicit(argument.type == null);
 			}
+		}
+		return p;
+	}
+
+	/**
+	 * Creates a receiver parameter for a method or constructor.
+	 *
+	 * @param argument the argument containing information about the parameter
+	 * @return the created CtReceiverParameter object
+	 */
+	CtReceiverParameter createReceiverParameter(Receiver argument) {
+		CtReceiverParameter p = jdtTreeBuilder.getFactory().Core().createReceiverParameter();
+		if (argument.type != null) {
+			p.setType(jdtTreeBuilder.getReferencesBuilder().getTypeReference(argument.type));
 		}
 		return p;
 	}

@@ -5,6 +5,12 @@
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
+/* SPDX-License-Identifier: (MIT OR CECILL-C)
+
+Copyright (C) 2006-2019 INRIA and contributors
+
+Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ */
 package spoon.support.visitor.replace;
 /**
  * Used to replace an element by another one.
@@ -65,6 +71,20 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		@java.lang.Override
 		public void set(spoon.reflect.code.CtPattern replace) {
 			this.element.setPattern(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	static class CtReceiverParameterTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.declaration.CtTypedElement element;
+
+		CtReceiverParameterTypeReplaceListener(spoon.reflect.declaration.CtTypedElement element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtTypeReference replace) {
+			this.element.setType(replace);
 		}
 	}
 
@@ -1007,6 +1027,20 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	static class CtExecutableReceiverParameterReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtReceiverParameter> {
+		private final spoon.reflect.declaration.CtExecutable element;
+
+		CtExecutableReceiverParameterReplaceListener(spoon.reflect.declaration.CtExecutable element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.declaration.CtReceiverParameter replace) {
+			this.element.setReceiverParameter(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	static class CtConditionalElseExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtConditional element;
 
@@ -1711,6 +1745,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	@java.lang.Override
 	public <T> void visitCtConstructor(final spoon.reflect.declaration.CtConstructor<T> c) {
 		replaceInListIfExist(c.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(c));
+		replaceElementIfExist(c.getReceiverParameter(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableReceiverParameterReplaceListener(c));
 		replaceInListIfExist(c.getParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableParametersReplaceListener(c));
 		replaceInSetIfExist(c.getThrownTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableThrownTypesReplaceListener(c));
 		replaceInListIfExist(c.getFormalCtTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener(c));
@@ -1909,6 +1944,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(m.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(m));
 		replaceInListIfExist(m.getFormalCtTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener(m));
 		replaceElementIfExist(m.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(m));
+		replaceElementIfExist(m.getReceiverParameter(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableReceiverParameterReplaceListener(m));
 		replaceInListIfExist(m.getParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableParametersReplaceListener(m));
 		replaceInSetIfExist(m.getThrownTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableThrownTypesReplaceListener(m));
 		replaceElementIfExist(m.getBody(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableBodyReplaceListener(m));
@@ -2369,6 +2405,14 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(recordType.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(recordType));
 		replaceElementIfExist(recordType.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(recordType));
 		replaceInListIfExist(recordType.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(recordType));
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public void visitCtReceiverParameter(spoon.reflect.declaration.CtReceiverParameter receiverParameter) {
+		replaceInListIfExist(receiverParameter.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(receiverParameter));
+		replaceElementIfExist(receiverParameter.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtReceiverParameterTypeReplaceListener(receiverParameter));
+		replaceInListIfExist(receiverParameter.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(receiverParameter));
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
