@@ -271,7 +271,7 @@ public class CtScannerTest {
 		// this is a coarse-grain check to see if the scanner changes
 		// no more exec ref in paramref
 		// also takes into account the comments
-		assertEquals(3667, counter.nElement + countOfCommentsInCompilationUnits);
+		assertEquals(3704, counter.nElement + countOfCommentsInCompilationUnits);
 		assertEquals(2449, counter.nEnter + countOfCommentsInCompilationUnits);
 		assertEquals(2449, counter.nExit + countOfCommentsInCompilationUnits);
 
