@@ -50,7 +50,7 @@ public class CtReceiverParameterImpl extends CtElementImpl implements CtReceiver
 
 	@Override
 	public void accept(CtVisitor visitor) {
-	 visitor.visitCtReceiverParameter(this);
+		visitor.visitCtReceiverParameter(this);
 	}
 
 	@Override
