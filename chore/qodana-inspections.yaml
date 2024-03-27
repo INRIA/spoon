@@ -1,0 +1,8 @@
+name: "SpoonInspections" # Profile name
+
+baseProfile: qodana.recommended
+
+inspections:
+  - inspection: MissortedModifiers
+    options:
+      m_requireAnnotationsFirst: true
