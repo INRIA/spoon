@@ -10,15 +10,7 @@ package spoon.support.compiler.jdt;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import spoon.reflect.declaration.CtElement;
 
-public class ASTPair {
-	public final CtElement element;
-
-	public final ASTNode node;
-
-	public ASTPair(CtElement element, ASTNode node) {
-		this.element = element;
-		this.node = node;
-	}
+public record ASTPair(CtElement element, ASTNode node) {
 
 	@Override
 	public String toString() {
