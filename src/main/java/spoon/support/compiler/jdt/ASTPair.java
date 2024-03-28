@@ -9,7 +9,9 @@ package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import spoon.reflect.declaration.CtElement;
+import spoon.support.Internal;
 
+@Internal
 public record ASTPair(CtElement element, ASTNode node) {
 
 	@Override
