@@ -175,7 +175,10 @@ import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.*;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
 
 /**
  * A visitor for iterating through the parse tree.
