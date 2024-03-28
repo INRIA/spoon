@@ -7,6 +7,12 @@
  */
 package spoon.support.compiler.jdt;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
@@ -30,7 +36,6 @@ import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.jspecify.annotations.Nullable;
-
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CaseKind;
@@ -113,12 +118,6 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static spoon.reflect.code.BinaryOperatorKind.INSTANCEOF;
 
@@ -208,8 +207,8 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (child instanceof CtBlock && !(e instanceof CtMethod || e instanceof CtConstructor)) {
 			e.setBody((CtBlock<R>) child);
 			return;
-		} else if (child instanceof CtReceiverParameter) {
-				e.setReceiverParameter((CtReceiverParameter) child);
+		} else if (child instanceof CtReceiverParameter ctReceiverParameter) {
+				e.setReceiverParameter(ctReceiverParameter);
 		}
 		super.scanCtExecutable(e);
 	}
