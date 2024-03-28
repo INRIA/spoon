@@ -7,6 +7,12 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import spoon.refactoring.Refactoring;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
@@ -24,12 +30,6 @@ import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.support.adaption.TypeAdaptor;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtMethod}.
@@ -50,7 +50,6 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
-
 
 	public CtMethodImpl() {
 	}
@@ -298,5 +297,4 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	public CtMethod<?> copyMethod() {
 		return Refactoring.copyMethod(this);
 	}
-
 }

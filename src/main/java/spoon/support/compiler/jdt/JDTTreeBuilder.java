@@ -7,6 +7,9 @@
  */
 package spoon.support.compiler.jdt;
 
+import java.lang.invoke.MethodHandles;
+import java.util.Set;
+
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
@@ -172,13 +175,7 @@ import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 
-import java.lang.invoke.MethodHandles;
-import java.util.Set;
-
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.*;
 
 /**
  * A visitor for iterating through the parse tree.

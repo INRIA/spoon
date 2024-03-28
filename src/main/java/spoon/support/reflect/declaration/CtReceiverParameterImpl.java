@@ -20,12 +20,12 @@ public class CtReceiverParameterImpl extends CtElementImpl implements CtReceiver
 	@MetamodelPropertyField(role = CtRole.TYPE)
 	private CtTypeReference<Object> type;
 	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
-	boolean isShadow;
+	private boolean isShadow;
 
+	@Override
 	public boolean isShadow() {
 		return isShadow;
 	}
-
 
 	@Override
 	public <C extends CtShadowable> C setShadow(boolean isShadow) {

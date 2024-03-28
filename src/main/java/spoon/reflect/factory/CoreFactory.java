@@ -7,6 +7,8 @@
  */
 package spoon.reflect.factory;
 
+import java.lang.annotation.Annotation;
+
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -105,8 +107,6 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-
-import java.lang.annotation.Annotation;
 
 /**
  * This interface defines the core creation methods for the meta-model (to be

@@ -133,7 +133,7 @@ public class ExecutableFactory extends SubFactory {
 			}
 		}
 		if (paramType == null) {
-			return factory.Type().objectType();
+			paramType = factory.Type().OBJECT;
 		}
 		return paramType.clone();
 	}
@@ -242,4 +242,5 @@ public class ExecutableFactory extends SubFactory {
 		executableRef.setParameters(params);
 		return executableRef;
 	}
+
 }
