@@ -7,6 +7,15 @@
  */
 package spoon.reflect.visitor;
 
+import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.SpoonException;
@@ -126,15 +135,6 @@ import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.util.ModelList;
-
-import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static spoon.reflect.visitor.ElementPrinterHelper.PrintTypeArguments.ALSO_PRINT_DIAMOND_OPERATOR;
 import static spoon.reflect.visitor.ElementPrinterHelper.PrintTypeArguments.ONLY_PRINT_EXPLICIT_TYPES;
@@ -2368,9 +2368,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		printer.writeIdentifier(receiverParameter.getType().getSimpleName());
 		printer.writeSpace();
-		boolean isInnerClass = receiverParameter.getType().getTopLevelType().equals(receiverParameter.getParent(CtType.class));
+		// if the receiver parameter is in an inner class, we need to print the outer class name
+		boolean isInnerClass = !receiverParameter.getType().getTopLevelType().getQualifiedName().equals(receiverParameter.getParent(CtType.class).getQualifiedName());
 		boolean isConstructor = receiverParameter.getParent() instanceof CtConstructor;
-		// after an implicit type, there is no space because we dont print anything
 		if (isConstructor && isInnerClass) {
 			// inside a ctor of an inner class, the identifier is $SimpleName.this
 			printer.writeSeparator(receiverParameter.getType().getSimpleName() + ".this");
