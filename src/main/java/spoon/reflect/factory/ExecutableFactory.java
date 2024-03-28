@@ -7,6 +7,11 @@
  */
 package spoon.reflect.factory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
+
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -22,11 +27,6 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
@@ -133,7 +133,7 @@ public class ExecutableFactory extends SubFactory {
 			}
 		}
 		if (paramType == null) {
-			paramType = factory.Type().OBJECT;
+			paramType = factory.Type().objectType();
 		}
 		return paramType.clone();
 	}
