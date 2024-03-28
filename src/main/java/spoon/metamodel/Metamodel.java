@@ -7,6 +7,18 @@
  */
 package spoon.metamodel;
 
+import java.io.File;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.jspecify.annotations.Nullable;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -34,18 +46,6 @@ import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.adaption.TypeAdaptor;
 import spoon.support.compiler.FileSystemFolder;
-
-import java.io.File;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Represents the Spoon metamodel (incl. at runtime)
