@@ -958,7 +958,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		}
 		boolean isVar = argument.type != null && argument.type.isTypeNameVar(scope);
-		// we can also use an instanceof Receiver here
 		if (argument instanceof Receiver receiver) {
 			CtReceiverParameter receiverParameter = helper.createReceiverParameter(receiver);
 			context.enter(receiverParameter, argument);
