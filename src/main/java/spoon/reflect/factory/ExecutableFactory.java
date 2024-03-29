@@ -23,7 +23,6 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
