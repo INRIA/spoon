@@ -48,8 +48,7 @@ public class ReceiverParameterTest {
         SpoonAssertions.assertThat(ctConstructor.getReceiverParameter()).extracting(CtElement::toString).isEqualTo("Outer Outer.this");
     }
 
-    @ModelTest(
-            value = "src/test/resources/receiver/Outer.java")
+    @ModelTest("src/test/resources/receiver/Outer.java")
     void innerClassInnerClass(CtModel model) {
         // contract: constructor of inner class which is an innerclass can have receiver parameter with their outer class type
         CtType<?> targetType = model.getAllTypes().iterator().next();
