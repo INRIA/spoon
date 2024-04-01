@@ -16,9 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ReceiverParameterTest {
 
-    @ModelTest(
-        value = "src/test/resources/receiver/SimpleReceiverParameter.java"
-    )
+    @ModelTest("src/test/resources/receiver/SimpleReceiverParameter.java")
     void simpleParameter(CtModel model) {
         // contract: receiver parameter is correctly parsed and can be accessed from the model
         CtType<?> targetType = model.getAllTypes().iterator().next();
