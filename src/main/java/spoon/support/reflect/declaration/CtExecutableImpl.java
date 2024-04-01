@@ -51,6 +51,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	Set<CtTypeReference<? extends Throwable>> thrownTypes = emptySet();
 	@MetamodelPropertyField(role = CtRole.RECEIVER_PARAMETER)
 	private CtReceiverParameter receiverParameter;
+
 	public CtExecutableImpl() {
 	}
 
