@@ -12,12 +12,12 @@ import spoon.reflect.reference.CtTypeReference;
 /**
  * This element represents a class declaration.
  *
- * <pre>
- * // Foo this is a receiver parameter
+ * <pre>{@code
  * class Foo {
+ *   // this is a receiver parameter
  *   void bar(Foo this) {
  *   }
- * }
+ * }}
  * </pre>
  */
 public interface CtReceiverParameter extends CtTypedElement<Object>, CtShadowable, CtElement {
