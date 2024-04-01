@@ -47,4 +47,18 @@ public class ReceiverParameterTest {
         SpoonAssertions.assertThat(ctConstructor.getReceiverParameter().getType()).isNotNull();
         SpoonAssertions.assertThat(ctConstructor.getReceiverParameter()).extracting(CtElement::toString).isEqualTo("Outer Outer.this");
     }
+
+    @ModelTest(
+            value = "src/test/resources/receiver/Outer.java")
+    void innerClassInnerClass(CtModel model) {
+        // contract: constructor of inner class which is an innerclass can have receiver parameter with their outer class type
+        CtType<?> targetType = model.getAllTypes().iterator().next();
+        List<CtReceiverParameter> receiverParams = targetType.getElements(new TypeFilter<>(CtReceiverParameter.class));
+        assertEquals(1, receiverParams.size());
+        CtConstructor<?> ctConstructor = targetType.getElements(new TypeFilter<>(CtConstructor.class)).stream().filter(v -> v.getReceiverParameter() != null).findFirst().get();
+        SpoonAssertions.assertThat(ctConstructor).isNotNull();
+        SpoonAssertions.assertThat(ctConstructor.getReceiverParameter()).isNotNull();
+        SpoonAssertions.assertThat(ctConstructor.getReceiverParameter().getType()).isNotNull();
+        SpoonAssertions.assertThat(ctConstructor.getReceiverParameter()).extracting(CtElement::toString).isEqualTo("Middle Middle.this");
+    }
 }
