@@ -208,7 +208,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			e.setBody((CtBlock<R>) child);
 			return;
 		} else if (child instanceof CtReceiverParameter ctReceiverParameter) {
-				e.setReceiverParameter(ctReceiverParameter);
+			e.setReceiverParameter(ctReceiverParameter);
 		}
 		super.scanCtExecutable(e);
 	}
