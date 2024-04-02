@@ -29,9 +29,7 @@ public class ReceiverParameterTest {
 	}
 
 
-	@ModelTest(
-			value = "src/test/resources/receiver/InnerClassCtor.java"
-	)
+	@ModelTest("src/test/resources/receiver/InnerClassCtor.java")
 	void innerClassCtor(CtModel model) {
 		// contract: constructor of inner class can have receiver parameter with their outer class type
 		CtType<?> targetType = model.getAllTypes().iterator().next();
