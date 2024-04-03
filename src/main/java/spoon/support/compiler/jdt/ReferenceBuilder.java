@@ -1346,7 +1346,7 @@ public class ReferenceBuilder {
 	public CtExecutableReference<?> getLambdaExecutableReference(SingleNameReference singleNameReference) {
 		ASTPair potentialLambda = null;
 		for (ASTPair astPair : jdtTreeBuilder.getContextBuilder().getAllContexts()) {
-			if (astPair.node instanceof LambdaExpression) {
+			if (astPair.node() instanceof LambdaExpression) {
 				potentialLambda = astPair;
 				// stop at innermost lambda, fixes #1100
 				break;
@@ -1355,14 +1355,14 @@ public class ReferenceBuilder {
 		if (potentialLambda == null) {
 			return null;
 		}
-		LambdaExpression lambdaJDT = (LambdaExpression) potentialLambda.node;
+		LambdaExpression lambdaJDT = (LambdaExpression) potentialLambda.node();
 		for (Argument argument : lambdaJDT.arguments()) {
 			if (CharOperation.equals(argument.name, singleNameReference.token)) {
 				CtTypeReference<?> declaringType = null;
 				if (lambdaJDT.enclosingScope instanceof MethodScope) {
 					declaringType = jdtTreeBuilder.getReferencesBuilder().getTypeReference(((MethodScope) lambdaJDT.enclosingScope).parent.enclosingSourceType());
 				}
-				CtLambda<?> ctLambda = (CtLambda<?>) potentialLambda.element;
+				CtLambda<?> ctLambda = (CtLambda<?>) potentialLambda.element();
 				List<CtTypeReference<?>> parametersType = new ArrayList<>();
 				List<CtParameter<?>> parameters = ctLambda.getParameters();
 				for (CtParameter<?> parameter : parameters) {

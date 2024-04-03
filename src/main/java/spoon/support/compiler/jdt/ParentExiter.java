@@ -140,7 +140,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	public void exitParent(ASTPair pair) {
 		this.parentPair = pair;
-		scan(pair.element);
+		scan(pair.element());
 	}
 	public void setChild(CtElement child) {
 		this.child = child;
@@ -718,7 +718,7 @@ public class ParentExiter extends CtInheritanceScanner {
 				child.setPosition(this.child.getPosition());
 			}
 
-			IfStatement ifJDT = (IfStatement) this.parentPair.node;
+			IfStatement ifJDT = (IfStatement) this.parentPair.node();
 			if (ifJDT.thenStatement == this.childJDT) {
 				//we are visiting `then` of `if`
 				ifElement.setThenStatement(child);
@@ -779,10 +779,9 @@ public class ParentExiter extends CtInheritanceScanner {
 		// Compare with Test "correctlySetsThisTargetForUnqualifiedCalls".
 
 		// We need a MessageSend as the parent to resolve the actualType from the receiver
-		if (!(parentPair.node instanceof MessageSend)) {
+		if (!(parentPair.node() instanceof MessageSend messageSend)) {
 			return false;
 		}
-		MessageSend messageSend = (MessageSend) parentPair.node;
 		if (messageSend.actualReceiverType == null || messageSend.receiver.resolvedType == null) {
 			return false;
 		}
@@ -1096,7 +1095,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			} else {
 				// we have to find it manually
 				for (ASTPair pair: this.jdtTreeBuilder.getContextBuilder().getAllContexts()) {
-					final List<CtLocalVariable> variables = pair.element.getElements(new TypeFilter<>(CtLocalVariable.class));
+					final List<CtLocalVariable> variables = pair.element().getElements(new TypeFilter<>(CtLocalVariable.class));
 					for (CtLocalVariable v: variables) {
 						if (v.getSimpleName().equals(variableRef.getSimpleName())) {
 							// we found the resource

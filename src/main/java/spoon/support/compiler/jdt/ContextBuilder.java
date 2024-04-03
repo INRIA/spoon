@@ -97,7 +97,7 @@ public class ContextBuilder {
 		}
 
 		ASTPair pair = stack.peek();
-		CtElement current = pair.element;
+		CtElement current = pair.element();
 
 		if (current instanceof CtExpression) {
 			while (!casts.isEmpty()) {
@@ -118,13 +118,13 @@ public class ContextBuilder {
 
 	void exit(ASTNode node) {
 		ASTPair pair = stack.pop();
-		if (pair.node != node) {
-			throw new RuntimeException("Inconsistent Stack " + node + "\n" + pair.node);
+		if (pair.node() != node) {
+			throw new RuntimeException("Inconsistent Stack " + node + "\n" + pair.node());
 		}
-		CtElement current = pair.element;
+		CtElement current = pair.element();
 		if (!stack.isEmpty()) {
 			this.jdtTreeBuilder.getExiter().setChild(current);
-			this.jdtTreeBuilder.getExiter().setChild(pair.node);
+			this.jdtTreeBuilder.getExiter().setChild(pair.node());
 			ASTPair parentPair = stack.peek();
 			this.jdtTreeBuilder.getExiter().exitParent(parentPair);
 		}
@@ -150,7 +150,7 @@ public class ContextBuilder {
 	 * @throws NullPointerException if the stack is empty
 	 */
 	CtElement getCurrentElement() {
-		return stack.peek().element;
+		return stack.peek().element();
 	}
 
 	/**
@@ -158,13 +158,13 @@ public class ContextBuilder {
 	 * @throws NullPointerException if the stack is empty
 	 */
 	ASTNode getCurrentNode() {
-		return stack.peek().node;
+		return stack.peek().node();
 	}
 
 	CtElement getContextElementOnLevel(int level) {
 		for (ASTPair pair : stack) {
 			if (level == 0) {
-				return pair.element;
+				return pair.element();
 			}
 			level--;
 		}
@@ -173,8 +173,8 @@ public class ContextBuilder {
 
 	<T extends CtElement> T getParentElementOfType(Class<T> clazz) {
 		for (ASTPair pair : stack) {
-			if (clazz.isInstance(pair.element)) {
-				return (T) pair.element;
+			if (clazz.isInstance(pair.element())) {
+				return (T) pair.element();
 			}
 		}
 		return null;
@@ -182,7 +182,7 @@ public class ContextBuilder {
 
 	ASTPair getParentContextOfType(Class<? extends CtElement> clazz) {
 		for (ASTPair pair : stack) {
-			if (clazz.isInstance(pair.element)) {
+			if (clazz.isInstance(pair.element())) {
 				return pair;
 			}
 		}
@@ -259,14 +259,13 @@ public class ContextBuilder {
 			// the variable may have been declared directly by one of these elements
 			final ScopeRespectingVariableScanner<U> scanner =
 					new ScopeRespectingVariableScanner(name, clazz);
-			astPair.element.accept(scanner);
+			astPair.element().accept(scanner);
 			if (scanner.getResult() != null) {
 				return scanner.getResult();
 			}
 
 			// the variable may have been declared in a super class/interface
-			if (lookingForFields && astPair.node instanceof TypeDeclaration) {
-				final TypeDeclaration nodeDeclaration = (TypeDeclaration) astPair.node;
+			if (lookingForFields && astPair.node() instanceof TypeDeclaration nodeDeclaration) {
 				final Deque<ReferenceBinding> referenceBindings = new ArrayDeque<>();
 				// add super class if any
 				if (nodeDeclaration.superclass != null
@@ -419,11 +418,10 @@ public class ContextBuilder {
 					// `stack`. This peculiarity calls for the second condition.
 					final CtElement parentOfPotentialVariable = potentialVariable.getParent();
 					for (final ASTPair astPair : stack) {
-						if (astPair.element == parentOfPotentialVariable) {
+						if (astPair.element() == parentOfPotentialVariable) {
 							finish(potentialVariable);
 							return;
-						} else if (astPair.element instanceof CtExecutable) {
-							final CtExecutable executable = (CtExecutable) astPair.element;
+						} else if (astPair.element() instanceof CtExecutable<?> executable) {
 							if (executable.getBody() == parentOfPotentialVariable) {
 								finish(potentialVariable);
 								return;
