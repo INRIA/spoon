@@ -7,6 +7,7 @@
  */
 package spoon.reflect.declaration;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.UnsettableProperty;
 
@@ -49,5 +50,13 @@ public interface CtAnonymousExecutable extends CtExecutable<Void>, CtTypeMember 
 	@Override
 	@UnsettableProperty
 	<T extends CtExecutable<Void>> T addThrownType(CtTypeReference<? extends Throwable> throwType);
+
+
+	@UnsettableProperty
+	CtExecutable<?> setReceiverParameter(CtReceiverParameter receiverParameter);
+
+	@UnsettableProperty
+	@Nullable
+	CtReceiverParameter getReceiverParameter();
 
 }

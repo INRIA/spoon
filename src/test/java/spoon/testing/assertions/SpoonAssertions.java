@@ -43,6 +43,7 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtRHSReceiver;
 import spoon.reflect.code.CtRecordPattern;
@@ -96,6 +97,7 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtSealable;
@@ -307,6 +309,10 @@ public final class SpoonAssertions {
 
 	public static CtAnnotationFieldAccessAssert assertThat(CtAnnotationFieldAccess<?> ctAnnotationFieldAccess) {
 		return new CtAnnotationFieldAccessAssert(ctAnnotationFieldAccess);
+	}
+
+	public static CtReceiverParameterAssert assertThat(CtReceiverParameter ctReceiverParameter) {
+		return new CtReceiverParameterAssert(ctReceiverParameter);
 	}
 
 	public static CtAnnotationMethodAssert assertThat(CtAnnotationMethod<?> ctAnnotationMethod) {

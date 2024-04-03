@@ -146,10 +146,20 @@ public class ElementPrinterHelper {
 		}
 	}
 
+	/**
+	 * Writes the executable parameters of the given executable. This includes the receiver parameter if it is present.
+	 * For example, for a method `void foo(int a, int b)`, this method will write `(int a, int b)`.
+	 * @param executable The executable to write the parameters for. This can be a method, constructor, or lambda.
+	 */
 	public void writeExecutableParameters(CtExecutable<?> executable) {
-		printList(executable.getParameters(), null,
+		List<CtElement> parameters = new ArrayList<>();
+		if (executable.getReceiverParameter() != null) {
+			parameters.add(executable.getReceiverParameter());
+		}
+		parameters.addAll(executable.getParameters());
+		printList(parameters, null,
 			false, "(", false, false, ",", true, false, ")",
-			p -> prettyPrinter.scan(p));
+			prettyPrinter::scan);
 	}
 
 	/** writes the thrown exception with a ListPrinter */

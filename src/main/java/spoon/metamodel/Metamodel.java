@@ -33,6 +33,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
@@ -42,9 +43,9 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.adaption.TypeAdaptor;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.compiler.FileSystemFolder;
 
 /**
@@ -195,6 +196,7 @@ public class Metamodel {
 		result.add(factory.Type().get(CtModuleDirective.class));
 		result.add(factory.Type().get(CtRecordComponent.class));
 		result.add(factory.Type().get(CtRecord.class));
+		result.add(factory.Type().get(CtReceiverParameter.class));
 		return result;
 	}
 

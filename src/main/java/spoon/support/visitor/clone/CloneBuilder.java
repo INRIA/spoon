@@ -314,4 +314,11 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 		((spoon.reflect.declaration.CtRecordComponent) (other)).setShadow(recordComponent.isShadow());
 		super.visitCtRecordComponent(recordComponent);
 	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtReceiverParameter(spoon.reflect.declaration.CtReceiverParameter e) {
+		((spoon.reflect.declaration.CtReceiverParameter) (other)).setShadow(e.isShadow());
+		super.visitCtReceiverParameter(e);
+	}
 }

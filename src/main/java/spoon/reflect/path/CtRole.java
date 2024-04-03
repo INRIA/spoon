@@ -122,7 +122,8 @@ public enum CtRole {
 	RECORD_COMPONENT,
 	COMPACT_CONSTRUCTOR,
 	PERMITTED_TYPE,
-	PATTERN;
+	PATTERN,
+	RECEIVER_PARAMETER;
 
 	private final CtRole superRole;
 	private final List<CtRole> subRoles;

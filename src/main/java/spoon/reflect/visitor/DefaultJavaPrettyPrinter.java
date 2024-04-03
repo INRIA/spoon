@@ -100,6 +100,7 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
@@ -2359,5 +2360,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		scan(recordPattern.getRecordType());
 		elementPrinterHelper.printList(recordPattern.getPatternList(),
 			null, false, "(", false, false, ",", true, false, ")", this::scan);
+	}
+
+	@Override
+	public void visitCtReceiverParameter(CtReceiverParameter receiverParameter) {
+		elementPrinterHelper.writeComment(receiverParameter);
+		elementPrinterHelper.writeAnnotations(receiverParameter);
+
+		printer.writeIdentifier(receiverParameter.getType().getSimpleName());
+		printer.writeSpace();
+		// if the receiver parameter is in an inner class, we need to print the outer class name
+		boolean isInnerClass = !receiverParameter.getType().getTopLevelType().getQualifiedName().equals(receiverParameter.getParent(CtType.class).getQualifiedName());
+		boolean isConstructor = receiverParameter.getParent() instanceof CtConstructor;
+		if (isConstructor && isInnerClass) {
+			// inside a ctor of an inner class, the identifier is $SimpleName.this
+			printer.writeSeparator(receiverParameter.getType().getSimpleName() + ".this");
+		} else {
+			printer.writeSeparator("this");
+		}
 	}
 }

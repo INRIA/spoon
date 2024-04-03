@@ -11,6 +11,7 @@ package spoon.support;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
+
 import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -91,6 +92,7 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -191,6 +193,7 @@ import spoon.support.reflect.declaration.CtPackageExportImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
 import spoon.support.reflect.declaration.CtProvidedServiceImpl;
+import spoon.support.reflect.declaration.CtReceiverParameterImpl;
 import spoon.support.reflect.declaration.CtRecordComponentImpl;
 import spoon.support.reflect.declaration.CtRecordImpl;
 import spoon.support.reflect.declaration.CtTypeParameterImpl;
@@ -1120,6 +1123,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.code.CtRecordPattern.class)) {
 			return createRecordPattern();
 		}
+		if (klass.equals(spoon.reflect.declaration.CtReceiverParameter.class)) {
+			return createReceiverParameter();
+		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
 
@@ -1216,5 +1222,12 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		CtRecordPattern recordPattern = new CtRecordPatternImpl();
 		recordPattern.setFactory(getMainFactory());
 		return recordPattern;
+	}
+
+	@Override
+	public CtReceiverParameter createReceiverParameter() {
+		CtReceiverParameter receiverParameter = new CtReceiverParameterImpl();
+		receiverParameter.setFactory(getMainFactory());
+		return receiverParameter;
 	}
 }

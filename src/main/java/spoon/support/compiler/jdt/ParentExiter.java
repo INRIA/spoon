@@ -30,7 +30,6 @@ import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.jspecify.annotations.Nullable;
-
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CaseKind;
@@ -97,6 +96,7 @@ import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
@@ -207,6 +207,8 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (child instanceof CtBlock && !(e instanceof CtMethod || e instanceof CtConstructor)) {
 			e.setBody((CtBlock<R>) child);
 			return;
+		} else if (child instanceof CtReceiverParameter ctReceiverParameter) {
+			e.setReceiverParameter(ctReceiverParameter);
 		}
 		super.scanCtExecutable(e);
 	}

@@ -7,15 +7,9 @@
  */
 package spoon.support.compiler.jdt;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Set;
 
-import org.eclipse.jdt.internal.compiler.ast.Expression;
-import org.eclipse.jdt.internal.compiler.ast.FakeDefaultLiteral;
-import org.eclipse.jdt.internal.compiler.ast.GuardedPattern;
-import org.eclipse.jdt.internal.compiler.ast.RecordPattern;
-import org.eclipse.jdt.internal.compiler.ast.TypePattern;
-import org.eclipse.jdt.internal.compiler.lookup.ParameterizedGenericMethodBinding;
-import org.slf4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
@@ -48,13 +42,16 @@ import org.eclipse.jdt.internal.compiler.ast.DoStatement;
 import org.eclipse.jdt.internal.compiler.ast.DoubleLiteral;
 import org.eclipse.jdt.internal.compiler.ast.EqualExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
+import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral;
+import org.eclipse.jdt.internal.compiler.ast.FakeDefaultLiteral;
 import org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
 import org.eclipse.jdt.internal.compiler.ast.FloatLiteral;
 import org.eclipse.jdt.internal.compiler.ast.ForStatement;
 import org.eclipse.jdt.internal.compiler.ast.ForeachStatement;
+import org.eclipse.jdt.internal.compiler.ast.GuardedPattern;
 import org.eclipse.jdt.internal.compiler.ast.IfStatement;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
@@ -86,6 +83,7 @@ import org.eclipse.jdt.internal.compiler.ast.QualifiedThisReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.Receiver;
 import org.eclipse.jdt.internal.compiler.ast.RecordComponent;
+import org.eclipse.jdt.internal.compiler.ast.RecordPattern;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
@@ -104,6 +102,7 @@ import org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
 import org.eclipse.jdt.internal.compiler.ast.TryStatement;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
+import org.eclipse.jdt.internal.compiler.ast.TypePattern;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnaryExpression;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
@@ -117,11 +116,13 @@ import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.ModuleBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ParameterizedGenericMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -161,6 +162,7 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -172,8 +174,6 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
-
-import java.lang.invoke.MethodHandles;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
@@ -958,6 +958,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		}
 		boolean isVar = argument.type != null && argument.type.isTypeNameVar(scope);
+		if (argument instanceof Receiver receiver) {
+			CtReceiverParameter receiverParameter = helper.createReceiverParameter(receiver);
+			context.enter(receiverParameter, argument);
+			return true;
+		}
 		CtParameter<Object> p = helper.createParameter(argument);
 		if (isVar) {
 			p.setInferred(true);
@@ -1141,8 +1146,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(getFactory().Core().createBlock(), methodDeclaration);
 			context.exit(methodDeclaration);
 		}
-
-		// We consider the receiver as a standard argument (i.e. as a parameter)
 		Receiver receiver = methodDeclaration.receiver;
 		if (receiver != null) {
 			receiver.traverse(this, methodDeclaration.scope);
@@ -1176,7 +1179,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// Create block
 		context.enter(factory.Core().createBlock(), constructorDeclaration);
 		context.exit(constructorDeclaration);
-
+		Receiver receiver = constructorDeclaration.receiver;
+		if (receiver != null) {
+			receiver.traverse(this, constructorDeclaration.scope);
+		}
 		return true;
 	}
 

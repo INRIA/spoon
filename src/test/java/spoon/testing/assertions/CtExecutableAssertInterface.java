@@ -16,6 +16,10 @@ public interface CtExecutableAssertInterface<A extends AbstractObjectAssert<A, W
 		return Assertions.assertThat(actual().getParameters());
 	}
 
+	default CtReceiverParameterAssertInterface<?, ?> getReceiverParameter() {
+		return SpoonAssertions.assertThat(actual().getReceiverParameter());
+	}
+
 	default AbstractCollectionAssert<?, Collection<? extends CtTypeReference<? extends Throwable>>, CtTypeReference<? extends Throwable>, ?> getThrownTypes() {
 		return Assertions.assertThat(actual().getThrownTypes());
 	}
