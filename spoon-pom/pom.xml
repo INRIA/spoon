@@ -207,6 +207,7 @@
                             <configuration>
                                 <!-- the build should fail if there are unused direct dependencies -->
                                 <failIfUnusedDirect>true</failIfUnusedDirect>
+                                <skipDepClean>true</skipDepClean>
                             </configuration>
                         </execution>
                     </executions>
