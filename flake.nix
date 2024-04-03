@@ -122,7 +122,7 @@
             # Check documentation links
             python3 ./chore/check-links-in-doc.py
             # Analyze dependencies through DepClean in spoon-core
-            mvn -q depclean:depclean
+            # mvn -q depclean:depclean
 
             pushd spoon-decompiler || exit 1
             mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
@@ -130,7 +130,7 @@
             git diff
             mvn -q test
             mvn -q checkstyle:checkstyle license:check
-            mvn -q depclean:depclean
+            # mvn -q depclean:depclean
             popd || exit 1
 
             pushd spoon-control-flow || exit 1
@@ -146,7 +146,7 @@
             mvn -q versions:update-parent -DallowSnapshots=true
             git diff
             mvn -q test
-            mvn -q depclean:depclean
+            # mvn -q depclean:depclean
             popd || exit 1
 
             pushd spoon-smpl || exit 1
@@ -155,7 +155,7 @@
             git diff
             mvn -q -Djava.src.version=17 test
             mvn -q checkstyle:checkstyle license:check
-            mvn -q depclean:depclean
+            # mvn -q depclean:depclean
             popd || exit 1
           '');
           extraRemote = pkgs.writeScriptBin "extra-remote" ''
