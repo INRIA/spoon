@@ -9,7 +9,6 @@ on:
   pull_request:
     branches:
       - master
-      - java17
 jobs:
     code-quality:
       runs-on: ubuntu-latest
