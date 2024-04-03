@@ -80,8 +80,8 @@ def run_quality_check(config_path: Path, target_branch: Optional[str] = None) ->
     it does not exist locally.
     """
     check_path = Path("chore/CheckJavadoc.java")
-    if target_branch and not check_path.exists():
-        print(warn(f"Quality check does not exist in file system, borrowing it from '{target_branch}'"))
+    if target_branch:
+        print(warn(f"Borrowing quality script from '{target_branch}'"))
         run_command(["git", "checkout", target_branch, "--", str(check_path)])
 
     return run_command([
