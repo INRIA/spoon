@@ -18,7 +18,7 @@ public class ControlFlowPathHelper {
      * @param node Starting node
      * @return Set of possible paths
      */
-    private List<List<ControlFlowNode>> paths(ControlFlowNode node) {
+    List<List<ControlFlowNode>> paths(ControlFlowNode node) {
         if (pathsMemo.containsKey(node)) {
             return pathsMemo.get(node);
         }

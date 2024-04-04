@@ -377,6 +377,18 @@ public class ControlFlowArithmetic {
 		return b;
 	}
 
+	public int multipleCaseExpressions(int a) {
+		int b = 0;
+		switch (a) {
+			case 1, 2:
+				b = 1;
+				break;
+			default:
+				break;
+		}
+		return b;
+	}
+
 	//All lines will be tested in this method
 	public int simple(int a) {
 		a = a + a / 2;

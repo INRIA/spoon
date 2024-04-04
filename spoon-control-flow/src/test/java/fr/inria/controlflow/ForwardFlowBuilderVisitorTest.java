@@ -30,6 +30,7 @@ import spoon.reflect.factory.Factory;
 import spoon.support.QueueProcessingManager;
 
 import java.io.PrintWriter;
+import java.util.List;
 
 import static fr.inria.controlflow.BranchKind.BRANCH;
 import static fr.inria.controlflow.BranchKind.STATEMENT;
@@ -180,6 +181,16 @@ public class ForwardFlowBuilderVisitorTest {
 		ControlFlowNode caseNode = pathHelper.findNodeByString(graph, "b = 1");
 		boolean canAvoid = pathHelper.canAvoidNode(entryNode, caseNode);
 		assertTrue(canAvoid);
+	}
+
+	@Test
+	public void testMultipleCaseExpressions() throws Exception {
+		ControlFlowGraph graph = testMethod("multipleCaseExpressions", true, 1, 8, 17);
+		graph.simplify();
+		ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+		ControlFlowNode startNode = pathHelper.findNodeByString(graph, "int b = 0");
+		List<List<ControlFlowNode>> paths = pathHelper.paths(startNode);
+		assertTrue(paths.size() > 2);
 	}
 
 	//Test some mixed conditions
