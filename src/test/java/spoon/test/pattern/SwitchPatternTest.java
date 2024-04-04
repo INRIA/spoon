@@ -69,7 +69,7 @@ class SwitchPatternTest {
 		assertThat(ctCase.getIncludesDefault()).isFalse();
 		CtExpression<?> caseExpression = ctCase.getCaseExpression();
 		assertThat(caseExpression).isInstanceOf(CtCasePattern.class);
-		CtExpression<?> guard = ((CtCasePattern) caseExpression).getGuard();
+		CtExpression<?> guard = ctCase.getGuard();
 		assertThat(guard).isInstanceOf(CtBinaryOperator.class);
 
 		CtPattern pattern = ((CtCasePattern) caseExpression).getPattern();

@@ -653,6 +653,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			printer.writeKeyword("default");
 		}
+		if (caseStatement.getGuard() != null) {
+			printer.writeSpace().writeKeyword("when").writeSpace();
+			scan(caseStatement.getGuard());
+		}
 		String separator = caseStatement.getCaseKind() == CaseKind.ARROW ? "->" : ":";
 		printer.writeSpace().writeSeparator(separator).incTab();
 
@@ -2349,10 +2353,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void visitCtCasePattern(CtCasePattern casePattern) {
 		scan(casePattern.getPattern());
-		if (casePattern.getGuard() != null) {
-			printer.writeSpace().writeKeyword("when").writeSpace();
-			scan(casePattern.getGuard());
-		}
 	}
 
 	@Override

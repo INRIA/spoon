@@ -5,4 +5,8 @@ public interface CtLambdaAssertInterface<A extends AbstractObjectAssert<A, W>, W
 	default CtExpressionAssertInterface<?, ?> getExpression() {
 		return SpoonAssertions.assertThat(actual().getExpression());
 	}
+
+	default CtReceiverParameterAssertInterface<?, ?> getReceiverParameter() {
+		return SpoonAssertions.assertThat(actual().getReceiverParameter());
+	}
 }

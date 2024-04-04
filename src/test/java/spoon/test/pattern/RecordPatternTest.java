@@ -1,7 +1,5 @@
 package spoon.test.pattern;
 
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -21,6 +19,7 @@ import spoon.support.compiler.VirtualFile;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -181,23 +180,24 @@ public class RecordPatternTest {
 			"Inner(Leaf leaf, var right)",
 			"Inner(var left, Node right)"
 		);
-		List<CtCase<?>> cases = (List<CtCase<?>>) (List) ctSwitch.getCases();
+		List<CtCase<?>> cases = (List<CtCase<?>>) ctSwitch.getCases();
 		assertEquals(cases.size(), 5); // includes default
 		CtCasePattern c0 = assertInstanceOf(CtCasePattern.class, cases.get(0).getCaseExpression());
 		new Leaf("s").assertMatches(c0.getPattern());
-		assertNotNull(c0.getGuard());
+		assertNotNull(cases.get(0).getGuard());
+		assertThat(cases.get(0).toString()).contains(" when "); // guard must be printed
 
 		CtCasePattern c1 = assertInstanceOf(CtCasePattern.class, cases.get(1).getCaseExpression());
 		new Leaf("s").assertMatches(c1.getPattern());
-		assertNull(c1.getGuard());
+		assertNull(cases.get(1).getGuard());
 
 		CtCasePattern c2 = assertInstanceOf(CtCasePattern.class, cases.get(2).getCaseExpression());
 		new Inner(new SimpleLeaf("leaf"), new SimpleLeaf("right")).assertMatches(c2.getPattern());
-		assertNull(c2.getGuard());
+		assertNull(cases.get(2).getGuard());
 
 		CtCasePattern c3 = assertInstanceOf(CtCasePattern.class, cases.get(3).getCaseExpression());
 		new Inner(new SimpleLeaf("left"), new SimpleLeaf("right")).assertMatches(c3.getPattern());
-		assertNull(c3.getGuard());
+		assertNull(cases.get(3).getGuard());
 	}
 
 	interface Node {

@@ -182,6 +182,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		enter(caseStatement);
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, caseStatement.getAnnotations(), other.getAnnotations());
 		biScan(spoon.reflect.path.CtRole.EXPRESSION, caseStatement.getCaseExpressions(), other.getCaseExpressions());
+		biScan(spoon.reflect.path.CtRole.CONDITION, caseStatement.getGuard(), other.getGuard());
 		biScan(spoon.reflect.path.CtRole.STATEMENT, caseStatement.getStatements(), other.getStatements());
 		biScan(spoon.reflect.path.CtRole.COMMENT, caseStatement.getComments(), other.getComments());
 		exit(caseStatement);
@@ -1101,7 +1102,6 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		biScan(spoon.reflect.path.CtRole.CAST, casePattern.getTypeCasts(), other.getTypeCasts());
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, casePattern.getAnnotations(), other.getAnnotations());
 		biScan(spoon.reflect.path.CtRole.PATTERN, casePattern.getPattern(), other.getPattern());
-		biScan(spoon.reflect.path.CtRole.CONDITION, casePattern.getGuard(), other.getGuard());
 		biScan(spoon.reflect.path.CtRole.TYPE, casePattern.getType(), other.getType());
 		biScan(spoon.reflect.path.CtRole.COMMENT, casePattern.getComments(), other.getComments());
 		exit(casePattern);
