@@ -768,12 +768,14 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		//Push the convergence node so all non labeled breaks jumps there
 		breakingBad.push(convergenceNode);
 
+		boolean hasDefaultCase = false;
 		lastNode = switchNode;
-		for (CtCase caseStatement : switchStatement.getCases()) {
+		for (CtCase<?> caseStatement : switchStatement.getCases()) {
 
 			//Visit Case
 			registerStatementLabel(caseStatement);
 			ControlFlowNode cn = new ControlFlowNode(caseStatement.getCaseExpression(), result, BranchKind.STATEMENT);
+			hasDefaultCase |= caseStatement.getCaseExpressions().isEmpty();
 			tryAddEdge(lastNode, cn);
 			if (lastNode != switchNode) {
 				tryAddEdge(switchNode, cn);
@@ -785,6 +787,10 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			}
 		}
 		tryAddEdge(lastNode, convergenceNode);
+
+		if (!hasDefaultCase) {
+			tryAddEdge(switchNode, convergenceNode);
+		}
 
 		//Return as last node the convergence node
 		lastNode = convergenceNode;
