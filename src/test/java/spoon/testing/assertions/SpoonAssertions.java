@@ -43,7 +43,6 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
-import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtRHSReceiver;
 import spoon.reflect.code.CtRecordPattern;
