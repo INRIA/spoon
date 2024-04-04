@@ -35,6 +35,7 @@ import java.net.URISyntaxException;
 
 import static fr.inria.controlflow.BranchKind.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
@@ -170,6 +171,17 @@ public class ForwardFlowBuilderVisitorTest {
 	@Test
 	public void testSwitchFallThrough() throws Exception {
 		testMethod("lastCaseFallThrough", false, 1, 4, 12);
+	}
+
+	@Test
+	public void testSwitchImplicitDefault() throws Exception {
+		ControlFlowGraph graph = testMethod("lastCaseFallThrough", false, 1, 4, 12);
+		graph.simplify();
+		ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+		ControlFlowNode entryNode = pathHelper.findNodeByString(graph, "int b = 0");
+		ControlFlowNode caseNode = pathHelper.findNodeByString(graph, "b = 1");
+		boolean canAvoid = pathHelper.canAvoidNode(entryNode, caseNode);
+		assertTrue(canAvoid);
 	}
 
 	//Test some mixed conditions
