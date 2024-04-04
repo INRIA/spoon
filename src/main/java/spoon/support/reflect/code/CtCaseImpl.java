@@ -9,7 +9,11 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.code.*;
+import spoon.reflect.code.CaseKind;
+import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;

@@ -9,7 +9,6 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCasePattern;
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtPattern;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;

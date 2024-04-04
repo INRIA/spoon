@@ -7,11 +7,9 @@
  */
 package spoon.reflect.code;
 
-import org.jspecify.annotations.Nullable;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
-import static spoon.reflect.path.CtRole.CONDITION;
 import static spoon.reflect.path.CtRole.PATTERN;
 
 /**

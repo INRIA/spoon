@@ -180,7 +180,7 @@ public class RecordPatternTest {
 			"Inner(Leaf leaf, var right)",
 			"Inner(var left, Node right)"
 		);
-		List<CtCase<?>> cases = (List<CtCase<?>>) ctSwitch.getCases();
+		List<CtCase<?>> cases = (List<CtCase<?>>) (List) ctSwitch.getCases();
 		assertEquals(cases.size(), 5); // includes default
 		CtCasePattern c0 = assertInstanceOf(CtCasePattern.class, cases.get(0).getCaseExpression());
 		new Leaf("s").assertMatches(c0.getPattern());
