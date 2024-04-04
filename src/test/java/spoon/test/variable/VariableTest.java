@@ -33,6 +33,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
+import spoon.testing.utils.ModelTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -190,5 +191,14 @@ public class VariableTest {
         assertEquals("java.lang.Integer", lambda.getParameters().get(0).getType().getQualifiedName());
         assertEquals("java.lang.Long", lambda.getParameters().get(1).getType().getQualifiedName());
         assertEquals("(var x,var y) -> x + y", lambda.toString()); // we should print var, if it was in the original code
+    }
+
+    // @ModelTest(value = "./src/test/resources/spoon/test/var/VarInLambda.java", complianceLevel = 21)
+    @Test
+    void testUnnamedVariable() {
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setComplianceLevel(21);
+        launcher.getEnvironment().setPreviewFeaturesEnabled(true);
+        launcher.addInputResource("./src/test/resources/spoon/test/var/VarInLambda.java");
     }
 }
