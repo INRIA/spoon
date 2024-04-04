@@ -103,11 +103,14 @@
             mvn -f spoon-pom -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
           '';
           codegen = pkgs.writeScriptBin "codegen" ''
-           set -eu
-           mvn test -Dtest=spoon.testing.assertions.codegen.AssertJCodegen
-           mvn spotless:apply
-           git diff --exit-code || echo "::error::Generated code is not up to date. Execute mvn test -Dtest=spoon.testing.assertions.codegen.AssertJCodegen, mvn spotless:apply and commit your changes."
-           '';
+            set -eu
+            mvn test -Dtest=spoon.testing.assertions.codegen.AssertJCodegen
+            mvn spotless:apply
+            if ! git diff --exit-code; then
+              echo "::error::Generated code is not up to date. Execute mvn test -Dtest=spoon.testing.assertions.codegen.AssertJCodegen, mvn spotless:apply and commit your changes."
+              exit 1
+            fi
+          '';
           extra = pkgs.writeScriptBin "extra" (if !extraChecks then "exit 2" else ''
             set -eu
 
