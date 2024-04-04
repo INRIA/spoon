@@ -34,6 +34,7 @@ import java.io.PrintWriter;
 import static fr.inria.controlflow.BranchKind.BRANCH;
 import static fr.inria.controlflow.BranchKind.STATEMENT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by marodrig on 14/10/2015.
@@ -168,6 +169,17 @@ public class ForwardFlowBuilderVisitorTest {
 	@Test
 	public void testSwitchFallThrough() throws Exception {
 		testMethod("lastCaseFallThrough", false, 1, 4, 12);
+	}
+
+	@Test
+	public void testSwitchImplicitDefault() throws Exception {
+		ControlFlowGraph graph = testMethod("lastCaseFallThrough", false, 1, 4, 12);
+		graph.simplify();
+		ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+		ControlFlowNode entryNode = pathHelper.findNodeByString(graph, "int b = 0");
+		ControlFlowNode caseNode = pathHelper.findNodeByString(graph, "b = 1");
+		boolean canAvoid = pathHelper.canAvoidNode(entryNode, caseNode);
+		assertTrue(canAvoid);
 	}
 
 	//Test some mixed conditions
