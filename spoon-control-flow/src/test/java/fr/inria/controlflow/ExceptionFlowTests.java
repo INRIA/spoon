@@ -18,18 +18,20 @@ public class ExceptionFlowTests {
         // contract: NaiveExceptionControlFlowStrategy should result in every statement parented by a try
         //           block having a path to the corresponding catch block.
 
-        CtMethod<?> method = Launcher.parseClass("class A {\n" +
-                                                 "  void m() {\n" +
-                                                 "    try {\n" +
-                                                 "      a();\n" +
-                                                 "      b();\n" +
-                                                 "      c();\n" +
-                                                 "    } catch (Exception e) {\n" +
-                                                 "      bang();\n" +
-                                                 "    }\n" +
-                                                 "    x();\n" +
-                                                 "  }\n" +
-                                                 "}\n").getMethods().iterator().next();
+        CtMethod<?> method = Launcher.parseClass("""
+                class A {
+                  void m() {
+                    try {
+                      a();
+                      b();
+                      c();
+                    } catch (Exception e) {
+                      bang();
+                    }
+                    x();
+                  }
+                }
+                """).getMethods().iterator().next();
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
@@ -62,21 +64,23 @@ public class ExceptionFlowTests {
         // contract: NaiveExceptionControlFlowStrategy should result in every statement parented by a try
         //           block having a path to the corresponding catch block.
 
-        CtMethod<?> method = Launcher.parseClass("class A {\n" +
-                                                 "  void m() {\n" +
-                                                 "    try {\n" +
-                                                 "      a();\n" +
-                                                 "    } catch (Exception e) {\n" +
-                                                 "      bang();\n" +
-                                                 "    }\n" +
-                                                 "    x();\n" +
-                                                 "    try {\n" +
-                                                 "      b();\n" +
-                                                 "    } catch (Exception e) {\n" +
-                                                 "      boom();\n" +
-                                                 "    }\n" +
-                                                 "  }\n" +
-                                                 "}\n").getMethods().iterator().next();
+        CtMethod<?> method = Launcher.parseClass("""
+                class A {
+                  void m() {
+                    try {
+                      a();
+                    } catch (Exception e) {
+                      bang();
+                    }
+                    x();
+                    try {
+                      b();
+                    } catch (Exception e) {
+                      boom();
+                    }
+                  }
+                }
+                """).getMethods().iterator().next();
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
@@ -108,21 +112,23 @@ public class ExceptionFlowTests {
         // contract: NaiveExceptionControlFlowStrategy should result in every statement parented by a try
         //           block having a path to the corresponding catch block.
 
-        CtMethod<?> method = Launcher.parseClass("class A {\n" +
-                                                 "  void m() {\n" +
-                                                 "    try {\n" +
-                                                 "      a();\n" +
-                                                 "      try {\n" +
-                                                 "        b();\n" +
-                                                 "      } catch (Exception e2) {\n" +
-                                                 "        boom();\n" +
-                                                 "      }\n" +
-                                                 "      c();\n" +
-                                                 "    } catch (Exception e1) {\n" +
-                                                 "      bang();\n" +
-                                                 "    }\n" +
-                                                 "  }\n" +
-                                                 "}\n").getMethods().iterator().next();
+        CtMethod<?> method = Launcher.parseClass("""
+                class A {
+                  void m() {
+                    try {
+                      a();
+                      try {
+                        b();
+                      } catch (Exception e2) {
+                        boom();
+                      }
+                      c();
+                    } catch (Exception e1) {
+                      bang();
+                    }
+                  }
+                }
+                """).getMethods().iterator().next();
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
@@ -155,20 +161,22 @@ public class ExceptionFlowTests {
         //           flow is guaranteed to enter a try block equipped with multiple catchers, or 2) parented
         //           by a try block equipped with multiple catchers, to have a path to every catcher.
 
-        CtMethod<?> method = Launcher.parseClass("class A {\n" +
-                                                 "  void m() {\n" +
-                                                 "    top();\n" +
-                                                 "    try {\n" +
-                                                 "      a();\n" +
-                                                 "    }\n" +
-                                                 "    catch (IOException e) {\n" +
-                                                 "      b();\n" +
-                                                 "    }\n" +
-                                                 "    catch (RuntimeException e) {\n" +
-                                                 "      c();\n" +
-                                                 "    }\n" +
-                                                 "  }\n" +
-                                                 "}\n").getMethods().iterator().next();
+        CtMethod<?> method = Launcher.parseClass("""
+                class A {
+                  void m() {
+                    top();
+                    try {
+                      a();
+                    }
+                    catch (IOException e) {
+                      b();
+                    }
+                    catch (RuntimeException e) {
+                      c();
+                    }
+                  }
+                }
+                """).getMethods().iterator().next();
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
@@ -200,20 +208,22 @@ public class ExceptionFlowTests {
         //           catcher while having no other paths, meaning unreachable post-throw statements should never
         //           make it into the graph.
 
-        CtMethod<?> method = Launcher.parseClass("class A {\n" +
-                                                 "  void m() {\n" +
-                                                 "    try {\n" +
-                                                 "      throw new RuntimeException();\n" +
-                                                 "      unreachable();\n" +
-                                                 "    }\n" +
-                                                 "    catch (RuntimeException e) {\n" +
-                                                 "      boom();\n" +
-                                                 "    }\n" +
-                                                 "    catch (Exception e) {\n" +
-                                                 "      bang();\n" +
-                                                 "    }\n" +
-                                                 "  }\n" +
-                                                 "}\n").getMethods().iterator().next();
+        CtMethod<?> method = Launcher.parseClass("""
+                class A {
+                  void m() {
+                    try {
+                      throw new RuntimeException();
+                      unreachable();
+                    }
+                    catch (RuntimeException e) {
+                      boom();
+                    }
+                    catch (Exception e) {
+                      bang();
+                    }
+                  }
+                }
+                """).getMethods().iterator().next();
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
@@ -238,15 +248,17 @@ public class ExceptionFlowTests {
         //           any of its catchers, preventing unreachable statements in catch blocks from appearing in
         //           the CFG.
 
-        CtMethod<?> method = Launcher.parseClass("class A {\n" +
-                                                 "  void m() {\n" +
-                                                 "    try {\n" +
-                                                 "    }\n" +
-                                                 "    catch (Exception e) {\n" +
-                                                 "      bang();\n" +
-                                                 "    }\n" +
-                                                 "  }\n" +
-                                                 "}\n").getMethods().iterator().next();
+        CtMethod<?> method = Launcher.parseClass("""
+                class A {
+                  void m() {
+                    try {
+                    }
+                    catch (Exception e) {
+                      bang();
+                    }
+                  }
+                }
+                """).getMethods().iterator().next();
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
@@ -262,15 +274,17 @@ public class ExceptionFlowTests {
         //           an empty try block to each of its catchers, causing unreachable statements in catch blocks to
         //           be included in the CFG.
 
-        CtMethod<?> method = Launcher.parseClass("class A {\n" +
-                                                 "  void m() {\n" +
-                                                 "    try {\n" +
-                                                 "    }\n" +
-                                                 "    catch (Exception e) {\n" +
-                                                 "      bang();\n" +
-                                                 "    }\n" +
-                                                 "  }\n" +
-                                                 "}\n").getMethods().iterator().next();
+        CtMethod<?> method = Launcher.parseClass("""
+                class A {
+                  void m() {
+                    try {
+                    }
+                    catch (Exception e) {
+                      bang();
+                    }
+                  }
+                }
+                """).getMethods().iterator().next();
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         EnumSet<NaiveExceptionControlFlowStrategy.Options> options = EnumSet.of(NaiveExceptionControlFlowStrategy.Options.AddPathsForEmptyTryBlocks);
@@ -287,26 +301,28 @@ public class ExceptionFlowTests {
         // contract: NaiveExceptionControlFlowStrategy should reject a try-catch construct if it is equipped with a
         //           finalizer and return statements are used anywhere in the construct
 
-        CtMethod<?> method = Launcher.parseClass("class A {\n" +
-                                                 "  void m() {\n" +
-                                                 "    top();\n" +
-                                                 "    try {\n" +
-                                                 "      return;\n" +
-                                                 "    }\n" +
-                                                 "    catch (Exception e) {\n" +
-                                                 "      b();\n" +
-                                                 "    }\n" +
-                                                 "    finally {\n" +
-                                                 "      c();\n" +
-                                                 "    }\n" +
-                                                 "  }\n" +
-                                                 "}\n").getMethods().iterator().next();
+        CtMethod<?> method = Launcher.parseClass("""
+                class A {
+                  void m() {
+                    top();
+                    try {
+                      return;
+                    }
+                    catch (Exception e) {
+                      b();
+                    }
+                    finally {
+                      c();
+                    }
+                  }
+                }
+                """).getMethods().iterator().next();
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
         builder.build(method);
         });
-    } 
+    }
 
     @Test
     public void testFinalizerReturnStatementInCatchBlockRejected() {
@@ -314,60 +330,60 @@ public class ExceptionFlowTests {
         // contract: NaiveExceptionControlFlowStrategy should reject a try-catch construct if it is equipped with a
         //           finalizer and return statements are used anywhere in the construct
 
-        CtMethod<?> method = Launcher.parseClass("class A {\n" +
-                                                 "  void m() {\n" +
-                                                 "    top();\n" +
-                                                 "    try {\n" +
-                                                 "      a();\n" +
-                                                 "    }\n" +
-                                                 "    catch (Exception e) {\n" +
-                                                 "      if (random > 0.5f) {\n" +
-                                                 "        return;\n" +
-                                                 "      }\n" +
-                                                 "    }\n" +
-                                                 "    finally {\n" +
-                                                 "      c();\n" +
-                                                 "    }\n" +
-                                                 "  }\n" +
-                                                 "}\n").getMethods().iterator().next();
+        CtMethod<?> method = Launcher.parseClass("""
+                class A {
+                  void m() {
+                    top();
+                    try {
+                      a();
+                    }
+                    catch (Exception e) {
+                      if (random > 0.5f) {
+                        return;
+                      }
+                    }
+                    finally {
+                      c();
+                    }
+                  }
+                }
+                """).getMethods().iterator().next();
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
         builder.build(method);
         });
-    } 
+    }
 
     @Test
     public void testFinalizerReturnStatementInFinalizerBlockRejected() {
         // contract: NaiveExceptionControlFlowStrategy should reject a try-catch construct if it is equipped with a
         //           finalizer and return statements are used anywhere in the construct
 
-        CtMethod<?> method = Launcher.parseClass("class A {\n" +
-                                                 "  void m() {\n" +
-                                                 "    top();\n" +
-                                                 "    try {\n" +
-                                                 "      a();\n" +
-                                                 "    }\n" +
-                                                 "    catch (Exception e) {\n" +
-                                                 "      b();\n" +
-                                                 "    }\n" +
-                                                 "    finally {\n" +
-                                                 "      try {\n" +
-                                                 "        c();" +
-                                                 "      }\n" +
-                                                 "      catch (Exception e) {\n" +
-                                                 "        return;" +
-                                                 "      }\n" +
-                                                 "    }\n" +
-                                                 "  }\n" +
-                                                 "}\n").getMethods().iterator().next();
+        CtMethod<?> method = Launcher.parseClass("""
+                class A {
+                  void m() {
+                    top();
+                    try {
+                      a();
+                    }
+                    catch (Exception e) {
+                      b();
+                    }
+                    finally {
+                      try {
+                        c();      }
+                      catch (Exception e) {
+                        return;      }
+                    }
+                  }
+                }
+                """).getMethods().iterator().next();
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
-        assertThrows(IllegalArgumentException.class, () -> {
-            builder.build(method);
-        });
-    } 
+        assertThrows(IllegalArgumentException.class, () -> builder.build(method));
+    }
 
     @Test
     public void testFinalizer() {
@@ -377,20 +393,22 @@ public class ExceptionFlowTests {
         //           block equipped with a finalizer, to unavoidably reach the finalizer block when no return
         //           statements are used.
 
-        CtMethod<?> method = Launcher.parseClass("class A {\n" +
-                                                 "  void m() {\n" +
-                                                 "    top();\n" +
-                                                 "    try {\n" +
-                                                 "      a();\n" +
-                                                 "    }\n" +
-                                                 "    catch (Exception e) {\n" +
-                                                 "      b();\n" +
-                                                 "    }\n" +
-                                                 "    finally {\n" +
-                                                 "      c();\n" +
-                                                 "    }\n" +
-                                                 "  }\n" +
-                                                 "}\n").getMethods().iterator().next();
+        CtMethod<?> method = Launcher.parseClass("""
+                class A {
+                  void m() {
+                    top();
+                    try {
+                      a();
+                    }
+                    catch (Exception e) {
+                      b();
+                    }
+                    finally {
+                      c();
+                    }
+                  }
+                }
+                """).getMethods().iterator().next();
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
@@ -419,17 +437,19 @@ public class ExceptionFlowTests {
         //           block equipped with a finalizer, to unavoidably reach the finalizer block when no return
         //           statements are used.
 
-        CtMethod<?> method = Launcher.parseClass("class A {\n" +
-                                                 "  void m() {\n" +
-                                                 "    top();\n" +
-                                                 "    try {\n" +
-                                                 "      a();\n" +
-                                                 "    }\n" +
-                                                 "    finally {\n" +
-                                                 "      b();\n" +
-                                                 "    }\n" +
-                                                 "  }\n" +
-                                                 "}\n").getMethods().iterator().next();
+        CtMethod<?> method = Launcher.parseClass("""
+                class A {
+                  void m() {
+                    top();
+                    try {
+                      a();
+                    }
+                    finally {
+                      b();
+                    }
+                  }
+                }
+                """).getMethods().iterator().next();
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
@@ -453,23 +473,25 @@ public class ExceptionFlowTests {
         //           or 2) parented by a try block equipped with multiple catchers and a finalizer, to unavoidably
         //           reach the finalizer when no return statements are used.
 
-        CtMethod<?> method = Launcher.parseClass("class A {\n" +
-                                                 "  void m() {\n" +
-                                                 "    top();\n" +
-                                                 "    try {\n" +
-                                                 "      a();\n" +
-                                                 "    }\n" +
-                                                 "    catch (IOException e) {\n" +
-                                                 "      b();\n" +
-                                                 "    }\n" +
-                                                 "    catch (RuntimeException e) {\n" +
-                                                 "      c();\n" +
-                                                 "    }\n" +
-                                                 "    finally {\n" +
-                                                 "      breathe();\n" +
-                                                 "    }\n" +
-                                                 "  }\n" +
-                                                 "}\n").getMethods().iterator().next();
+        CtMethod<?> method = Launcher.parseClass("""
+                class A {
+                  void m() {
+                    top();
+                    try {
+                      a();
+                    }
+                    catch (IOException e) {
+                      b();
+                    }
+                    catch (RuntimeException e) {
+                      c();
+                    }
+                    finally {
+                      breathe();
+                    }
+                  }
+                }
+                """).getMethods().iterator().next();
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
@@ -494,19 +516,21 @@ public class ExceptionFlowTests {
         // contract: NaiveExceptionControlFlowStrategy should reject a try-catch construct if it is equipped with a
         //           finalizer and return statements are used anywhere in the construct
 
-        CtMethod<?> method = Launcher.parseClass("class A {\n" +
-                                                 "  void m() {\n" +
-                                                 "    try {\n" +
-                                                 "      return;\n" +
-                                                 "    }\n" +
-                                                 "    catch (Exception e) {\n" +
-                                                 "      a();\n" +
-                                                 "    }\n" +
-                                                 "    finally {\n" +
-                                                 "      b();\n" +
-                                                 "    }\n" +
-                                                 "  }\n" +
-                                                 "}\n").getMethods().iterator().next();
+        CtMethod<?> method = Launcher.parseClass("""
+                class A {
+                  void m() {
+                    try {
+                      return;
+                    }
+                    catch (Exception e) {
+                      a();
+                    }
+                    finally {
+                      b();
+                    }
+                  }
+                }
+                """).getMethods().iterator().next();
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
 
