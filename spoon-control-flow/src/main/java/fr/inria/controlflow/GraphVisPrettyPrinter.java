@@ -24,8 +24,6 @@ package fr.inria.controlflow;
 import java.util.HashMap;
 /**
  * Prints the control flow in .Dot for GraphVis to visualize
- *
- * Created by marodrig on 14/10/2015.
  */
 public class GraphVisPrettyPrinter {
 
@@ -37,7 +35,6 @@ public class GraphVisPrettyPrinter {
 
 	public String print() {
 		StringBuilder sb = new StringBuilder("digraph ").append(graph.getName()).append(" { \n");
-		//sb.append("exit [shape=doublecircle];\n");
 		sb.append("node [fontsize = 8];\n");
 
 
@@ -64,20 +61,16 @@ public class GraphVisPrettyPrinter {
 
 
 	private String printNode(int i, ControlFlowNode n, StringBuilder sb) {
-		String labelStr = " [shape=rectangle, label=\"";
-		if (n.getKind() == NodeKind.BRANCH) {
-			labelStr = " [shape=diamond, label=\"";
-		} else if (n.getKind() == NodeKind.BEGIN) {
-			labelStr = " [shape=Mdiamond, label=\"";
-		} else if (n.getKind() == NodeKind.BLOCK_BEGIN || n.getKind() == NodeKind.BLOCK_END) {
-			labelStr = " [shape=rectangle, style=filled, fillcolor=gray, label=\"";
-		} else if (n.getKind() == NodeKind.EXIT) {
-			labelStr = " [shape=doublecircle, label=\"";
-		} else if (n.getKind() == NodeKind.CONVERGE) {
-			labelStr = " [shape=point label=\"";
-		}
+		String labelString = switch (n.getKind()) {
+			case BRANCH -> " [shape=diamond, label=\"";
+			case BEGIN -> " [shape=Mdiamond, label=\"";
+			case BLOCK_BEGIN, BLOCK_END -> " [shape=rectangle, style=filled, fillcolor=gray, label=\"";
+			case EXIT -> " [shape=doublecircle, label=\"";
+			case CONVERGE -> " [shape=point label=\"";
+			default -> " [shape=rectangle, label=\"";
+		};
 
-		sb.append(i).append(labelStr).append(n.toString().replace("\"", "quot ")).append(" \"]").append(";\n");
+		sb.append(i).append(labelString).append(n.toString().replace("\"", "quot ")).append(" \"]").append(";\n");
 		return sb.toString();
 	}
 
