@@ -97,7 +97,7 @@ public interface CtCase<S> extends CtStatement, CtStatementList {
 	CtCase<S> setIncludesDefault(boolean includesDefault);
 
 	/**
-	 * {@return the guard of this case pattern}
+	 * {@return the guard of this case}
 	 * This method returns {@code null} if no guard is present.
 	 */
 	@PropertyGetter(role = CtRole.CONDITION)
@@ -105,10 +105,10 @@ public interface CtCase<S> extends CtStatement, CtStatementList {
 	CtExpression<?> getGuard();
 
 	/**
-	 * Sets the guarding expression for this case pattern.
+	 * Sets the guarding expression for this case.
 	 *
-	 * @param guard the expression guarding this case pattern. If {@code null}, no guard will be inserted in the code.
-	 * @return this case pattern.
+	 * @param guard the expression guarding this case. If {@code null}, no guard will be inserted in the code.
+	 * @return this case.
 	 */
 	@PropertySetter(role = CtRole.CONDITION)
 	CtCase<S> setGuard(@Nullable CtExpression<?> guard);
