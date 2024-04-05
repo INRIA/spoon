@@ -6,11 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A helper class for analyzing paths in the control flow graph
+ */
 public class ControlFlowPathHelper {
     /**
      * Memoization of paths.
      */
-    Map<ControlFlowNode, List<List<ControlFlowNode>>> pathsMemo = new HashMap<>();
+    private final Map<ControlFlowNode, List<List<ControlFlowNode>>> pathsMemo = new HashMap<>();
 
     /**
      * Get the set of possible paths to the exit node from a given starting node.
