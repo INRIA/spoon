@@ -21,9 +21,6 @@
  */
 package fr.inria.controlflow;
 
-import fr.inria.controlflow.ControlFlowEdge;
-import fr.inria.controlflow.ControlFlowNode;
-import fr.inria.controlflow.NodeKind;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;

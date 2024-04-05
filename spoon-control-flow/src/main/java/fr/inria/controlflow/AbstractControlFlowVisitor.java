@@ -21,9 +21,6 @@
  */
 package fr.inria.controlflow;
 
-import fr.inria.controlflow.ControlFlowNode;
-import fr.inria.controlflow.ControlFlowVisitor;
-
 public abstract class AbstractControlFlowVisitor implements ControlFlowVisitor {
 
 	protected boolean visit(ControlFlowNode n) {
