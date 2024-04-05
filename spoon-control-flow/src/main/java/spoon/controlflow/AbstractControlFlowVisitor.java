@@ -19,31 +19,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.inria.controlflow;
+package spoon.controlflow;
 
-import org.jgrapht.graph.DefaultEdge;
+public abstract class AbstractControlFlowVisitor implements ControlFlowVisitor {
 
-public class ControlFlowEdge extends DefaultEdge {
-
-	/**
-	 * Indicates if this loop is the looping edge of a loop (from the las statement to the first of a loop).
-	 */
-	boolean isBackEdge = false;
-
-	public boolean isBackEdge() {
-		return isBackEdge;
-	}
-
-	public void setBackEdge(boolean isBackEdge) {
-		this.isBackEdge = isBackEdge;
-	}
-
-	public ControlFlowNode getTargetNode() {
-		return (ControlFlowNode) getTarget();
-	}
-
-	public ControlFlowNode getSourceNode() {
-		return (ControlFlowNode) getSource();
+	protected boolean visit(ControlFlowNode n) {
+		//Visit the node
+		return switch (n.getKind()) {
+			case BEGIN -> visitBegin(n);
+			case BLOCK_BEGIN -> visitBlockBegin(n);
+			case BLOCK_END -> visitBlockEnd(n);
+			case BRANCH -> visitBranch(n);
+			case STATEMENT -> visitStatement(n);
+			default -> false;
+		};
 	}
 
 }

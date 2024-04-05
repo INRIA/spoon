@@ -1,16 +1,16 @@
-/*
+/**
  * The MIT License
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -19,43 +19,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.inria.controlflow;
 
-import spoon.reflect.code.CtThrow;
-import spoon.reflect.code.CtTry;
+package spoon.controlflow;
 
-/**
- * Base interface for exception control flow strategies.
- */
-public interface ExceptionControlFlowStrategy {
-	/**
-	 * Handle a try-catch-finally construct.
-	 *
-	 * @param builder The builder
-	 * @param tryBlock A try statement
-	 */
-	void handleTryStatement(ControlFlowBuilder builder, CtTry tryBlock);
+import spoon.Launcher;
+import spoon.reflect.factory.Factory;
 
-	/**
-	 * Handle a throw statement.
-	 *
-	 * @param builder The builder
-	 * @param throwStatement A throw statement
-	 */
-	void handleThrowStatement(ControlFlowBuilder builder, CtThrow throwStatement);
+public class SpoonMetaFactory {
 
-	/**
-	 * Handle a statement node.
-	 *
-	 * @param builder The builder
-	 * @param source Statement node
-	 */
-	void handleStatement(ControlFlowBuilder builder, ControlFlowNode source);
+	public Factory buildNewFactory(String sourceDirectory,
+	                               int javaVersion) {
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(javaVersion);
+		launcher.addInputResource(sourceDirectory);
+		launcher.getModelBuilder().build();
 
-	/**
-	 * Apply any post-processing to the graph.
-	 *
-	 * @param graph Graph to post-process
-	 */
-	void postProcess(ControlFlowGraph graph);
+		return launcher.getFactory();
+	}
 }

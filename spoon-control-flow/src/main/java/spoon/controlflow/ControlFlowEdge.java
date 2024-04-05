@@ -1,16 +1,16 @@
-/**
+/*
  * The MIT License
- * <p>
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * <p>
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * <p>
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -19,21 +19,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package spoon.controlflow;
 
-package fr.inria.controlflow;
+import org.jgrapht.graph.DefaultEdge;
 
-import spoon.Launcher;
-import spoon.reflect.factory.Factory;
+public class ControlFlowEdge extends DefaultEdge {
 
-public class SpoonMetaFactory {
+	/**
+	 * Indicates if this loop is the looping edge of a loop (from the las statement to the first of a loop).
+	 */
+	boolean isBackEdge = false;
 
-	public Factory buildNewFactory(String sourceDirectory,
-	                               int javaVersion) {
-		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setComplianceLevel(javaVersion);
-		launcher.addInputResource(sourceDirectory);
-		launcher.getModelBuilder().build();
-
-		return launcher.getFactory();
+	public boolean isBackEdge() {
+		return isBackEdge;
 	}
+
+	public void setBackEdge(boolean isBackEdge) {
+		this.isBackEdge = isBackEdge;
+	}
+
+	public ControlFlowNode getTargetNode() {
+		return (ControlFlowNode) getTarget();
+	}
+
+	public ControlFlowNode getSourceNode() {
+		return (ControlFlowNode) getSource();
+	}
+
 }

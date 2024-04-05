@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.inria.controlflow;
+package spoon.controlflow;
 
 import org.jgrapht.graph.DefaultDirectedGraph;
 import spoon.reflect.declaration.CtElement;

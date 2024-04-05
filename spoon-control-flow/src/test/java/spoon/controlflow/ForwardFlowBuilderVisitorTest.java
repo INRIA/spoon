@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package fr.inria.controlflow;
+package spoon.controlflow;
 
 import org.junit.jupiter.api.Test;
 import spoon.processing.AbstractProcessor;
@@ -32,8 +32,8 @@ import spoon.support.QueueProcessingManager;
 
 import java.net.URISyntaxException;
 
-import static fr.inria.controlflow.NodeKind.BRANCH;
-import static fr.inria.controlflow.NodeKind.STATEMENT;
+import static spoon.controlflow.NodeKind.BRANCH;
+import static spoon.controlflow.NodeKind.STATEMENT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 

@@ -20,14 +20,15 @@
  * THE SOFTWARE.
  */
 
-package fr.inria.controlflow;
+package spoon.controlflow;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.support.reflect.code.CtIfImpl;
-import static fr.inria.controlflow.NodeKind.*;
+import static spoon.controlflow.NodeKind.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -184,6 +185,6 @@ public class ControlFlowGraphTests {
 		ControlFlowBuilder builder = new ControlFlowBuilder();
 		Launcher launcher = new Launcher();
 		CtElement element = launcher.getFactory().createCodeSnippetStatement("while(true)").compile();
-		assertDoesNotThrow(() -> builder.build(element));
+		Assertions.assertDoesNotThrow(() -> builder.build(element));
 	}
 }

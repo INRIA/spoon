@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package fr.inria.controlflow;
+package spoon.controlflow;
 
 import org.junit.jupiter.api.Test;
 import spoon.processing.AbstractProcessor;

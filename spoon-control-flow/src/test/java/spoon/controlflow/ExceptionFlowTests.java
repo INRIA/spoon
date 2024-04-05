@@ -1,4 +1,4 @@
-package fr.inria.controlflow;
+package spoon.controlflow;
 
 import java.util.*;
 import org.junit.jupiter.api.Test;
