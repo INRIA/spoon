@@ -39,7 +39,7 @@ public class GraphVisPrettyPrinter {
 
 
 		int i = 0;
-		HashMap<ControlFlowNode, Integer> nodeIds = new HashMap<ControlFlowNode, Integer>();
+		HashMap<ControlFlowNode, Integer> nodeIds = new HashMap<>();
 		for (ControlFlowNode n : graph.vertexSet()) {
 			printNode(++i, n, sb);
 			nodeIds.put(n, i);
@@ -60,7 +60,7 @@ public class GraphVisPrettyPrinter {
 	}
 
 
-	private String printNode(int i, ControlFlowNode n, StringBuilder sb) {
+	private void printNode(int i, ControlFlowNode n, StringBuilder sb) {
 		String labelString = switch (n.getKind()) {
 			case BRANCH -> " [shape=diamond, label=\"";
 			case BEGIN -> " [shape=Mdiamond, label=\"";
@@ -71,7 +71,6 @@ public class GraphVisPrettyPrinter {
 		};
 
 		sb.append(i).append(labelString).append(n.toString().replace("\"", "quot ")).append(" \"]").append(";\n");
-		return sb.toString();
 	}
 
 }

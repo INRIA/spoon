@@ -41,7 +41,6 @@ import java.util.Set;
  */
 public class InitializedVariables {
 
-	private int depth = 0;
 	//See the algorithm description in the adjoint pdf
 
 	public boolean getIncludeDefinedInNode() {
@@ -157,14 +156,12 @@ public class InitializedVariables {
 				continue;
 			}
 			ControlFlowNode previous = edge.getSourceNode();
-			depth++;
 			InitFactors previousFactors;
 			if (factors.containsKey(previous)) {
 				previousFactors = factors.get(previous);
 			} else {
 				previousFactors = initialized(previous, factors, true);
 			}
-			depth--;
 
 			//[Def_P for each P ]
 			if (initialEdge) {

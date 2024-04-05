@@ -60,18 +60,18 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	private final ControlFlowGraph result = new ControlFlowGraph(ControlFlowEdge.class);
 
-	ControlFlowNode exitNode = new ControlFlowNode(null, result, NodeKind.EXIT);
+	private final ControlFlowNode exitNode = new ControlFlowNode(null, result, NodeKind.EXIT);
 
-	ControlFlowNode beginNode = new ControlFlowNode(null, result, NodeKind.BEGIN);
+	private final ControlFlowNode beginNode = new ControlFlowNode(null, result, NodeKind.BEGIN);
 
 	private ControlFlowNode lastNode = beginNode;
 
-	HashMap<String, CtStatement> labeledStatement = new HashMap<>();
+	private final HashMap<String, CtStatement> labeledStatement = new HashMap<>();
 
 	//This stack pushes all the nodes to wich a break statement may jump to.
-	Deque<ControlFlowNode> breakingBad = new ArrayDeque<>();
+	private final Deque<ControlFlowNode> breakingBad = new ArrayDeque<>();
 	//This stack pushes all the nodes to wich a continue statement may jump to.
-	Deque<ControlFlowNode> continueBad = new ArrayDeque<>();
+	private final Deque<ControlFlowNode> continueBad = new ArrayDeque<>();
 
 	/**
 	 * Strategy for modeling exception control flow, if any.
@@ -264,14 +264,14 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 	@Override
-	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignement) {
+	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignment) {
 
-		registerStatementLabel(assignement);
+		registerStatementLabel(assignment);
 
-		if (assignement.getAssignment() instanceof CtConditional<?> conditionalAssignment) {
-			visitConditional(assignement, conditionalAssignment);
+		if (assignment.getAssignment() instanceof CtConditional<?> conditionalAssignment) {
+			visitConditional(assignment, conditionalAssignment);
 		} else {
-			defaultAction(NodeKind.STATEMENT, assignement);
+			defaultAction(NodeKind.STATEMENT, assignment);
 		}
 	}
 

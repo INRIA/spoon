@@ -61,7 +61,7 @@ public class InitializedVariablesTest {
 		vars.run(n);
 
 		HashSet<String> names = new HashSet<>();
-		for (CtVariableReference v : vars.getInitialized()) names.add(v.getSimpleName());
+		for (CtVariableReference<?> v : vars.getInitialized()) names.add(v.getSimpleName());
 
 		assertEquals(vars.getInitialized().size(), 11);
 		assertTrue(names.contains("wn4r"));
@@ -165,7 +165,7 @@ public class InitializedVariablesTest {
 		//boolean cwk1r = false;
 		//boolean cwk3r = false;
 		HashSet<String> names = new HashSet<>();
-		for (CtVariableReference v : vars.getInitialized()) names.add(v.getSimpleName());
+		for (CtVariableReference<?> v : vars.getInitialized()) names.add(v.getSimpleName());
 		assertEquals(2, vars.getInitialized().size());
 		assertFalse(names.contains("i"));
 	}

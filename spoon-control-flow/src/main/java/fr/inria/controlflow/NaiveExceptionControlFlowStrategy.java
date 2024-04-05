@@ -204,9 +204,7 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 
 		if (catchNodes != null) {
 			ControlFlowGraph graph = builder.getResult();
-			catchNodes.forEach(catchNode -> {
-				graph.addEdge(source, catchNode);
-			});
+			catchNodes.forEach(catchNode -> graph.addEdge(source, catchNode));
 		}
 	}
 
@@ -251,9 +249,7 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 	}
 
 	private void removeUnreachableFinalizerNodeBlockEndPredecessors(ControlFlowGraph graph) {
-		graph.findNodesOfKind(NodeKind.FINALLY).forEach(node -> {
-			node.prev().stream().filter(prevNode -> prevNode.prev().isEmpty()).forEach(graph::removeVertex);
-		});
+		graph.findNodesOfKind(NodeKind.FINALLY).forEach(node -> node.prev().stream().filter(prevNode -> prevNode.prev().isEmpty()).forEach(graph::removeVertex));
 	}
 
 	/**
@@ -263,7 +259,7 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 	 * @param start Starting node
 	 */
 	private void removePathWhileUnreachable(ControlFlowNode start) {
-		Deque<ControlFlowNode> nodesToRemove = new LinkedList<ControlFlowNode>(Collections.singletonList(start));
+		Deque<ControlFlowNode> nodesToRemove = new LinkedList<>(Collections.singletonList(start));
 
 		while (!nodesToRemove.isEmpty()) {
 			ControlFlowNode node = nodesToRemove.removeFirst();
@@ -293,10 +289,10 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 	/**
 	 * Stack of catch nodes that statements parented by a try block may jump to.
 	 */
-	private Stack<List<ControlFlowNode>> catchNodeStack;
+	private final Stack<List<ControlFlowNode>> catchNodeStack;
 
 	/**
 	 * Flag indicating whether paths should be added between an empty try {} block and its catchers.
 	 */
-	private EnumSet<Options> instanceOptions;
+	private final EnumSet<Options> instanceOptions;
 }

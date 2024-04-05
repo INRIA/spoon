@@ -46,7 +46,7 @@ public class ForwardFlowBuilderVisitorTest {
 		ProcessingManager pm = new QueueProcessingManager(factory);
 		pm.addProcessor(new AbstractProcessor<CtMethod<?>>() {
 			@Override
-			public void process(CtMethod element) {
+			public void process(CtMethod<?> element) {
 				if (element.getSimpleName().equals(methodName)) {
 					visitor.build(element);
 				}
