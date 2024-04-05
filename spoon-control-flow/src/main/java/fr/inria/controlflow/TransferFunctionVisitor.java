@@ -31,10 +31,8 @@ import java.util.List;
 
 /**
  * Parent for all transfer function visitors.
- *
+ * <p>
  * These visitors are meant to be the transfer functions of control flow nodes.
- *
- * Created by marodrig on 13/10/2015.
  */
 public abstract class TransferFunctionVisitor implements CtVisitor {
 
@@ -61,13 +59,13 @@ public abstract class TransferFunctionVisitor implements CtVisitor {
 	 */
 	public List<Value> getOutput() {
 		if (output == null) {
-			output = new ArrayList<Value>();
+			output = new ArrayList<>();
 		}
 		return output;
 	}
 
 	public List<Value> transfer(CtElement statement) {
-		output = new ArrayList<Value>();
+		output = new ArrayList<>();
 		statement.accept(this);
 		return output;
 	}
