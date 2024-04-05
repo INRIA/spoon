@@ -55,17 +55,8 @@ public class ControlFlowNode {
 	 */
 	private CtElement statement;
 
-	private List<Value> input;
-
-	private List<Value> output;
-
 	//An object you can tag to the node
 	Object tag;
-
-	/**
-	 * Visitor containing the transfer functions for each node
-	 */
-	TransferFunctionVisitor visitor;
 
 	public ControlFlowNode(CtElement statement, ControlFlowGraph parent, NodeKind kind) {
 		this.kind = kind;
@@ -81,26 +72,6 @@ public class ControlFlowNode {
 		this.parent = parent;
 		++count;
 		id = count;
-	}
-
-	/**
-	 * Performs the transfer using a given visitor
-	 */
-	public void transfer(TransferFunctionVisitor visitor) {
-		this.visitor = visitor;
-		transfer();
-	}
-
-	/**
-	 * Perform the transfer function
-	 */
-	public void transfer() {
-		if (statement != null && visitor != null) {
-			output = visitor.transfer(statement);
-		} else {
-			throw new RuntimeException("Unable to perform the transfer function. Statement or visitor are null.");
-		}
-
 	}
 
 	public int getId() {
@@ -144,27 +115,12 @@ public class ControlFlowNode {
 		return result;
 	}
 
-	public List<Value> getOutput() {
-		if (output == null)  {
-			transfer();
-		}
-		return output;
-	}
-
 	public CtElement getStatement() {
 		return statement;
 	}
 
 	public void setStatement(CtElement statement) {
 		this.statement = statement;
-	}
-
-	public List<Value> getInput() {
-		return input;
-	}
-
-	public void setInput(List<Value> input) {
-		this.input = input;
 	}
 
 	public ControlFlowGraph getParent() {
