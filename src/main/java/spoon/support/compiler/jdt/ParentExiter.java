@@ -511,6 +511,8 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (child instanceof CtStatement) {
 			caseStatement.addStatement((CtStatement) child);
 			return;
+		} else if (child instanceof CtExpression<?> guard) {
+			caseStatement.setGuard(guard);
 		}
 		super.visitCtCase(caseStatement);
 	}
@@ -544,8 +546,6 @@ public class ParentExiter extends CtInheritanceScanner {
 	public void visitCtCasePattern(CtCasePattern casePattern) {
 		if (child instanceof CtPattern pattern) {
 			casePattern.setPattern(pattern);
-		} else if (child instanceof CtExpression<?> guard) {
-			casePattern.setGuard(guard);
 		}
 		super.visitCtCasePattern(casePattern);
 	}

@@ -16,6 +16,10 @@ public interface CtCaseAssertInterface<A extends AbstractObjectAssert<A, W>, W e
 		return Assertions.assertThatObject(actual().getCaseKind());
 	}
 
+	default CtExpressionAssertInterface<?, ?> getGuard() {
+		return SpoonAssertions.assertThat(actual().getGuard());
+	}
+
 	default AbstractBooleanAssert<?> getIncludesDefault() {
 		return Assertions.assertThat(actual().getIncludesDefault());
 	}

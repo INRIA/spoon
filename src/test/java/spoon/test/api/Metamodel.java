@@ -1055,6 +1055,7 @@ public class Metamodel {
 				.field(CtRole.CASE_KIND, false, false)
 				.field(CtRole.ANNOTATION, false, false)
 				.field(CtRole.EXPRESSION, false, false)
+				.field(CtRole.CONDITION, false, false)
 				.field(CtRole.STATEMENT, false, false)
 				.field(CtRole.COMMENT, false, false)
 
@@ -1371,7 +1372,6 @@ public class Metamodel {
 				.field(CtRole.CAST, false, false)
 				.field(CtRole.ANNOTATION, false, false)
 				.field(CtRole.PATTERN, false, false)
-				.field(CtRole.CONDITION, false, false)
 				.field(CtRole.TYPE, false, false)
 				.field(CtRole.COMMENT, false, false)
 
