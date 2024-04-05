@@ -38,7 +38,7 @@ public class InitializedVariablesTest {
 				this.getClass().getResource("/initialized").toURI().getPath(), "simpleflow", true);
 		InitializedVariables vars = new InitializedVariables();
 		graph.simplify();
-		ControlFlowNode n = graph.findNodesOfKind(NodeKind.EXIT).getFirst();
+		ControlFlowNode n = graph.findNodesOfKind(NodeKind.EXIT).get(0);
 		vars.run(n);
 
 		for (CtVariableReference<?> v : vars.getInitialized()) {
@@ -138,7 +138,7 @@ public class InitializedVariablesTest {
 		InitializedVariables vars = new InitializedVariables();
 		graph.simplify();
 		System.out.print(graph.toGraphVisText());
-		ControlFlowNode n = ControlFlowBuilder.firstNode(graph, graph.branches().getFirst().getStatement().getParent());
+		ControlFlowNode n = ControlFlowBuilder.firstNode(graph, graph.branches().get(0).getStatement().getParent());
 		vars.run(n);
 
 		HashSet<String> names = new HashSet<>();
