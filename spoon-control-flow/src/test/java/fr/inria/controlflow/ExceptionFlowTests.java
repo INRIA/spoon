@@ -516,7 +516,6 @@ public class ExceptionFlowTests {
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy(options));
         builder.build(method);
         ControlFlowGraph cfg = builder.getResult();
-        System.out.println(cfg.toGraphVisText());
 
         ControlFlowNode ret = findNodeByString(cfg, "return");
         ControlFlowNode a = findNodeByString(cfg, "a()");
