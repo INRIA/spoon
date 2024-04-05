@@ -111,7 +111,7 @@ public class ControlFlowNode {
 	 * Obtains the siblings of a control node. Siblings are the nodes in parallel branches
 	 */
 	public List<ControlFlowNode> siblings() {
-		ArrayList<ControlFlowNode> result = new ArrayList<ControlFlowNode>();
+		ArrayList<ControlFlowNode> result = new ArrayList<>();
 		for (ControlFlowNode n : prev()) {
 			for (ControlFlowNode nn : n.next()) {
 				if (!nn.equals(this)) {
@@ -126,7 +126,7 @@ public class ControlFlowNode {
 	 * List of nodes that can be executed just after this one
 	 */
 	public List<ControlFlowNode> next() {
-		ArrayList<ControlFlowNode> result = new ArrayList<ControlFlowNode>();
+		ArrayList<ControlFlowNode> result = new ArrayList<>();
 		for (ControlFlowEdge e : parent.outgoingEdgesOf(this)) {
 			result.add(e.getTargetNode());
 		}
@@ -137,7 +137,7 @@ public class ControlFlowNode {
 	 * List of nodes that could be executed just before this one
 	 */
 	public List<ControlFlowNode> prev() {
-		ArrayList<ControlFlowNode> result = new ArrayList<ControlFlowNode>();
+		ArrayList<ControlFlowNode> result = new ArrayList<>();
 		for (ControlFlowEdge e : parent.incomingEdgesOf(this)) {
 			result.add(e.getSourceNode());
 		}
