@@ -16,10 +16,10 @@ public class ControlFlowPathHelper {
     private final Map<ControlFlowNode, List<List<ControlFlowNode>>> pathsMemo = new HashMap<>();
 
     /**
-     * Get the set of possible paths to the exit node from a given starting node.
+     * Get a list of possible paths to the exit node from a given starting node.
      *
      * @param node Starting node
-     * @return Set of possible paths
+     * @return List of possible paths
      */
     List<List<ControlFlowNode>> paths(ControlFlowNode node) {
         if (pathsMemo.containsKey(node)) {
@@ -38,10 +38,10 @@ public class ControlFlowPathHelper {
     }
 
     /**
-     * Get the set of possible paths to the exit node given a set of potentially incomplete paths.
+     * Get a list of possible paths to the exit node given a set of potentially incomplete paths.
      *
      * @param prior Set of potentially incomplete paths
-     * @return Set of possible paths
+     * @return List of possible paths
      */
     private List<List<ControlFlowNode>> paths(List<List<ControlFlowNode>> prior) {
         List<List<ControlFlowNode>> result = new ArrayList<>();
