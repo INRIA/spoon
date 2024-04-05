@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by marodrig on 13/10/2015.
+ * Representation of a Control Flow Graph
  */
 public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, ControlFlowEdge> {
 
@@ -67,7 +67,8 @@ public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, Cont
 	 * Find the node holding and element
 	 *
 	 * @param e node to find
-	 * @return
+	 * @return the node if found
+	 * @throws NotFoundException if no such node could be found
 	 */
 	public ControlFlowNode findNode(CtElement e) throws NotFoundException {
 		if (e != null) {
@@ -83,7 +84,7 @@ public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, Cont
 	/**
 	 * Find nodes by a given id
 	 * @param id of the node to find
-	 * @return
+	 * @return the node if found or {@code null} if no such node exists
 	 */
 	public ControlFlowNode findNodeById(int id) {
 		for (ControlFlowNode n : vertexSet()) {
@@ -98,10 +99,10 @@ public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, Cont
 	 * Find all nodes of a given kind
 	 *
 	 * @param kind of node to find
-	 * @return list of nodes
+	 * @return a list of all the nodes of the given kind
 	 */
 	public List<ControlFlowNode> findNodesOfKind(NodeKind kind) {
-		ArrayList<ControlFlowNode> result = new ArrayList<ControlFlowNode>();
+		ArrayList<ControlFlowNode> result = new ArrayList<>();
 		for (ControlFlowNode n : vertexSet()) {
 			if (n.getKind().equals(kind)) {
 				result.add(n);
@@ -110,6 +111,12 @@ public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, Cont
 		return result;
 	}
 
+	/**
+	 * Add an edge to this graph
+	 * @param source The node the edge originates from
+	 * @param target The node the edge ends at
+	 * @return the inserted edge
+	 */
 	@Override
 	public ControlFlowEdge addEdge(ControlFlowNode source, ControlFlowNode target) {
 		if (!containsVertex(source)) {
@@ -122,14 +129,14 @@ public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, Cont
 	}
 
 	/**
-	 * Returns all statements
+	 * {@return all statements}
 	 */
 	public List<ControlFlowNode> statements() {
 		return findNodesOfKind(NodeKind.STATEMENT);
 	}
 
 	/**
-	 * Returns all branches
+	 * {@return all branches}
 	 */
 	public List<ControlFlowNode> branches() {
 		return findNodesOfKind(NodeKind.BRANCH);

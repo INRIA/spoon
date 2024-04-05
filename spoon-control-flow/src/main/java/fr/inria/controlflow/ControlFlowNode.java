@@ -28,14 +28,12 @@ import java.util.List;
 
 /**
  * A node of the control flow
- *
- * Created by marodrig on 13/10/2015.
  */
 public class ControlFlowNode {
 
 	public static int count = 0;
 
-	private int id;
+	private final int id;
 
 	/**
 	 * Çontrol flow graph containing this node
@@ -55,11 +53,11 @@ public class ControlFlowNode {
 	/**
 	 * Statement that is going to be pointed to by this node
 	 */
-	CtElement statement;
+	private CtElement statement;
 
-	List<Value> input;
+	private List<Value> input;
 
-	List<Value> output;
+	private List<Value> output;
 
 	//An object you can tag to the node
 	Object tag;
@@ -188,7 +186,7 @@ public class ControlFlowNode {
 	@Override
 	public String toString() {
 		if (statement != null) {
-			return id + " - " + statement.toString();
+			return id + " - " + statement;
 		} else {
 			return kind + "_" + id;
 		}

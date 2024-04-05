@@ -23,9 +23,6 @@ package fr.inria.controlflow;
 
 import org.jgrapht.graph.DefaultEdge;
 
-/**
- * Created by marodrig on 13/10/2015.
- */
 public class ControlFlowEdge extends DefaultEdge {
 
 	/**
@@ -37,8 +34,8 @@ public class ControlFlowEdge extends DefaultEdge {
 		return isBackEdge;
 	}
 
-	public void setBackEdge(boolean isLooopingEdge) {
-		this.isBackEdge = isLooopingEdge;
+	public void setBackEdge(boolean isBackEdge) {
+		this.isBackEdge = isBackEdge;
 	}
 
 	public ControlFlowNode getTargetNode() {
