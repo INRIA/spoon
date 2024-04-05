@@ -30,23 +30,19 @@ import java.util.Set;
 /**
  * An algorithm that takes a CtElement, builds a graph for it and checks that all branches return
  * something or that there is no branch returns anything
- *
- * Created by marodrig on 04/01/2016.
  */
 public class AllBranchesReturn {
 
 	/**
 	 * Finds if all branches returns
 	 *
-	 * @param element   starting point
+	 * @param element starting point
 	 * @return True if all branches return or none return
 	 */
 	public boolean execute(CtElement element) {
 		ControlFlowBuilder builder = new ControlFlowBuilder();
 		ControlFlowGraph graph = builder.build(element);
 		graph.simplify();
-		//System.out.println(graph.toGraphVisText());
-		//System.out.println(graph.toGraphVisText());
 
 
 		List<ControlFlowNode> exits = graph.findNodesOfKind(BranchKind.EXIT);
