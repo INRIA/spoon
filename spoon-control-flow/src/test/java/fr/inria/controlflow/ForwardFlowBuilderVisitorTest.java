@@ -180,7 +180,7 @@ public class ForwardFlowBuilderVisitorTest {
 		ControlFlowNode entryNode = pathHelper.findNodeByString(graph, "int b = 0");
 		ControlFlowNode caseNode = pathHelper.findNodeByString(graph, "b = 1");
 		boolean canAvoid = pathHelper.canAvoidNode(entryNode, caseNode);
-		assertTrue(canAvoid);
+		assertTrue(canAvoid, "Path for implicit default case missing");
 	}
 
 	@Test
@@ -190,7 +190,7 @@ public class ForwardFlowBuilderVisitorTest {
 		ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
 		ControlFlowNode startNode = pathHelper.findNodeByString(graph, "int b = 0");
 		List<List<ControlFlowNode>> paths = pathHelper.paths(startNode);
-		assertTrue(paths.size() > 2);
+		assertTrue(paths.size() > 2, "Not enough paths. Possibly missing different paths from multiple expressions for a case");
 	}
 
 	//Test some mixed conditions
