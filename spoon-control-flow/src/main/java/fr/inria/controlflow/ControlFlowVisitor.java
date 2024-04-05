@@ -19,13 +19,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.inria.dataflow;
+package fr.inria.controlflow;
 
-import fr.inria.controlflow.ControlFlowNode;
-
-/**
- * Created by marodrig on 12/11/2015.
- */
 public interface ControlFlowVisitor {
 
 	/**
