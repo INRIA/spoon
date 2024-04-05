@@ -37,13 +37,14 @@ import java.util.Stack;
 
 /**
  * A naive over-approximating model of exception control flow with limited support for finalizers.
- *
+ * <p>
  * The model uses the following assumptions:
- *
- *   1) Any statement can potentially throw any exception.
- *   2) All exceptions thrown inside a try block are caught by the catchers immediately associated with the block.
- *
- * Support for finalizers is limited by the lack of modeling for the semantics of return statements in regards to
+ * <ol>
+ *   <li>Any statement can potentially throw any exception.</li>
+ *   <li>All exceptions thrown inside a try block are caught by the catchers immediately associated with the block.</li>
+ * </ol
+ * <p>
+ * Support for finalizers is limited by the lack of modeling for the semantics of return statements in regard to
  * executing finalizers before actually returning. Because of this limitation, by default the implementation will
  * refuse to model the flow of a try-(catch-)finally construct that contains return statements. An option is
  * available to allow the model to produce a partially incorrect graph where return statements jump directly to the
@@ -56,9 +57,9 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 	public enum Options {
 		/**
 		 * Add paths between the end of an empty try {} block and its catchers.
-		 *
+		 * <p>
 		 * Default: disabled.
-		 *
+		 * <p>
 		 * This option exists because expressions of the form "try { } catch(Exception e) { foo(); }" (i.e empty try
 		 * blocks) are legal in Java, despite the statement "foo()" trivially being unreachable. In some use cases,
 		 * excluding such unreachable statements from the control flow graph may be desirable, while in other cases the
@@ -71,9 +72,9 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 		/**
 		 * Model (incorrectly) return statements as jumping directly to the exit node without executing any "in-scope"
 		 * finalizers.
-		 *
+		 * <p>
 		 * Default: disabled.
-		 *
+		 * <p>
 		 * This option exists to provide a limited form of support for return statements in try-(catch-)finally
 		 * constructs despite the lack of complete modeling for the semantics of return statements when finalizers are
 		 * present. Depending on the use case, the incorrect aspects of the produced graph may be an acceptable
@@ -145,7 +146,7 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 		graph.addEdge(builder.getLastNode(), finallyNode != null ? finallyNode : convergeNode);
 
 		for (ControlFlowNode catchNode : catchNodes) {
-			if (tryBlock.getBody().getStatements().size() == 0 && instanceOptions.contains(Options.AddPathsForEmptyTryBlocks)) {
+			if (tryBlock.getBody().getStatements().isEmpty() && instanceOptions.contains(Options.AddPathsForEmptyTryBlocks)) {
 				graph.addEdge(tryNode.next().get(0).next().get(0), catchNode);
 			}
 
@@ -251,7 +252,7 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 
 	private void removeUnreachableFinalizerNodeBlockEndPredecessors(ControlFlowGraph graph) {
 		graph.findNodesOfKind(NodeKind.FINALLY).forEach(node -> {
-			node.prev().stream().filter(prevNode -> prevNode.prev().size() == 0).forEach(graph::removeVertex);
+			node.prev().stream().filter(prevNode -> prevNode.prev().isEmpty()).forEach(graph::removeVertex);
 		});
 	}
 
@@ -275,13 +276,13 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 	 * Find all nodes that have an empty set of predecessors.
 	 *
 	 * @param graph Graph to search
-	 * @return Set of nodes lacking predecessors
+	 * @return The list of nodes lacking predecessors
 	 */
 	private List<ControlFlowNode> nodesWithoutPredecessors(ControlFlowGraph graph) {
 		List<ControlFlowNode> result = new ArrayList<>();
 
 		for (ControlFlowNode node : graph.vertexSet()) {
-			if (node.prev().size() == 0) {
+			if (node.prev().isEmpty()) {
 				result.add(node);
 			}
 		}
