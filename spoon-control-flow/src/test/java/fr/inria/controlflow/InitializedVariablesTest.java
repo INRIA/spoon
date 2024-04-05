@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package fr.inria.dataflow;
+package fr.inria.controlflow;
 
 import fr.inria.controlflow.*;
 import org.junit.jupiter.api.Disabled;
@@ -41,10 +41,10 @@ public class InitializedVariablesTest {
 				this.getClass().getResource("/initialized").toURI().getPath(), "simpleflow", true);
 		InitializedVariables vars = new InitializedVariables();
 		graph.simplify();
-		ControlFlowNode n = graph.findNodesOfKind(NodeKind.EXIT).get(0);
+		ControlFlowNode n = graph.findNodesOfKind(NodeKind.EXIT).getFirst();
 		vars.run(n);
 
-		for (CtVariableReference v : vars.getInitialized()) {
+		for (CtVariableReference<?> v : vars.getInitialized()) {
 			assertFalse(v.getSimpleName().contains("notInitialized"));
 		}
 		assertEquals(vars.getInitialized().size(), 6);
