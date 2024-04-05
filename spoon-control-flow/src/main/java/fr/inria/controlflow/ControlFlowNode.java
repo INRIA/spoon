@@ -36,7 +36,7 @@ public class ControlFlowNode {
 	private final int id;
 
 	/**
-	 * Çontrol flow graph containing this node
+	 * Control flow graph containing this node
 	 */
 	ControlFlowGraph parent;
 
