@@ -783,7 +783,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			registerStatementLabel(caseStatement);
 			var caseExpressions = caseStatement.getCaseExpressions();
 			ArrayList<ControlFlowNode> caseExpressionNodes = new ArrayList<>();
-			for (CtExpression<?> expression: caseExpressions) {
+			for (CtExpression<?> expression : caseExpressions) {
 				ControlFlowNode caseNode = new ControlFlowNode(expression, result, BranchKind.STATEMENT);
 				caseExpressionNodes.add(caseNode);
 				tryAddEdge(switchNode, caseNode);
@@ -797,7 +797,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			}
 
 			ControlFlowNode fallThroughEnd = null;
-			if(lastNode != switchNode) {
+			if (lastNode != switchNode) {
 				fallThroughEnd = lastNode;
 			}
 			lastNode = null;
