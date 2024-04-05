@@ -383,6 +383,12 @@ public class ControlFlowArithmetic {
 		return 10 * a;
 	}
 
+	public void synchronization() {
+		synchronized (new Object()) {
+			int a = 0;
+		}
+	}
+
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 
