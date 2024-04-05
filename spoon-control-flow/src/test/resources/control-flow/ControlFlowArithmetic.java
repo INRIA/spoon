@@ -377,6 +377,10 @@ public class ControlFlowArithmetic {
 		return b;
 	}
 
+	public void constructorCall() {
+		new Object();
+	}
+
 	//All lines will be tested in this method
 	public int simple(int a) {
 		a = a + a / 2;
