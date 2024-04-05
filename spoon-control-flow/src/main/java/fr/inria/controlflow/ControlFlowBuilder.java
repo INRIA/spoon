@@ -127,9 +127,9 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	ControlFlowGraph result = new ControlFlowGraph(ControlFlowEdge.class);
 
-	ControlFlowNode exitNode = new ControlFlowNode(null, result, BranchKind.EXIT);
+	ControlFlowNode exitNode = new ControlFlowNode(null, result, NodeKind.EXIT);
 
-	ControlFlowNode beginNode = new ControlFlowNode(null, result, BranchKind.BEGIN);
+	ControlFlowNode beginNode = new ControlFlowNode(null, result, NodeKind.BEGIN);
 
 	ControlFlowNode lastNode = beginNode;
 
@@ -196,15 +196,15 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 	private void visitConditional(CtElement parent, CtConditional conditional) {
-		ControlFlowNode branch = new ControlFlowNode(parent, result, BranchKind.BRANCH);
+		ControlFlowNode branch = new ControlFlowNode(parent, result, NodeKind.BRANCH);
 		tryAddEdge(lastNode, branch);
 
-		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, NodeKind.CONVERGE);
 		lastNode = branch;
 		if (conditional.getThenExpression() instanceof CtConditional) {
 			visitConditional(conditional, (CtConditional) conditional.getThenExpression());
 		} else {
-			lastNode = new ControlFlowNode(conditional.getThenExpression(), result, BranchKind.STATEMENT);
+			lastNode = new ControlFlowNode(conditional.getThenExpression(), result, NodeKind.STATEMENT);
 			tryAddEdge(branch, lastNode);
 		}
 		tryAddEdge(lastNode, convergenceNode);
@@ -213,7 +213,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		if (conditional.getElseExpression() instanceof CtConditional) {
 			visitConditional(conditional, (CtConditional) conditional.getElseExpression());
 		} else {
-			lastNode = new ControlFlowNode(conditional.getElseExpression(), result, BranchKind.STATEMENT);
+			lastNode = new ControlFlowNode(conditional.getElseExpression(), result, NodeKind.STATEMENT);
 			tryAddEdge(branch, lastNode);
 		}
 		tryAddEdge(lastNode, convergenceNode);
@@ -273,7 +273,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 
-	private void defaultAction(BranchKind kind, CtStatement st) {
+	private void defaultAction(NodeKind kind, CtStatement st) {
 		ControlFlowNode n = new ControlFlowNode(st, result, kind);
 		tryAddEdge(lastNode, n);
 		lastNode = n;
@@ -311,7 +311,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	 * @param breakDance indicates that the edge is a jump out of the block
 	 */
 	private void tryAddEdge(ControlFlowNode source, ControlFlowNode target, boolean isLooping, boolean breakDance) {
-		if (source != null && source.getKind() != BranchKind.CATCH && source.getStatement() != null && exceptionControlFlowStrategy != null) {
+		if (source != null && source.getKind() != NodeKind.CATCH && source.getStatement() != null && exceptionControlFlowStrategy != null) {
 			exceptionControlFlowStrategy.handleStatement(this, source);
 		}
 
@@ -370,7 +370,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	@Override
 	public <T> void visitCtAssert(CtAssert<T> asserted) {
-		defaultAction(BranchKind.STATEMENT, asserted);
+		defaultAction(NodeKind.STATEMENT, asserted);
 	}
 
 	@Override
@@ -381,7 +381,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		if (assignement.getAssignment() instanceof CtConditional) {
 			visitConditional(assignement, (CtConditional) assignement.getAssignment());
 		} else {
-			defaultAction(BranchKind.STATEMENT, assignement);
+			defaultAction(NodeKind.STATEMENT, assignement);
 		}
 	}
 
@@ -391,7 +391,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 	private <R> void travelStatementList(List<CtStatement> statements) {
-		ControlFlowNode begin = new ControlFlowNode(null, result, BranchKind.BLOCK_BEGIN);
+		ControlFlowNode begin = new ControlFlowNode(null, result, NodeKind.BLOCK_BEGIN);
 		tryAddEdge(lastNode, begin);
 		lastNode = begin;
 		for (CtStatement s : statements) {
@@ -399,7 +399,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			s.accept(this); // <- This should modify last node
 			//tryAddEdge(before, lastNode); //Probably the link is already added
 		}
-		ControlFlowNode end = new ControlFlowNode(null, result, BranchKind.BLOCK_END);
+		ControlFlowNode end = new ControlFlowNode(null, result, NodeKind.BLOCK_END);
 		tryAddEdge(lastNode, end);
 		lastNode = end;
 	}
@@ -418,11 +418,11 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			to = null;
 		}
 		if (to != null) {
-			defaultAction(BranchKind.STATEMENT, breakStatement);
+			defaultAction(NodeKind.STATEMENT, breakStatement);
 			tryAddEdge(lastNode, to, true, false);
 		} else if (!breakingBad.empty()) {
 			//Jump to the last guy who said I can jump to...
-			defaultAction(BranchKind.STATEMENT, breakStatement);
+			defaultAction(NodeKind.STATEMENT, breakStatement);
 			tryAddEdge(lastNode, breakingBad.peek(), false, true);
 		}
 	}
@@ -434,7 +434,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
-		defaultAction(BranchKind.STATEMENT, ctClass);
+		defaultAction(NodeKind.STATEMENT, ctClass);
 	}
 
 	@Override
@@ -456,7 +456,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			to = continueBad.peek();
 		}
 		if (to != null) {
-			defaultAction(BranchKind.STATEMENT, continueStatement);
+			defaultAction(NodeKind.STATEMENT, continueStatement);
 			tryAddEdge(lastNode, to, true, false);
 		}
 	}
@@ -465,15 +465,15 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	public void visitCtDo(CtDo doLoop) {
 		registerStatementLabel(doLoop);
 
-		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, NodeKind.CONVERGE);
 		continueBad.push(convergenceNode);
 		//to break out of the do loop
-		ControlFlowNode convergenceNodeOut = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		ControlFlowNode convergenceNodeOut = new ControlFlowNode(null, result, NodeKind.CONVERGE);
 		breakingBad.push(convergenceNodeOut);
 
 
 		tryAddEdge(lastNode, convergenceNode);
-		ControlFlowNode branch = new ControlFlowNode(doLoop.getLoopingExpression(), result, BranchKind.BRANCH);
+		ControlFlowNode branch = new ControlFlowNode(doLoop.getLoopingExpression(), result, NodeKind.BRANCH);
 		tryAddEdge(branch, convergenceNode, true, false);
 		tryAddEdge(branch, convergenceNodeOut);
 
@@ -536,11 +536,11 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			}
 		}
 
-		ControlFlowNode convergence = new ControlFlowNode(forLoop.getExpression(), result, BranchKind.CONVERGE);
+		ControlFlowNode convergence = new ControlFlowNode(forLoop.getExpression(), result, NodeKind.CONVERGE);
 		breakingBad.push(convergence);
 
 		//Next the branch
-		ControlFlowNode branch = new ControlFlowNode(forLoop.getExpression(), result, BranchKind.BRANCH);
+		ControlFlowNode branch = new ControlFlowNode(forLoop.getExpression(), result, NodeKind.BRANCH);
 		tryAddEdge(lastNode, branch);
 
 		//Node continue statements can continue to
@@ -577,14 +577,14 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	public void visitCtForEach(CtForEach foreach) {
 		registerStatementLabel(foreach);
 
-		ControlFlowNode convergence = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		ControlFlowNode convergence = new ControlFlowNode(null, result, NodeKind.CONVERGE);
 		breakingBad.push(convergence);
 
-		ControlFlowNode init = new ControlFlowNode(foreach.getVariable(), result, BranchKind.STATEMENT);
+		ControlFlowNode init = new ControlFlowNode(foreach.getVariable(), result, NodeKind.STATEMENT);
 		tryAddEdge(lastNode, init);
 		lastNode = init;
 
-		ControlFlowNode branch = new ControlFlowNode(foreach.getExpression(), result, BranchKind.BRANCH);
+		ControlFlowNode branch = new ControlFlowNode(foreach.getExpression(), result, NodeKind.BRANCH);
 		continueBad.push(branch);
 		tryAddEdge(lastNode, branch);
 
@@ -606,10 +606,10 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	public void visitCtIf(CtIf ifElement) {
 		registerStatementLabel(ifElement);
 
-		ControlFlowNode branch = new ControlFlowNode(ifElement.getCondition(), result, BranchKind.BRANCH);
+		ControlFlowNode branch = new ControlFlowNode(ifElement.getCondition(), result, NodeKind.BRANCH);
 		tryAddEdge(lastNode, branch);
 
-		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, NodeKind.CONVERGE);
 		if (ifElement.getThenStatement() != null) {
 			lastNode = branch;
 			ifElement.getThenStatement().accept(this);
@@ -634,7 +634,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	@Override
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		registerStatementLabel(invocation);
-		defaultAction(BranchKind.STATEMENT, invocation);
+		defaultAction(NodeKind.STATEMENT, invocation);
 	}
 
 	@Override
@@ -653,7 +653,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		if (localVariable.getDefaultExpression() instanceof CtConditional) {
 			visitConditional(localVariable, (CtConditional) localVariable.getDefaultExpression());
 		} else {
-			defaultAction(BranchKind.STATEMENT, localVariable);
+			defaultAction(NodeKind.STATEMENT, localVariable);
 		}
 	}
 
@@ -710,7 +710,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	@Override
 	public <T, A extends T> void visitCtOperatorAssignment(CtOperatorAssignment<T, A> assignment) {
 		registerStatementLabel(assignment);
-		defaultAction(BranchKind.STATEMENT, assignment);
+		defaultAction(NodeKind.STATEMENT, assignment);
 	}
 
 	@Override
@@ -736,7 +736,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	@Override
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
 		registerStatementLabel(returnStatement);
-		ControlFlowNode n = new ControlFlowNode(returnStatement, result, BranchKind.STATEMENT);
+		ControlFlowNode n = new ControlFlowNode(returnStatement, result, NodeKind.STATEMENT);
 		tryAddEdge(lastNode, n);
 		tryAddEdge(n, exitNode);
 		lastNode = null; //Special case in which this node does not connect with the next, because is a return
@@ -750,7 +750,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	@Override
 	public <S> void visitCtCase(CtCase<S> caseStatement) {
 		registerStatementLabel(caseStatement);
-		ControlFlowNode caseNode = new ControlFlowNode(caseStatement.getCaseExpression(), result, BranchKind.STATEMENT);
+		ControlFlowNode caseNode = new ControlFlowNode(caseStatement.getCaseExpression(), result, NodeKind.STATEMENT);
 		tryAddEdge(lastNode, caseNode);
 		lastNode = caseNode;
 		travelStatementList(caseStatement.getStatements());
@@ -760,11 +760,11 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	public <S> void visitCtSwitch(CtSwitch<S> switchStatement) {
 		registerStatementLabel(switchStatement);
 		//Push the condition
-		ControlFlowNode switchNode = new ControlFlowNode(switchStatement.getSelector(), result, BranchKind.BRANCH);
+		ControlFlowNode switchNode = new ControlFlowNode(switchStatement.getSelector(), result, NodeKind.BRANCH);
 		tryAddEdge(lastNode, switchNode);
 
 		//Create a convergence node for all the branches to converge after this
-		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, NodeKind.CONVERGE);
 		//Push the convergence node so all non labeled breaks jumps there
 		breakingBad.push(convergenceNode);
 
@@ -773,7 +773,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 			//Visit Case
 			registerStatementLabel(caseStatement);
-			ControlFlowNode cn = new ControlFlowNode(caseStatement.getCaseExpression(), result, BranchKind.STATEMENT);
+			ControlFlowNode cn = new ControlFlowNode(caseStatement.getCaseExpression(), result, NodeKind.STATEMENT);
 			tryAddEdge(lastNode, cn);
 			if (lastNode != switchNode) {
 				tryAddEdge(switchNode, cn);
@@ -852,7 +852,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	@Override
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
-		defaultAction(BranchKind.STATEMENT, operator);
+		defaultAction(NodeKind.STATEMENT, operator);
 	}
 
 	@Override
@@ -869,10 +869,10 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	public void visitCtWhile(CtWhile whileLoop) {
 		registerStatementLabel(whileLoop);
 
-		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, NodeKind.CONVERGE);
 		breakingBad.push(convergenceNode);
 
-		ControlFlowNode branch = new ControlFlowNode(whileLoop.getLoopingExpression(), result, BranchKind.BRANCH);
+		ControlFlowNode branch = new ControlFlowNode(whileLoop.getLoopingExpression(), result, NodeKind.BRANCH);
 		continueBad.push(branch);
 
 		tryAddEdge(lastNode, branch);

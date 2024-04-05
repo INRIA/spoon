@@ -65,15 +65,15 @@ public class GraphVisPrettyPrinter {
 
 	private String printNode(int i, ControlFlowNode n, StringBuilder sb) {
 		String labelStr = " [shape=rectangle, label=\"";
-		if (n.getKind() == BranchKind.BRANCH) {
+		if (n.getKind() == NodeKind.BRANCH) {
 			labelStr = " [shape=diamond, label=\"";
-		} else if (n.getKind() == BranchKind.BEGIN) {
+		} else if (n.getKind() == NodeKind.BEGIN) {
 			labelStr = " [shape=Mdiamond, label=\"";
-		} else if (n.getKind() == BranchKind.BLOCK_BEGIN || n.getKind() == BranchKind.BLOCK_END) {
+		} else if (n.getKind() == NodeKind.BLOCK_BEGIN || n.getKind() == NodeKind.BLOCK_END) {
 			labelStr = " [shape=rectangle, style=filled, fillcolor=gray, label=\"";
-		} else if (n.getKind() == BranchKind.EXIT) {
+		} else if (n.getKind() == NodeKind.EXIT) {
 			labelStr = " [shape=doublecircle, label=\"";
-		} else if (n.getKind() == BranchKind.CONVERGE) {
+		} else if (n.getKind() == NodeKind.CONVERGE) {
 			labelStr = " [shape=point label=\"";
 		}
 

@@ -48,7 +48,7 @@ public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, Cont
 		super(ControlFlowEdge.class);
 	}
 
-	private int countNodes(BranchKind kind) {
+	private int countNodes(NodeKind kind) {
 		int result = 0;
 		for (ControlFlowNode v : vertexSet()) {
 			if (v.getKind().equals(kind)) {
@@ -100,7 +100,7 @@ public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, Cont
 	 * @param kind of node to find
 	 * @return list of nodes
 	 */
-	public List<ControlFlowNode> findNodesOfKind(BranchKind kind) {
+	public List<ControlFlowNode> findNodesOfKind(NodeKind kind) {
 		ArrayList<ControlFlowNode> result = new ArrayList<ControlFlowNode>();
 		for (ControlFlowNode n : vertexSet()) {
 			if (n.getKind().equals(kind)) {
@@ -125,17 +125,17 @@ public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, Cont
 	 * Returns all statements
 	 */
 	public List<ControlFlowNode> statements() {
-		return findNodesOfKind(BranchKind.STATEMENT);
+		return findNodesOfKind(NodeKind.STATEMENT);
 	}
 
 	/**
 	 * Returns all branches
 	 */
 	public List<ControlFlowNode> branches() {
-		return findNodesOfKind(BranchKind.BRANCH);
+		return findNodesOfKind(NodeKind.BRANCH);
 	}
 
-	private void simplify(BranchKind kind) {
+	private void simplify(NodeKind kind) {
 		try {
 			List<ControlFlowNode> convergence = findNodesOfKind(kind);
 			for (ControlFlowNode n : convergence) {
@@ -169,8 +169,8 @@ public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, Cont
 	 * Removes all blocks
 	 */
 	public void simplifyBlockNodes() {
-		simplify(BranchKind.BLOCK_BEGIN);
-		simplify(BranchKind.BLOCK_END);
+		simplify(NodeKind.BLOCK_BEGIN);
+		simplify(NodeKind.BLOCK_END);
 	}
 
 	/**
@@ -185,17 +185,17 @@ public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, Cont
 	 * Removes all convergence nodes
 	 */
 	public void simplifyConvergenceNodes() {
-		simplify(BranchKind.CONVERGE);
+		simplify(NodeKind.CONVERGE);
 	}
 
 	//public void
 
 	public int branchCount() {
-		return countNodes(BranchKind.BRANCH);
+		return countNodes(NodeKind.BRANCH);
 	}
 
 	public int statementCount() {
-		return countNodes(BranchKind.STATEMENT);
+		return countNodes(NodeKind.STATEMENT);
 	}
 
 	public void setName(String name) {
@@ -208,7 +208,7 @@ public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, Cont
 
 	public ControlFlowNode getExitNode() {
 		if (exitNode == null) {
-			exitNode = findNodesOfKind(BranchKind.EXIT).get(0);
+			exitNode = findNodesOfKind(NodeKind.EXIT).get(0);
 		}
 		return exitNode;
 	}

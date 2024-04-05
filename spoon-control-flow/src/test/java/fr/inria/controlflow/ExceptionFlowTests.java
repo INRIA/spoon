@@ -565,7 +565,7 @@ public class ExceptionFlowTests {
         for (List<ControlFlowNode> path : prior) {
             ControlFlowNode lastNode = path.get(path.size() - 1);
 
-            if (lastNode.getKind() == BranchKind.EXIT) {
+            if (lastNode.getKind() == NodeKind.EXIT) {
                 result.add(new ArrayList<>(path));
             } else {
                 for (ControlFlowNode nextNode : lastNode.next()) {
@@ -591,7 +591,7 @@ public class ExceptionFlowTests {
      * @return True if path contains a catch block node, false otherwise
      */
     private boolean containsCatchBlockNode(List<ControlFlowNode> nodes) {
-        return nodes.stream().anyMatch(node -> node.getKind() == BranchKind.CATCH);
+        return nodes.stream().anyMatch(node -> node.getKind() == NodeKind.CATCH);
     }
 
     /**

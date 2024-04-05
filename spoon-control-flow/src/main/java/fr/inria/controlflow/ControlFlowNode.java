@@ -42,15 +42,15 @@ public class ControlFlowNode {
 	 */
 	ControlFlowGraph parent;
 
-	public BranchKind getKind() {
+	public NodeKind getKind() {
 		return kind;
 	}
 
-	public void setKind(BranchKind kind) {
+	public void setKind(NodeKind kind) {
 		this.kind = kind;
 	}
 
-	private BranchKind kind;
+	private NodeKind kind;
 
 	/**
 	 * Statement that is going to be pointed to by this node
@@ -69,7 +69,7 @@ public class ControlFlowNode {
 	 */
 	TransferFunctionVisitor visitor;
 
-	public ControlFlowNode(CtElement statement, ControlFlowGraph parent, BranchKind kind) {
+	public ControlFlowNode(CtElement statement, ControlFlowGraph parent, NodeKind kind) {
 		this.kind = kind;
 		this.parent = parent;
 		this.statement = statement;

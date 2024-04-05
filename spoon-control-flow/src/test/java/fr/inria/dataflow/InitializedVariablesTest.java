@@ -41,7 +41,7 @@ public class InitializedVariablesTest {
 				this.getClass().getResource("/initialized").toURI().getPath(), "simpleflow", true);
 		InitializedVariables vars = new InitializedVariables();
 		graph.simplify();
-		ControlFlowNode n = graph.findNodesOfKind(BranchKind.EXIT).get(0);
+		ControlFlowNode n = graph.findNodesOfKind(NodeKind.EXIT).get(0);
 		vars.run(n);
 
 		for (CtVariableReference v : vars.getInitialized()) {

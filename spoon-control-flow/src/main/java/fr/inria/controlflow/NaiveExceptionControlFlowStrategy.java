@@ -120,17 +120,17 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 		ControlFlowNode lastNode = builder.getLastNode();
 		List<ControlFlowNode> catchNodes = new ArrayList<>();
 
-		ControlFlowNode tryNode = new ControlFlowNode(null, graph, BranchKind.TRY);
-		ControlFlowNode convergeNode = new ControlFlowNode(null, graph, BranchKind.CONVERGE);
+		ControlFlowNode tryNode = new ControlFlowNode(null, graph, NodeKind.TRY);
+		ControlFlowNode convergeNode = new ControlFlowNode(null, graph, NodeKind.CONVERGE);
 
 		for (CtCatch catchBlock : tryBlock.getCatchers()) {
-			catchNodes.add(new ControlFlowNode(catchBlock.getParameter(), graph, BranchKind.CATCH));
+			catchNodes.add(new ControlFlowNode(catchBlock.getParameter(), graph, NodeKind.CATCH));
 		}
 
 		ControlFlowNode finallyNode = null;
 
 		if (tryBlock.getFinalizer() != null) {
-			finallyNode = new ControlFlowNode(null, graph, BranchKind.FINALLY);
+			finallyNode = new ControlFlowNode(null, graph, NodeKind.FINALLY);
 		}
 
 		graph.addEdge(lastNode, tryNode);
@@ -182,7 +182,7 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 		// in postProcess() we will remove the successor for the successful execution.
 
 		ControlFlowGraph graph = builder.getResult();
-		ControlFlowNode throwNode = new ControlFlowNode(throwStatement, graph, BranchKind.STATEMENT);
+		ControlFlowNode throwNode = new ControlFlowNode(throwStatement, graph, NodeKind.STATEMENT);
 		graph.addEdge(builder.getLastNode(), throwNode);
 		builder.setLastNode(throwNode);
 	}
@@ -228,12 +228,12 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 	 * @param graph Graph to process
 	 */
 	private void removeNonCatchSuccessorsFromThrowStatements(ControlFlowGraph graph) {
-		graph.findNodesOfKind(BranchKind.STATEMENT).forEach(node -> {
+		graph.findNodesOfKind(NodeKind.STATEMENT).forEach(node -> {
 			if (!(node.getStatement() instanceof CtThrow)) {
 				return;
 			}
 
-			node.next().stream().filter(x -> x.getKind() != BranchKind.CATCH).forEach(nextNode -> {
+			node.next().stream().filter(x -> x.getKind() != NodeKind.CATCH).forEach(nextNode -> {
 				graph.removeEdge(node, nextNode);
 				removePathWhileUnreachable(nextNode);
 			});
@@ -246,11 +246,11 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 	 * @param graph Graph to process
 	 */
 	private void removeUnreachableCatchNodes(ControlFlowGraph graph) {
-		nodesWithoutPredecessors(graph).stream().filter(node -> node.getKind() == BranchKind.CATCH).forEach(this::removePathWhileUnreachable);
+		nodesWithoutPredecessors(graph).stream().filter(node -> node.getKind() == NodeKind.CATCH).forEach(this::removePathWhileUnreachable);
 	}
 
 	private void removeUnreachableFinalizerNodeBlockEndPredecessors(ControlFlowGraph graph) {
-		graph.findNodesOfKind(BranchKind.FINALLY).forEach(node -> {
+		graph.findNodesOfKind(NodeKind.FINALLY).forEach(node -> {
 			node.prev().stream().filter(prevNode -> prevNode.prev().size() == 0).forEach(graph::removeVertex);
 		});
 	}

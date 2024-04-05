@@ -27,7 +27,7 @@ import spoon.Launcher;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.support.reflect.code.CtIfImpl;
-import static fr.inria.controlflow.BranchKind.*;
+import static fr.inria.controlflow.NodeKind.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;

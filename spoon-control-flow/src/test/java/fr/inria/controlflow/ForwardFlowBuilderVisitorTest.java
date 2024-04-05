@@ -32,7 +32,8 @@ import spoon.support.QueueProcessingManager;
 
 import java.net.URISyntaxException;
 
-import static fr.inria.controlflow.BranchKind.*;
+import static fr.inria.controlflow.NodeKind.BRANCH;
+import static fr.inria.controlflow.NodeKind.STATEMENT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 

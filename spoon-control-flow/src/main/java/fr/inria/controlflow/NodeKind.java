@@ -22,17 +22,47 @@
 package fr.inria.controlflow;
 
 /**
- * Branching for a node
+ * The kind of a {@link ControlFlowNode}
  */
-public enum BranchKind {
-	TRY,         // Represents the start of a try block
-	CATCH,       // Represents the start of a catch block
-	FINALLY,     // Represents the start of a finally block
-	BRANCH,      // Represents a branch
-	STATEMENT,   // Represents an statement
-	BLOCK_BEGIN, // Represents the begining of a block
-	BLOCK_END,   // Represents the end of a block
-	CONVERGE,    // The exit node of all branches. Depending on the analysis it may be convenient to leave them
-	EXIT,        // EXIT node is where all return statements points to
-	BEGIN         // BEGIN node is where all begins
+public enum NodeKind {
+	/**
+	 * Represents the start of a try block
+	 */
+	TRY,
+	/**
+	 * Represents the start of a catch block
+	 */
+	CATCH,
+	/**
+	 * Represents the start of a finally block
+	 */
+	FINALLY,
+	/**
+	 * Represents a branch
+	 */
+	BRANCH,
+	/**
+	 * Represents an statement
+	 */
+	STATEMENT,
+	/**
+	 * Represents the beginning of a block
+	 */
+	BLOCK_BEGIN,
+	/**
+	 * Represents the end of a block
+	 */
+	BLOCK_END,
+	/**
+	 * The exit node of all branches. Depending on the analysis it may be convenient to leave them
+	 */
+	CONVERGE,
+	/**
+	 * The node, where all return statements point to
+	 */
+	EXIT,
+	/**
+	 * Entry point for the control flow graph
+	 */
+	BEGIN
 }

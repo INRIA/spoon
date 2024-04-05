@@ -21,7 +21,7 @@
  */
 package fr.inria.dataflow;
 
-import fr.inria.controlflow.BranchKind;
+import fr.inria.controlflow.NodeKind;
 import fr.inria.controlflow.ControlFlowEdge;
 import fr.inria.controlflow.ControlFlowNode;
 import spoon.reflect.code.CtArrayAccess;
@@ -80,9 +80,9 @@ public class InitializedVariables {
 		HashMap<ControlFlowNode, InitFactors> factors = new HashMap<>();
 
 		if (node.getParent() != null) {
-			if (node.getParent().findNodesOfKind(BranchKind.BLOCK_END).size() > 0
-					|| node.getParent().findNodesOfKind(BranchKind.BLOCK_BEGIN).size() > 0
-					|| node.getParent().findNodesOfKind(BranchKind.CONVERGE).size() > 0) {
+			if (node.getParent().findNodesOfKind(NodeKind.BLOCK_END).size() > 0
+					|| node.getParent().findNodesOfKind(NodeKind.BLOCK_BEGIN).size() > 0
+					|| node.getParent().findNodesOfKind(NodeKind.CONVERGE).size() > 0) {
 				throw new RuntimeException("Invalid node types. Simplify the graph with the simplify() method.");
 			}
 		}

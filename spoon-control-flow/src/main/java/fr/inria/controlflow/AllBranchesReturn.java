@@ -45,7 +45,7 @@ public class AllBranchesReturn {
 		graph.simplify();
 
 
-		List<ControlFlowNode> exits = graph.findNodesOfKind(BranchKind.EXIT);
+		List<ControlFlowNode> exits = graph.findNodesOfKind(NodeKind.EXIT);
 
 		int returnCount = 0;
 		int incomingCount = -1;
