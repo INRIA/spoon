@@ -22,16 +22,13 @@
 
 package fr.inria.controlflow;
 
-import fr.inria.controlflow.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import spoon.reflect.reference.CtVariableReference;
 
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class InitializedVariablesTest {
 
@@ -97,7 +94,7 @@ public class InitializedVariablesTest {
 		vars.run(n);
 
 		HashSet<String> names = new HashSet<>();
-		for (CtVariableReference v : vars.getInitialized()) names.add(v.getSimpleName());
+		for (CtVariableReference<?> v : vars.getInitialized()) names.add(v.getSimpleName());
 
 		assertEquals(vars.getInitialized().size(), 5);
 		assertTrue(names.contains("pp"));
@@ -119,10 +116,8 @@ public class InitializedVariablesTest {
 		ControlFlowNode n = ControlFlowBuilder.firstNode(graph, graph.branches().get(3).getStatement().getParent());
 		vars.run(n);
 
-		//boolean cwk1r = false;
-		//boolean cwk3r = false;
 		HashSet<String> names = new HashSet<>();
-		for (CtVariableReference v : vars.getInitialized()) names.add(v.getSimpleName());
+		for (CtVariableReference<?> v : vars.getInitialized()) names.add(v.getSimpleName());
 
 		assertEquals(vars.getInitialized().size(), 6);
 		assertTrue(names.contains("a"));
@@ -143,13 +138,11 @@ public class InitializedVariablesTest {
 		InitializedVariables vars = new InitializedVariables();
 		graph.simplify();
 		System.out.print(graph.toGraphVisText());
-		ControlFlowNode n = ControlFlowBuilder.firstNode(graph, graph.branches().get(0).getStatement().getParent());
+		ControlFlowNode n = ControlFlowBuilder.firstNode(graph, graph.branches().getFirst().getStatement().getParent());
 		vars.run(n);
 
-		//boolean cwk1r = false;
-		//boolean cwk3r = false;
 		HashSet<String> names = new HashSet<>();
-		for (CtVariableReference v : vars.getInitialized()) names.add(v.getSimpleName());
+		for (CtVariableReference<?> v : vars.getInitialized()) names.add(v.getSimpleName());
 		assertEquals(vars.getInitialized().size(), 2);
 		assertTrue(names.contains("eigenValues"));
 		assertTrue(names.contains("e"));
