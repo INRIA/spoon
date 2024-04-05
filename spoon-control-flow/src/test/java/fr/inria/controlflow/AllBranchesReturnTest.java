@@ -33,92 +33,9 @@ import spoon.support.QueueProcessingManager;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Created by marodrig on 04/01/2016.
- */
 public class AllBranchesReturnTest {
-/*
-    private ModifierKind getInvocationMethodVisibility(CtInvocation inv) {
-        if (inv.getExecutable().getDeclaration() != null &&
-                inv.getExecutable().getDeclaration() instanceof CtMethodImpl)
-            return (inv.getExecutable().getDeclaration()).getVisibility();
-        return null;
-    }
 
-    @Test
-    public void testSegment2() throws Exception {
-        final Factory factory = new SpoonMetaFactory().buildNewFactory(
-                "C:\\MarcelStuff\\DATA\\DIVERSE\\input_programs\\MATH_3_2\\src\\main\\java", 7);
-        //        "C:\\MarcelStuff\\DATA\\DIVERSE\\input_programs\\easymock-light-3.2\\src\\main\\javaz", 7);
-        ProcessingManager pm = new QueueProcessingManager(factory);
-
-
-        AbstractProcessor<CtMethod> p = new AbstractProcessor<CtMethod>() {
-            @Override
-            public void process(CtMethod ctMethod) {
-                List<CtFor> fors = ctMethod.getElements(new TypeFilter<CtFor>(CtFor.class));
-                if (ctMethod.getBody() == null || ctMethod.getBody().getStatements() == null) return;
-
-                int size = ctMethod.getBody().getStatements().size();
-
-                if (size > 6 || fors.size() < 1 || !hasInterfaceVariables(ctMethod) ) return;
-
-                printMethod(ctMethod);
-
-            }
-        };
-
-        pm.addProcessor(p);
-        pm.process();
-    }
-
-    private boolean hasInterfaceVariables(CtMethod ctMethod) {
-        List<CtVariableAccess> vars =
-                ctMethod.getElements(new TypeFilter<CtVariableAccess>(CtVariableAccess.class));
-        for ( CtVariableAccess a : vars ) {
-            try {
-                if (!a.getVariable().getDeclaration().getModifiers().contains(ModifierKind.FINAL) &&
-                        a.getVariable().getType().isInterface()) return true;
-            } catch (Exception e) {
-                System.out.print(".");
-            }
-        }
-        return false;
-    }
-
-    private void printMethod(CtMethod ctMethod) {
-        System.out.println(ctMethod.getPosition().toString());
-        System.out.println(ctMethod);
-        //System.out.println(invName);
-        System.out.println("+++++++++++++++++++++++++++++++++++++");
-
-    }
-
-    private void printStaticInvocations(CtMethodImpl ctMethod) {
-        List<CtInvocation> invs = ctMethod.getElements(new TypeFilter<CtInvocation>(CtInvocation.class));
-        boolean staticInv = true;
-        boolean abstractVarAccess = false;
-        String invName = "";
-        for (CtInvocation inv : invs) {
-            ModifierKind mk = getInvocationMethodVisibility(inv);
-            if (inv.getExecutable().isStatic() &&
-                    (mk == ModifierKind.PRIVATE || mk == ModifierKind.PROTECTED)) {
-                invName = inv.toString();
-                staticInv = true;
-                break;
-            }
-        }
-        if( staticInv) {
-            System.out.println(ctMethod.getPosition().toString());
-            System.out.println(ctMethod);
-            System.out.println(invName);
-            System.out.println("+++++++++++++++++++++++++++++++++++++");
-        }
-    }*/
-
-	public void testSegment(AbstractProcessor processor) throws Exception {
-		//ControlFlowGraph graph = buildGraph(this.getClass().getResource("/control-flow").toURI().getPath(),
-		//        "nestedIfSomeNotReturning", false);
+	public void testSegment(AbstractProcessor<?> processor) throws Exception {
 
 		Factory factory = new SpoonMetaFactory().buildNewFactory(
 				this.getClass().getResource("/control-flow").toURI().getPath(), 7);
@@ -132,7 +49,7 @@ public class AllBranchesReturnTest {
 		testSegment(new AbstractProcessor<CtIf>() {
 			@Override
 			public void process(CtIf element) {
-				CtMethod m = element.getParent().getParent(CtMethod.class);
+				CtMethod<?> m = element.getParent().getParent(CtMethod.class);
 				if (m != null && m.getSimpleName().equals("nestedIfSomeNotReturning"))
 					if (element.getCondition().toString().contains("b < 1")) {
 						AllBranchesReturn alg = new AllBranchesReturn();
@@ -147,7 +64,7 @@ public class AllBranchesReturnTest {
 		testSegment(new AbstractProcessor<CtIf>() {
 			@Override
 			public void process(CtIf element) {
-				CtMethod m = element.getParent().getParent(CtMethod.class);
+				CtMethod<?> m = element.getParent().getParent(CtMethod.class);
 				if (m != null && m.getSimpleName().equals("nestedIfAllReturning"))
 					if (element.getCondition().toString().contains("a > 0")) {
 						AllBranchesReturn alg = new AllBranchesReturn();
