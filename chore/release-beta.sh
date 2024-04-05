@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
 CURRENT_VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//')"
 CURRENT_VERSION_WITH_SNAPSHOT="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
 
