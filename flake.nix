@@ -80,6 +80,7 @@
         pkgs.mkShell rec {
           test = pkgs.writeScriptBin "test" ''
             set -eu
+
             # Use silent log config
             cp chore/logback.xml src/test/resources/
             mvn -f spoon-pom -B test-compile
@@ -95,19 +96,24 @@
           '';
           coverage = pkgs.writeScriptBin "coverage" ''
             set -eu
+
             # Use silent log config
             cp chore/logback.xml src/test/resources/
             mvn -f spoon-pom -B test-compile
             mvn -f spoon-pom -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
           '';
           codegen = pkgs.writeScriptBin "codegen" ''
-           set -eu
-           mvn test -Dtest=spoon.testing.assertions.codegen.AssertJCodegen
-           mvn spotless:apply
-           git diff --exit-code || echo "::error::Generated code is not up to date. Execute mvn test -Dtest=spoon.testing.assertions.codegen.AssertJCodegen, mvn spotless:apply and commit your changes."
-           '';
+            set -eu
+            mvn test -Dtest=spoon.testing.assertions.codegen.AssertJCodegen
+            mvn spotless:apply
+            if ! git diff --exit-code; then
+              echo "::error::Generated code is not up to date. Execute mvn test -Dtest=spoon.testing.assertions.codegen.AssertJCodegen, mvn spotless:apply and commit your changes."
+              exit 1
+            fi
+          '';
           extra = pkgs.writeScriptBin "extra" (if !extraChecks then "exit 2" else ''
             set -eu
+
             # Use silent log config
             cp chore/logback.xml src/test/resources/
             # Verify and Site Maven goals
@@ -159,16 +165,24 @@
             popd || exit 1
           '');
           extraRemote = pkgs.writeScriptBin "extra-remote" ''
+            set -eu
+
             curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-pull-request.sh | bash
           '';
           mavenPomQuality = pkgs.writeScriptBin "maven-pom-quality" ''
+            set -eu
+
             # we dont enforce that the version must be non snapshot as this is not possible for SNAPSHOT versions in our workflow.
             mvn -f spoon-pom org.kordamp.maven:pomchecker-maven-plugin:1.9.0:check-maven-central -D"checker.release=false"
           '';
           reproducibleBuilds = pkgs.writeScriptBin "reproducible-builds" ''
+            set -eu
+
             chore/check-reproducible-builds.sh
           '';
           ciJavadocQuality = pkgs.writeScriptBin "ci-javadoc-quality" ''
+            set -eu
+
             # Help jbang. Build locally and update the version. Otherwise it fails to resolve sometimes.
             pushd spoon-pom || exit 1
             mvn clean install -Dmaven.test.skip=true -DskipDepClean &>/dev/null
@@ -185,6 +199,8 @@
             javadoc-quality
           '';
           javadocQuality = pkgs.writeScriptBin "javadoc-quality" ''
+            set -eu
+
             ./chore/check-javadoc-regressions.py COMPARE_WITH_MASTER
           '';
           pythonEnv =

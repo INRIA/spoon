@@ -5,4 +5,8 @@ public interface CtAnnotationMethodAssertInterface<A extends AbstractObjectAsser
 	default CtExpressionAssertInterface<?, ?> getDefaultExpression() {
 		return SpoonAssertions.assertThat(actual().getDefaultExpression());
 	}
+
+	default CtReceiverParameterAssertInterface<?, ?> getReceiverParameter() {
+		return SpoonAssertions.assertThat(actual().getReceiverParameter());
+	}
 }
