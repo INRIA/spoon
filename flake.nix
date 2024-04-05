@@ -19,8 +19,8 @@
                 let
                   base = rec {
                     jdk =
-                      if javaVersion <= 21 then prev."jdk${toString javaVersion}"
-                      else jdk22-ea;
+                      if javaVersion <= 23 then prev."jdk${toString javaVersion}"
+                      else abort "Not set up yet :)";
                     maven = prev.maven.override { inherit jdk; };
                   };
                   extra = with base; {
@@ -30,39 +30,27 @@
                 (if extraChecks then base // extra else base))
             ];
           };
-          jdk22-ea = pkgs.stdenv.mkDerivation rec {
-            name = "jdk22-ea";
-            version = "22+16";
-            src = builtins.fetchTarball {
-              url = "https://download.java.net/java/early_access/jdk22/16/GPL/openjdk-22-ea+16_linux-x64_bin.tar.gz";
-              sha256 = "sha256:17fckjdr1gadm41ih2nxi8c7zdimk4s9p12d8jcr0paic74mqinj";
-            };
-            installPhase = ''
-              cd ..
-              mv $sourceRoot $out
-            '';
-          };
           semver = pkgs.buildGoModule rec {
             name = "semver";
-            version = "2.1.0";
+            version = "2.4.0";
 
-            vendorHash = "sha256-HKqZbgP7vqDJMaHUbSqfSOnBYwzOtIr9o2v/T9S+uNg=";
+            vendorHash = "sha256-/8rYdeOHp6Bdc3CD5tzw5M0hjTPd+aYZSW7w2Xi695Y=";
             subPackages = [ "cmd/semver" ];
 
             src = pkgs.fetchFromGitHub {
               owner = "ffurrer2";
               repo = "semver";
               rev = "v${version}";
-              sha256 = "sha256-i/XPA2Hr2puJFKupIeBUE/yFPJxSeVsDWcz1OepxIcU=";
+              sha256 = "sha256-wl5UEu2U11Q0lZfm9reMhGMCI7y6sabk18j7SPWgy1k=";
             };
           };
           jreleaser = pkgs.stdenv.mkDerivation rec {
             pname = "jreleaser-cli";
-            version = "1.7.0";
+            version = "1.11.0";
 
             src = pkgs.fetchurl {
               url = "https://github.com/jreleaser/jreleaser/releases/download/v${version}/jreleaser-tool-provider-${version}.jar";
-              sha256 = "sha256-gr1IWisuep00xyoZWKXtHymWkQjbDhlk6+UC16bKXu0=";
+              sha256 = "sha256-VkINXKVBBBK6/PIRPMVKZGY9afE7mAsqrcFPh2Algqk=";
             };
 
             nativeBuildInputs = with pkgs; [ makeWrapper ];
@@ -220,17 +208,16 @@
     {
       devShells =
         let
-          # We have additional options (currently EA jdks) on 64 bit linux systems
+          # We might have additional options (currently none) on 64 bit linux systems
           blessedSystem = "x86_64-linux";
-          blessed = rec {
-            jdk22-ea = mkShell blessedSystem { javaVersion = 22; };
-          };
+          blessed = rec { };
           common = forAllSystems
             (system:
               rec {
                 default = jdk17;
                 jdk17 = mkShell system { javaVersion = 17; };
                 jdk21 = mkShell system { javaVersion = 21; };
+                jdk22 = mkShell system { javaVersion = 22; };
                 extraChecks = mkShell system { extraChecks = true; javaVersion = 21; };
                 jReleaser = mkShell system { release = true; javaVersion = 21; };
               });
