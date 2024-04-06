@@ -30,17 +30,20 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
-import spoon.testing.utils.ModelTest;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 public class VariableTest {
 
@@ -199,6 +202,13 @@ public class VariableTest {
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setComplianceLevel(21);
         launcher.getEnvironment().setPreviewFeaturesEnabled(true);
-        launcher.addInputResource("./src/test/resources/spoon/test/var/VarInLambda.java");
+        launcher.addInputResource("./src/test/resources/spoon/test/unnamed/UnnamedVar.java");
+        launcher.buildModel();
+        CtType<?> type = launcher.getFactory().Type().get("spoon.test.unnamed.UnnamedVar");
+        for (CtMethod<?> method : type.getMethods()) {
+            List<CtVariable<?>> locals = method.getBody().getElements(new TypeFilter<>(CtVariable.class));
+            assertThat(locals).describedAs(method.getSimpleName()).hasSize(1);
+            assertThat(locals.get(0)).getSimpleName().isEqualTo("_");
+        }
     }
 }

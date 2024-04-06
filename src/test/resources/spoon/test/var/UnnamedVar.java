@@ -1,3 +1,0 @@
-class UnnamedVar {
-    void
-}
