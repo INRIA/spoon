@@ -21,6 +21,14 @@
  */
 package fr.inria.controlflow;
 
+import spoon.reflect.code.CtAbstractSwitch;
+import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtFor;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtElement;
 
 import java.util.ArrayList;
@@ -28,7 +36,7 @@ import java.util.List;
 
 /**
  * A node of the control flow
- *
+ * <p>
  * Created by marodrig on 13/10/2015.
  */
 public class ControlFlowNode {
@@ -56,6 +64,10 @@ public class ControlFlowNode {
 	 * Statement that is going to be pointed to by this node
 	 */
 	CtElement statement;
+	/**
+	 * Whether this Node finishes the statement. See conditionals or switch expressions for an example where it might not.
+	 */
+	private boolean isStatementEnd;
 
 	List<Value> input;
 
@@ -73,14 +85,16 @@ public class ControlFlowNode {
 		this.kind = kind;
 		this.parent = parent;
 		this.statement = statement;
+		this.isStatementEnd = true;
 		++count;
 		id = count;
 	}
 
 
 	public ControlFlowNode(CtElement statement, ControlFlowGraph parent) {
-		this.statement = statement;
 		this.parent = parent;
+		this.statement = statement;
+		this.isStatementEnd = true;
 		++count;
 		id = count;
 	}
@@ -147,7 +161,7 @@ public class ControlFlowNode {
 	}
 
 	public List<Value> getOutput() {
-		if (output == null)  {
+		if (output == null) {
 			transfer();
 		}
 		return output;
@@ -159,6 +173,17 @@ public class ControlFlowNode {
 
 	public void setStatement(CtElement statement) {
 		this.statement = statement;
+	}
+
+	public boolean getIsStatementEnd() {
+		return isStatementEnd;
+	}
+
+	public void setEndTo(ControlFlowNode end) {
+		this.isStatementEnd = false;
+		setTag(end);
+		end.setTag(this);
+		end.isStatementEnd = true;
 	}
 
 	public List<Value> getInput() {
@@ -187,10 +212,47 @@ public class ControlFlowNode {
 
 	@Override
 	public String toString() {
-		if (statement != null) {
-			return id + " - " + statement.toString();
-		} else {
+		if (statement == null) {
 			return kind + "_" + id;
+		} else if (kind == BranchKind.STATEMENT_END || !isStatementEnd) {
+			String prefix;
+			if (isStatementEnd && tag instanceof ControlFlowNode start) {
+				prefix = "END of " + start.id + ": " + id + " - ";
+			} else {
+				prefix = id + " - ";
+			}
+			if (statement instanceof CtAbstractSwitch<?> switchStatement) {
+				return prefix + "switch (" + switchStatement.getSelector() + ")";
+			} else if (statement instanceof CtReturn<?> returnStatement && returnStatement.getReturnedExpression() instanceof CtAbstractSwitch<?> switchExpression) {
+				return prefix + "return switch (" + switchExpression.getSelector() + ")";
+			} else if (statement instanceof CtLocalVariable<?> localVariable && localVariable.getDefaultExpression() instanceof CtAbstractSwitch<?> switchExpression) {
+				CtLocalVariable<?> renderVariable = localVariable.clone();
+				renderVariable.setDefaultExpression(null);
+				return prefix + renderVariable + " = switch (" + switchExpression.getSelector() + ")";
+			} else if (statement instanceof CtConditional<?> conditional) {
+				return prefix + conditional.getCondition() + " ?";
+			} else if (statement instanceof CtIf ifStatement) {
+				CtIf renderStatement = ifStatement.clone();
+				renderStatement.setThenStatement(null);
+				renderStatement.setElseStatement(null);
+				return prefix + "if (" + ifStatement.getCondition() + ")";
+			} else if (statement instanceof CtDo && !isStatementEnd) {
+				return prefix + "do";
+			} else if (statement instanceof CtDo doWhileLoop) {
+				return prefix + "while (" + doWhileLoop.getLoopingExpression() + ")";
+			} else if (statement instanceof CtWhile whileLoop) {
+				CtWhile renderLoop = whileLoop.clone();
+				renderLoop.setBody(null);
+				return prefix + renderLoop;
+			} else if (statement instanceof CtFor forLoop) {
+				CtFor renderLoop = forLoop.clone();
+				renderLoop.setBody(null);
+				return prefix + renderLoop;
+			} else {
+				return prefix + statement;
+			}
+		} else {
+			return id + " - " + statement;
 		}
 	}
 

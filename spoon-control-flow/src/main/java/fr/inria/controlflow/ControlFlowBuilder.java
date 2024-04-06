@@ -119,7 +119,6 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
-import java.util.function.Consumer;
 
 /**
  * Builds the control graph for a given snippet of code
@@ -127,7 +126,7 @@ import java.util.function.Consumer;
  * Created by marodrig on 13/10/2015.
  */
 public class ControlFlowBuilder extends CtAbstractVisitor {
-	public static final String CONTROL_FLOW_SWITCH_YIELD_STATEMENT = "CONTROL_FLOW_SWITCH_YIELD_STATEMENT";
+	public static final String CONTROL_FLOW_ORIGINAL_STATEMENT = "CONTROL_FLOW_ORIGINAL_STATEMENT";
 
 	ControlFlowGraph result = new ControlFlowGraph(ControlFlowEdge.class);
 
@@ -662,6 +661,8 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		registerStatementLabel(localVariable);
 		if (localVariable.getDefaultExpression() instanceof CtConditional) {
 			visitConditional(localVariable, (CtConditional) localVariable.getDefaultExpression());
+		} else if (localVariable.getDefaultExpression() instanceof CtSwitchExpression<T, ?> switchExpression) {
+			handleCtAbstractSwitch(localVariable, switchExpression);
 		} else {
 			defaultAction(BranchKind.STATEMENT, localVariable);
 		}
@@ -747,7 +748,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
 		registerStatementLabel(returnStatement);
 		if (returnStatement.getReturnedExpression() instanceof CtSwitchExpression<R, ?> switchExpression) {
-			handleReturningSwitchExpression(returnStatement, switchExpression);
+			handleCtAbstractSwitch(returnStatement, switchExpression);
 		} else {
 			ControlFlowNode n = new ControlFlowNode(returnStatement, result, BranchKind.STATEMENT);
 			tryAddEdge(lastNode, n);
@@ -772,25 +773,19 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	@Override
 	public <S> void visitCtSwitch(CtSwitch<S> switchStatement) {
-		handleCtAbstractSwitch(switchStatement, null);
+		handleCtAbstractSwitch(switchStatement, switchStatement);
 	}
 
-	public <T, S> void handleReturningSwitchExpression(CtReturn<T> ctReturn, CtSwitchExpression<T, S> switchExpression) {
-		handleCtAbstractSwitch(switchExpression, yieldStatement -> {
-			CtReturn<T> syntheticReturn = ctReturn.clone();
-			syntheticReturn.putMetadata(CONTROL_FLOW_SWITCH_YIELD_STATEMENT, yieldStatement);
-			syntheticReturn.setReturnedExpression((CtExpression<T>) yieldStatement.getExpression());
+	public <S> void handleCtAbstractSwitch(CtStatement containingStatement, CtAbstractSwitch<S> abstractSwitch) {
+		ControlFlowNode statementNode = new ControlFlowNode(containingStatement, result, BranchKind.STATEMENT);
+		tryAddEdge(lastNode, statementNode);
 
-			syntheticReturn.accept(this);
-		});
-	}
+		ControlFlowNode selectorNode = new ControlFlowNode(abstractSwitch.getSelector(), result, BranchKind.EXPRESSION);
+		tryAddEdge(statementNode, selectorNode);
+		lastNode = selectorNode;
 
-	public <S> void handleCtAbstractSwitch(CtAbstractSwitch<S> abstractSwitch, Consumer<CtYieldStatement> yieldAction) {
-		ControlFlowNode selectorNode = new ControlFlowNode(abstractSwitch.getSelector(), result, BranchKind.BRANCH);
-		selectorNode.setTag(abstractSwitch);
-		tryAddEdge(lastNode, selectorNode);
 		ControlFlowNode switchBlockBegin = new ControlFlowNode(null, result, BranchKind.BLOCK_BEGIN);
-		tryAddEdge(selectorNode, switchBlockBegin);
+		tryAddEdge(lastNode, switchBlockBegin);
 		lastNode = switchBlockBegin;
 
 		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
@@ -805,7 +800,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			tryAddEdge(fallThroughNode, caseConvergenceNode);
 
 			for (CtExpression<?> expression : switchCase.getCaseExpressions()) {
-				ControlFlowNode node = new ControlFlowNode(expression, result, BranchKind.STATEMENT);
+				ControlFlowNode node = new ControlFlowNode(expression, result, BranchKind.EXPRESSION);
 				node.setTag(switchCase.getGuard());
 				tryAddEdge(switchBlockBegin, node);
 				tryAddEdge(node, caseConvergenceNode);
@@ -819,16 +814,10 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 				tryAddEdge(lastNode, begin);
 				lastNode = begin;
 			}
-
 			for (CtStatement statement : switchCase.getStatements()) {
-				if (statement instanceof CtYieldStatement yieldStatement) {
-					yieldAction.accept(yieldStatement);
-				} else {
-					registerStatementLabel(statement);
-					statement.accept(this);
-				}
+				registerStatementLabel(statement);
+				statement.accept(this);
 			}
-
 			if (isEnhanced) {
 				ControlFlowNode end = new ControlFlowNode(null, result, BranchKind.BLOCK_END);
 				tryAddEdge(lastNode, end);
@@ -852,6 +841,11 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		ControlFlowNode switchBlockEnd = new ControlFlowNode(null, result, BranchKind.BLOCK_END);
 		tryAddEdge(convergenceNode, switchBlockEnd);
 		lastNode = switchBlockEnd;
+
+		ControlFlowNode statementEndNode = new ControlFlowNode(containingStatement, result, BranchKind.STATEMENT_END);
+		statementNode.setEndTo(statementEndNode);
+		tryAddEdge(lastNode, statementEndNode);
+		lastNode = statementEndNode;
 	}
 
 	private boolean checkExhaustive(CtAbstractSwitch<?> switchElement) {
