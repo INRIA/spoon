@@ -32,6 +32,7 @@ public class RecordPatternTest {
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(21);
 		launcher.addInputResource(new VirtualFile(code));
+		System.out.println(code);
 		return launcher.buildModel();
 	}
 
@@ -164,6 +165,12 @@ public class RecordPatternTest {
 		assertTrue(variable.isInferred());
 		assertEquals("String", variable.getType().getSimpleName());
 		assertEquals(pattern.contains("final"), variable.isFinal());
+	}
+
+	@Test
+	void testUnnamedPatternInRecordPattern() {
+		CtSwitch<?> ctSwitch = createFromSwitch("record Int(int i) {}", "Int(_)");
+		System.out.println(ctSwitch);
 	}
 
 	@Test

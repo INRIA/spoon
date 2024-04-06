@@ -22,6 +22,7 @@ class UnnamedVar {
     void pattern(Object o) {
         switch (o) {
             case MyRecord(String _) -> {}
+            default -> {}
         }
     }
 
