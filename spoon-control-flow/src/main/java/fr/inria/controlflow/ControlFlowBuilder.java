@@ -779,14 +779,15 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	public <S> void handleCtAbstractSwitch(CtStatement containingStatement, CtAbstractSwitch<S> abstractSwitch) {
 		ControlFlowNode statementNode = new ControlFlowNode(containingStatement, result, BranchKind.STATEMENT);
 		tryAddEdge(lastNode, statementNode);
-
-		ControlFlowNode selectorNode = new ControlFlowNode(abstractSwitch.getSelector(), result, BranchKind.BRANCH);
-		tryAddEdge(statementNode, selectorNode);
-		lastNode = selectorNode;
+		lastNode = statementNode;
 
 		ControlFlowNode switchBlockBegin = new ControlFlowNode(null, result, BranchKind.BLOCK_BEGIN);
 		tryAddEdge(lastNode, switchBlockBegin);
 		lastNode = switchBlockBegin;
+
+		ControlFlowNode selectorNode = new ControlFlowNode(abstractSwitch.getSelector(), result, BranchKind.BRANCH);
+		tryAddEdge(lastNode, selectorNode);
+		lastNode = selectorNode;
 
 		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
 		breakingBad.push(convergenceNode);
@@ -802,11 +803,11 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			for (CtExpression<?> expression : switchCase.getCaseExpressions()) {
 				ControlFlowNode node = new ControlFlowNode(expression, result, BranchKind.EXPRESSION);
 				node.setTag(switchCase.getGuard());
-				tryAddEdge(switchBlockBegin, node);
+				tryAddEdge(selectorNode, node);
 				tryAddEdge(node, caseConvergenceNode);
 			}
 			if (switchCase.getIncludesDefault() || switchCase.getCaseExpressions().isEmpty()) {
-				tryAddEdge(switchBlockBegin, caseConvergenceNode);
+				tryAddEdge(selectorNode, caseConvergenceNode);
 			}
 
 			for (CtStatement statement : switchCase.getStatements()) {
@@ -823,7 +824,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		tryAddEdge(fallThroughNode, convergenceNode);
 
 		if (!checkExhaustive(abstractSwitch)) {
-			tryAddEdge(switchBlockBegin, convergenceNode);
+			tryAddEdge(selectorNode, convergenceNode);
 		}
 
 		breakingBad.pop();
