@@ -393,8 +393,19 @@ public class ControlFlowArithmetic {
 		TYPE_1, TYPE_2
 	}
 
-	public void oldSwitchExpression () {
+	public void oldSwitchAssignExpression () {
 		int a = switch (1) {
+			case 1: yield 2;
+			case 2:
+				int b = 2;
+				yield 3;
+			default:
+				yield 1;
+		};
+	}
+
+	public int oldSwitchReturnExpression () {
+		return switch (1) {
 			case 1: yield 2;
 			case 2:
 				int b = 2;
@@ -426,7 +437,9 @@ public class ControlFlowArithmetic {
 		int a = 1;
 		int b = 0;
 		switch (a) {
-			case 1 -> b = 1;
+			case 1 -> {
+				b = 1;
+			}
 		}
 	}
 

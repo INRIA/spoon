@@ -116,11 +116,10 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtAbstractVisitor;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  * Builds the control graph for a given snippet of code
@@ -128,6 +127,7 @@ import java.util.function.Function;
  * Created by marodrig on 13/10/2015.
  */
 public class ControlFlowBuilder extends CtAbstractVisitor {
+	public static final String CONTROL_FLOW_SWITCH_YIELD_STATEMENT = "CONTROL_FLOW_SWITCH_YIELD_STATEMENT";
 
 	ControlFlowGraph result = new ControlFlowGraph(ControlFlowEdge.class);
 
@@ -746,10 +746,14 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	@Override
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
 		registerStatementLabel(returnStatement);
-		ControlFlowNode n = new ControlFlowNode(returnStatement, result, BranchKind.STATEMENT);
-		tryAddEdge(lastNode, n);
-		tryAddEdge(n, exitNode);
-		lastNode = null; //Special case in which this node does not connect with the next, because is a return
+		if (returnStatement.getReturnedExpression() instanceof CtSwitchExpression<R, ?> switchExpression) {
+			handleReturningSwitchExpression(returnStatement, switchExpression);
+		} else {
+			ControlFlowNode n = new ControlFlowNode(returnStatement, result, BranchKind.STATEMENT);
+			tryAddEdge(lastNode, n);
+			tryAddEdge(n, exitNode);
+			lastNode = null; //Special case in which this node does not connect with the next, because is a return
+		}
 	}
 
 	@Override
@@ -771,50 +775,67 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		handleCtAbstractSwitch(switchStatement, null);
 	}
 
-	@Override
-	public <T, S> void visitCtSwitchExpression(CtSwitchExpression<T, S> switchExpression) {
-		handleCtAbstractSwitch(switchExpression, null);
+	public <T, S> void handleReturningSwitchExpression(CtReturn<T> ctReturn, CtSwitchExpression<T, S> switchExpression) {
+		handleCtAbstractSwitch(switchExpression, yieldStatement -> {
+			CtReturn<T> syntheticReturn = ctReturn.clone();
+			syntheticReturn.putMetadata(CONTROL_FLOW_SWITCH_YIELD_STATEMENT, yieldStatement);
+			syntheticReturn.setReturnedExpression((CtExpression<T>) yieldStatement.getExpression());
+
+			syntheticReturn.accept(this);
+		});
 	}
 
-	public <S> void handleCtAbstractSwitch(CtAbstractSwitch<S> abstractSwitch, Function<CtYieldStatement, List<CtStatement>> yieldTransformer) {
+	public <S> void handleCtAbstractSwitch(CtAbstractSwitch<S> abstractSwitch, Consumer<CtYieldStatement> yieldAction) {
 		ControlFlowNode selectorNode = new ControlFlowNode(abstractSwitch.getSelector(), result, BranchKind.BRANCH);
+		selectorNode.setTag(abstractSwitch);
 		tryAddEdge(lastNode, selectorNode);
-		lastNode = selectorNode;
+		ControlFlowNode switchBlockBegin = new ControlFlowNode(null, result, BranchKind.BLOCK_BEGIN);
+		tryAddEdge(selectorNode, switchBlockBegin);
+		lastNode = switchBlockBegin;
 
 		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
 		breakingBad.push(convergenceNode);
 
 		ControlFlowNode fallThroughNode = null;
 		for (CtCase<?> switchCase : abstractSwitch.getCases()) {
-			List<ControlFlowNode> caseExpressionNodes = new ArrayList<>();
+			boolean isEnhanced = switchCase.getCaseKind() == CaseKind.ARROW;
+
+			ControlFlowNode caseConvergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+			lastNode = caseConvergenceNode;
+			tryAddEdge(fallThroughNode, caseConvergenceNode);
+
 			for (CtExpression<?> expression : switchCase.getCaseExpressions()) {
 				ControlFlowNode node = new ControlFlowNode(expression, result, BranchKind.STATEMENT);
 				node.setTag(switchCase.getGuard());
-				tryAddEdge(selectorNode, node);
-				caseExpressionNodes.add(node);
+				tryAddEdge(switchBlockBegin, node);
+				tryAddEdge(node, caseConvergenceNode);
 			}
 			if (switchCase.getIncludesDefault() || switchCase.getCaseExpressions().isEmpty()) {
-				caseExpressionNodes.add(selectorNode);
+				tryAddEdge(switchBlockBegin, caseConvergenceNode);
 			}
 
-			List<CtStatement> statements = switchCase.getStatements();
-			List<CtStatement> transformedStatements = new ArrayList<>();
-			for (CtStatement statement : statements) {
+			if (isEnhanced) {
+				ControlFlowNode begin = new ControlFlowNode(null, result, BranchKind.BLOCK_BEGIN);
+				tryAddEdge(lastNode, begin);
+				lastNode = begin;
+			}
+
+			for (CtStatement statement : switchCase.getStatements()) {
 				if (statement instanceof CtYieldStatement yieldStatement) {
-					transformedStatements.addAll(yieldTransformer.apply(yieldStatement));
+					yieldAction.accept(yieldStatement);
 				} else {
-					transformedStatements.add(statement);
+					registerStatementLabel(statement);
+					statement.accept(this);
 				}
 			}
 
-			lastNode = null; // We want full control over the edges
-			ControlFlowNode blockStart = travelStatementList(transformedStatements);
-			for (ControlFlowNode caseExpressionNode : caseExpressionNodes) {
-				tryAddEdge(caseExpressionNode, blockStart);
+			if (isEnhanced) {
+				ControlFlowNode end = new ControlFlowNode(null, result, BranchKind.BLOCK_END);
+				tryAddEdge(lastNode, end);
+				lastNode = end;
 			}
-			tryAddEdge(fallThroughNode, blockStart);
 
-			if (switchCase.getCaseKind() == CaseKind.COLON) {
+			if (!isEnhanced) {
 				fallThroughNode = lastNode;
 			} else {
 				tryAddEdge(lastNode, convergenceNode);
@@ -823,11 +844,14 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		tryAddEdge(fallThroughNode, convergenceNode);
 
 		if (!checkExhaustive(abstractSwitch)) {
-			tryAddEdge(selectorNode, convergenceNode);
+			tryAddEdge(switchBlockBegin, convergenceNode);
 		}
 
 		breakingBad.pop();
-		lastNode = convergenceNode;
+
+		ControlFlowNode switchBlockEnd = new ControlFlowNode(null, result, BranchKind.BLOCK_END);
+		tryAddEdge(convergenceNode, switchBlockEnd);
+		lastNode = switchBlockEnd;
 	}
 
 	private boolean checkExhaustive(CtAbstractSwitch<?> switchElement) {

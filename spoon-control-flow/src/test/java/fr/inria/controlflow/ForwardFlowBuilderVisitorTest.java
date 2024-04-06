@@ -167,18 +167,18 @@ public class ForwardFlowBuilderVisitorTest {
 	class SwitchTests {
 		@Test
 		public void testSwitch() throws Exception {
-			testMethod("switchTest", false, 1, 12, 28);
+			testMethod("switchTest", true, 1, 12, 19);
 		}
 
 		//Test fall-through of last switch case
 		@Test
 		public void testSwitchFallThrough() throws Exception {
-			testMethod("lastCaseFallThrough", false, 1, 4, 12);
+			testMethod("lastCaseFallThrough", true, 1, 4, 11);
 		}
 
 		@Test
 		public void testSwitchImplicitDefault() throws Exception {
-			ControlFlowGraph graph = testMethod("lastCaseFallThrough", false, 1, 4, 12);
+			ControlFlowGraph graph = testMethod("lastCaseFallThrough", false, null, null, null);
 			graph.simplify();
 			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
 			ControlFlowNode entryNode = pathHelper.findNodeByString(graph, "int b = 0");
@@ -189,7 +189,7 @@ public class ForwardFlowBuilderVisitorTest {
 
 		@Test
 		public void testMultipleCaseExpressions() throws Exception {
-			ControlFlowGraph graph = testMethod("multipleCaseExpressions", true, 1, 8, 17);
+			ControlFlowGraph graph = testMethod("multipleCaseExpressions", true, 1, 7, 14);
 			graph.simplify();
 			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
 			ControlFlowNode startNode = pathHelper.findNodeByString(graph, "int b = 0");
@@ -198,8 +198,18 @@ public class ForwardFlowBuilderVisitorTest {
 		}
 
 		@Test
-		public void testExpressionOldSwitch() throws Exception {
-			ControlFlowGraph graph = testMethod("oldSwitchExpression", true, null, null, null);
+		public void testAssignExpressionOldSwitch() throws Exception {
+			ControlFlowGraph graph = testMethod("oldSwitchAssignExpression", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(3, paths.size());
+		}
+
+		@Test
+		public void testReturnExpressionOldSwitch() throws Exception {
+			ControlFlowGraph graph = testMethod("oldSwitchReturnExpression", true, null, null, null);
 			graph.simplify();
 			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
 			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
