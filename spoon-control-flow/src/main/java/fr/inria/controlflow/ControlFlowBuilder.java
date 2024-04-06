@@ -782,7 +782,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			//Visit Case
 			registerStatementLabel(caseStatement);
 			var caseExpressions = caseStatement.getCaseExpressions();
-			ArrayList<ControlFlowNode> caseExpressionNodes = new ArrayList<>();
+			List<ControlFlowNode> caseExpressionNodes = new ArrayList<>();
 			for (CtExpression<?> expression : caseExpressions) {
 				ControlFlowNode caseNode = new ControlFlowNode(expression, result, BranchKind.STATEMENT);
 				caseExpressionNodes.add(caseNode);
