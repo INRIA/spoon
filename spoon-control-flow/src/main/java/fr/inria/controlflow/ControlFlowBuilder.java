@@ -809,19 +809,9 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 				tryAddEdge(switchBlockBegin, caseConvergenceNode);
 			}
 
-			if (isEnhanced) {
-				ControlFlowNode begin = new ControlFlowNode(null, result, BranchKind.BLOCK_BEGIN);
-				tryAddEdge(lastNode, begin);
-				lastNode = begin;
-			}
 			for (CtStatement statement : switchCase.getStatements()) {
 				registerStatementLabel(statement);
 				statement.accept(this);
-			}
-			if (isEnhanced) {
-				ControlFlowNode end = new ControlFlowNode(null, result, BranchKind.BLOCK_END);
-				tryAddEdge(lastNode, end);
-				lastNode = end;
 			}
 
 			if (!isEnhanced) {
@@ -1041,7 +1031,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	@Override
 	public void visitCtYieldStatement(CtYieldStatement ctYieldStatement) {
-
+		defaultAction(BranchKind.STATEMENT, ctYieldStatement);
 	}
 
 	@Override
