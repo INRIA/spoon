@@ -167,13 +167,35 @@ public class ForwardFlowBuilderVisitorTest {
 	class SwitchTests {
 		@Test
 		public void testSwitch() throws Exception {
-			testMethod("switchTest", true, 1, 12, 19);
+			ControlFlowGraph graph = testMethod("switchTest", true, 1, null, null);
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entry = graph.findNodesOfKind(BEGIN).get(0);
+
+			ControlFlowNode return0 = pathHelper.findNodeByString(graph, "return 0");
+			assertEquals(1, pathHelper.pathsBetween(entry, return0).size());
+
+			ControlFlowNode case2 = pathHelper.findNodeByString(graph, "b = a * 2");
+			assertEquals(1, pathHelper.pathsBetween(entry, case2).size());
+
+			ControlFlowNode case34 = pathHelper.findNodeByString(graph, "b = a * 9");
+			assertEquals(2, pathHelper.pathsBetween(entry, case34).size());
+
+			ControlFlowNode defaultReturn = pathHelper.findNodeByString(graph, "return 1");
+			assertEquals(1, pathHelper.pathsBetween(entry, defaultReturn).size());
+
+			ControlFlowNode afterSwitchReturn = pathHelper.findNodeByString(graph, "return b");
+			assertEquals(3, pathHelper.pathsBetween(entry, afterSwitchReturn).size());
+
+			assertEquals(5, pathHelper.pathsBetween(entry, graph.getExitNode()).size());
 		}
 
 		//Test fall-through of last switch case
 		@Test
 		public void testSwitchFallThrough() throws Exception {
-			testMethod("lastCaseFallThrough", true, 1, 4, 11);
+			ControlFlowGraph graph = testMethod("lastCaseFallThrough", true, null, null, null);
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entry = graph.findNodesOfKind(BEGIN).get(0);
+			assertEquals(2, pathHelper.paths(entry).size());
 		}
 
 		@Test
@@ -189,7 +211,7 @@ public class ForwardFlowBuilderVisitorTest {
 
 		@Test
 		public void testMultipleCaseExpressions() throws Exception {
-			ControlFlowGraph graph = testMethod("multipleCaseExpressions", true, 1, 7, 14);
+			ControlFlowGraph graph = testMethod("multipleCaseExpressions", true, null, null, null);
 			graph.simplify();
 			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
 			ControlFlowNode startNode = pathHelper.findNodeByString(graph, "int b = 0");

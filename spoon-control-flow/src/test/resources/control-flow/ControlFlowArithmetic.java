@@ -363,7 +363,7 @@ public class ControlFlowArithmetic {
 				b = a * 9;
 				break;
 			default:
-				return 0;
+				return 1;
 		}
 		return b;
 	}

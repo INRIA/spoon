@@ -38,6 +38,18 @@ public class ControlFlowPathHelper {
     }
 
     /**
+     * Get a list of possible paths to the exit node from a given starting node.
+     *
+     * @param from Starting node
+     * @param to   End node
+     * @return List of possible paths
+     */
+    List<List<ControlFlowNode>> pathsBetween(ControlFlowNode from, ControlFlowNode to) {
+        List<List<ControlFlowNode>> exitPaths = paths(from);
+        return exitPaths.stream().filter(path -> path.contains(to)).toList();
+    }
+
+    /**
      * Get a list of possible paths to the exit node given a set of potentially incomplete paths.
      *
      * @param prior Set of potentially incomplete paths

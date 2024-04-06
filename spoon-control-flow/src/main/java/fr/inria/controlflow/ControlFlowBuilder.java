@@ -780,7 +780,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		ControlFlowNode statementNode = new ControlFlowNode(containingStatement, result, BranchKind.STATEMENT);
 		tryAddEdge(lastNode, statementNode);
 
-		ControlFlowNode selectorNode = new ControlFlowNode(abstractSwitch.getSelector(), result, BranchKind.EXPRESSION);
+		ControlFlowNode selectorNode = new ControlFlowNode(abstractSwitch.getSelector(), result, BranchKind.BRANCH);
 		tryAddEdge(statementNode, selectorNode);
 		lastNode = selectorNode;
 
@@ -853,7 +853,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			return true;
 		}
 
-		boolean hasDefault = switchElement.getCases().stream().anyMatch(CtCase::getIncludesDefault);
+		boolean hasDefault = switchElement.getCases().stream().anyMatch(cases -> cases.getIncludesDefault() || cases.getCaseExpressions().isEmpty());
 		if (hasDefault) {
 			return true;
 		}
