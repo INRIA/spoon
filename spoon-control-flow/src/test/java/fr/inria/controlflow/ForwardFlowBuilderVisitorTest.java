@@ -351,7 +351,7 @@ public class ForwardFlowBuilderVisitorTest {
 		pm.process(factory.getModel().getRootPackage());
 
 		ControlFlowGraph graph = visitor.getResult();
-		ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).getFirst();
+		ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
 		ControlFlowNode exitNode = graph.getExitNode();
 
 		assertFalse(graph.containsEdge(entryNode, exitNode), "Graph is missing statements");
