@@ -41,20 +41,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	static class CtCasePatternGuardReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtCasePattern element;
-
-		CtCasePatternGuardReplaceListener(spoon.reflect.code.CtCasePattern element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setGuard(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	static class CtCasePatternPatternReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtPattern> {
 		private final spoon.reflect.code.CtCasePattern element;
 
@@ -1161,6 +1147,20 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	static class CtCaseGuardReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtCase element;
+
+		CtCaseGuardReplaceListener(spoon.reflect.code.CtCase element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setGuard(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	static class CtCaseCaseExpressionsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtCase element;
 
@@ -1690,6 +1690,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	public <S> void visitCtCase(final spoon.reflect.code.CtCase<S> caseStatement) {
 		replaceInListIfExist(caseStatement.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(caseStatement));
 		replaceInListIfExist(caseStatement.getCaseExpressions(), new spoon.support.visitor.replace.ReplacementVisitor.CtCaseCaseExpressionsReplaceListener(caseStatement));
+		replaceElementIfExist(caseStatement.getGuard(), new spoon.support.visitor.replace.ReplacementVisitor.CtCaseGuardReplaceListener(caseStatement));
 		replaceInListIfExist(caseStatement.getStatements(), new spoon.support.visitor.replace.ReplacementVisitor.CtStatementListStatementsReplaceListener(caseStatement));
 		replaceInListIfExist(caseStatement.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(caseStatement));
 	}
@@ -2415,7 +2416,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(casePattern.getTypeCasts(), new spoon.support.visitor.replace.ReplacementVisitor.CtExpressionTypeCastsReplaceListener(casePattern));
 		replaceInListIfExist(casePattern.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(casePattern));
 		replaceElementIfExist(casePattern.getPattern(), new spoon.support.visitor.replace.ReplacementVisitor.CtCasePatternPatternReplaceListener(casePattern));
-		replaceElementIfExist(casePattern.getGuard(), new spoon.support.visitor.replace.ReplacementVisitor.CtCasePatternGuardReplaceListener(casePattern));
 		replaceElementIfExist(casePattern.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(casePattern));
 		replaceInListIfExist(casePattern.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(casePattern));
 	}

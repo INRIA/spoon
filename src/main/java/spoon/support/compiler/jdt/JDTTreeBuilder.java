@@ -798,11 +798,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
-	public void endVisit(GuardedPattern guardedPattern, BlockScope scope) {
-		context.exit(guardedPattern);
-	}
-
-	@Override
 	public boolean visit(Javadoc javadoc, BlockScope scope) {
 		// Use a custom compiler.
 		return false;
@@ -1742,8 +1737,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(GuardedPattern guardedPattern, BlockScope scope) {
-		context.enter(factory.Core().createCasePattern(), guardedPattern);
-		return true;
+		if (guardedPattern.primaryPattern != null) {
+			guardedPattern.primaryPattern.traverse(this, scope);
+		}
+		if (guardedPattern.condition != null) {
+			guardedPattern.condition.traverse(this, scope);
+		}
+		return false; // we cover this ourselves
 	}
 
 	@Override

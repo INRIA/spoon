@@ -338,6 +338,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(caseStatement);
 		scan(CtRole.ANNOTATION, caseStatement.getAnnotations());
 		scan(CtRole.EXPRESSION, caseStatement.getCaseExpressions());
+		scan(CtRole.CONDITION, caseStatement.getGuard());
 		scan(CtRole.STATEMENT, caseStatement.getStatements());
 		scan(CtRole.COMMENT, caseStatement.getComments());
 		exit(caseStatement);
@@ -1099,7 +1100,6 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.CAST, casePattern.getTypeCasts());
 		scan(CtRole.ANNOTATION, casePattern.getAnnotations());
 		scan(CtRole.PATTERN, casePattern.getPattern());
-		scan(CtRole.CONDITION, casePattern.getGuard());
 		scan(CtRole.TYPE, casePattern.getType());
 		scan(CtRole.COMMENT, casePattern.getComments());
 		exit(casePattern);

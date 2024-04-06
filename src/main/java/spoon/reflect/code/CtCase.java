@@ -7,6 +7,7 @@
  */
 package spoon.reflect.code;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
@@ -94,6 +95,23 @@ public interface CtCase<S> extends CtStatement, CtStatementList {
 	 */
 	@PropertySetter(role = CtRole.DEFAULT_EXPRESSION)
 	CtCase<S> setIncludesDefault(boolean includesDefault);
+
+	/**
+	 * {@return the guard of this case}
+	 * This method returns {@code null} if no guard is present.
+	 */
+	@PropertyGetter(role = CtRole.CONDITION)
+	@Nullable
+	CtExpression<?> getGuard();
+
+	/**
+	 * Sets the guarding expression for this case.
+	 *
+	 * @param guard the expression guarding this case. If {@code null}, no guard will be inserted in the code.
+	 * @return this case.
+	 */
+	@PropertySetter(role = CtRole.CONDITION)
+	CtCase<S> setGuard(@Nullable CtExpression<?> guard);
 
 	@Override
 	CtCase<S> clone();

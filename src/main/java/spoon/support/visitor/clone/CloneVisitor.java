@@ -171,6 +171,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		this.builder.copy(caseStatement, aCtCase);
 		aCtCase.setAnnotations(this.cloneHelper.clone(caseStatement.getAnnotations()));
 		aCtCase.setCaseExpressions(this.cloneHelper.clone(caseStatement.getCaseExpressions()));
+		aCtCase.setGuard(this.cloneHelper.clone(caseStatement.getGuard()));
 		aCtCase.setStatements(this.cloneHelper.clone(caseStatement.getStatements()));
 		aCtCase.setComments(this.cloneHelper.clone(caseStatement.getComments()));
 		this.cloneHelper.tailor(caseStatement, aCtCase);
@@ -1168,7 +1169,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtCasePattern.setTypeCasts(this.cloneHelper.clone(casePattern.getTypeCasts()));
 		aCtCasePattern.setAnnotations(this.cloneHelper.clone(casePattern.getAnnotations()));
 		aCtCasePattern.setPattern(this.cloneHelper.clone(casePattern.getPattern()));
-		aCtCasePattern.setGuard(this.cloneHelper.clone(casePattern.getGuard()));
 		aCtCasePattern.setType(this.cloneHelper.clone(casePattern.getType()));
 		aCtCasePattern.setComments(this.cloneHelper.clone(casePattern.getComments()));
 		this.cloneHelper.tailor(casePattern, aCtCasePattern);

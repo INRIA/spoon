@@ -40,6 +40,9 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	@MetamodelPropertyField(role = CtRole.DEFAULT_EXPRESSION)
 	private boolean includesDefault = false;
 
+	@MetamodelPropertyField(role = CtRole.CONDITION)
+	private CtExpression<?> guard;
+
 	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCase(this);
@@ -121,6 +124,22 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	public CtCase<E> setIncludesDefault(boolean includesDefault) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.DEFAULT_EXPRESSION, includesDefault, this.includesDefault);
 		this.includesDefault = includesDefault;
+		return this;
+	}
+
+	@Override
+	public CtExpression<?> getGuard() {
+		return guard;
+	}
+
+	@Override
+	public CtCase<E> setGuard(CtExpression<?> guard) {
+		if (guard != null) {
+			guard.setParent(this);
+		}
+		getFactory().getEnvironment().getModelChangeListener()
+				.onObjectUpdate(this, CtRole.CONDITION, guard, this.guard);
+		this.guard = guard;
 		return this;
 	}
 
