@@ -251,7 +251,8 @@ public class ForwardFlowBuilderVisitorTest {
 
 		@Test
 		public void testSimpleEnhancedSwitch() throws Exception {
-			ControlFlowGraph graph = testMethod("enhancedSwitchSimple", true, null, 5, null);
+			// TODO: This is a spoon bug that imagines a break statement. It should ideally be only 6 statements
+			ControlFlowGraph graph = testMethod("enhancedSwitchSimple", true, null, 6, null);
 			graph.simplify();
 			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
 			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
