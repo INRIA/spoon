@@ -1209,6 +1209,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				throw new SpoonException("Unexpected compilation unit type: " + compilationUnit.getUnitType());
 			}
 			elementPrinterHelper.writeComment(compilationUnit, CommentOffset.AFTER);
+		printer.writeln(); // end file with newline
 		} finally {
 			this.sourceCompilationUnit = outerCompilationUnit;
 		}

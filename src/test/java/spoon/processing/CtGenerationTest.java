@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
+import spoon.compiler.Environment;
 import spoon.generating.CloneVisitorGenerator;
 import spoon.generating.CtBiScannerGenerator;
 import spoon.generating.ReplacementVisitorGenerator;
@@ -19,13 +20,16 @@ import spoon.metamodel.MetamodelProperty;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtBiScannerDefault;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.DefaultTokenWriter;
 import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.PrettyPrinter;
+import spoon.reflect.visitor.PrinterHelper;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -56,6 +60,7 @@ public class CtGenerationTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
+		configurePrinter(launcher);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
@@ -81,15 +86,7 @@ public class CtGenerationTest {
 		// cp ./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java ./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java
 		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory() + "/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
 		CtClass<Object> expected = build(new File("./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
-		// checkstyle enforces a newline at the end of the file
-		appendNewLine(new File("./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java"));
 		assertThat(actual).isEqualTo(expected);
-	}
-
-	private void appendNewLine(File file) throws IOException {
-		FileWriter writer = new FileWriter(file, true);
-		writer.append("\n");
-		writer.close();
 	}
 
 	@Test
@@ -99,6 +96,7 @@ public class CtGenerationTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
+		configurePrinter(launcher);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
@@ -128,6 +126,7 @@ public class CtGenerationTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
+		configurePrinter(launcher);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
@@ -166,6 +165,7 @@ public class CtGenerationTest {
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().setCopyResources(false);
 		launcher.getEnvironment().useTabulations(true);
+		configurePrinter(launcher);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// Spoon model interfaces
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
@@ -192,6 +192,24 @@ public class CtGenerationTest {
 		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory() + "/spoon/reflect/meta/impl/ModelRoleHandlers.java")).Class().get("spoon.reflect.meta.impl.ModelRoleHandlers");
 		CtClass<Object> expected = build(new File("./src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java")).Class().get("spoon.reflect.meta.impl.ModelRoleHandlers");
 		assertThat(actual).isEqualTo(expected);
+	}
+
+	private void configurePrinter(Launcher launcher) {
+		Environment environment = launcher.getEnvironment();
+		environment.setPrettyPrinterCreator(new Supplier<>() {
+            @Override
+            public PrettyPrinter get() {
+				// we want to create a printer configured for the given environment,
+				// but we are who creates this printer - juggle around this StackOverflowError
+                environment.setPrettyPrinterCreator(null);
+                DefaultJavaPrettyPrinter printer = (DefaultJavaPrettyPrinter) environment.createPrettyPrinter();
+                environment.setPrettyPrinterCreator(this);
+                PrinterHelper printerHelper = new PrinterHelper(environment);
+                printerHelper.setPrefixBlockComments(true);
+                printer.setPrinterTokenWriter(new DefaultTokenWriter(printerHelper));
+                return printer;
+            }
+        });
 	}
 
 	private class RegexFilter implements Filter<CtType<?>> {
