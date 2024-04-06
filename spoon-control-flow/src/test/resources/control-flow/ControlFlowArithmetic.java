@@ -389,6 +389,78 @@ public class ControlFlowArithmetic {
 		return b;
 	}
 
+	enum Test {
+		TYPE_1, TYPE_2
+	}
+
+	public void oldSwitchExpression () {
+		int a = switch (1) {
+			case 1: yield 2;
+			case 2:
+				int b = 2;
+				yield 3;
+			default:
+				yield 1;
+		};
+	}
+
+	public void oldSwitchExpressionExhaustive() {
+		int a = switch (Test.TYPE_1) {
+			case TYPE_1: yield 1;
+			case TYPE_2: yield 2;
+		};
+	}
+
+	public void enhancedSwitchSimple() {
+		int a = 1;
+		switch (a) {
+			case 1 -> System.out.println("hi from case 1");
+			case 2 -> {
+				System.out.println("Hello from case 2");
+			}
+			default -> System.out.println("Hello from default");
+		}
+	}
+
+	public void enhancedSwitchImplicitDefault() {
+		int a = 1;
+		int b = 0;
+		switch (a) {
+			case 1 -> b = 1;
+		}
+	}
+
+	public void enhancedSwitchMultipleExpressions() {
+		switch (3) {
+			case 1, 2 -> {
+				int b = 1;
+			}
+			default -> {}
+		}
+	}
+
+	public void enhancedSwitchNullDefault(Object arg) {
+		switch (arg) {
+			case null, default -> {
+				int a = 1;
+			}
+		}
+	}
+
+	public void enhancedSwitchExhaustiveExpression () {
+		int a = switch (Test.TYPE_1) {
+			case TYPE_1 -> 1;
+			case TYPE_2 -> 2;
+		};
+	}
+
+	public void enhandedSwitchExhaustive() {
+		switch (Test.TYPE_1) {
+			case TYPE_1 -> {}
+			case TYPE_2 -> {}
+		}
+	}
+
 	//All lines will be tested in this method
 	public int simple(int a) {
 		a = a + a / 2;
