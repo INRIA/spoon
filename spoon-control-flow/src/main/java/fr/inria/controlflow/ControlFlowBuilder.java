@@ -118,7 +118,9 @@ import spoon.reflect.visitor.CtAbstractVisitor;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 /**
  * Builds the control graph for a given snippet of code
@@ -847,6 +849,17 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		boolean hasDefault = switchElement.getCases().stream().anyMatch(cases -> cases.getIncludesDefault() || cases.getCaseExpressions().isEmpty());
 		if (hasDefault) {
 			return true;
+		}
+
+		Set<CtExpression<?>> caseExpressions = switchElement.getCases().stream().flatMap(cases -> cases.getCaseExpressions().stream()).collect(Collectors.toSet());
+		if (switchElement.getSelector().getType().isEnum()) {
+			CtEnum<?> enumType = (CtEnum<?>) switchElement.getSelector().getType().getTypeDeclaration();
+			Set<String> enumConstantNames = enumType.getEnumValues().stream().map(CtEnumValue::getSimpleName).collect(Collectors.toSet());
+			Set<String> referencedEnumConstants = caseExpressions.stream().map(expression -> ((CtFieldRead<?>) expression).getVariable().getSimpleName()).collect(Collectors.toSet());
+
+			if (referencedEnumConstants.containsAll(enumConstantNames)) {
+				return true;
+			}
 		}
 
 		// TODO: More complete exhaustive check

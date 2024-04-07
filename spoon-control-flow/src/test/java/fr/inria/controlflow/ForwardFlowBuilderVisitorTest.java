@@ -301,8 +301,18 @@ public class ForwardFlowBuilderVisitorTest {
 		}
 
 		@Test
-		public void testEnhancedSwitchExhaustive() throws Exception {
-			ControlFlowGraph graph = testMethod("enhancedSwitchExhaustive", true, null, null, null);
+		public void testEnhancedSwitchExhaustiveEnum() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchExhaustiveEnum", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(2, paths.size());
+		}
+
+		@Test
+		public void testEnhancedSwitchNonExhaustiveEnum() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchNonExhaustiveEnum", true, null, null, null);
 			graph.simplify();
 			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
 			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);

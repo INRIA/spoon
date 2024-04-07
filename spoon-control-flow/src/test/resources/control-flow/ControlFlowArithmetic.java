@@ -467,9 +467,15 @@ public class ControlFlowArithmetic {
 		};
 	}
 
-	public void enhancedSwitchExhaustive() {
+	public void enhancedSwitchExhaustiveEnum() {
 		switch (Test.TYPE_1) {
 			case TYPE_1 -> {}
+			case TYPE_2 -> {}
+		}
+	}
+
+	public void enhancedSwitchNonExhaustiveEnum() {
+		switch (Test.TYPE_1) {
 			case TYPE_2 -> {}
 		}
 	}
