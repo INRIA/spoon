@@ -9,6 +9,7 @@ package spoon.processing;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.compiler.Environment;
@@ -27,8 +28,10 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.PrinterHelper;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -110,7 +113,6 @@ public class CtGenerationTest {
 		launcher.setOutputFilter(new RegexFilter("spoon.reflect.visitor.CtBiScannerDefault"));
 		launcher.run();
 
-		// cp ./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java ./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java
 		// we don't necessarily want to hard-wired the relation between CtScanner and CtBiScannerDefault.java
 		// this can be done on an informed basis when important changes are made in the metamodel/scanner
 		// and then we can have smaller clean tested pull requests to see the impact of the change
@@ -192,6 +194,35 @@ public class CtGenerationTest {
 		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory() + "/spoon/reflect/meta/impl/ModelRoleHandlers.java")).Class().get("spoon.reflect.meta.impl.ModelRoleHandlers");
 		CtClass<Object> expected = build(new File("./src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java")).Class().get("spoon.reflect.meta.impl.ModelRoleHandlers");
 		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	@Disabled("only meant to be run manually to make copying easier")
+	void copyGeneratedFiles() throws IOException {
+		copy(
+				"./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java",
+				"./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java"
+		);
+		copy(
+				"./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java",
+				"./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java"
+		);
+		copy(
+				"./target/generated/spoon/support/visitor/clone/CloneBuilder.java",
+				"./src/main/java/spoon/support/visitor/clone/CloneBuilder.java"
+		);
+		copy(
+				"./target/generated/spoon/support/visitor/clone/CloneVisitor.java",
+				"./src/main/java/spoon/support/visitor/clone/CloneVisitor.java"
+		);
+		copy(
+				"./target/generated/spoon/reflect/meta/impl/ModelRoleHandlers.java",
+				"./src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java"
+		);
+	}
+
+	private static void copy(String from, String to) throws IOException {
+		Files.copy(Path.of(from), Path.of(to), StandardCopyOption.REPLACE_EXISTING);
 	}
 
 	private void configurePrinter(Launcher launcher) {
