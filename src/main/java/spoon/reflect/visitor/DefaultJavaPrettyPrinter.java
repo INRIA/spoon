@@ -1213,7 +1213,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			this.sourceCompilationUnit = outerCompilationUnit;
 		}
 		// by convention, we add a newline at the end of the file
-		printer.writeln();
+		// we guard this with a check to avoid adding a newline if there is already one
+		if (!getResult().endsWith(System.lineSeparator())) {
+			printer.writeln();
+		}
 	}
 
 	protected ModelList<CtImport> getImports(CtCompilationUnit compilationUnit) {
