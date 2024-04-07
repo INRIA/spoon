@@ -1212,6 +1212,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} finally {
 			this.sourceCompilationUnit = outerCompilationUnit;
 		}
+		// by convention, we add a newline at the end of the file
+		printer.writeln();
 	}
 
 	protected ModelList<CtImport> getImports(CtCompilationUnit compilationUnit) {
@@ -2182,29 +2184,28 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void calculate(CtCompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		reset();
-		if (types.isEmpty()) {
-			// is package-info.java, we cannot call types.get(0) in the then branch
-		} else {
-			CtType<?> type = types.get(0);
-			if (sourceCompilationUnit == null) {
-				sourceCompilationUnit = type.getFactory().CompilationUnit().getOrCreate(type);
-			}
-			if (type.getPackage() == null) {
-				type.setParent(type.getFactory().Package().getRootPackage());
-			}
-			CtPackageReference packRef = type.getPackage().getReference();
-			if (!packRef.equals(sourceCompilationUnit.getPackageDeclaration().getReference())) {
-				//the type was cloned and moved to different package. Adapt package reference of compilation unit too
-				sourceCompilationUnit.getPackageDeclaration().setReference(packRef);
-			}
-			if (!hasSameTypes(sourceCompilationUnit, types)) {
-				//the provided CU has different types, then these which has to be printed
-				//clone CU and assign it expected types
-				sourceCompilationUnit = sourceCompilationUnit.clone();
-				sourceCompilationUnit.setDeclaredTypes(types);
-			}
-		}
-		applyPreProcessors(sourceCompilationUnit);
+		 // if empty => is package-info.java, we cannot call types.get(0) in the then branch
+        if (!types.isEmpty()) {
+            CtType<?> type = types.get(0);
+            if (sourceCompilationUnit == null) {
+                sourceCompilationUnit = type.getFactory().CompilationUnit().getOrCreate(type);
+            }
+            if (type.getPackage() == null) {
+                type.setParent(type.getFactory().Package().getRootPackage());
+            }
+            CtPackageReference packRef = type.getPackage().getReference();
+            if (!packRef.equals(sourceCompilationUnit.getPackageDeclaration().getReference())) {
+                //the type was cloned and moved to different package. Adapt package reference of compilation unit too
+                sourceCompilationUnit.getPackageDeclaration().setReference(packRef);
+            }
+            if (!hasSameTypes(sourceCompilationUnit, types)) {
+                //the provided CU has different types, then these which has to be printed
+                //clone CU and assign it expected types
+                sourceCompilationUnit = sourceCompilationUnit.clone();
+                sourceCompilationUnit.setDeclaredTypes(types);
+            }
+        }
+        applyPreProcessors(sourceCompilationUnit);
 		scan(sourceCompilationUnit);
 	}
 
