@@ -2187,7 +2187,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void calculate(CtCompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		reset();
-		 // if empty => is package-info.java, we cannot call types.get(0) in the then branch
+		// if empty => is package-info.java, we cannot call types.get(0) in the then branch
 		if (!types.isEmpty()) {
 			CtType<?> type = types.get(0);
 			if (sourceCompilationUnit == null) {
