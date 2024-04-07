@@ -1858,7 +1858,7 @@ public class ImportTest {
 				"        System.out.println(Locale.HELLO);\n" +
 				"        System.out.println(java.util.Locale.GERMANY);\n" +
 				"    }\n" +
-				"}",
+				"}\n",
 			user.toStringWithImports()
 		);
 	}
