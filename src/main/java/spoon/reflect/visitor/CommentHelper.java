@@ -61,26 +61,26 @@ public class CommentHelper {
 			break;
 		}
 		// content
-        switch (commentType) {
-            case INLINE -> printer.write(content);
+		switch (commentType) {
+			case INLINE -> printer.write(content);
 			case FILE, BLOCK -> {
 				UnaryOperator<String> op;
-                if (printer.prefixBlockComments) {
-                    op = s -> {
+				if (printer.prefixBlockComments) {
+					op = s -> {
 						if (s.isEmpty()) {
 							return " *";
 						}
-                        return (" * " + s);
-                    };
-                } else {
-                    op = s -> s;
-                }
-                printCommentContent(printer, comment, op);
+						return (" * " + s);
+					};
+				} else {
+					op = s -> s;
+				}
+				printCommentContent(printer, comment, op);
 			}
 			case JAVADOC ->
-					// per line suffix
-                    printCommentContent(printer, comment, s -> (" * " + s).replaceAll(" *$", ""));
-        }
+				// per line suffix
+					printCommentContent(printer, comment, s -> (" * " + s).replaceAll(" *$", ""));
+		}
 		// suffix
 		switch (commentType) {
 			case BLOCK:
