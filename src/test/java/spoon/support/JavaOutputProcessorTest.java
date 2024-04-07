@@ -1,10 +1,12 @@
 package spoon.support;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
+import spoon.testing.utils.LineSeparatorExtension;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -38,6 +40,7 @@ class JavaOutputProcessorTest {
 		assertEquals(1, javaOutputProcessor.printedFiles.size());
 	}
 
+	@ExtendWith(LineSeparatorExtension.class)
 	@Test
 	void testCreateJavaFileAssertFileEncodingChanged(@TempDir File tempDir) throws Exception {
 
@@ -48,7 +51,7 @@ class JavaOutputProcessorTest {
 		Factory factory = launcher.getFactory();
 
 		// use characters encoded differently in ISO-8859-01 and UTFs
-		String code = "class ÈmptyÇlàss {}\n";
+		String code = "class ÈmptyÇlàss {}"+ System.lineSeparator();
 		CtClass<?> ctClass =  Launcher.parseClass(code);
 
 		JavaOutputProcessor javaOutputProcessor = new JavaOutputProcessor();
