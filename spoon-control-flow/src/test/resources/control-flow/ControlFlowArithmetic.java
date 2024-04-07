@@ -467,7 +467,7 @@ public class ControlFlowArithmetic {
 		};
 	}
 
-	public void enhandedSwitchExhaustive() {
+	public void enhancedSwitchExhaustive() {
 		switch (Test.TYPE_1) {
 			case TYPE_1 -> {}
 			case TYPE_2 -> {}
