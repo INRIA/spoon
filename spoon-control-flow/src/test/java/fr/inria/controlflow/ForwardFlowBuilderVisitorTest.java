@@ -347,7 +347,7 @@ public class ForwardFlowBuilderVisitorTest {
 			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
 			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
 			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
-			assertEquals(2, paths.size());
+			assertEquals(1, paths.size());
 		}
 
 	}

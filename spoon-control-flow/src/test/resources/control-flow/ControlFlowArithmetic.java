@@ -393,9 +393,10 @@ public class ControlFlowArithmetic {
 		TYPE_1, TYPE_2
 	}
 
-	public void oldSwitchAssignExpression () {
+	public void oldSwitchAssignExpression() {
 		int a = switch (1) {
-			case 1: yield 2;
+			case 1:
+				yield 2;
 			case 2:
 				int b = 2;
 				yield 3;
@@ -404,9 +405,10 @@ public class ControlFlowArithmetic {
 		};
 	}
 
-	public int oldSwitchReturnExpression () {
+	public int oldSwitchReturnExpression() {
 		return switch (1) {
-			case 1: yield 2;
+			case 1:
+				yield 2;
 			case 2:
 				int b = 2;
 				yield 3;
@@ -417,8 +419,10 @@ public class ControlFlowArithmetic {
 
 	public void oldSwitchExpressionExhaustive() {
 		int a = switch (Test.TYPE_1) {
-			case TYPE_1: yield 1;
-			case TYPE_2: yield 2;
+			case TYPE_1:
+				yield 1;
+			case TYPE_2:
+				yield 2;
 		};
 	}
 
@@ -448,7 +452,8 @@ public class ControlFlowArithmetic {
 			case 1, 2 -> {
 				int b = 1;
 			}
-			default -> {}
+			default -> {
+			}
 		}
 	}
 
@@ -460,7 +465,7 @@ public class ControlFlowArithmetic {
 		}
 	}
 
-	public void enhancedSwitchExhaustiveExpression () {
+	public void enhancedSwitchExhaustiveExpression() {
 		int a = switch (Test.TYPE_1) {
 			case TYPE_1 -> 1;
 			case TYPE_2 -> 2;
@@ -469,15 +474,58 @@ public class ControlFlowArithmetic {
 
 	public void enhancedSwitchExhaustiveEnum() {
 		switch (Test.TYPE_1) {
-			case TYPE_1 -> {}
-			case TYPE_2 -> {}
+			case TYPE_1 -> {
+			}
+			case TYPE_2 -> {
+			}
 		}
 	}
 
 	public void enhancedSwitchNonExhaustiveEnum() {
 		switch (Test.TYPE_1) {
-			case TYPE_2 -> {}
+			case TYPE_2 -> {
+			}
 		}
+	}
+
+	sealed interface I permits R, A {
+	}
+
+	record R(int j) implements I {
+	}
+
+	sealed class A implements I permits B, C {
+	}
+
+	final class B extends A {
+	}
+
+	final class C extends A {
+	}
+
+	static int enhancedSwitchSealedExhaustive(I i) {
+		switch (i) {
+			case A a -> {}
+			case R r -> {}
+		};
+	}
+
+	static int enhancedSwitchMultilevelSealedExhaustive(I i) {
+		switch (i) {
+			case B b -> {}
+			case C b -> {}
+			case R r -> {}
+		};
+	}
+
+	sealed interface J<X> permits D, E {}
+	final class D<Y> implements J<String> {}
+	final class E<X> implements J<X> {}
+
+	static int enhancedSwitchExhaustiveParametrization(J<Integer> ji) {
+		switch(ji) {          // Exhaustive!
+			case E<Integer> e -> 42;
+		};
 	}
 
 	//All lines will be tested in this method
@@ -525,7 +573,7 @@ public class ControlFlowArithmetic {
 	}
 
 	public void complex1(double phase, double source, double target, double baseIncrement, boolean starved, int i,
-	                     double current, double[] outputs, double[] amplitudes, double[] rates) {
+						 double current, double[] outputs, double[] amplitudes, double[] rates) {
 		if ((phase) >= 1.0) {
 			while ((phase) >= 1.0) {
 				source = target;
