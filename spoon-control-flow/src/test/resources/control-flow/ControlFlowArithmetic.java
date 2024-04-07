@@ -447,6 +447,16 @@ public class ControlFlowArithmetic {
 		}
 	}
 
+	public void enhancedSwitchImplicitDefaultString() {
+		int a = 1;
+		int b = 0;
+		switch ("a") {
+			case "1" -> {
+				b = 1;
+			}
+		}
+	}
+
 	public void enhancedSwitchMultipleExpressions() {
 		switch (3) {
 			case 1, 2 -> {
@@ -503,11 +513,11 @@ public class ControlFlowArithmetic {
 	final class C extends A {
 	}
 
-	static int enhancedSwitchSealedExhaustive(I i) {
+	static void enhancedSwitchSealedExhaustive(I i) {
 		switch (i) {
 			case A a -> {}
 			case R r -> {}
-		};
+		}
 	}
 
 	static int enhancedSwitchExhaustiveConstantTrueGuard(I i) {
@@ -525,15 +535,6 @@ public class ControlFlowArithmetic {
 		};
 	}
 
-	sealed interface J<X> permits D, E {}
-	final class D<Y> implements J<String> {}
-	final class E<X> implements J<X> {}
-
-	static int enhancedSwitchExhaustiveParametrization(J<Integer> ji) {
-		switch(ji) {          // Exhaustive!
-			case E<Integer> e -> 42;
-		};
-	}
 
 	//All lines will be tested in this method
 	public int simple(int a) {

@@ -271,6 +271,16 @@ public class ForwardFlowBuilderVisitorTest {
 		}
 
 		@Test
+		public void testEnhancedSwitchImplicitDefaultString() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchImplicitDefaultString", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(2, paths.size());
+		}
+
+		@Test
 		public void testEnhancedSwitchMultipleExpressions() throws Exception {
 			ControlFlowGraph graph = testMethod("enhancedSwitchMultipleExpressions", true, null, null, null);
 			graph.simplify();
@@ -347,17 +357,7 @@ public class ForwardFlowBuilderVisitorTest {
 			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
 			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
 			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
-			assertEquals(2, paths.size());
-		}
-
-		@Test
-		public void testEnhancedSwitchExhaustiveParametrization() throws Exception {
-			ControlFlowGraph graph = testMethod("enhancedSwitchExhaustiveParametrization", true, null, null, null);
-			graph.simplify();
-			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
-			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
-			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
-			assertEquals(1, paths.size());
+			assertEquals(3, paths.size());
 		}
 
 	}

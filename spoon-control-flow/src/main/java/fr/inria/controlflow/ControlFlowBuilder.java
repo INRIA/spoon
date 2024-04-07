@@ -851,19 +851,20 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			return true;
 		}
 
-		Set<CtExpression<?>> caseExpressions = switchElement.getCases().stream().flatMap(cases -> cases.getCaseExpressions().stream()).collect(Collectors.toSet());
 		if (switchElement.getSelector().getType().isEnum()) {
+			Set<CtExpression<?>> caseExpressions = switchElement.getCases().stream().flatMap(cases -> cases.getCaseExpressions().stream()).collect(Collectors.toSet());
 			CtEnum<?> enumType = (CtEnum<?>) switchElement.getSelector().getType().getTypeDeclaration();
 			Set<String> enumConstantNames = enumType.getEnumValues().stream().map(CtEnumValue::getSimpleName).collect(Collectors.toSet());
 			Set<String> referencedEnumConstants = caseExpressions.stream().map(expression -> ((CtFieldRead<?>) expression).getVariable().getSimpleName()).collect(Collectors.toSet());
 
-			if (referencedEnumConstants.containsAll(enumConstantNames)) {
-				return true;
-			}
+			return referencedEnumConstants.containsAll(enumConstantNames);
 		}
 
-		// TODO: More complete exhaustive check
-		return false;
+		CtTypeReference<?> selectorTypeReference = switchElement.getSelector().getType();
+
+		boolean isEnhanced = !selectorTypeReference.isPrimitive() && !selectorTypeReference.equals(selectorTypeReference.getFactory().Type().createReference(String.class));
+
+		return isEnhanced;
 	}
 
 	@Override
