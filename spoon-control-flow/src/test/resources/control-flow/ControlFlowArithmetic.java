@@ -510,6 +510,13 @@ public class ControlFlowArithmetic {
 		};
 	}
 
+	static int enhancedSwitchExhaustiveConstantTrueGuard(I i) {
+		switch (i) {
+			case A a when 1 < 2 -> {}
+			case R r -> {}
+		};
+	}
+
 	static int enhancedSwitchMultilevelSealedExhaustive(I i) {
 		switch (i) {
 			case B b -> {}

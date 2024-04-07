@@ -331,6 +331,16 @@ public class ForwardFlowBuilderVisitorTest {
 		}
 
 		@Test
+		public void testConstantGuardExhaustive() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchExhaustiveConstantTrueGuard", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(2, paths.size());
+		}
+
+		@Test
 		public void testComplexSealedHierarchyExhaustive() throws Exception {
 			ControlFlowGraph graph = testMethod("enhancedSwitchMultilevelSealedExhaustive", true, null, null, null);
 			graph.simplify();
