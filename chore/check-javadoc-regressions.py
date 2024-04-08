@@ -73,20 +73,25 @@ def print_quality_check_not_parseable_error():
         )
 
 
-def run_quality_check(config_path: Path, target_branch: Optional[str] = None) -> str:
+def run_quality_check(target_branch: Optional[str] = None) -> str:
     """
     Runs the quality check and returns the output as a decoded string.
     Optionally you can pass a branch to borrow the quality check from, if
     it does not exist locally.
     """
     check_path = Path("chore/CheckJavadoc.java")
+    runner_helper = Path("chore/run-with-spoon-javadoc-classpath.sh")
+
     if target_branch:
         print(warn(f"Borrowing quality script from '{target_branch}'"))
         run_command(["git", "checkout", target_branch, "--", str(check_path)])
 
+    if not runner_helper.exists():
+        print(warn(f"Borrowing runner script from '{target_branch}'"))
+        run_command(["git", "checkout", target_branch, "--", str(runner_helper)])
+
     return run_command([
-        "jbang",
-        "--verbose",
+        str(runner_helper),
         str(check_path)
     ])
 
@@ -176,17 +181,16 @@ def command_compare_with_branch(target_branch: str) -> None:
     # Switch to the root, so the quality check will run against the whole project
     os.chdir(run_command(["git", "rev-parse", "--show-toplevel"]).strip())
 
-    with temporary_path(suffix=".xml") as config_path:
-        original_branch = run_command(["git", "rev-parse", "--abbrev-ref", "HEAD"]).strip()
-        if original_branch == "HEAD":
-            original_branch = run_command(["git", "rev-parse", "HEAD"]).strip()
-        run_command(["git", "checkout", target_branch], stderr=PIPE)
-        reference_output = run_quality_check(config_path, original_branch)
+    original_branch = run_command(["git", "rev-parse", "--abbrev-ref", "HEAD"]).strip()
+    if original_branch == "HEAD":
+        original_branch = run_command(["git", "rev-parse", "HEAD"]).strip()
+    run_command(["git", "checkout", target_branch], stderr=PIPE)
+    reference_output = run_quality_check(original_branch)
 
-        run_command(["git", "checkout", original_branch], stderr=PIPE)
-        other_output = run_quality_check(config_path)
+    run_command(["git", "checkout", original_branch], stderr=PIPE)
+    other_output = run_quality_check()
 
-        handle_compare_with_branch_output(target_branch, reference_output, other_output)
+    handle_compare_with_branch_output(target_branch, reference_output, other_output)
 
 
 def handle_compare_with_branch_output(target_branch: str, reference_output: str, other_output: str):
@@ -236,15 +240,14 @@ def command_filtered_quality_check_errors(regex_str: str) -> None:
     Runs the quality check in the current working directory and filters the output using the passed regex.
     """
     regex: Pattern = re.compile(regex_str)
-    with temporary_path(suffix=".xml") as config_path:
-        quality_check_output = run_quality_check(config_path)
+    quality_check_output = run_quality_check()
 
-        for line in quality_check_output.splitlines():
-            if regex.search(line):
-                print(line)
+    for line in quality_check_output.splitlines():
+        if regex.search(line):
+            print(line)
 
-        if extract_violation_count(quality_check_output) is None:
-            print_quality_check_not_parseable_error()
+    if extract_violation_count(quality_check_output) is None:
+        print_quality_check_not_parseable_error()
 
 
 def fix_colors_windows_cmd():
