@@ -20,6 +20,7 @@ package spoon.test.sourcePosition;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import spoon.reflect.CtModel;
@@ -132,10 +133,16 @@ public class SourcePositionTest {
 	)
 	void testModifiersHaveSourcePosition(CtModel model) {
 		// contract: all explicit modifiers should have a valid position
-		Stream<Executable> executables = model.getElements(new TypeFilter<>(CtModifiable.class)).stream()
+		Executable[] executables = model.getElements(new TypeFilter<>(CtModifiable.class)).stream()
 				.flatMap(modifiable -> modifiable.getExtendedModifiers().stream())
 				.filter(modifier -> !modifier.isImplicit())
-				.map(mod -> () -> assertThat(mod).matches(m -> m.getPosition().isValidPosition(), "is valid source position"));
+				.map(mod -> (Executable) () -> assertThat(mod).matches(
+								m -> m.getPosition().isValidPosition(),
+								"is valid source position"
+						)
+				)
+				.toArray(Executable[]::new);
+		assertEquals(8, executables.length, "unexpected length of modifiers found");
 		assertAll(executables);
 	}
 }
