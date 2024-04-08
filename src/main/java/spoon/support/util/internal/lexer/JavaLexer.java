@@ -7,6 +7,7 @@
  */
 package spoon.support.util.internal.lexer;
 
+import org.jspecify.annotations.Nullable;
 import spoon.support.util.internal.trie.Trie;
 
 import java.util.Arrays;
@@ -26,6 +27,12 @@ public class JavaLexer {
 	private final CharRemapper charRemapper;
 	private int nextPos;
 
+	/**
+	 * Creates a java lexer for the given content and range.
+	 * @param content the content to lex.
+	 * @param start the start offset of the range to lex (inclusive).
+	 * @param end the end offset of the range to lex (exclusive).
+	 */
 	public JavaLexer(char[] content, int start, int end) {
 		this.charRemapper = new CharRemapper(content, start, end);
 		this.content = this.charRemapper.remapContent();
@@ -35,7 +42,7 @@ public class JavaLexer {
 	/**
 	 * @return {@code null} if no more tokens can be lexed in the range of this lexer.
 	 */
-	public Token lex() {
+	public @Nullable Token lex() {
 		if (!skipCommentsAndWhitespaces()) {
 			return null;
 		}
@@ -123,7 +130,7 @@ public class JavaLexer {
 		} while (true);
 	}
 
-	private Token lexLiteralOrKeywordOrIdentifier() {
+	private @Nullable Token lexLiteralOrKeywordOrIdentifier() {
 		int pos = this.nextPos;
 		char next = next(); // assuming next is available
 		if (Character.isJavaIdentifierStart(next)) {
@@ -277,7 +284,7 @@ public class JavaLexer {
 		return null;
 	}
 
-	private Token lexCharacterLiteral(int startPos) {
+	private @Nullable Token lexCharacterLiteral(int startPos) {
 		while (hasMore()) {
 			char peek = peek();
 			if (peek == CHAR_ESCAPE_CHAR_CHAR) {
@@ -337,17 +344,19 @@ public class JavaLexer {
 	}
 
 	private static boolean isNon(int pos, char[] content) {
-		return content.length - pos >= 3 && content[pos++] == 'n' && content[pos++] == 'o' && content[pos] == 'n';
+		int p = pos;
+		return content.length - p >= 3 && content[p++] == 'n' && content[p++] == 'o' && content[p] == 'n';
 	}
 
 	private static boolean isDashSealed(char[] content, int pos) {
-		return content[pos++] == '-'
-				&& content[pos++] == 's'
-				&& content[pos++] == 'e'
-				&& content[pos++] == 'a'
-				&& content[pos++] == 'l'
-				&& content[pos++] == 'e'
-				&& content[pos] == 'd';
+		int p = pos;
+		return content[p++] == '-'
+				&& content[p++] == 's'
+				&& content[p++] == 'e'
+				&& content[p++] == 'a'
+				&& content[p++] == 'l'
+				&& content[p++] == 'e'
+				&& content[p] == 'd';
 	}
 
 	private boolean skipWhitespaces() {
