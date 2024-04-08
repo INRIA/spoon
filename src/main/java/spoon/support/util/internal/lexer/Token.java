@@ -14,15 +14,25 @@ package spoon.support.util.internal.lexer;
 public record Token(TokenType type, int start, int end) {
 	private static final int COLUMN_WIDTH = 8;
 
-
+	/**
+	 * {@return the number of chars this token covers}
+	 */
 	public int length() {
 		return end - start;
 	}
 
+	/**
+	 * {@return the value this token represents for the original content}
+	 * @param content the original content.
+	 */
 	public String valueForContent(char[] content) {
 		return new String(content, this.start, this.end - this.start);
 	}
 
+	/**
+	 * {@return a formatted string representing this token, given the original content}
+	 * @param content the original content.
+	 */
 	public String formatted(char[] content) {
 		String type = " ".repeat(10 - this.type.name().length()) + this.type.name();
 		String s = String.valueOf(this.start);

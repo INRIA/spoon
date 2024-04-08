@@ -116,6 +116,7 @@ public class AstCheckerTest {
 	public void testAvoidSetCollectionSavedOnAST() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setComplianceLevel(17);
 		launcher.addInputResource("src/main/java");
 		launcher.buildModel();
 

@@ -78,7 +78,7 @@ public class SpoonArchitectureEnforcerTest {
 	@BeforeAll
 	static void beforeAll() {
 		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setComplianceLevel(11);
+		launcher.getEnvironment().setComplianceLevel(17);
 		launcher.addInputResource("src/main/java/");
 		spoonSrcMainModel = launcher.buildModel();
 		spoonSrcMainFactory = launcher.getFactory();
@@ -341,6 +341,7 @@ public class SpoonArchitectureEnforcerTest {
 	public void testInterfacesAreCtScannable() {
 		// contract: all non-leaf interfaces of the metamodel should be visited by CtInheritanceScanner
 		Launcher interfaces = new Launcher();
+		interfaces.getEnvironment().setComplianceLevel(17);
 		interfaces.addInputResource("src/main/java/spoon/support");
 		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
 		interfaces.addInputResource("src/main/java/spoon/reflect/code");
