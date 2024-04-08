@@ -332,6 +332,11 @@ public class ForwardFlowBuilderVisitorTest {
 	}
 
 	@Test
+	public void testSynchronized() throws Exception {
+		testMethod("synchronization", true, 0, 2, 8);
+	}
+
+	@Test
 	public void testtestCase() throws Exception {
 		//branchCount, stmntCount, totalCount
 		ControlFlowGraph graph = testMethod("complex1", true, null, null, null);

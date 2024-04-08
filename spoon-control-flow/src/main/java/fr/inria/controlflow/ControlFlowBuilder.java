@@ -798,7 +798,11 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	@Override
 	public void visitCtSynchronized(CtSynchronized synchro) {
+		ControlFlowNode expressionNode = new ControlFlowNode(synchro.getExpression(), result, BranchKind.STATEMENT);
+		tryAddEdge(lastNode, expressionNode);
+		lastNode = expressionNode;
 
+		synchro.getBlock().accept(this);
 	}
 
 	@Override
