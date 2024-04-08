@@ -30,7 +30,7 @@ public class JavaLexer {
 		this.charRemapper = new CharRemapper(content, start, end);
 		this.content = this.charRemapper.remapContent();
 		this.nextPos = 0;
-    }
+	}
 
 	/**
 	 * @return {@code null} if no more tokens can be lexed in the range of this lexer.
@@ -265,7 +265,7 @@ public class JavaLexer {
 			if (peek == CHAR_ESCAPE_CHAR_CHAR) {
 				next();
 				if (hasMore()) {
-					next();// assuming the string is correct, we're skipping every escapable char, including "
+					next(); // assuming the string is correct, we're skipping every escapable char, including "
 				}
 			} else if (peek() == '"' && peek(1) == '"' && peek(2) == '"') {
 				skip(3);
@@ -341,13 +341,13 @@ public class JavaLexer {
 	}
 
 	private static boolean isDashSealed(char[] content, int pos) {
-		return content[pos++] == '-' &&
-				content[pos++] == 's' &&
-				content[pos++] == 'e' &&
-				content[pos++] == 'a' &&
-				content[pos++] == 'l' &&
-				content[pos++] == 'e' &&
-				content[pos] == 'd';
+		return content[pos++] == '-'
+				&& content[pos++] == 's'
+				&& content[pos++] == 'e'
+				&& content[pos++] == 'a'
+				&& content[pos++] == 'l'
+				&& content[pos++] == 'e'
+				&& content[pos] == 'd';
 	}
 
 	private boolean skipWhitespaces() {

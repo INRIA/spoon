@@ -21,6 +21,7 @@ record SimpleTrie<T>(
 
 	/**
 	 * Finds the value for the given char array.
+	 *
 	 * @param input the array representing the key.
 	 * @return the value mapped to by the given input.
 	 */
@@ -31,6 +32,7 @@ record SimpleTrie<T>(
 
 	/**
 	 * Finds the value for the range of given char array.
+	 *
 	 * @param input the array representing the key.
 	 * @return the value mapped to by the given input.
 	 */
@@ -78,7 +80,7 @@ record SimpleTrie<T>(
 	}
 
 	@SuppressWarnings("unchecked")
-    private static <T> Node<T>[] createFollows(char min, char max) {
+	private static <T> Node<T>[] createFollows(char min, char max) {
 		return new Node[max - min + 1];
 	}
 
@@ -87,7 +89,7 @@ record SimpleTrie<T>(
 			T value
 	) {
 
-        Node<T> advance(int index) {
+		Node<T> advance(int index) {
 			return follows[index];
 		}
 	}
