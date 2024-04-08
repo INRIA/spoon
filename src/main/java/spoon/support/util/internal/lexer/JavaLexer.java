@@ -47,58 +47,37 @@ public class JavaLexer {
 		}
 		int pos = this.nextPos;
 		char c = next();
-		switch (c) {
-			case '(':
-			case ')':
-			case '{':
-			case '}':
-			case '[':
-			case ']':
-			case ';':
-			case ',':
-			case '@':
-				return createToken(TokenType.SEPARATOR, pos);
-			case '.':
+		return switch (c) {
+			case '(', ')', '{', '}', '[', ']', ';', ',', '@' -> createToken(TokenType.SEPARATOR, pos);
+			case '.' -> {
 				if (hasMore(2) && peek() == '.' && peek(1) == '.') {
 					skip(2);
 				}
-				return createToken(TokenType.SEPARATOR, pos);
-			case ':':
+				yield createToken(TokenType.SEPARATOR, pos);
+			}
+			case ':' -> {
 				if (hasMore() && peek() == ':') {
 					next();
-					return createToken(TokenType.SEPARATOR, pos);
+					yield createToken(TokenType.SEPARATOR, pos);
 				}
-				return createToken(TokenType.OPERATOR, pos);
-			case '/': // no comment, already skipped
-			case '=':
-			case '*':
-			case '^':
-			case '%':
-			case '!':
-				return singleOrDoubleOperator(pos, '=');
-			case '+':
-				return singleOrDoubleOperator(pos, '=', '+');
-			case '-':
-				return singleOrDoubleOperator(pos, '=', '-', '>');
-			case '&':
-				return singleOrDoubleOperator(pos, '=', '&');
-			case '|':
-				return singleOrDoubleOperator(pos, '=', '|');
-			case '>':
-				return angleBracket(pos, 1, 3, '>');
-			case '<':
-				return angleBracket(pos, 1, 2, '<');
-			case '\'':
-				return lexCharacterLiteral(pos);
-			case '"':
-				return lexStringLiteral(pos);
-			case '~':
-			case '?':
-				return createToken(TokenType.OPERATOR, pos);
-			default:
+				yield createToken(TokenType.OPERATOR, pos);
+			}
+			// no comment, already skipped
+			case '/', '=', '*', '^', '%', '!' -> singleOrDoubleOperator(pos, '=');
+			case '+' -> singleOrDoubleOperator(pos, '=', '+');
+			case '-' -> singleOrDoubleOperator(pos, '=', '-', '>');
+			case '&' -> singleOrDoubleOperator(pos, '=', '&');
+			case '|' -> singleOrDoubleOperator(pos, '=', '|');
+			case '>' -> angleBracket(pos, 1, 3, '>');
+			case '<' -> angleBracket(pos, 1, 2, '<');
+			case '\'' -> lexCharacterLiteral(pos);
+			case '"' -> lexStringLiteral(pos);
+			case '~', '?' -> createToken(TokenType.OPERATOR, pos);
+			default -> {
 				skip(-1); // reset to previous
-				return lexLiteralOrKeywordOrIdentifier();
-		}
+				yield lexLiteralOrKeywordOrIdentifier();
+			}
+		};
 	}
 
 	private Token createToken(TokenType type, int pos) {
@@ -272,7 +251,6 @@ public class JavaLexer {
 			skip(2);
 			return lexTextBlockLiteral(pos);
 		}
-		// TODO use indexOf and check if escaped
 		while (hasMore()) {
 			char peek = peek();
 			if (peek == CHAR_ESCAPE_CHAR_CHAR) {
@@ -376,75 +354,6 @@ public class JavaLexer {
 				content[pos++] == 'l' &&
 				content[pos++] == 'e' &&
 				content[pos] == 'd';
-	}
-
-	static volatile Token store;
-	static volatile char[] lastContent;
-
-	public static void main(String[] args) throws IOException {
-		if (true) {
-			char[] content = """
-					public void \\ud801\\udc00method() {};
-					""".toCharArray();
-			// char[] content = "\\u007b".toCharArray();
-			JavaLexer lexer = new JavaLexer(content, 0, content.length);
-			Token token;
-			while ((token = lexer.lex()) != null) {
-				System.out.println(token.formatted(content));
-			}
-
-			// return;
-		}
-		Path all = Path.of("src/main/java");
-		// Path guava = Path.of("~/IdeaProjects/jdk");
-		Path jdk = Path.of("/home/hannes/IdeaProjects/jdk");
-		Path other = Path.of("src/");
-		class C {
-			private final Path file;
-			private final char[] content;
-
-			C(Path file, char[] content) {
-				this.file = file;
-				this.content = content;
-			}
-		}
-		try (Stream<Path> stream = Files.walk(jdk)) {
-			IntSummaryStatistics statistics = stream
-					.filter(Files::isRegularFile)
-					.filter(path -> path.getFileName().toString().endsWith(".java"))
-					.map(path -> {
-						try {
-							return new C(path, Files.readString(path).toCharArray());
-						} catch (IOException e) {
-							System.out.println("Couldn't read " + path);
-							return null;
-						}
-					})
-					.filter(Objects::nonNull)
-					.mapToInt(c -> {
-						char[] chars = c.content;
-						int count = 0;
-						JavaLexer javaLexer = new JavaLexer(chars, 0, chars.length);
-						// System.out.println("Processing file " + c.file + " of length " + chars.length);
-						while (true) {
-							Token lex = javaLexer.lex();
-							if (lex == null) {
-								if (lastContent == c.content) {
-									String value = store.valueForContent(c.content);
-									if (!"}".equals(value) && (!";".equals(value) && !c.file.getFileName().toString().equals("package-info.java"))) {
-										System.out.println("suspicious end: " + store.formatted(c.content) + " (file: " + c.file + ")");
-									}
-								}
-								return count;
-							}
-							count++;
-							store = lex;
-							lastContent = c.content;
-							// System.out.println(store);
-						}
-					}).summaryStatistics();
-			System.out.println("stats: " + statistics);
-		}
 	}
 
 	private boolean skipWhitespaces() {

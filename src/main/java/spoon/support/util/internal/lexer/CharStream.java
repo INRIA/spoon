@@ -21,6 +21,9 @@ public class CharStream {
         this.end = end;
     }
 
+    /**
+     * {@return the sub-array from start to end of the original char array with unicode escapes replaced}
+     */
     public char[] readAll() {
         char[] chars = new char[this.end - this.start]; // approximate
         int t = 0;

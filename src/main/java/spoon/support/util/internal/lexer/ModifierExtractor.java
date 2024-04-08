@@ -25,6 +25,14 @@ public class ModifierExtractor {
 					.collect(Collectors.toMap(ModifierKind::toString, Function.identity()))
 	);
 
+	/**
+	 * Collects modifiers from the content array into the modifiers map.
+	 * @param content the source code to extract modifiers from.
+	 * @param start the start offset when searching.
+	 * @param end the end offset when searching.
+	 * @param modifiers the map to insert the modifier data into.
+	 * @param createSourcePosition the function to create a source position object from location data.
+	 */
 	public void collectModifiers(
 			char[] content,
 			int start,
