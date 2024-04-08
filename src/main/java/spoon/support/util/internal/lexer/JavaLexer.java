@@ -23,12 +23,12 @@ public class JavaLexer {
 					.collect(Collectors.toMap(JavaKeyword::toString, Function.identity()))
 	);
 	private final char[] content;
-	private final CharStream charStream;
+	private final CharRemapper charRemapper;
 	private int nextPos;
 
 	public JavaLexer(char[] content, int start, int end) {
-		this.charStream = new CharStream(content, start, end);
-		this.content = this.charStream.readAll();
+		this.charRemapper = new CharRemapper(content, start, end);
+		this.content = this.charRemapper.remapContent();
 		this.nextPos = 0;
     }
 
@@ -75,7 +75,7 @@ public class JavaLexer {
 	}
 
 	private Token createToken(TokenType type, int pos) {
-		return new Token(type, this.charStream.remapPosition(pos), this.charStream.remapPosition(this.nextPos));
+		return new Token(type, this.charRemapper.remapPosition(pos), this.charRemapper.remapPosition(this.nextPos));
 	}
 
 	private Token angleBracket(int pos, int found, int maxFound, char bracket) {

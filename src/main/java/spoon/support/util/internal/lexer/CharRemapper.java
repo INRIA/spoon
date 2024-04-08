@@ -9,13 +9,16 @@ package spoon.support.util.internal.lexer;
 
 import java.util.Arrays;
 
-public class CharStream {
+/**
+ * A helper class to deal with unicode escapes.
+ */
+public class CharRemapper {
     private final char[] content;
     private final int start;
     private final int end;
     private int[] positionRemap;
 
-    public CharStream(char[] content, int start, int end) {
+    public CharRemapper(char[] content, int start, int end) {
         this.content = content;
         this.start = start;
         this.end = end;
@@ -24,7 +27,7 @@ public class CharStream {
     /**
      * {@return the sub-array from start to end of the original char array with unicode escapes replaced}
      */
-    public char[] readAll() {
+    public char[] remapContent() {
         char[] chars = new char[this.end - this.start]; // approximate
         int t = 0;
         boolean escape = false;

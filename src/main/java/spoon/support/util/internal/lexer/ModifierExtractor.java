@@ -49,7 +49,7 @@ public class ModifierExtractor {
 			if (lex.type() != TokenType.KEYWORD) {
 				continue;
 			}
-			char[] decodedContent = new CharStream(content, lex.start(), lex.end()).readAll();
+			char[] decodedContent = new CharRemapper(content, lex.start(), lex.end()).remapContent();
 			Optional<ModifierKind> match = MODIFIER_TRIE.findMatch(decodedContent);
 			if (match.isPresent()) {
 				CtExtendedModifier modifier = modifiers.remove(match.get());
