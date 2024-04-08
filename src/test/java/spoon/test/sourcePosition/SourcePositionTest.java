@@ -131,10 +131,11 @@ public class SourcePositionTest {
 			complianceLevel = 17
 	)
 	void testModifiersHaveSourcePosition(CtModel model) {
+		// contract: all explicit modifiers should have a valid position
 		Stream<Executable> executables = model.getElements(new TypeFilter<>(CtModifiable.class)).stream()
 				.flatMap(modifiable -> modifiable.getExtendedModifiers().stream())
 				.filter(modifier -> !modifier.isImplicit())
-				.map(mod -> () -> assertThat(mod.getPosition()).matches(SourcePosition::isValidPosition));
+				.map(mod -> () -> assertThat(mod).matches(m -> m.getPosition().isValidPosition(), "is valid source position"));
 		assertAll(executables);
 	}
 }
