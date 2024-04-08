@@ -57,6 +57,8 @@ public interface Trie<T> {
 	 * Finds the value for the range of given char array.
 	 *
 	 * @param input the array representing the key.
+	 * @param start the start offset of the range.
+	 * @param end the end offset of the range.
 	 * @return the value mapped to by the given input.
 	 */
 	Optional<T> findMatch(char[] input, int start, int end);

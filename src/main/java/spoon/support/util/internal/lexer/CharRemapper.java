@@ -12,13 +12,13 @@ import java.util.Arrays;
 /**
  * A helper class to deal with unicode escapes.
  */
-public class CharRemapper {
+class CharRemapper {
 	private final char[] content;
 	private final int start;
 	private final int end;
 	private int[] positionRemap;
 
-	public CharRemapper(char[] content, int start, int end) {
+	CharRemapper(char[] content, int start, int end) {
 		this.content = content;
 		this.start = start;
 		this.end = end;
@@ -27,7 +27,7 @@ public class CharRemapper {
 	/**
 	 * {@return the sub-array from start to end of the original char array with unicode escapes replaced}
 	 */
-	public char[] remapContent() {
+	char[] remapContent() {
 		char[] chars = new char[this.end - this.start]; // approximate
 		int t = 0;
 		boolean escape = false;
@@ -62,7 +62,7 @@ public class CharRemapper {
 		return Arrays.copyOf(chars, t);
 	}
 
-	public int remapPosition(int index) {
+	int remapPosition(int index) {
 		if (this.positionRemap == null) {
 			return index + this.start;
 		}
