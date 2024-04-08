@@ -18,16 +18,16 @@ package spoon.test.sourcePosition;
 
 
 import java.util.List;
-import java.util.stream.Stream;
 
-import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -43,7 +43,10 @@ import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class SourcePositionTest {
