@@ -247,7 +247,7 @@ public class JavaLexer {
 		}
 	}
 
-	private Token lexStringLiteral(int pos) {
+	private @Nullable Token lexStringLiteral(int pos) {
 		if (hasMore(2) && peek() == '"' && peek(1) == '"') {
 			skip(2);
 			return lexTextBlockLiteral(pos);
@@ -266,7 +266,7 @@ public class JavaLexer {
 		return null;
 	}
 
-	private Token lexTextBlockLiteral(int pos) {
+	private @Nullable Token lexTextBlockLiteral(int pos) {
 		while (hasMore(2)) {
 			char peek = peek();
 			if (peek == CHAR_ESCAPE_CHAR_CHAR) {
