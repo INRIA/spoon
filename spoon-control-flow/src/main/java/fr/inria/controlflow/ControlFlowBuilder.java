@@ -443,8 +443,8 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 	@Override
-	public <T> void visitCtConstructor(CtConstructor<T> c) {
-
+	public <T> void visitCtConstructor(CtConstructor<T> constructor) {
+		constructor.getBody().accept(this);
 	}
 
 	@Override
