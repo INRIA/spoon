@@ -12,6 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ExceptionFlowTests {
+
+    ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+
     @Test
     public void testBasicSingle() {
 
@@ -36,24 +39,24 @@ public class ExceptionFlowTests {
         builder.build(method);
         ControlFlowGraph cfg = builder.getResult();
 
-        ControlFlowNode x = findNodeByString(cfg, "x()");
-        ControlFlowNode a = findNodeByString(cfg, "a()");
-        ControlFlowNode b = findNodeByString(cfg, "b()");
-        ControlFlowNode c = findNodeByString(cfg, "c()");
-        ControlFlowNode bang = findNodeByString(cfg, "bang()");
+        ControlFlowNode x = pathHelper.findNodeByString(cfg, "x()");
+        ControlFlowNode a = pathHelper.findNodeByString(cfg, "a()");
+        ControlFlowNode b = pathHelper.findNodeByString(cfg, "b()");
+        ControlFlowNode c = pathHelper.findNodeByString(cfg, "c()");
+        ControlFlowNode bang = pathHelper.findNodeByString(cfg, "bang()");
 
-        assertFalse(canReachNode(x, bang));
+        assertFalse(pathHelper.canReachNode(x, bang));
 
-        assertTrue(canReachExitWithoutEnteringCatchBlock(x));
-        assertTrue(canReachExitWithoutEnteringCatchBlock(a));
-        assertTrue(canReachExitWithoutEnteringCatchBlock(b));
-        assertTrue(canReachExitWithoutEnteringCatchBlock(c));
+        assertTrue(pathHelper.canReachExitWithoutEnteringCatchBlock(x));
+        assertTrue(pathHelper.canReachExitWithoutEnteringCatchBlock(a));
+        assertTrue(pathHelper.canReachExitWithoutEnteringCatchBlock(b));
+        assertTrue(pathHelper.canReachExitWithoutEnteringCatchBlock(c));
 
-        assertTrue(canReachNode(a, bang));
-        assertTrue(canReachNode(a, b));
-        assertTrue(canReachNode(b, bang));
-        assertTrue(canReachNode(b, c));
-        assertTrue(canReachNode(c, bang));
+        assertTrue(pathHelper.canReachNode(a, bang));
+        assertTrue(pathHelper.canReachNode(a, b));
+        assertTrue(pathHelper.canReachNode(b, bang));
+        assertTrue(pathHelper.canReachNode(b, c));
+        assertTrue(pathHelper.canReachNode(c, bang));
     }
 
     @Test
@@ -83,23 +86,23 @@ public class ExceptionFlowTests {
         builder.build(method);
         ControlFlowGraph cfg = builder.getResult();
 
-        ControlFlowNode x = findNodeByString(cfg, "x()");
-        ControlFlowNode a = findNodeByString(cfg, "a()");
-        ControlFlowNode b = findNodeByString(cfg, "b()");
-        ControlFlowNode bang = findNodeByString(cfg, "bang()");
-        ControlFlowNode boom = findNodeByString(cfg, "boom()");
+        ControlFlowNode x = pathHelper.findNodeByString(cfg, "x()");
+        ControlFlowNode a = pathHelper.findNodeByString(cfg, "a()");
+        ControlFlowNode b = pathHelper.findNodeByString(cfg, "b()");
+        ControlFlowNode bang = pathHelper.findNodeByString(cfg, "bang()");
+        ControlFlowNode boom = pathHelper.findNodeByString(cfg, "boom()");
 
-        assertFalse(canReachNode(x, bang));
-        assertTrue(canReachNode(x, boom));
+        assertFalse(pathHelper.canReachNode(x, bang));
+        assertTrue(pathHelper.canReachNode(x, boom));
 
-        assertTrue(canReachExitWithoutEnteringCatchBlock(x));
-        assertTrue(canReachExitWithoutEnteringCatchBlock(a));
-        assertTrue(canReachExitWithoutEnteringCatchBlock(b));
+        assertTrue(pathHelper.canReachExitWithoutEnteringCatchBlock(x));
+        assertTrue(pathHelper.canReachExitWithoutEnteringCatchBlock(a));
+        assertTrue(pathHelper.canReachExitWithoutEnteringCatchBlock(b));
 
-        assertTrue(canReachNode(a, bang));
+        assertTrue(pathHelper.canReachNode(a, bang));
 
-        assertTrue(canReachNode(b, boom));
-        assertFalse(canReachNode(b, bang));
+        assertTrue(pathHelper.canReachNode(b, boom));
+        assertFalse(pathHelper.canReachNode(b, bang));
     }
 
     @Test
@@ -129,23 +132,23 @@ public class ExceptionFlowTests {
         builder.build(method);
         ControlFlowGraph cfg = builder.getResult();
 
-        ControlFlowNode a = findNodeByString(cfg, "a()");
-        ControlFlowNode b = findNodeByString(cfg, "b()");
-        ControlFlowNode c = findNodeByString(cfg, "c()");
-        ControlFlowNode boom = findNodeByString(cfg, "boom()");
-        ControlFlowNode bang = findNodeByString(cfg, "bang()");
+        ControlFlowNode a = pathHelper.findNodeByString(cfg, "a()");
+        ControlFlowNode b = pathHelper.findNodeByString(cfg, "b()");
+        ControlFlowNode c = pathHelper.findNodeByString(cfg, "c()");
+        ControlFlowNode boom = pathHelper.findNodeByString(cfg, "boom()");
+        ControlFlowNode bang = pathHelper.findNodeByString(cfg, "bang()");
 
-        assertTrue(canReachExitWithoutEnteringCatchBlock(a));
-        assertTrue(canReachExitWithoutEnteringCatchBlock(b));
-        assertTrue(canReachExitWithoutEnteringCatchBlock(c));
-        assertTrue(canReachExitWithoutEnteringCatchBlock(boom));
+        assertTrue(pathHelper.canReachExitWithoutEnteringCatchBlock(a));
+        assertTrue(pathHelper.canReachExitWithoutEnteringCatchBlock(b));
+        assertTrue(pathHelper.canReachExitWithoutEnteringCatchBlock(c));
+        assertTrue(pathHelper.canReachExitWithoutEnteringCatchBlock(boom));
 
-        assertTrue(canReachNode(a, boom));
-        assertTrue(canReachNode(a, bang));
-        assertTrue(canReachNode(b, boom));
-        assertTrue(canReachNode(b, bang));
-        assertFalse(canReachNode(c, boom));
-        assertTrue(canReachNode(c, bang));
+        assertTrue(pathHelper.canReachNode(a, boom));
+        assertTrue(pathHelper.canReachNode(a, bang));
+        assertTrue(pathHelper.canReachNode(b, boom));
+        assertTrue(pathHelper.canReachNode(b, bang));
+        assertFalse(pathHelper.canReachNode(c, boom));
+        assertTrue(pathHelper.canReachNode(c, bang));
     }
 
     @Test
@@ -175,23 +178,23 @@ public class ExceptionFlowTests {
         builder.build(method);
         ControlFlowGraph cfg = builder.getResult();
 
-        ControlFlowNode top = findNodeByString(cfg, "top()");
-        ControlFlowNode a = findNodeByString(cfg, "a()");
-        ControlFlowNode b = findNodeByString(cfg, "b()");
-        ControlFlowNode c = findNodeByString(cfg, "c()");
+        ControlFlowNode top = pathHelper.findNodeByString(cfg, "top()");
+        ControlFlowNode a = pathHelper.findNodeByString(cfg, "a()");
+        ControlFlowNode b = pathHelper.findNodeByString(cfg, "b()");
+        ControlFlowNode c = pathHelper.findNodeByString(cfg, "c()");
 
-        assertTrue(canReachExitWithoutEnteringCatchBlock(top));
-        assertTrue(canReachExitWithoutEnteringCatchBlock(a));
+        assertTrue(pathHelper.canReachExitWithoutEnteringCatchBlock(top));
+        assertTrue(pathHelper.canReachExitWithoutEnteringCatchBlock(a));
 
-        assertTrue(canReachNode(top, a));
-        assertTrue(canReachNode(top, b));
-        assertTrue(canReachNode(top, c));
+        assertTrue(pathHelper.canReachNode(top, a));
+        assertTrue(pathHelper.canReachNode(top, b));
+        assertTrue(pathHelper.canReachNode(top, c));
 
-        assertTrue(canReachNode(a, b));
-        assertTrue(canReachNode(a, c));
+        assertTrue(pathHelper.canReachNode(a, b));
+        assertTrue(pathHelper.canReachNode(a, c));
 
-        assertFalse(canReachNode(b, c));
-        assertFalse(canReachNode(c, b));
+        assertFalse(pathHelper.canReachNode(b, c));
+        assertFalse(pathHelper.canReachNode(c, b));
     }
 
     @Test
@@ -220,16 +223,16 @@ public class ExceptionFlowTests {
         builder.build(method);
         ControlFlowGraph cfg = builder.getResult();
 
-        assertNull(findNodeByString(cfg, "unreachable()"));
+        assertNull(pathHelper.findNodeByString(cfg, "unreachable()"));
 
-        ControlFlowNode throwstmt = findNodeByString(cfg, "throw new RuntimeException()");
-        ControlFlowNode boom = findNodeByString(cfg, "boom()");
-        ControlFlowNode bang = findNodeByString(cfg, "bang()");
+        ControlFlowNode throwstmt = pathHelper.findNodeByString(cfg, "throw new RuntimeException()");
+        ControlFlowNode boom = pathHelper.findNodeByString(cfg, "boom()");
+        ControlFlowNode bang = pathHelper.findNodeByString(cfg, "bang()");
 
-        assertTrue(canReachNode(throwstmt, boom));
-        assertTrue(canReachNode(throwstmt, bang));
+        assertTrue(pathHelper.canReachNode(throwstmt, boom));
+        assertTrue(pathHelper.canReachNode(throwstmt, bang));
 
-        assertFalse(canReachExitWithoutEnteringCatchBlock(throwstmt));
+        assertFalse(pathHelper.canReachExitWithoutEnteringCatchBlock(throwstmt));
     }
 
     @Test
@@ -253,7 +256,7 @@ public class ExceptionFlowTests {
         builder.build(method);
         ControlFlowGraph cfg = builder.getResult();
 
-        assertNull(findNodeByString(cfg, "bang()"));
+        assertNull(pathHelper.findNodeByString(cfg, "bang()"));
     }
 
     @Test
@@ -278,7 +281,7 @@ public class ExceptionFlowTests {
         builder.build(method);
         ControlFlowGraph cfg = builder.getResult();
 
-        assertNotNull(findNodeByString(cfg, "bang()"));
+        assertNotNull(pathHelper.findNodeByString(cfg, "bang()"));
     }
 
     @Test
@@ -397,18 +400,18 @@ public class ExceptionFlowTests {
         builder.build(method);
         ControlFlowGraph cfg = builder.getResult();
 
-        ControlFlowNode top = findNodeByString(cfg, "top()");
-        ControlFlowNode a = findNodeByString(cfg, "a()");
-        ControlFlowNode b = findNodeByString(cfg, "b()");
-        ControlFlowNode c = findNodeByString(cfg, "c()");
+        ControlFlowNode top = pathHelper.findNodeByString(cfg, "top()");
+        ControlFlowNode a = pathHelper.findNodeByString(cfg, "a()");
+        ControlFlowNode b = pathHelper.findNodeByString(cfg, "b()");
+        ControlFlowNode c = pathHelper.findNodeByString(cfg, "c()");
 
-        assertFalse(canAvoidNode(top, c));
-        assertTrue(canReachNode(top, b));
-        assertTrue(canAvoidNode(top, b));
-        assertFalse(canAvoidNode(a, c));
-        assertTrue(canReachNode(a, b));
-        assertTrue(canAvoidNode(a, b));
-        assertFalse(canAvoidNode(b, c));
+        assertFalse(pathHelper.canAvoidNode(top, c));
+        assertTrue(pathHelper.canReachNode(top, b));
+        assertTrue(pathHelper.canAvoidNode(top, b));
+        assertFalse(pathHelper.canAvoidNode(a, c));
+        assertTrue(pathHelper.canReachNode(a, b));
+        assertTrue(pathHelper.canAvoidNode(a, b));
+        assertFalse(pathHelper.canAvoidNode(b, c));
     }
 
     @Test
@@ -436,13 +439,13 @@ public class ExceptionFlowTests {
         builder.build(method);
         ControlFlowGraph cfg = builder.getResult();
 
-        ControlFlowNode top = findNodeByString(cfg, "top()");
-        ControlFlowNode a = findNodeByString(cfg, "a()");
-        ControlFlowNode b = findNodeByString(cfg, "b()");
+        ControlFlowNode top = pathHelper.findNodeByString(cfg, "top()");
+        ControlFlowNode a = pathHelper.findNodeByString(cfg, "a()");
+        ControlFlowNode b = pathHelper.findNodeByString(cfg, "b()");
 
-        assertFalse(canAvoidNode(top, a));
-        assertFalse(canAvoidNode(top, b));
-        assertFalse(canAvoidNode(a, b));
+        assertFalse(pathHelper.canAvoidNode(top, a));
+        assertFalse(pathHelper.canAvoidNode(top, b));
+        assertFalse(pathHelper.canAvoidNode(a, b));
     }
 
     @Test
@@ -476,16 +479,16 @@ public class ExceptionFlowTests {
         builder.build(method);
         ControlFlowGraph cfg = builder.getResult();
 
-        ControlFlowNode top = findNodeByString(cfg, "top()");
-        ControlFlowNode a = findNodeByString(cfg, "a()");
-        ControlFlowNode b = findNodeByString(cfg, "b()");
-        ControlFlowNode c = findNodeByString(cfg, "c()");
-        ControlFlowNode breathe = findNodeByString(cfg, "breathe()");
+        ControlFlowNode top = pathHelper.findNodeByString(cfg, "top()");
+        ControlFlowNode a = pathHelper.findNodeByString(cfg, "a()");
+        ControlFlowNode b = pathHelper.findNodeByString(cfg, "b()");
+        ControlFlowNode c = pathHelper.findNodeByString(cfg, "c()");
+        ControlFlowNode breathe = pathHelper.findNodeByString(cfg, "breathe()");
 
-        assertFalse(canAvoidNode(top, breathe));
-        assertFalse(canAvoidNode(a, breathe));
-        assertFalse(canAvoidNode(b, breathe));
-        assertFalse(canAvoidNode(c, breathe));
+        assertFalse(pathHelper.canAvoidNode(top, breathe));
+        assertFalse(pathHelper.canAvoidNode(a, breathe));
+        assertFalse(pathHelper.canAvoidNode(b, breathe));
+        assertFalse(pathHelper.canAvoidNode(c, breathe));
     }
 
     @Test
@@ -518,130 +521,11 @@ public class ExceptionFlowTests {
         ControlFlowGraph cfg = builder.getResult();
         System.out.println(cfg.toGraphVisText());
 
-        ControlFlowNode ret = findNodeByString(cfg, "return");
-        ControlFlowNode a = findNodeByString(cfg, "a()");
-        ControlFlowNode b = findNodeByString(cfg, "b()");
+        ControlFlowNode ret = pathHelper.findNodeByString(cfg, "return");
+        ControlFlowNode a = pathHelper.findNodeByString(cfg, "a()");
+        ControlFlowNode b = pathHelper.findNodeByString(cfg, "b()");
 
-        assertTrue(canAvoidNode(ret, a));
-        assertTrue(canAvoidNode(ret, b));
-    }
-
-    /**
-     * Memoization of paths.
-     */
-    Map<ControlFlowNode, List<List<ControlFlowNode>>> pathsMemo = new HashMap<>();
-
-    /**
-     * Get the set of possible paths to the exit node from a given starting node.
-     *
-     * @param node Starting node
-     * @return Set of possible paths
-     */
-    private List<List<ControlFlowNode>> paths(ControlFlowNode node) {
-        if (pathsMemo.containsKey(node)) {
-            return pathsMemo.get(node);
-        }
-
-        List<List<ControlFlowNode>> result = new ArrayList<>();
-
-        for (ControlFlowNode nextNode : node.next()) {
-            result.add(new ArrayList<>(Arrays.asList(node, nextNode)));
-        }
-
-        result = paths(result);
-        pathsMemo.put(node, result);
-        return result;
-    }
-
-    /**
-     * Get the set of possible paths to the exit node given a set of potentially incomplete paths.
-     *
-     * @param prior Set of potentially incomplete paths
-     * @return Set of possible paths
-     */
-    private List<List<ControlFlowNode>> paths(List<List<ControlFlowNode>> prior) {
-        List<List<ControlFlowNode>> result = new ArrayList<>();
-        boolean extended = false;
-
-        for (List<ControlFlowNode> path : prior) {
-            ControlFlowNode lastNode = path.get(path.size() - 1);
-
-            if (lastNode.getKind() == BranchKind.EXIT) {
-                result.add(new ArrayList<>(path));
-            } else {
-                for (ControlFlowNode nextNode : lastNode.next()) {
-                    extended = true;
-                    List<ControlFlowNode> thisPath = new ArrayList<>(path);
-                    thisPath.add(nextNode);
-                    result.add(thisPath);
-                }
-            }
-        }
-
-        if (extended) {
-            return paths(result);
-        } else {
-            return result;
-        }
-    }
-
-    /**
-     * Check whether a path contains a catch block node.
-     *
-     * @param nodes Path to check
-     * @return True if path contains a catch block node, false otherwise
-     */
-    private boolean containsCatchBlockNode(List<ControlFlowNode> nodes) {
-        return nodes.stream().anyMatch(node -> node.getKind() == BranchKind.CATCH);
-    }
-
-    /**
-     * Check whether a node has a path to the exit node that does not enter a catch block.
-     *
-     * @param node Node to check
-     * @return True if node has path to exit that does not enter any catch block, false otherwise
-     */
-    private boolean canReachExitWithoutEnteringCatchBlock(ControlFlowNode node) {
-        return paths(node).stream().anyMatch(xs -> !containsCatchBlockNode(xs));
-    }
-
-    /**
-     * Check whether a node has a path to another node.
-     *
-     * @param source Starting node
-     * @param target Target node
-     * @return True if there is a path from source to target, false otherwise
-     */
-    private boolean canReachNode(ControlFlowNode source, ControlFlowNode target) {
-        return paths(source).stream().anyMatch(xs -> xs.contains(target));
-    }
-
-    /**
-     * Check whether a node can reach the exit without crossing a certain node.
-     *
-     * @param source Starting node
-     * @param target Target node
-     * @return True if there exists a path between source and exit that does not include target, false otherwise
-     */
-    private boolean canAvoidNode(ControlFlowNode source, ControlFlowNode target) {
-        return !paths(source).stream().allMatch(xs -> xs.contains(target));
-    }
-
-    /**
-     * Find a node in a ControlFlowGraph by matching on the string representation of the statement
-     * stored in the node (if any).
-     *
-     * @param graph Graph to search
-     * @param s String to match against statement
-     * @return First node found with statement matching string, or null if none was found
-     */
-    private ControlFlowNode findNodeByString(ControlFlowGraph graph, String s) {
-        for (ControlFlowNode node : graph.vertexSet()) {
-            if (node.getStatement() != null && node.getStatement().toString().equals(s)) {
-                return node;
-            }
-        }
-
-        return null;
+        assertTrue(pathHelper.canAvoidNode(ret, a));
+        assertTrue(pathHelper.canAvoidNode(ret, b));
     }
 }

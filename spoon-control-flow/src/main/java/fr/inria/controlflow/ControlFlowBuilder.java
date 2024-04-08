@@ -114,6 +114,7 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtAbstractVisitor;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
@@ -390,7 +391,12 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	}
 
-	private <R> void travelStatementList(List<CtStatement> statements) {
+	/**
+	 * Add a list of statements as a block to the current CFG.
+	 * @param statements The list of statements
+	 * @return The start node of the block
+	 */
+	private ControlFlowNode travelStatementList(List<CtStatement> statements) {
 		ControlFlowNode begin = new ControlFlowNode(null, result, BranchKind.BLOCK_BEGIN);
 		tryAddEdge(lastNode, begin);
 		lastNode = begin;
@@ -402,6 +408,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		ControlFlowNode end = new ControlFlowNode(null, result, BranchKind.BLOCK_END);
 		tryAddEdge(lastNode, end);
 		lastNode = end;
+		return begin;
 	}
 
 	@Override
@@ -768,23 +775,49 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		//Push the convergence node so all non labeled breaks jumps there
 		breakingBad.push(convergenceNode);
 
+		boolean hasDefaultCase = false;
 		lastNode = switchNode;
-		for (CtCase caseStatement : switchStatement.getCases()) {
+		for (CtCase<?> caseStatement : switchStatement.getCases()) {
 
 			//Visit Case
 			registerStatementLabel(caseStatement);
-			ControlFlowNode cn = new ControlFlowNode(caseStatement.getCaseExpression(), result, BranchKind.STATEMENT);
-			tryAddEdge(lastNode, cn);
-			if (lastNode != switchNode) {
-				tryAddEdge(switchNode, cn);
+			var caseExpressions = caseStatement.getCaseExpressions();
+			List<ControlFlowNode> caseExpressionNodes = new ArrayList<>();
+			for (CtExpression<?> expression : caseExpressions) {
+				ControlFlowNode caseNode = new ControlFlowNode(expression, result, BranchKind.STATEMENT);
+				caseExpressionNodes.add(caseNode);
+				tryAddEdge(switchNode, caseNode);
 			}
-			lastNode = cn;
-			travelStatementList(caseStatement.getStatements());
+
+			if (caseExpressionNodes.isEmpty()) {
+				hasDefaultCase = true;
+				ControlFlowNode defaultNode = new ControlFlowNode(null, result, BranchKind.STATEMENT);
+				caseExpressionNodes.add(defaultNode);
+				tryAddEdge(switchNode, defaultNode);
+			}
+
+			ControlFlowNode fallThroughEnd = null;
+			if (lastNode != switchNode) {
+				fallThroughEnd = lastNode;
+			}
+			lastNode = null;
+
+			ControlFlowNode blockStart = travelStatementList(caseStatement.getStatements());
+			tryAddEdge(fallThroughEnd, blockStart);
+
+			for (ControlFlowNode expressionNode : caseExpressionNodes) {
+				tryAddEdge(expressionNode, blockStart);
+			}
+
 			if (lastNode.getStatement() instanceof CtBreak) {
 				lastNode = switchNode;
 			}
 		}
 		tryAddEdge(lastNode, convergenceNode);
+
+		if (!hasDefaultCase) {
+			tryAddEdge(switchNode, convergenceNode);
+		}
 
 		//Return as last node the convergence node
 		lastNode = convergenceNode;
