@@ -119,7 +119,7 @@ jobs:
 
       - name: Time nix setup
         run: nix develop ${{ env.NIX_OPTIONS }} .#extraChecks --command true
-      - name: Time nix setup
+      - name: Build spoon
         run: nix develop ${{ env.NIX_OPTIONS }} .#extraChecks --command mvn -f spoon-pom -B install -Dmaven.test.skip=true -DskipDepClean
       - name: Run Javadoc quality check
         run: nix develop ${{ env.NIX_OPTIONS }} .#extraChecks --command javadoc-quality
