@@ -342,6 +342,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(BreakStatement breakStatement, BlockScope scope) {
+		if (breakStatement.isSynthetic) {
+			return; // we never entered
+		}
 		context.exit(breakStatement);
 	}
 
@@ -1077,6 +1080,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(BreakStatement breakStatement, BlockScope scope) {
+		if (breakStatement.isSynthetic) {
+			return false;
+		}
 		CtBreak b = factory.Core().createBreak();
 		if (breakStatement.label != null) {
 			b.setTargetLabel(new String(breakStatement.label));
