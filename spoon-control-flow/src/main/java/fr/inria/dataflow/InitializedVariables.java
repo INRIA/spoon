@@ -152,8 +152,8 @@ public class InitializedVariables {
 
 
 		Set<CtVariableReference> defN = includeDefinedInNode ? defined(n) : new HashSet<CtVariableReference>();
-		//[Used_n - Def_n]
-		Set<CtVariableReference> usedN = includeDefinedInNode ? used(n) : new HashSet<CtVariableReference>();
+		//[Used_n - Def_n] - Only get used variables for single node statements. Multi node statements might define new ones that aren't in scope anymore
+		Set<CtVariableReference> usedN = (includeDefinedInNode && n.getIsStatementEnd()) ? used(n) : new HashSet<CtVariableReference>();
 		usedN.removeAll(defN);
 
 		InitFactors result = new InitFactors();
