@@ -527,7 +527,7 @@ public class ForwardFlowBuilderVisitorTest {
 	public void testConstructor() throws URISyntaxException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 		ControlFlowBuilder visitor = new ControlFlowBuilder();
 
-		Factory factory = new SpoonMetaFactory().buildNewFactory(this.getClass().getResource("/control-flow").toURI().getPath(), 17);
+		Factory factory = new SpoonMetaFactory().buildNewFactory(this.getClass().getResource("/control-flow").toURI().getPath(), 21);
 		ProcessingManager pm = new QueueProcessingManager(factory);
 		pm.addProcessor(new AbstractProcessor<CtConstructor<?>>() {
 			@Override
