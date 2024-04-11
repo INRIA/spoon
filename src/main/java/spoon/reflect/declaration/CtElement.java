@@ -415,6 +415,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * @return the source code of this element with the pretty-printing rules of Spoon
 	 * Warning: this is not side-effect free, this triggers some {@link spoon.reflect.visitor.ImportAnalyzer} which would change the model: add/remove imports, change the value `implicit` of some model elements, etc.
+	 * This method <strong>ignores</strong> the settings of {@link Environment#getPrettyPrintingMode()}. If this is not what you want, use {@link #toString()} instead.
 	 */
 	@Experimental
 	String prettyprint();
