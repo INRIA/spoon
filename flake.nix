@@ -168,24 +168,6 @@
 
             chore/check-reproducible-builds.sh
           '';
-          ciJavadocQuality = pkgs.writeScriptBin "ci-javadoc-quality" ''
-            set -eu
-
-            # Help jbang. Build locally and update the version. Otherwise it fails to resolve sometimes.
-            pushd spoon-pom || exit 1
-            mvn clean install -Dmaven.test.skip=true -DskipDepClean &>/dev/null
-            popd || exit 2
-
-            # Use concrete version
-            sed -i "s/:RELEASE/:$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)/" chore/CheckJavadoc.java
-            git add chore/CheckJavadoc.java
-            git config user.email "jbang-fixup@example.com"
-            git config user.name "Jbang fixup"
-            git commit -m "Fixup version"
-
-            # Delegate
-            javadoc-quality
-          '';
           javadocQuality = pkgs.writeScriptBin "javadoc-quality" ''
             set -eu
 
@@ -200,7 +182,7 @@
               ])
             else [ ];
           packages = with pkgs;
-            [ jdk maven test codegen coverage mavenPomQuality javadocQuality ciJavadocQuality reproducibleBuilds ]
+            [ jdk maven test codegen coverage mavenPomQuality javadocQuality reproducibleBuilds ]
             ++ (if extraChecks then [ gradle pythonEnv extra extraRemote jbang ] else [ ])
             ++ (if release then [ semver jreleaser ] else [ ]);
         };
