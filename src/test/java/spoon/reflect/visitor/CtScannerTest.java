@@ -271,7 +271,7 @@ public class CtScannerTest {
 		// this is a coarse-grain check to see if the scanner changes
 		// no more exec ref in paramref
 		// also takes into account the comments
-		assertEquals(3667, counter.nElement + countOfCommentsInCompilationUnits);
+		assertEquals(3704, counter.nElement + countOfCommentsInCompilationUnits);
 		assertEquals(2449, counter.nEnter + countOfCommentsInCompilationUnits);
 		assertEquals(2449, counter.nExit + countOfCommentsInCompilationUnits);
 
@@ -370,7 +370,7 @@ public class CtScannerTest {
 			}
 		}.scan(c);
 		// contract: the CtDequeScanner has the context information of the parents
-		assertEquals(45, l.size()); // we visited the whole tree
+		assertEquals(47, l.size()); // we visited the whole tree
 		assertEquals(0, l.get(0));
 		assertEquals(1, l.get(1)); // visiting a child
 		assertEquals(2, l.get(3)); // visiting a grand child

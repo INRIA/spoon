@@ -86,7 +86,7 @@ public class ParameterTest {
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
 			CtTypeReference refType = param.getReference().getType();
-			assertEquals(factory.Type().STRING, refType);
+			assertEquals(factory.Type().stringType(), refType);
 		}
 
 		// test integer parameters
@@ -97,7 +97,7 @@ public class ParameterTest {
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
 			CtTypeReference refType = param.getReference().getType();
-			assertEquals(factory.Type().INTEGER, refType);
+			assertEquals(factory.Type().integerType(), refType);
 		}
 
 		// test unknown parameters

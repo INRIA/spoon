@@ -58,70 +58,57 @@ def hl(text: str) -> str:
     return colored(text, _COLOR_HIGHLIGHT)
 
 
-def print_checkstyle_not_parseable_error():
+def print_quality_check_not_parseable_error():
     """
-    If the user has a maven problem that prevents checkstyle from running they'd likely
-    appreciate *some* output. If we can't extract a violation count the checkstyle plugin
+    If the user has setup problem that prevents the quality check from running they'd likely
+    appreciate *some* output. If we can't extract a violation count the quality check
     probably didn't run successfully. Let's warn them.
     """
     print()
-    print(warn("Checkstyle output doesn't contain a violation count. Maybe your setup has an error?"))
+    print(warn("Quality check output doesn't contain a violation count. Maybe your setup has an error?"))
     if len(sys.argv) > 1:
         print(
             f" {hl('Suggestion')}: Run this script without arguments and inspect the unfiltered "
-            "checkstyle output"
+            "quality check output"
         )
 
 
-def write_checkstyle_config(path: Path) -> None:
+def run_quality_check(target_branch: Optional[str] = None) -> str:
     """
-    Saves the Javadoc checkstyle config in the given path.
+    Runs the quality check and returns the output as a decoded string.
+    Optionally you can pass a branch to borrow the quality check from, if
+    it does not exist locally.
     """
-    config = """
-    <?xml version="1.0"?>
-    <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN" "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
-    <module name="Checker">
-        <module name="TreeWalker">
-            <module name="JavadocMethod">
-                <property name="accessModifiers" value="public"/>
-            </module>
-            <module name="MissingJavadocMethod">
-                <property name="scope" value="public"/>
-            </module>
-        </module>
-    </module>
-    """.strip()
+    check_path = Path("chore/CheckJavadoc.java")
+    runner_helper = Path("chore/run-with-spoon-javadoc-classpath.sh")
 
-    with open(path, "w") as file:
-        file.write(config)
+    if target_branch:
+        print(warn(f"Borrowing quality script from '{target_branch}'"))
+        run_command(["git", "checkout", target_branch, "--", str(check_path)])
 
+    if not runner_helper.exists():
+        print(warn(f"Borrowing runner script from '{target_branch}'"))
+        run_command(["git", "checkout", target_branch, "--", str(runner_helper)])
 
-def run_checkstyle(config_path: Path) -> str:
-    """
-    Runs checkstyle and returns the output as a decoded string.
-    """
     return run_command([
-        "mvn",
-        "-B",
-        "checkstyle:check",
-        "--fail-never",
-        f'-Dcheckstyle.config.location={str(config_path)}',
+        str(runner_helper),
+        str(check_path)
     ])
 
 
-def extract_violation_count(checkstyle_output: str) -> Optional[int]:
+def extract_violation_count(quality_check_output: str) -> Optional[int]:
     """
-    Tries to extract the violation count from the checkstyle output.
+    Tries to extract the violation count from the quality check output.
     Returns None if no count could be found.
     """
-    match = re.search(r"There are (\d+) errors reported by Checkstyle", checkstyle_output)
+    match = re.search(r"There are (\d+) errors reported by Checkstyle", quality_check_output)
     if match:
         return int(match.group(1))
     return None
 
 
 def filter_relevant_lines(lines: List[str]) -> List[str]:
-    """Tries to filter the checkstyle output to only include lines with violations."""
+    """Tries to filter the quality check output to only include lines with violations."""
     return [line for line in lines if re.search(r":\d+:", line) and "ERROR" in line]
 
 
@@ -168,7 +155,7 @@ def try_readd_line_numbers(without_numbers: 'Counter[str]', with_numbers: List[s
 
 def print_regression_lines(reference: str, other: str) -> None:
     """
-    Receives two checkstyle outputs, one for the reference and one for the current branch and
+    Receives two quality check outputs, one for the reference and one for the current branch and
     prints all identified regressions.
     """
     lines_reference = filter_relevant_lines(reference.splitlines())
@@ -191,19 +178,19 @@ def command_compare_with_branch(target_branch: str) -> None:
     Compares the current branch with a given reference branch and prints a change summary.
     Exits with an error if the current branch has more violations than the passed target branch.
     """
-    # Switch to the root so checkstyle will run against the whole project
+    # Switch to the root, so the quality check will run against the whole project
     os.chdir(run_command(["git", "rev-parse", "--show-toplevel"]).strip())
 
-    with temporary_path(suffix=".xml") as config_path:
-        write_checkstyle_config(config_path)
+    original_branch = run_command(["git", "rev-parse", "--abbrev-ref", "HEAD"]).strip()
+    if original_branch == "HEAD":
+        original_branch = run_command(["git", "rev-parse", "HEAD"]).strip()
+    run_command(["git", "checkout", target_branch], stderr=PIPE)
+    reference_output = run_quality_check(original_branch)
 
-        run_command(["git", "checkout", target_branch], stderr=PIPE)
-        reference_output = run_checkstyle(config_path)
+    run_command(["git", "checkout", original_branch], stderr=PIPE)
+    other_output = run_quality_check()
 
-        run_command(["git", "checkout", "-"], stderr=PIPE)
-        other_output = run_checkstyle(config_path)
-
-        handle_compare_with_branch_output(target_branch, reference_output, other_output)
+    handle_compare_with_branch_output(target_branch, reference_output, other_output)
 
 
 def handle_compare_with_branch_output(target_branch: str, reference_output: str, other_output: str):
@@ -211,12 +198,12 @@ def handle_compare_with_branch_output(target_branch: str, reference_output: str,
     other_violation_count = extract_violation_count(other_output)
 
     if reference_violation_count is None:
-        print(warn("The Checkstyle run for the reference branch did not yield any result."))
-        print_checkstyle_not_parseable_error()
+        print(warn("The quality check run for the reference branch did not yield any result."))
+        print_quality_check_not_parseable_error()
         exit(1)
     if other_violation_count is None:
-        print(warn("The Checkstyle run for your branch did not yield any result."))
-        print_checkstyle_not_parseable_error()
+        print(warn("The quality check run for your branch did not yield any result."))
+        print_quality_check_not_parseable_error()
         exit(1)
 
     print_current_status(target_branch, reference_violation_count, other_violation_count)
@@ -248,21 +235,19 @@ See {hl('https://github.com/inria/spoon/issues/3923')} for details.
     print_regression_lines(reference_output, other_output)
 
 
-def command_filtered_checkstyle_errors(regex_str: str) -> None:
+def command_filtered_quality_check_errors(regex_str: str) -> None:
     """
-    Runs checkstyle in the current working directory and filters the output using the passed regex.
+    Runs the quality check in the current working directory and filters the output using the passed regex.
     """
     regex: Pattern = re.compile(regex_str)
-    with temporary_path(suffix=".xml") as config_path:
-        write_checkstyle_config(config_path)
-        checkstyle_output = run_checkstyle(config_path)
+    quality_check_output = run_quality_check()
 
-        for line in checkstyle_output.splitlines():
-            if regex.search(line):
-                print(line)
+    for line in quality_check_output.splitlines():
+        if regex.search(line):
+            print(line)
 
-        if extract_violation_count(checkstyle_output) is None:
-            print_checkstyle_not_parseable_error()
+    if extract_violation_count(quality_check_output) is None:
+        print_quality_check_not_parseable_error()
 
 
 def fix_colors_windows_cmd():
@@ -281,20 +266,20 @@ def print_help():
  {hl('DESCRIPTION')}
    This is a small helper script to ensure the Javadoc quality in the project does not
    deteriorate. It runs during CI and enforces that new changes never increase the amount
-   of checkstyle Javadoc errors.
+   of Javadoc errors.
    Additionally, it tries to create a helpful output showing you the approximate location
    of any errors you might introduce so you have some guidance while fixing them.
 
  {hl('EXAMPLES')}
    {success('Compare your branch with the master branch to check for regressions.')}
-     This will checkout the master branch, run checkstyle, checkout your branch
+     This will checkout the master branch, run the quality check, checkout your branch
      and compare the results.
      Note that the checkout will {hl('fail')} if you have incompatible uncommitted changes.
 
      {warn('python ' + sys.argv[0] + ' COMPARE_WITH_MASTER')}
 
    {success('List all violations in a set of files in your current working directory.')}
-     Running this script with a regex as its only argument will execute checkstyle in
+     Running this script with a regex as its only argument will execute the quality check in
      your working directory and filter the results using the regex you provided.
      This can be useful if you want to find all violations in files you touched or
      files the CI found errors in.
@@ -302,10 +287,9 @@ def print_help():
      {warn('python ' + sys.argv[0])} src/main/java/
 
    {success('List all violations in your current working directory.')}
-     Running this script without any arguments will echo the full maven checkstyle
-     output back to you.
-     This can be useful if you just want to invoke the maven checkstyle command
-     with an adequate configuration.
+     Running this script without any arguments will echo the full output back to you.
+     This can be useful if you just want to invoke the quality check with an adequate
+     configuration.
 
      {warn('python ' + sys.argv[0])}
     """[1:])
@@ -327,12 +311,13 @@ if __name__ == "__main__":
         if len(sys.argv) == 2 and sys.argv[1] == "COMPARE_WITH_MASTER":
             command_compare_with_branch("master")
         else:
-            command_filtered_checkstyle_errors(sys.argv[1] if len(sys.argv) > 1 else "")
+            command_filtered_quality_check_errors(sys.argv[1] if len(sys.argv) > 1 else "")
     except CalledProcessError as e:
-        print("Error ececuting native command:", e.cmd)
+        print("Error executing native command:", e.cmd)
         print("Error output:")
         if e.stderr:
             for line in e.stderr.decode().splitlines():
                 print("  " + line)
         else:
             print("  No error output captured. Maybe it escaped and was printed already?")
+        exit(1)

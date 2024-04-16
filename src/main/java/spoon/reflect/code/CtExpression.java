@@ -27,18 +27,21 @@ public interface CtExpression<T> extends CtCodeElement, CtTypedElement<T>, Templ
 
 	/**
 	 * Returns the type casts if any.
+	 * @return this object
 	 */
 	@PropertyGetter(role = CAST)
 	List<CtTypeReference<?>> getTypeCasts();
 
 	/**
 	 * Sets the type casts.
+	 * @return this object
 	 */
 	@PropertySetter(role = CAST)
 	<C extends CtExpression<T>> C setTypeCasts(List<CtTypeReference<?>> types);
 
 	/**
 	 * Adds a type cast.
+	 * @return this object
 	 */
 	@PropertySetter(role = CAST)
 	<C extends CtExpression<T>> C addTypeCast(CtTypeReference<?> type);

@@ -7,6 +7,7 @@
  */
 package spoon.support.util;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
@@ -179,7 +180,7 @@ public abstract class RtHelper {
 	 * @param numParams
 	 * @return the found method or null
 	 */
-	public static Method getMethod(Class<?> clazz, String methodName, int numParams) {
+	public static @Nullable Method getMethod(Class<?> clazz, String methodName, int numParams) {
 		Method[] methods = clazz.getMethods();
 		for (Method method : methods) {
 			if (!method.isSynthetic() && method.getName().equals(methodName)) {

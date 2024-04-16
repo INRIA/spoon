@@ -30,6 +30,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -55,6 +56,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -94,6 +96,7 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -839,6 +842,20 @@ public class PatternBuilder implements CtVisitor {
 		throw new NotImplementedException("Not implemented");
 	}
 
+	@Override
+	public void visitCtCasePattern(CtCasePattern casePattern) {
+		throw new NotImplementedException("Not implemented");
+	}
+
+	@Override
+	public void visitCtRecordPattern(CtRecordPattern recordPattern) {
+		throw new NotImplementedException("Not implemented");
+	}
+
+	@Override
+	public void visitCtReceiverParameter(CtReceiverParameter receiverParameter) {
+		throw new NotImplementedException("Not implemented");
+	}
 
 	/**
 	 * Parameter identifiers.

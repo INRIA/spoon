@@ -31,7 +31,7 @@ jobs:
     name: Tests with Java ${{ matrix.java }} on ${{ matrix.os }}
     strategy:
       matrix:
-        java: [11, 17, 21]
+        java: [17, 21]
         os: [ubuntu-latest]
     steps:
       - name: Checkout
@@ -56,7 +56,7 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@0ab4596768b603586c0de567f2430c30f5b0d2b0 # v3
+      - uses: actions/setup-java@99b8673ff64fbf99d8d325f52d9a5bdedb8483e9 # v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -105,6 +105,22 @@ jobs:
       - name: Trigger extra remote tasks
         if: github.repository == 'INRIA/spoon' && github.event_name == 'pull_request'
         run: nix develop ${{ env.NIX_OPTIONS }} .#extraChecks --command extra-remote
+
+  javadoc:
+    runs-on: ubuntu-latest
+    name: Javadoc quality
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+        with:
+          fetch-depth: 0
+      - name: Setup env
+        uses: ./.github/actions/setup-tests
+
+      - name: Time nix setup
+        run: nix develop ${{ env.NIX_OPTIONS }} .#extraChecks --command true
+      - name: Build spoon
+        run: nix develop ${{ env.NIX_OPTIONS }} .#extraChecks --command mvn -f spoon-pom -B install -Dmaven.test.skip=true -DskipDepClean
       - name: Run Javadoc quality check
         run: nix develop ${{ env.NIX_OPTIONS }} .#extraChecks --command javadoc-quality
 
@@ -138,3 +154,19 @@ jobs:
         run: nix develop ${{ env.NIX_OPTIONS }} --command true
       - name: Check maven pom quality
         run: nix develop ${{ env.NIX_OPTIONS }} --command maven-pom-quality
+
+  codegen:
+    runs-on: ubuntu-latest
+    name: Codegeneration
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+        with:
+          fetch-depth: 0
+      - name: Setup env
+        uses: ./.github/actions/setup-tests
+
+      - name: Time nix setup
+        run: nix develop ${{ env.NIX_OPTIONS }} --command true
+      - name: Run codegen checks
+        run: nix develop ${{ env.NIX_OPTIONS }}  --command codegen

@@ -892,11 +892,11 @@ public class ImportTest {
 		assertThat(result, hasItem(Object.class.getName()));
 
 		//contract: super type of Object is nothing
-		List<CtTypeReference<?>> typeResult = clientClass.getFactory().Type().OBJECT.map(new SuperInheritanceHierarchyFunction().includingSelf(false).returnTypeReferences(true)).list();
+		List<CtTypeReference<?>> typeResult = clientClass.getFactory().Type().objectType().map(new SuperInheritanceHierarchyFunction().includingSelf(false).returnTypeReferences(true)).list();
 		assertEquals(0, typeResult.size());
-		typeResult = clientClass.getFactory().Type().OBJECT.map(new SuperInheritanceHierarchyFunction().includingSelf(true).returnTypeReferences(true)).list();
+		typeResult = clientClass.getFactory().Type().objectType().map(new SuperInheritanceHierarchyFunction().includingSelf(true).returnTypeReferences(true)).list();
 		assertEquals(1, typeResult.size());
-		assertEquals(clientClass.getFactory().Type().OBJECT, typeResult.get(0));
+		assertEquals(clientClass.getFactory().Type().objectType(), typeResult.get(0));
 	}
 
 	@Test

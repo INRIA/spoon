@@ -26,6 +26,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -52,6 +53,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -98,6 +100,7 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
@@ -624,10 +627,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			for (int i = 0; i < caseExpressions.size(); i++) {
 				CtExpression<E> caseExpression = caseExpressions.get(i);
 				// writing enum case expression
-				if (caseExpression instanceof CtFieldAccess) {
+				if (caseExpression instanceof CtFieldAccess<E> fieldAccess) {
 					final CtFieldReference variable = ((CtFieldAccess) caseExpression).getVariable();
 					// In noclasspath mode, we don't have always the type of the declaring type.
-					if (variable.getType() != null
+					if ((fieldAccess.getTarget().isImplicit() || env.getComplianceLevel() < 21)
+							&& variable.getType() != null
 							&& variable.getDeclaringType() != null
 							&& variable.getType().getQualifiedName().equals(variable.getDeclaringType().getQualifiedName())) {
 						printer.writeIdentifier(variable.getSimpleName());
@@ -641,8 +645,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					printer.writeSeparator(",").writeSpace();
 				}
 			}
+			if (caseStatement.getIncludesDefault()) {
+				printer.writeSeparator(",")
+					.writeSpace()
+					.writeKeyword("default");
+			}
 		} else {
 			printer.writeKeyword("default");
+		}
+		if (caseStatement.getGuard() != null) {
+			printer.writeSpace().writeKeyword("when").writeSpace();
+			scan(caseStatement.getGuard());
 		}
 		String separator = caseStatement.getCaseKind() == CaseKind.ARROW ? "->" : ":";
 		printer.writeSpace().writeSeparator(separator).incTab();
@@ -797,6 +810,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 						printer.writeln();
 						scan(enumValue);
 					});
+			printer.writeln();
 		}
 
 		elementPrinterHelper.writeElementList(ctEnum.getTypeMembers());
@@ -2334,5 +2348,35 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		visitCtTypeReference(recordComponent.getType());
 		printer.writeSpace();
 		printer.writeIdentifier(recordComponent.getSimpleName());
+	}
+
+	@Override
+	public void visitCtCasePattern(CtCasePattern casePattern) {
+		scan(casePattern.getPattern());
+	}
+
+	@Override
+	public void visitCtRecordPattern(CtRecordPattern recordPattern) {
+		scan(recordPattern.getRecordType());
+		elementPrinterHelper.printList(recordPattern.getPatternList(),
+			null, false, "(", false, false, ",", true, false, ")", this::scan);
+	}
+
+	@Override
+	public void visitCtReceiverParameter(CtReceiverParameter receiverParameter) {
+		elementPrinterHelper.writeComment(receiverParameter);
+		elementPrinterHelper.writeAnnotations(receiverParameter);
+
+		printer.writeIdentifier(receiverParameter.getType().getSimpleName());
+		printer.writeSpace();
+		// if the receiver parameter is in an inner class, we need to print the outer class name
+		boolean isInnerClass = !receiverParameter.getType().getTopLevelType().getQualifiedName().equals(receiverParameter.getParent(CtType.class).getQualifiedName());
+		boolean isConstructor = receiverParameter.getParent() instanceof CtConstructor;
+		if (isConstructor && isInnerClass) {
+			// inside a ctor of an inner class, the identifier is $SimpleName.this
+			printer.writeSeparator(receiverParameter.getType().getSimpleName() + ".this");
+		} else {
+			printer.writeSeparator("this");
+		}
 	}
 }

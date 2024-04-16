@@ -11,6 +11,7 @@ package spoon.support;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
+
 import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -21,6 +22,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -46,6 +48,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
@@ -89,6 +92,7 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -121,6 +125,7 @@ import spoon.support.reflect.code.CtBinaryOperatorImpl;
 import spoon.support.reflect.code.CtBlockImpl;
 import spoon.support.reflect.code.CtBreakImpl;
 import spoon.support.reflect.code.CtCaseImpl;
+import spoon.support.reflect.code.CtCasePatternImpl;
 import spoon.support.reflect.code.CtCatchImpl;
 import spoon.support.reflect.code.CtCatchVariableImpl;
 import spoon.support.reflect.code.CtCodeSnippetExpressionImpl;
@@ -145,6 +150,7 @@ import spoon.support.reflect.code.CtLocalVariableImpl;
 import spoon.support.reflect.code.CtNewArrayImpl;
 import spoon.support.reflect.code.CtNewClassImpl;
 import spoon.support.reflect.code.CtOperatorAssignmentImpl;
+import spoon.support.reflect.code.CtRecordPatternImpl;
 import spoon.support.reflect.code.CtReturnImpl;
 import spoon.support.reflect.code.CtStatementListImpl;
 import spoon.support.reflect.code.CtSuperAccessImpl;
@@ -187,6 +193,7 @@ import spoon.support.reflect.declaration.CtPackageExportImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
 import spoon.support.reflect.declaration.CtProvidedServiceImpl;
+import spoon.support.reflect.declaration.CtReceiverParameterImpl;
 import spoon.support.reflect.declaration.CtRecordComponentImpl;
 import spoon.support.reflect.declaration.CtRecordImpl;
 import spoon.support.reflect.declaration.CtTypeParameterImpl;
@@ -870,6 +877,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.code.CtCase.class)) {
 			return createCase();
 		}
+		if (klass.equals(spoon.reflect.code.CtCasePattern.class)) {
+			return createCasePattern();
+		}
 		if (klass.equals(spoon.reflect.code.CtCatch.class)) {
 			return createCatch();
 		}
@@ -1110,6 +1120,12 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.declaration.CtRecordComponent.class)) {
 			return createRecordComponent();
 		}
+		if (klass.equals(spoon.reflect.code.CtRecordPattern.class)) {
+			return createRecordPattern();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtReceiverParameter.class)) {
+			return createReceiverParameter();
+		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
 
@@ -1192,5 +1208,26 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		CtRecordComponent recordComponent = new CtRecordComponentImpl();
 		recordComponent.setFactory(getMainFactory());
 		return recordComponent;
+	}
+
+	@Override
+	public CtCasePattern createCasePattern() {
+		CtCasePattern casePattern = new CtCasePatternImpl();
+		casePattern.setFactory(getMainFactory());
+		return casePattern;
+	}
+
+	@Override
+	public CtRecordPattern createRecordPattern() {
+		CtRecordPattern recordPattern = new CtRecordPatternImpl();
+		recordPattern.setFactory(getMainFactory());
+		return recordPattern;
+	}
+
+	@Override
+	public CtReceiverParameter createReceiverParameter() {
+		CtReceiverParameter receiverParameter = new CtReceiverParameterImpl();
+		receiverParameter.setFactory(getMainFactory());
+		return receiverParameter;
 	}
 }

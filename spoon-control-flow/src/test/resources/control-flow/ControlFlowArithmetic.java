@@ -383,6 +383,10 @@ public class ControlFlowArithmetic {
 		return 10 * a;
 	}
 
+	public ControlFlowArithmetic() {
+		int a = 1;
+	}
+
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 

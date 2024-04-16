@@ -25,6 +25,7 @@ import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
@@ -307,6 +308,25 @@ public interface Environment {
 	 * @param sourceClasspath classpath to set
 	 */
 	void setSourceClasspath(String[] sourceClasspath);
+
+	/**
+	 * Gets the module path used for sourcing the input modules.
+	 * The returned list is immutable and does not contain null values.
+	 *
+	 * @return A list of strings representing the module path. Each string element
+	 *         is the path to a directory or a module jar file.
+	 */
+	List<String> getSourceModulePath();
+
+	/**
+	 * Sets the module path that is used to build/compile the input sources.
+	 * This is the equivalent to the {@code --module-path} option of {@code javac} and {@code java} executables.
+	 *
+	 * @param sourceModulePath The new module path to be set. Each string element
+	 *                         should be the path to a directory or a module jar file.
+	 * @throws NullPointerException if the argument is null or an element of the list is null.
+	 */
+	void setSourceModulePath(List<String> sourceModulePath);
 
 	/**
 	 * Sets the option "noclasspath", use with caution (see explanation below).

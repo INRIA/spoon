@@ -132,6 +132,7 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <E> void visitCtCase(spoon.reflect.code.CtCase<E> e) {
 		((spoon.reflect.code.CtCase<E>) (other)).setCaseKind(e.getCaseKind());
+		((spoon.reflect.code.CtCase<E>) (other)).setIncludesDefault(e.getIncludesDefault());
 		super.visitCtCase(e);
 	}
 
@@ -312,5 +313,12 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	public void visitCtRecordComponent(spoon.reflect.declaration.CtRecordComponent recordComponent) {
 		((spoon.reflect.declaration.CtRecordComponent) (other)).setShadow(recordComponent.isShadow());
 		super.visitCtRecordComponent(recordComponent);
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtReceiverParameter(spoon.reflect.declaration.CtReceiverParameter e) {
+		((spoon.reflect.declaration.CtReceiverParameter) (other)).setShadow(e.isShadow());
+		super.visitCtReceiverParameter(e);
 	}
 }

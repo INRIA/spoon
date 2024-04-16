@@ -144,40 +144,44 @@ echo "-------------------------------------------------------"
 echo " "
 
 # Edits pom xml to prepare project to spoon project.
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project" --type elem -n pluginRepositories -v "" pom.xml > pom.bak.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories" --type elem -n pluginRepository -v "" pom.bak.xml > pom.bak1.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n id -v "ow2.org-snapshot" pom.bak1.xml > pom.bak2.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n name -v "Maven repository for Spoon Snapshot" pom.bak2.xml > pom.bak3.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n url -v "https://oss.sonatype.org/content/repositories/snapshots/" pom.bak3.xml > pom.bak4.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n snapshots -v "" pom.bak4.xml > pom.bak5.xml
-mv pom.bak5.xml pom.xml
-rm pom.bak*.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project" --type elem -n pluginRepositories -v "" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories" --type elem -n pluginRepository -v "" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n id -v "ow2.org-snapshot" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n name -v "Maven repository for Spoon Snapshot" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n url -v "https://oss.sonatype.org/content/repositories/snapshots/" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n snapshots -v "" pom.xml
 
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins" --type elem -n plugin -v "" pom.xml > pom.bak.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n groupId -v "fr.inria.gforge.spoon" pom.bak.xml > pom.bak2.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n artifactId -v "spoon-maven-plugin" pom.bak2.xml > pom.bak3.xml
+
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins" --type elem -n plugin -v "" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n groupId -v "fr.inria.gforge.spoon" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n artifactId -v "spoon-maven-plugin" pom.xml
 
 # we depend on the latest version of spoon-maven-plugin) 
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n version -v "3.8-SNAPSHOT" pom.bak3.xml > pom.bak4.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n version -v "3.8-SNAPSHOT" pom.xml 
 
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n executions -v "" pom.bak4.xml > pom.bak5.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions" --type elem -n execution -v "" pom.bak5.xml > pom.bak6.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions/x:execution" --type elem -n phase -v "generate-sources" pom.bak6.xml > pom.bak7.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions/x:execution" --type elem -n goals -v "" pom.bak7.xml > pom.bak8.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n executions -v "" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions" --type elem -n execution -v "" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions/x:execution" --type elem -n phase -v "generate-sources" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions/x:execution" --type elem -n goals -v "" pom.xml
 # we generate the sources separately
 #xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions/x:execution/x:goals" --type elem -n goal -v "generate" pom.bak8.xml > pom.bak9.xml
-cat pom.bak8.xml > pom.bak9.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n configuration -v "" pom.bak9.xml > pom.bak10.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:configuration" --type elem -n processors -v "" pom.bak10.xml > pom.bak11.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:configuration/x:processors" --type elem -n processor -v "spoon.processing.SpoonTagger" pom.bak11.xml > pom.bak12.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n dependencies -v "" pom.bak12.xml > pom.bak14.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies" --type elem -n dependency -v "" pom.bak14.xml > pom.bak19.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n groupId -v "fr.inria.gforge.spoon" pom.bak19.xml > pom.bak20.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n artifactId -v "spoon-core" pom.bak20.xml > pom.bak21.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n version -v "[7.0.0-SNAPSHOT,)" pom.bak21.xml > pom.bak22.xml
-mv pom.bak22.xml pom.xml
-rm pom.bak*.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n configuration -v "" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:configuration" --type elem -n processors -v "" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:configuration/x:processors" --type elem -n processor -v "spoon.processing.SpoonTagger" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n dependencies -v "" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies" --type elem -n dependency -v "" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n groupId -v "fr.inria.gforge.spoon" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n artifactId -v "spoon-core" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n version -v "[7.0.0-SNAPSHOT,)" pom.xml
 
+# we add the spoon-core dependency to the project, resolve the ranges and remove it. The resolve ranges plugin only works for dependencies of the project, but not for plugins. But the rewrite engine of the plugin also updates the plugin version.
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:dependencies" -t elem -n dependency -v "" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:dependencies/x:dependency[last()]" --type elem -n groupId -v "fr.inria.gforge.spoon" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:dependencies/x:dependency[last()]" --type elem -n artifactId -v "spoon-core" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:dependencies/x:dependency[last()]" --type elem -n version -v "[7.0.0-SNAPSHOT,)" pom.xml
+MAVEN_COMMAND versions:resolve-ranges -DallowSnapshots=true
+# remove the dependency again
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -d "/x:project/x:dependencies/x:dependency[last()]" pom.xml
 # Purge the project from snapshots
 # Avoid to use an old snapshot of Spoon and force the resolution
 $MAVEN_COMMAND dependency:purge-local-repository -DmanualInclude="fr.inria.gforge.spoon:spoon-core" -DsnapshotsOnly=true

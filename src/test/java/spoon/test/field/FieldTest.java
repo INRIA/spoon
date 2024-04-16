@@ -98,9 +98,9 @@ public class FieldTest {
 
 		assertEquals(1, aClass.getFields().size());
 
-		final CtField<String> generated = aClass.getFactory().Field().create(null, new HashSet<>(), aClass.getFactory().Type().STRING, "generated");
+		final CtField<String> generated = aClass.getFactory().Field().create(null, new HashSet<>(), aClass.getFactory().Type().stringType(), "generated");
 		aClass.addFieldAtTop(generated);
-		final CtField<String> generated2 = aClass.getFactory().Field().create(null, new HashSet<>(), aClass.getFactory().Type().STRING, "generated2");
+		final CtField<String> generated2 = aClass.getFactory().Field().create(null, new HashSet<>(), aClass.getFactory().Type().stringType(), "generated2");
 		aClass.addFieldAtTop(generated2);
 
 		assertEquals(3, aClass.getFields().size());
@@ -126,7 +126,7 @@ public class FieldTest {
 	private CtField<Integer> createField(Factory factory, HashSet<ModifierKind> modifiers, String name) {
 		final CtField<Integer> first = factory.Core().createField();
 		first.setModifiers(modifiers);
-		first.setType(factory.Type().INTEGER_PRIMITIVE);
+		first.setType(factory.Type().integerPrimitiveType());
 		first.setSimpleName(name);
 		return first;
 	}

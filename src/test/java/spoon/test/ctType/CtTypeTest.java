@@ -122,7 +122,7 @@ public class CtTypeTest {
 
 		CtType<?> oCtType = factory.Type().get("spoon.test.ctType.testclasses.O");
 		CtType<?> pCtType = factory.Type().get("spoon.test.ctType.testclasses.P");
-		CtTypeReference<?> objectCtTypeRef = factory.Type().OBJECT;
+		CtTypeReference<?> objectCtTypeRef = factory.Type().objectType();
 
 		List<CtTypeParameter> oTypeParameters = oCtType.getFormalCtTypeParameters();
 		assertTrue(oTypeParameters.size() == 1);

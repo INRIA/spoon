@@ -19,9 +19,8 @@
                 let
                   base = rec {
                     jdk =
-                      if javaVersion < 21 then prev."jdk${toString javaVersion}"
-                      else if javaVersion == 22 then jdk22-ea
-                      else jdk21;
+                      if javaVersion <= 23 then prev."jdk${toString javaVersion}"
+                      else abort "Not set up yet :)";
                     maven = prev.maven.override { inherit jdk; };
                   };
                   extra = with base; {
@@ -31,51 +30,27 @@
                 (if extraChecks then base // extra else base))
             ];
           };
-          jdk21 = pkgs.stdenv.mkDerivation rec {
-            name = "jdk21-oracle";
-            version = "21+35";
-            src = builtins.fetchTarball {
-              url = "https://download.oracle.com/java/21/archive/jdk-21_linux-x64_bin.tar.gz";
-              sha256 = "sha256:1snj1jxa5175r17nb6l2ldgkcvjbp5mbfflwcc923svgf0604ps4";
-            };
-            installPhase = ''
-              cd ..
-              mv $sourceRoot $out
-            '';
-          };
-          jdk22-ea = pkgs.stdenv.mkDerivation rec {
-            name = "jdk22-ea";
-            version = "22+16";
-            src = builtins.fetchTarball {
-              url = "https://download.java.net/java/early_access/jdk22/16/GPL/openjdk-22-ea+16_linux-x64_bin.tar.gz";
-              sha256 = "sha256:17fckjdr1gadm41ih2nxi8c7zdimk4s9p12d8jcr0paic74mqinj";
-            };
-            installPhase = ''
-              cd ..
-              mv $sourceRoot $out
-            '';
-          };
           semver = pkgs.buildGoModule rec {
             name = "semver";
-            version = "2.1.0";
+            version = "2.4.0";
 
-            vendorHash = "sha256-HKqZbgP7vqDJMaHUbSqfSOnBYwzOtIr9o2v/T9S+uNg=";
+            vendorHash = "sha256-/8rYdeOHp6Bdc3CD5tzw5M0hjTPd+aYZSW7w2Xi695Y=";
             subPackages = [ "cmd/semver" ];
 
             src = pkgs.fetchFromGitHub {
               owner = "ffurrer2";
               repo = "semver";
               rev = "v${version}";
-              sha256 = "sha256-i/XPA2Hr2puJFKupIeBUE/yFPJxSeVsDWcz1OepxIcU=";
+              sha256 = "sha256-wl5UEu2U11Q0lZfm9reMhGMCI7y6sabk18j7SPWgy1k=";
             };
           };
           jreleaser = pkgs.stdenv.mkDerivation rec {
             pname = "jreleaser-cli";
-            version = "1.7.0";
+            version = "1.11.0";
 
             src = pkgs.fetchurl {
               url = "https://github.com/jreleaser/jreleaser/releases/download/v${version}/jreleaser-tool-provider-${version}.jar";
-              sha256 = "sha256-gr1IWisuep00xyoZWKXtHymWkQjbDhlk6+UC16bKXu0=";
+              sha256 = "sha256-VkINXKVBBBK6/PIRPMVKZGY9afE7mAsqrcFPh2Algqk=";
             };
 
             nativeBuildInputs = with pkgs; [ makeWrapper ];
@@ -93,6 +68,7 @@
         pkgs.mkShell rec {
           test = pkgs.writeScriptBin "test" ''
             set -eu
+
             # Use silent log config
             cp chore/logback.xml src/test/resources/
             mvn -f spoon-pom -B test-compile
@@ -108,13 +84,24 @@
           '';
           coverage = pkgs.writeScriptBin "coverage" ''
             set -eu
+
             # Use silent log config
             cp chore/logback.xml src/test/resources/
             mvn -f spoon-pom -B test-compile
             mvn -f spoon-pom -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
           '';
+          codegen = pkgs.writeScriptBin "codegen" ''
+            set -eu
+            mvn test -Dtest=spoon.testing.assertions.codegen.AssertJCodegen
+            mvn spotless:apply
+            if ! git diff --exit-code; then
+              echo "::error::Generated code is not up to date. Execute mvn test -Dtest=spoon.testing.assertions.codegen.AssertJCodegen, mvn spotless:apply and commit your changes."
+              exit 1
+            fi
+          '';
           extra = pkgs.writeScriptBin "extra" (if !extraChecks then "exit 2" else ''
             set -eu
+
             # Use silent log config
             cp chore/logback.xml src/test/resources/
             # Verify and Site Maven goals
@@ -129,7 +116,7 @@
             # Check documentation links
             python3 ./chore/check-links-in-doc.py
             # Analyze dependencies through DepClean in spoon-core
-            mvn -q depclean:depclean
+            # mvn -q depclean:depclean
 
             pushd spoon-decompiler || exit 1
             mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
@@ -137,7 +124,7 @@
             git diff
             mvn -q test
             mvn -q checkstyle:checkstyle license:check
-            mvn -q depclean:depclean
+            # mvn -q depclean:depclean
             popd || exit 1
 
             pushd spoon-control-flow || exit 1
@@ -153,29 +140,37 @@
             mvn -q versions:update-parent -DallowSnapshots=true
             git diff
             mvn -q test
-            mvn -q depclean:depclean
+            # mvn -q depclean:depclean
             popd || exit 1
 
             pushd spoon-smpl || exit 1
             mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
             mvn -q versions:update-parent -DallowSnapshots=true
             git diff
-            mvn -q -Djava.src.version=11 test
+            mvn -q -Djava.src.version=17 test
             mvn -q checkstyle:checkstyle license:check
-            mvn -q depclean:depclean
+            # mvn -q depclean:depclean
             popd || exit 1
           '');
           extraRemote = pkgs.writeScriptBin "extra-remote" ''
+            set -eu
+
             curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-pull-request.sh | bash
           '';
           mavenPomQuality = pkgs.writeScriptBin "maven-pom-quality" ''
+            set -eu
+
             # we dont enforce that the version must be non snapshot as this is not possible for SNAPSHOT versions in our workflow.
             mvn -f spoon-pom org.kordamp.maven:pomchecker-maven-plugin:1.9.0:check-maven-central -D"checker.release=false"
           '';
           reproducibleBuilds = pkgs.writeScriptBin "reproducible-builds" ''
+            set -eu
+
             chore/check-reproducible-builds.sh
           '';
           javadocQuality = pkgs.writeScriptBin "javadoc-quality" ''
+            set -eu
+
             ./chore/check-javadoc-regressions.py COMPARE_WITH_MASTER
           '';
           pythonEnv =
@@ -187,29 +182,26 @@
               ])
             else [ ];
           packages = with pkgs;
-            [ jdk maven test coverage mavenPomQuality javadocQuality reproducibleBuilds ]
-            ++ (if extraChecks then [ gradle pythonEnv extra extraRemote ] else [ ])
+            [ jdk maven test codegen coverage mavenPomQuality javadocQuality reproducibleBuilds ]
+            ++ (if extraChecks then [ gradle pythonEnv extra extraRemote jbang ] else [ ])
             ++ (if release then [ semver jreleaser ] else [ ]);
         };
     in
     {
       devShells =
         let
-          # We have additional options (currently EA jdks) on 64 bit linux systems
+          # We might have additional options (currently none) on 64 bit linux systems
           blessedSystem = "x86_64-linux";
-          blessed = rec {
-            jdk21 = mkShell blessedSystem { javaVersion = 21; };
-            jdk22-ea = mkShell blessedSystem { javaVersion = 22; };
-            default = jdk21;
-          };
+          blessed = rec { };
           common = forAllSystems
             (system:
               rec {
-                default = jdk11;
+                default = jdk17;
                 jdk17 = mkShell system { javaVersion = 17; };
-                jdk11 = mkShell system { javaVersion = 11; };
-                extraChecks = mkShell system { extraChecks = true; javaVersion = 11; };
-                jReleaser = mkShell system { release = true; javaVersion = 11; };
+                jdk21 = mkShell system { javaVersion = 21; };
+                jdk22 = mkShell system { javaVersion = 22; };
+                extraChecks = mkShell system { extraChecks = true; javaVersion = 21; };
+                jReleaser = mkShell system { release = true; javaVersion = 21; };
               });
         in
         common // { "${blessedSystem}" = common."${blessedSystem}" // blessed; };

@@ -436,7 +436,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 
 		if ((f != null) && f.getModifiers().contains(ModifierKind.FINAL)
 				// enum values have no meaningful default expression to be evaluated
-				&& !fieldAccess.getVariable().getDeclaringType().isSubtypeOf(fieldAccess.getFactory().Type().ENUM)
+				&& !fieldAccess.getVariable().getDeclaringType().isSubtypeOf(fieldAccess.getFactory().Type().createReference(Enum.class))
 				) {
 			setResult(evaluate(f.getDefaultExpression()));
 			return;

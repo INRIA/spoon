@@ -413,7 +413,7 @@ public class PositionBuilder {
 				return handlePositionProblem("There is no CtCatch parent for CtCatchVariable");
 			}
 			//build position with appropriate context
-			return buildPositionCtElement(e, (Argument) pair.node);
+			return buildPositionCtElement(e, (Argument) pair.node());
 		} else if (node instanceof TypeReference) {
 			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
 		} else if (node instanceof AllocationExpression) {
@@ -470,7 +470,7 @@ public class PositionBuilder {
 			iter.next();
 			if (iter.hasNext()) {
 				ASTPair pair = iter.next();
-				SourcePosition pos = pair.element.getPosition();
+				SourcePosition pos = pair.element().getPosition();
 				if (pos.isValidPosition()) {
 					return pos.getSourceStart();
 				}

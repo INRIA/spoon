@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
 if [ -z "$1" ]; then
   echo "Usage: $0 <patch|major|minor>"
   exit 1

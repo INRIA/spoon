@@ -323,7 +323,7 @@ public class TestSniperPrinter {
 		testSniper(ToBeChanged.class.getName(), type -> {
 			Factory f = type.getFactory();
 			//create new type member
-			context.newField = f.createField(type, Collections.singleton(ModifierKind.PRIVATE), f.Type().DATE, "dateField");
+			context.newField = f.createField(type, Collections.singleton(ModifierKind.PRIVATE), f.Type().dateType(), "dateField");
 			type.addTypeMember(context.newField);
 		}, (type, printed) -> {
 			String lastMemberString = "new List<?>[7][];";
@@ -422,7 +422,7 @@ public class TestSniperPrinter {
 		Consumer<CtType<?>> addFieldAtTop = type -> {
 			Factory fact = type.getFactory();
 			CtField<?> field = fact.createCtField(
-					"newFieldAtTop", fact.Type().INTEGER_PRIMITIVE, "2");
+					"newFieldAtTop", fact.Type().integerPrimitiveType(), "2");
 			type.addFieldAtTop(field);
 		};
 
@@ -466,7 +466,7 @@ public class TestSniperPrinter {
 					.findFirst()
 					.get();
 			CtLocalVariable<?> localVar = factory.createLocalVariable(
-					factory.Type().INTEGER_PRIMITIVE, "localVar", factory.createCodeSnippetExpression("2"));
+				factory.Type().integerPrimitiveType(), "localVar", factory.createCodeSnippetExpression("2"));
 			method.getBody().addStatement(0, localVar);
 		};
 
@@ -607,7 +607,7 @@ public class TestSniperPrinter {
 
 		Consumer<CtType<?>> addElements = type -> {
 		    Factory fact = type.getFactory();
-		    fact.createField(type, new HashSet<>(), fact.Type().INTEGER_PRIMITIVE, "z", fact.createLiteral(3));
+		    fact.createField(type, new HashSet<>(), fact.Type().integerPrimitiveType(), "z", fact.createLiteral(3));
 		    type.getMethod("sum").getBody()
 					.addStatement(0, fact.createCodeSnippetStatement("System.out.println(z);"));
 		};
@@ -636,7 +636,7 @@ public class TestSniperPrinter {
 
 		Consumer<CtType<?>> addElement = type -> {
 			Factory fact = type.getFactory();
-			fact.createField(type, new HashSet<>(), fact.Type().INTEGER_PRIMITIVE, "z", fact.createLiteral(2));
+			fact.createField(type, new HashSet<>(), fact.Type().integerPrimitiveType(), "z", fact.createLiteral(2));
 		};
 		final String newField = "int z = 2;";
 
@@ -659,7 +659,7 @@ public class TestSniperPrinter {
 
 		Consumer<CtType<?>> addField = type -> {
 			Factory fact = type.getFactory();
-			fact.createField(type, new HashSet<>(), fact.Type().INTEGER_PRIMITIVE, "z", fact.createLiteral(3));
+			fact.createField(type, new HashSet<>(), fact.Type().integerPrimitiveType(), "z", fact.createLiteral(3));
 		};
 		testSniper("indentation.NoTypeMembers", addField, (type, result) -> {
 			assertThat(result, containsString("\n\tint z = 3;"));

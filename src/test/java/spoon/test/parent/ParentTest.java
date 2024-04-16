@@ -234,7 +234,7 @@ public class ParentTest {
 		final CtMethod<?> aMethod = aTacos.getMethodsByName("m").get(0);
 
 		assertNotNull(aMethod.getType().getParent());
-		assertEquals(factory.Type().INTEGER_PRIMITIVE, aMethod.getType());
+		assertEquals(factory.Type().integerPrimitiveType(), aMethod.getType());
 		assertEquals(aMethod, aMethod.getType().getParent());
 	}
 
@@ -390,11 +390,11 @@ public class ParentTest {
 			 */
 			private CtBinaryOperator<Boolean> createCheckNull(CtParameter<?> ctParameter) {
 				final CtLiteral nullLiteral = factory.Code().createLiteral(null);
-				nullLiteral.setType(factory.Type().NULL_TYPE.clone());
+				nullLiteral.setType(factory.Type().nullType());
 				final CtBinaryOperator<Boolean> operator = factory.Code().createBinaryOperator( //
 						factory.Code().createVariableRead(ctParameter.getReference(), true), //
 						nullLiteral, BinaryOperatorKind.EQ);
-				operator.setType(factory.Type().BOOLEAN_PRIMITIVE);
+				operator.setType(factory.Type().booleanPrimitiveType());
 				return operator;
 			}
 

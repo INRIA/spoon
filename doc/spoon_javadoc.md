@@ -15,13 +15,13 @@ converting them into your own format.
 
 ### Installation
 
-On a Unix-like system, the following set of commands should be sufficient for
-getting spoon-javadoc up and running from scratch.
-
-```
-$ git clone https://github.com/INRIA/spoon.git
-$ cd spoon/spoon-pom
-$ mvn install
+To use spoon-javadoc, add the following dependency to your `pom.xml`:
+```xml
+<dependency>
+    <groupId>fr.inria.gforge.spoon</groupId>
+    <artifactId>spoon-javadoc</artifactId>
+    <version>$currentVersion</version>
+</dependency>
 ```
 
 ### Basic usage
@@ -35,10 +35,6 @@ Using a `JavadocVisitor` you can then visit each of them and drill down a bit.
 In the following example, javadoc is parsed and then printed out again -- but
 this time with some ANSI color highlighting applied. Note that references are
 pretty-printed according to `CtReference#toString()`.
-
-<details>
-
-<summary>Expand me for the code </summary>
 
 ```java
 void example() {
@@ -75,7 +71,7 @@ void example() {
             // Javadoc comments can use "#foo" to refer to fields/methods
             // in the current class.
             new Launcher().getFactory().Type().OBJECT.getTypeDeclaration()
-            ).parse();
+    ).parse();
 
     for (JavadocElement element : elements) {
         System.out.print(element.accept(new ExampleVisitor()));
@@ -140,7 +136,6 @@ private static class ExampleVisitor implements JavadocVisitor<String> {
 }
 ```
 
-</details>
 <br>
 This will print a version with a bit more colours:
 ![ANSI colored javadoc]({{ "/images/spoon_javadoc_ansi_print.png" | prepend: site.baseurl }})

@@ -9,7 +9,6 @@ package spoon.support.adaption;
 
 import spoon.SpoonException;
 import spoon.processing.FactoryAccessor;
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -249,12 +248,27 @@ public class TypeAdaptor {
 	 * @return the input method but with the return type, parameter types and thrown types adapted to
 	 * 	the context of this type adapter
 	 */
-	@SuppressWarnings("unchecked")
 	public CtMethod<?> adaptMethod(CtMethod<?> inputMethod) {
+		return adaptMethod(inputMethod, true);
+	}
+
+	@SuppressWarnings("unchecked")
+	private CtMethod<?> adaptMethod(CtMethod<?> inputMethod, boolean cloneBody) {
 		if (useLegacyTypeAdaption(inputMethod)) {
 			return legacyAdaptMethod(inputMethod);
 		}
-		CtMethod<?> clonedMethod = inputMethod.clone();
+		CtMethod<?> clonedMethod;
+		if (cloneBody) {
+			clonedMethod = inputMethod.clone();
+		} else {
+			clonedMethod = inputMethod.getFactory().createMethod().setSimpleName(inputMethod.getSimpleName());
+			for (CtParameter<?> parameter : inputMethod.getParameters()) {
+				clonedMethod.addParameter(parameter.clone());
+			}
+			for (CtTypeParameter parameter : inputMethod.getFormalCtTypeParameters()) {
+				clonedMethod.addFormalCtTypeParameter(parameter.clone());
+			}
+		}
 
 		for (int i = 0; i < clonedMethod.getFormalCtTypeParameters().size(); i++) {
 			CtTypeParameter clonedParameter = clonedMethod.getFormalCtTypeParameters().get(i);
@@ -450,13 +464,9 @@ public class TypeAdaptor {
 		if (!isSubtype(subDeclaringType, superDeclaringType.getReference())) {
 			return false;
 		}
-
 		// We don't need to clone the body here, so leave it out
-		CtBlock<?> superBody = superMethod.getBody();
-		superMethod.setBody(null);
 		CtMethod<?> adapted = new TypeAdaptor(subMethod.getDeclaringType())
-			.adaptMethod(superMethod);
-		superMethod.setBody(superBody);
+			.adaptMethod(superMethod, false);
 
 		for (int i = 0; i < subMethod.getParameters().size(); i++) {
 			CtParameter<?> subParam = subMethod.getParameters().get(i);

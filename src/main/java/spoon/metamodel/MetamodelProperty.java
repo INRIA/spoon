@@ -203,7 +203,7 @@ public class MetamodelProperty {
 		if (valueType instanceof CtTypeParameterReference) {
 			valueType = ((CtTypeParameterReference) valueType).getBoundingType();
 			if (valueType == null) {
-				valueType = f.Type().OBJECT;
+				valueType = f.Type().objectType();
 			}
 		}
 		if (valueType.isImplicit()) {
@@ -211,6 +211,7 @@ public class MetamodelProperty {
 			//never return type  with implicit==true, such type is then not pretty printed
 			valueType.setImplicit(false);
 		}
+		valueType.setAnnotations(List.of()); // clear annotations, not relevant here
 		this.valueType = valueType;
 		this.valueContainerType = containerKindOf(valueType.getActualClass());
 		if (valueContainerType != ContainerKind.SINGLE) {
@@ -337,8 +338,9 @@ public class MetamodelProperty {
 		CtTypeReference<?> returnType1 = methods.get(0).getActualCtMethod().getType();
 		CtTypeReference<?> returnType2 = methods.get(1).getActualCtMethod().getType();
 		Factory f = returnType1.getFactory();
-		boolean is1Iterable = returnType1.isSubtypeOf(f.Type().ITERABLE);
-		boolean is2Iterable = returnType2.isSubtypeOf(f.Type().ITERABLE);
+		CtTypeReference<?> iterableRef = f.Type().createReference(Iterable.class);
+		boolean is1Iterable = returnType1.isSubtypeOf(iterableRef);
+		boolean is2Iterable = returnType2.isSubtypeOf(iterableRef);
 		if (is1Iterable != is2Iterable) {
 			// they are not some. Only one of them is iterable
 			if (is1Iterable) {
@@ -418,7 +420,7 @@ public class MetamodelProperty {
 		if (itemValueType instanceof CtTypeParameterReference) {
 			itemValueType = ((CtTypeParameterReference) itemValueType).getBoundingType();
 			if (itemValueType == null) {
-				itemValueType = valueType.getFactory().Type().OBJECT;
+				itemValueType = valueType.getFactory().Type().objectType();
 			}
 		}
 		return itemValueType;

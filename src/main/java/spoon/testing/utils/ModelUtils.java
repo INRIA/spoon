@@ -26,7 +26,9 @@ public final class ModelUtils {
 	}
 
 	public static Factory createFactory() {
-		return new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
+		StandardEnvironment environment = new StandardEnvironment();
+		environment.setComplianceLevel(17);
+		return new FactoryImpl(new DefaultCoreFactory(), environment);
 	}
 
 	/** Utility method for testing: creates the model of `packageName` from src/test/java and returns the CtType corresponding to `className` */
