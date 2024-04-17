@@ -64,7 +64,7 @@ public class PrinterHelper {
 	 */
 	private boolean lastCharWasCR = false;
 
-	boolean prefixBlockComments = false;
+	boolean prefixBlockComments;
 
 	public PrinterHelper() {
 	}
