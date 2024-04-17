@@ -1212,6 +1212,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} finally {
 			this.sourceCompilationUnit = outerCompilationUnit;
 		}
+		// by convention, we add a newline at the end of the file
+		// we guard this with a check to avoid adding a newline if there is already one
+		if (!getResult().endsWith(System.lineSeparator())) {
+			printer.writeln();
+		}
 	}
 
 	protected ModelList<CtImport> getImports(CtCompilationUnit compilationUnit) {
@@ -2182,9 +2187,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void calculate(CtCompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		reset();
-		if (types.isEmpty()) {
-			// is package-info.java, we cannot call types.get(0) in the then branch
-		} else {
+		// if empty => is package-info.java, we cannot call types.get(0) in the then branch
+		if (!types.isEmpty()) {
 			CtType<?> type = types.get(0);
 			if (sourceCompilationUnit == null) {
 				sourceCompilationUnit = type.getFactory().CompilationUnit().getOrCreate(type);
@@ -2302,7 +2306,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * When set to true, this activates round bracket minimization for expressions. This means that
 	 * the printer will attempt to only write round brackets strictly necessary for preserving
 	 * syntactical structure (and by extension, semantics).
-     *
+	 *
 	 * As an example, the expression <code>1 + 2 + 3 + 4</code> is written as
 	 * <code>((1 + 2) + 3) + 4</code> without round bracket minimization, but entirely without
 	 * parentheses when minimization is enabled. However, an expression <code>1 + 2 + (3 + 4)</code>

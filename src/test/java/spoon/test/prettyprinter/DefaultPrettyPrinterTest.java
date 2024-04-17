@@ -104,7 +104,7 @@ public class DefaultPrettyPrinterTest {
 				"        findFirst();" + nl +
                 "        new ClassWithStaticMethod().notStaticFindFirst();" + nl +
 				"    }" + nl +
-				"}";
+				"}" + nl;
 
 		final CtClass<?> classUsingStaticMethod = (CtClass<?>) factory.Type().get(ClassUsingStaticMethod.class);
 		final String printed = factory.getEnvironment().createPrettyPrinter().printTypes(classUsingStaticMethod);
@@ -343,7 +343,7 @@ public class DefaultPrettyPrinterTest {
 		File javaFile = new File(pathname);
 		assertTrue(javaFile.exists());
 
-		assertEquals("package foo;" + nl + "class Bar {}",
+		assertEquals("package foo;" + nl + "class Bar {}" + nl,
 				Files.readString(javaFile.toPath(), StandardCharsets.UTF_8));
 	}
 
@@ -464,7 +464,7 @@ public class DefaultPrettyPrinterTest {
 				"        } else if (a == 3) {\n" +
 				"        }\n" +
 				"    }\n" +
-				"}";
+				"}\n";
 		assertEquals(expected, result);
 	}
 
