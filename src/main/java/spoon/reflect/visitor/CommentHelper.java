@@ -66,12 +66,7 @@ public class CommentHelper {
 			case FILE, BLOCK -> {
 				UnaryOperator<String> op;
 				if (printer.prefixBlockComments) {
-					op = s -> {
-						if (s.isEmpty()) {
-							return " *";
-						}
-						return (" * " + s);
-					};
+					op = s -> s.isEmpty() ? " *" : " * " + s;
 				} else {
 					op = s -> s;
 				}
