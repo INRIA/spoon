@@ -22,6 +22,7 @@
 
 package fr.inria.controlflow;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.ProcessingManager;
@@ -31,10 +32,12 @@ import spoon.reflect.factory.Factory;
 import spoon.support.QueueProcessingManager;
 
 import java.io.PrintWriter;
+import java.util.List;
 import java.net.URISyntaxException;
 
 import static fr.inria.controlflow.BranchKind.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
@@ -46,7 +49,7 @@ public class ForwardFlowBuilderVisitorTest {
 			throws Exception {
 		final ControlFlowBuilder visitor = new ControlFlowBuilder();
 
-		Factory factory = new SpoonMetaFactory().buildNewFactory(folder, 5);
+		Factory factory = new SpoonMetaFactory().buildNewFactory(folder, 21);
 		ProcessingManager pm = new QueueProcessingManager(factory);
 		pm.addProcessor(new AbstractProcessor<CtMethod>() {
 			@Override
@@ -160,16 +163,202 @@ public class ForwardFlowBuilderVisitorTest {
 		testMethod("simple", false, 0, 2, 6);
 	}
 
-	//Test some mixed conditions
-	@Test
-	public void testSwitch() throws Exception {
-		testMethod("switchTest", false, 1, 13, 29);
-	}
+	@Nested
+	class SwitchTests {
+		@Test
+		public void testSwitch() throws Exception {
+			ControlFlowGraph graph = testMethod("switchTest", true, 1, null, null);
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entry = graph.findNodesOfKind(BEGIN).get(0);
 
-	//Test fall-through of last switch case
-	@Test
-	public void testSwitchFallThrough() throws Exception {
-		testMethod("lastCaseFallThrough", false, 1, 4, 12);
+			ControlFlowNode return0 = pathHelper.findNodeByString(graph, "return 0");
+			assertEquals(1, pathHelper.pathsBetween(entry, return0).size());
+
+			ControlFlowNode case2 = pathHelper.findNodeByString(graph, "b = a * 2");
+			assertEquals(1, pathHelper.pathsBetween(entry, case2).size());
+
+			ControlFlowNode case34 = pathHelper.findNodeByString(graph, "b = a * 9");
+			assertEquals(2, pathHelper.pathsBetween(entry, case34).size());
+
+			ControlFlowNode defaultReturn = pathHelper.findNodeByString(graph, "return 1");
+			assertEquals(1, pathHelper.pathsBetween(entry, defaultReturn).size());
+
+			ControlFlowNode afterSwitchReturn = pathHelper.findNodeByString(graph, "return b");
+			assertEquals(3, pathHelper.pathsBetween(entry, afterSwitchReturn).size());
+
+			assertEquals(5, pathHelper.pathsBetween(entry, graph.getExitNode()).size());
+		}
+
+		//Test fall-through of last switch case
+		@Test
+		public void testSwitchFallThrough() throws Exception {
+			ControlFlowGraph graph = testMethod("lastCaseFallThrough", true, null, null, null);
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entry = graph.findNodesOfKind(BEGIN).get(0);
+			assertEquals(2, pathHelper.paths(entry).size());
+		}
+
+		@Test
+		public void testSwitchImplicitDefault() throws Exception {
+			ControlFlowGraph graph = testMethod("lastCaseFallThrough", false, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = pathHelper.findNodeByString(graph, "int b = 0");
+			ControlFlowNode caseNode = pathHelper.findNodeByString(graph, "b = 1");
+			boolean canAvoid = pathHelper.canAvoidNode(entryNode, caseNode);
+			assertTrue(canAvoid, "Path for implicit default case missing");
+		}
+
+		@Test
+		public void testMultipleCaseExpressions() throws Exception {
+			ControlFlowGraph graph = testMethod("multipleCaseExpressions", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode startNode = pathHelper.findNodeByString(graph, "int b = 0");
+			List<List<ControlFlowNode>> paths = pathHelper.paths(startNode);
+			assertTrue(paths.size() > 2, "Not enough paths. Possibly missing different paths from multiple expressions for a case");
+		}
+
+		@Test
+		public void testAssignExpressionOldSwitch() throws Exception {
+			ControlFlowGraph graph = testMethod("oldSwitchAssignExpression", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(3, paths.size());
+		}
+
+		@Test
+		public void testReturnExpressionOldSwitch() throws Exception {
+			ControlFlowGraph graph = testMethod("oldSwitchReturnExpression", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(3, paths.size());
+		}
+
+		@Test
+		public void testExpressionOldExhaustive() throws Exception {
+			ControlFlowGraph graph = testMethod("oldSwitchExpressionExhaustive", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(2, paths.size());
+		}
+
+		@Test
+		public void testSimpleEnhancedSwitch() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchSimple", true, null, 5, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(3, paths.size());
+		}
+
+		@Test
+		public void testEnhancedSwitchImplicitDefault() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchImplicitDefault", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(2, paths.size());
+		}
+
+		@Test
+		public void testEnhancedSwitchImplicitDefaultString() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchImplicitDefaultString", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(2, paths.size());
+		}
+
+		@Test
+		public void testEnhancedSwitchMultipleExpressions() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchMultipleExpressions", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(3, paths.size());
+		}
+
+		@Test
+		public void testEnhancedSwitchNullDefault() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchNullDefault", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(2, paths.size());
+		}
+
+		@Test
+		public void testEnhancedSwitchExpressionExhaustive() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchExhaustiveExpression", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(2, paths.size());
+		}
+
+		@Test
+		public void testEnhancedSwitchExhaustiveEnum() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchExhaustiveEnum", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(2, paths.size());
+		}
+
+		@Test
+		public void testEnhancedSwitchNonExhaustiveEnum() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchNonExhaustiveEnum", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(2, paths.size());
+		}
+
+		@Test
+		public void testSimpleSealedHierarchyExhaustive() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchSealedExhaustive", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(2, paths.size());
+		}
+
+		@Test
+		public void testConstantGuardExhaustive() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchExhaustiveConstantTrueGuard", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(2, paths.size());
+		}
+
+		@Test
+		public void testComplexSealedHierarchyExhaustive() throws Exception {
+			ControlFlowGraph graph = testMethod("enhancedSwitchMultilevelSealedExhaustive", true, null, null, null);
+			graph.simplify();
+			ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+			ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+			List<List<ControlFlowNode>> paths = pathHelper.paths(entryNode);
+			assertEquals(3, paths.size());
+		}
+
 	}
 
 	//Test some mixed conditions
@@ -337,7 +526,7 @@ public class ForwardFlowBuilderVisitorTest {
 	public void testConstructor() throws URISyntaxException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 		ControlFlowBuilder visitor = new ControlFlowBuilder();
 
-		Factory factory = new SpoonMetaFactory().buildNewFactory(this.getClass().getResource("/control-flow").toURI().getPath(), 17);
+		Factory factory = new SpoonMetaFactory().buildNewFactory(this.getClass().getResource("/control-flow").toURI().getPath(), 21);
 		ProcessingManager pm = new QueueProcessingManager(factory);
 		pm.addProcessor(new AbstractProcessor<CtConstructor<?>>() {
 			@Override

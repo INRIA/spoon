@@ -21,6 +21,8 @@
  */
 package fr.inria.controlflow;
 
+import spoon.reflect.code.CaseKind;
+import spoon.reflect.code.CtAbstractSwitch;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -116,14 +118,17 @@ import spoon.reflect.visitor.CtAbstractVisitor;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 /**
  * Builds the control graph for a given snippet of code
- *
+ * <p>
  * Created by marodrig on 13/10/2015.
  */
 public class ControlFlowBuilder extends CtAbstractVisitor {
+	public static final String CONTROL_FLOW_ORIGINAL_STATEMENT = "CONTROL_FLOW_ORIGINAL_STATEMENT";
 
 	ControlFlowGraph result = new ControlFlowGraph(ControlFlowEdge.class);
 
@@ -222,7 +227,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	/**
 	 * Returns the first graph node representing the statement s construction.
-	 *
+	 * <p>
 	 * Usually an statement is represented by many blocks and branches.
 	 * This method returns the first of those blocks/branches.
 	 *
@@ -281,7 +286,6 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	/**
 	 * Register the label of the statement
-	 *
 	 */
 	private void registerStatementLabel(CtStatement st) {
 		if (st.getLabel() == null || st.getLabel().isEmpty()) {
@@ -319,8 +323,8 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		boolean isContinue = source != null && source.getStatement() instanceof CtContinue;
 
 		if (source != null && target != null
-			&& !result.containsEdge(source, target)
-			&& (isLooping || breakDance || !(isBreak || isContinue))) {
+				&& !result.containsEdge(source, target)
+				&& (isLooping || breakDance || !(isBreak || isContinue))) {
 			ControlFlowEdge e = result.addEdge(source, target);
 			e.setBackEdge(isLooping);
 		}
@@ -390,7 +394,13 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	}
 
-	private <R> void travelStatementList(List<CtStatement> statements) {
+	/**
+	 * Add a list of statements as a block to the current CFG.
+	 *
+	 * @param statements The list of statements
+	 * @return The start node of the block
+	 */
+	private ControlFlowNode travelStatementList(List<CtStatement> statements) {
 		ControlFlowNode begin = new ControlFlowNode(null, result, BranchKind.BLOCK_BEGIN);
 		tryAddEdge(lastNode, begin);
 		lastNode = begin;
@@ -402,6 +412,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		ControlFlowNode end = new ControlFlowNode(null, result, BranchKind.BLOCK_END);
 		tryAddEdge(lastNode, end);
 		lastNode = end;
+		return begin;
 	}
 
 	@Override
@@ -652,6 +663,8 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		registerStatementLabel(localVariable);
 		if (localVariable.getDefaultExpression() instanceof CtConditional) {
 			visitConditional(localVariable, (CtConditional) localVariable.getDefaultExpression());
+		} else if (localVariable.getDefaultExpression() instanceof CtSwitchExpression<T, ?> switchExpression) {
+			handleCtAbstractSwitch(localVariable, switchExpression);
 		} else {
 			defaultAction(BranchKind.STATEMENT, localVariable);
 		}
@@ -736,10 +749,14 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	@Override
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
 		registerStatementLabel(returnStatement);
-		ControlFlowNode n = new ControlFlowNode(returnStatement, result, BranchKind.STATEMENT);
-		tryAddEdge(lastNode, n);
-		tryAddEdge(n, exitNode);
-		lastNode = null; //Special case in which this node does not connect with the next, because is a return
+		if (returnStatement.getReturnedExpression() instanceof CtSwitchExpression<R, ?> switchExpression) {
+			handleCtAbstractSwitch(returnStatement, switchExpression);
+		} else {
+			ControlFlowNode n = new ControlFlowNode(returnStatement, result, BranchKind.STATEMENT);
+			tryAddEdge(lastNode, n);
+			tryAddEdge(n, exitNode);
+			lastNode = null; //Special case in which this node does not connect with the next, because is a return
+		}
 	}
 
 	@Override
@@ -758,42 +775,96 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	@Override
 	public <S> void visitCtSwitch(CtSwitch<S> switchStatement) {
-		registerStatementLabel(switchStatement);
-		//Push the condition
-		ControlFlowNode switchNode = new ControlFlowNode(switchStatement.getSelector(), result, BranchKind.BRANCH);
-		tryAddEdge(lastNode, switchNode);
-
-		//Create a convergence node for all the branches to converge after this
-		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
-		//Push the convergence node so all non labeled breaks jumps there
-		breakingBad.push(convergenceNode);
-
-		lastNode = switchNode;
-		for (CtCase caseStatement : switchStatement.getCases()) {
-
-			//Visit Case
-			registerStatementLabel(caseStatement);
-			ControlFlowNode cn = new ControlFlowNode(caseStatement.getCaseExpression(), result, BranchKind.STATEMENT);
-			tryAddEdge(lastNode, cn);
-			if (lastNode != switchNode) {
-				tryAddEdge(switchNode, cn);
-			}
-			lastNode = cn;
-			travelStatementList(caseStatement.getStatements());
-			if (lastNode.getStatement() instanceof CtBreak) {
-				lastNode = switchNode;
-			}
-		}
-		tryAddEdge(lastNode, convergenceNode);
-
-		//Return as last node the convergence node
-		lastNode = convergenceNode;
-		breakingBad.pop();
+		handleCtAbstractSwitch(switchStatement, switchStatement);
 	}
 
-	@Override
-	public <T, S> void visitCtSwitchExpression(CtSwitchExpression<T, S> switchExpression) {
-		//TODO: missing, implementation needed
+	public <S> void handleCtAbstractSwitch(CtStatement containingStatement, CtAbstractSwitch<S> abstractSwitch) {
+		ControlFlowNode statementNode = new ControlFlowNode(containingStatement, result, BranchKind.STATEMENT);
+		tryAddEdge(lastNode, statementNode);
+		lastNode = statementNode;
+
+		ControlFlowNode switchBlockBegin = new ControlFlowNode(null, result, BranchKind.BLOCK_BEGIN);
+		tryAddEdge(lastNode, switchBlockBegin);
+		lastNode = switchBlockBegin;
+
+		ControlFlowNode selectorNode = new ControlFlowNode(abstractSwitch.getSelector(), result, BranchKind.BRANCH);
+		tryAddEdge(lastNode, selectorNode);
+		lastNode = selectorNode;
+
+		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		breakingBad.push(convergenceNode);
+
+		ControlFlowNode fallThroughNode = null;
+		for (CtCase<?> switchCase : abstractSwitch.getCases()) {
+			boolean isEnhanced = switchCase.getCaseKind() == CaseKind.ARROW;
+
+			ControlFlowNode caseConvergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+			lastNode = caseConvergenceNode;
+			tryAddEdge(fallThroughNode, caseConvergenceNode);
+
+			for (CtExpression<?> expression : switchCase.getCaseExpressions()) {
+				ControlFlowNode node = new ControlFlowNode(expression, result, BranchKind.EXPRESSION);
+				node.setTag(switchCase.getGuard());
+				tryAddEdge(selectorNode, node);
+				tryAddEdge(node, caseConvergenceNode);
+			}
+			if (switchCase.getIncludesDefault() || switchCase.getCaseExpressions().isEmpty()) {
+				tryAddEdge(selectorNode, caseConvergenceNode);
+			}
+
+			for (CtStatement statement : switchCase.getStatements()) {
+				registerStatementLabel(statement);
+				statement.accept(this);
+			}
+
+			if (!isEnhanced) {
+				fallThroughNode = lastNode;
+			} else {
+				tryAddEdge(lastNode, convergenceNode);
+			}
+		}
+		tryAddEdge(fallThroughNode, convergenceNode);
+
+		if (!checkExhaustive(abstractSwitch)) {
+			tryAddEdge(selectorNode, convergenceNode);
+		}
+
+		breakingBad.pop();
+
+		ControlFlowNode switchBlockEnd = new ControlFlowNode(null, result, BranchKind.BLOCK_END);
+		tryAddEdge(convergenceNode, switchBlockEnd);
+		lastNode = switchBlockEnd;
+
+		ControlFlowNode statementEndNode = new ControlFlowNode(containingStatement, result, BranchKind.STATEMENT_END);
+		statementNode.setEndTo(statementEndNode);
+		tryAddEdge(lastNode, statementEndNode);
+		lastNode = statementEndNode;
+	}
+
+	private boolean checkExhaustive(CtAbstractSwitch<?> switchElement) {
+		if (switchElement instanceof CtSwitchExpression<?, ?>) { // A successfully compiled switch expression is always exhaustive
+			return true;
+		}
+
+		boolean hasDefault = switchElement.getCases().stream().anyMatch(cases -> cases.getIncludesDefault() || cases.getCaseExpressions().isEmpty());
+		if (hasDefault) {
+			return true;
+		}
+
+		if (switchElement.getSelector().getType().isEnum()) {
+			Set<CtExpression<?>> caseExpressions = switchElement.getCases().stream().flatMap(cases -> cases.getCaseExpressions().stream()).collect(Collectors.toSet());
+			CtEnum<?> enumType = (CtEnum<?>) switchElement.getSelector().getType().getTypeDeclaration();
+			Set<String> enumConstantNames = enumType.getEnumValues().stream().map(CtEnumValue::getSimpleName).collect(Collectors.toSet());
+			Set<String> referencedEnumConstants = caseExpressions.stream().map(expression -> ((CtFieldRead<?>) expression).getVariable().getSimpleName()).collect(Collectors.toSet());
+
+			return referencedEnumConstants.containsAll(enumConstantNames);
+		}
+
+		CtTypeReference<?> selectorTypeReference = switchElement.getSelector().getType();
+
+		boolean isEnhanced = !selectorTypeReference.isPrimitive() && !selectorTypeReference.equals(selectorTypeReference.getFactory().Type().createReference(String.class));
+
+		return isEnhanced;
 	}
 
 	@Override
@@ -975,7 +1046,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	@Override
 	public void visitCtYieldStatement(CtYieldStatement ctYieldStatement) {
-
+		defaultAction(BranchKind.STATEMENT, ctYieldStatement);
 	}
 
 	@Override

@@ -30,6 +30,8 @@ public enum BranchKind {
 	FINALLY,     // Represents the start of a finally block
 	BRANCH,      // Represents a branch
 	STATEMENT,   // Represents an statement
+	STATEMENT_END, // Represents the end of a multinode statement
+	EXPRESSION, // Represents an expression such as a case constant
 	BLOCK_BEGIN, // Represents the begining of a block
 	BLOCK_END,   // Represents the end of a block
 	CONVERGE,    // The exit node of all branches. Depending on the analysis it may be convenient to leave them

@@ -363,7 +363,7 @@ public class ControlFlowArithmetic {
 				b = a * 9;
 				break;
 			default:
-				return 0;
+				return 1;
 		}
 		return b;
 	}
@@ -376,6 +376,165 @@ public class ControlFlowArithmetic {
 		}
 		return b;
 	}
+
+	public int multipleCaseExpressions(int a) {
+		int b = 0;
+		switch (a) {
+			case 1, 2:
+				b = 1;
+				break;
+			default:
+				break;
+		}
+		return b;
+	}
+
+	enum Test {
+		TYPE_1, TYPE_2
+	}
+
+	public void oldSwitchAssignExpression() {
+		int a = switch (1) {
+			case 1:
+				yield 2;
+			case 2:
+				int b = 2;
+				yield 3;
+			default:
+				yield 1;
+		};
+	}
+
+	public int oldSwitchReturnExpression() {
+		return switch (1) {
+			case 1:
+				yield 2;
+			case 2:
+				int b = 2;
+				yield 3;
+			default:
+				yield 1;
+		};
+	}
+
+	public void oldSwitchExpressionExhaustive() {
+		int a = switch (Test.TYPE_1) {
+			case TYPE_1:
+				yield 1;
+			case TYPE_2:
+				yield 2;
+		};
+	}
+
+	public void enhancedSwitchSimple() {
+		int a = 1;
+		switch (a) {
+			case 1 -> System.out.println("hi from case 1");
+			case 2 -> {
+				System.out.println("Hello from case 2");
+			}
+			default -> System.out.println("Hello from default");
+		}
+	}
+
+	public void enhancedSwitchImplicitDefault() {
+		int a = 1;
+		int b = 0;
+		switch (a) {
+			case 1 -> {
+				b = 1;
+			}
+		}
+	}
+
+	public void enhancedSwitchImplicitDefaultString() {
+		int a = 1;
+		int b = 0;
+		switch ("a") {
+			case "1" -> {
+				b = 1;
+			}
+		}
+	}
+
+	public void enhancedSwitchMultipleExpressions() {
+		switch (3) {
+			case 1, 2 -> {
+				int b = 1;
+			}
+			default -> {
+			}
+		}
+	}
+
+	public void enhancedSwitchNullDefault(Object arg) {
+		switch (arg) {
+			case null, default -> {
+				int a = 1;
+			}
+		}
+	}
+
+	public void enhancedSwitchExhaustiveExpression() {
+		int a = switch (Test.TYPE_1) {
+			case TYPE_1 -> 1;
+			case TYPE_2 -> 2;
+		};
+	}
+
+	public void enhancedSwitchExhaustiveEnum() {
+		switch (Test.TYPE_1) {
+			case TYPE_1 -> {
+			}
+			case TYPE_2 -> {
+			}
+		}
+	}
+
+	public void enhancedSwitchNonExhaustiveEnum() {
+		switch (Test.TYPE_1) {
+			case TYPE_2 -> {
+			}
+		}
+	}
+
+	sealed interface I permits R, A {
+	}
+
+	record R(int j) implements I {
+	}
+
+	sealed class A implements I permits B, C {
+	}
+
+	final class B extends A {
+	}
+
+	final class C extends A {
+	}
+
+	static void enhancedSwitchSealedExhaustive(I i) {
+		switch (i) {
+			case A a -> {}
+			case R r -> {}
+		}
+	}
+
+	static int enhancedSwitchExhaustiveConstantTrueGuard(I i) {
+		switch (i) {
+			case A a when 1 < 2 -> {}
+			case R r -> {}
+		};
+	}
+
+	static int enhancedSwitchMultilevelSealedExhaustive(I i) {
+		switch (i) {
+			case B b -> {}
+			case C b -> {}
+			case R r -> {}
+		};
+	}
+
 
 	//All lines will be tested in this method
 	public int simple(int a) {
@@ -422,7 +581,7 @@ public class ControlFlowArithmetic {
 	}
 
 	public void complex1(double phase, double source, double target, double baseIncrement, boolean starved, int i,
-	                     double current, double[] outputs, double[] amplitudes, double[] rates) {
+						 double current, double[] outputs, double[] amplitudes, double[] rates) {
 		if ((phase) >= 1.0) {
 			while ((phase) >= 1.0) {
 				source = target;
