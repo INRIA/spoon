@@ -19,126 +19,59 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.inria.controlflow;
+package spoon.controlflow;
 
-import spoon.reflect.code.CtAnnotationFieldAccess;
-import spoon.reflect.code.CtArrayRead;
-import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
-import spoon.reflect.code.CtCatch;
-import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtCodeSnippetExpression;
-import spoon.reflect.code.CtCodeSnippetStatement;
-import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
-import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
-import spoon.reflect.code.CtExecutableReferenceExpression;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldRead;
-import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtJavaDoc;
-import spoon.reflect.code.CtJavaDocTag;
-import spoon.reflect.code.CtLambda;
-import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtNewArray;
-import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtStatementList;
-import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSwitchExpression;
-import spoon.reflect.code.CtSynchronized;
-import spoon.reflect.code.CtTextBlock;
-import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
-import spoon.reflect.code.CtTryWithResource;
-import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
-import spoon.reflect.code.CtYieldStatement;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtAnnotationMethod;
-import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtCompilationUnit;
-import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtImport;
-import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtModuleRequirement;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtPackageDeclaration;
-import spoon.reflect.declaration.CtPackageExport;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.CtUsedService;
-import spoon.reflect.reference.CtArrayTypeReference;
-import spoon.reflect.reference.CtCatchVariableReference;
-import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtIntersectionTypeReference;
-import spoon.reflect.reference.CtLocalVariableReference;
-import spoon.reflect.reference.CtModuleReference;
-import spoon.reflect.reference.CtPackageReference;
-import spoon.reflect.reference.CtParameterReference;
-import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
-import spoon.reflect.reference.CtTypeParameterReference;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtUnboundVariableReference;
-import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtAbstractVisitor;
 
-import java.lang.annotation.Annotation;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * Builds the control graph for a given snippet of code
- *
- * Created by marodrig on 13/10/2015.
  */
 public class ControlFlowBuilder extends CtAbstractVisitor {
 
-	ControlFlowGraph result = new ControlFlowGraph(ControlFlowEdge.class);
+	private final ControlFlowGraph result = new ControlFlowGraph(ControlFlowEdge.class);
 
-	ControlFlowNode exitNode = new ControlFlowNode(null, result, BranchKind.EXIT);
+	private final ControlFlowNode exitNode = new ControlFlowNode(null, result, NodeKind.EXIT);
 
-	ControlFlowNode beginNode = new ControlFlowNode(null, result, BranchKind.BEGIN);
+	private final ControlFlowNode beginNode = new ControlFlowNode(null, result, NodeKind.BEGIN);
 
-	ControlFlowNode lastNode = beginNode;
+	private ControlFlowNode lastNode = beginNode;
 
-	HashMap<String, CtStatement> labeledStatement = new HashMap<>();
+	private final HashMap<String, CtStatement> labeledStatement = new HashMap<>();
 
 	//This stack pushes all the nodes to wich a break statement may jump to.
-	Stack<ControlFlowNode> breakingBad = new Stack<>();
+	private final Deque<ControlFlowNode> breakingBad = new ArrayDeque<>();
 	//This stack pushes all the nodes to wich a continue statement may jump to.
-	Stack<ControlFlowNode> continueBad = new Stack<>();
+	private final Deque<ControlFlowNode> continueBad = new ArrayDeque<>();
 
 	/**
 	 * Strategy for modeling exception control flow, if any.
@@ -179,7 +112,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 	/**
-	 * Build the control graph
+	 * Build the control graph for the given element
 	 *
 	 * @param s starting point
 	 * @return control flow graph
@@ -195,25 +128,25 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		return result;
 	}
 
-	private void visitConditional(CtElement parent, CtConditional conditional) {
-		ControlFlowNode branch = new ControlFlowNode(parent, result, BranchKind.BRANCH);
+	private void visitConditional(CtElement parent, CtConditional<?> conditional) {
+		ControlFlowNode branch = new ControlFlowNode(parent, result, NodeKind.BRANCH);
 		tryAddEdge(lastNode, branch);
 
-		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, NodeKind.CONVERGE);
 		lastNode = branch;
-		if (conditional.getThenExpression() instanceof CtConditional) {
-			visitConditional(conditional, (CtConditional) conditional.getThenExpression());
+		if (conditional.getThenExpression() instanceof CtConditional<?> conditionalThen) {
+			visitConditional(conditional, conditionalThen);
 		} else {
-			lastNode = new ControlFlowNode(conditional.getThenExpression(), result, BranchKind.STATEMENT);
+			lastNode = new ControlFlowNode(conditional.getThenExpression(), result, NodeKind.STATEMENT);
 			tryAddEdge(branch, lastNode);
 		}
 		tryAddEdge(lastNode, convergenceNode);
 
 		lastNode = branch;
-		if (conditional.getElseExpression() instanceof CtConditional) {
-			visitConditional(conditional, (CtConditional) conditional.getElseExpression());
+		if (conditional.getElseExpression() instanceof CtConditional<?> conditionalElse) {
+			visitConditional(conditional, conditionalElse);
 		} else {
-			lastNode = new ControlFlowNode(conditional.getElseExpression(), result, BranchKind.STATEMENT);
+			lastNode = new ControlFlowNode(conditional.getElseExpression(), result, NodeKind.STATEMENT);
 			tryAddEdge(branch, lastNode);
 		}
 		tryAddEdge(lastNode, convergenceNode);
@@ -221,9 +154,9 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 	/**
-	 * Returns the first graph node representing the statement s construction.
-	 *
-	 * Usually an statement is represented by many blocks and branches.
+	 * Returns the first graph node representing the statement's construction.
+	 * <p>
+	 * Usually a statement is represented by many blocks and branches.
 	 * This method returns the first of those blocks/branches.
 	 *
 	 * @param g         Graph in which the bloc is to be found
@@ -237,9 +170,8 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			throw new NotFoundException("statement null");
 		}
 
-		if (statement instanceof CtFor) {
-			CtFor ctFor = (CtFor) statement;
-			if (ctFor.getForInit().size() > 0) {
+		if (statement instanceof CtFor ctFor) {
+			if (!ctFor.getForInit().isEmpty()) {
 				return g.findNode(ctFor.getForInit().get(0));
 			} else {
 				return g.findNode(ctFor.getExpression());
@@ -261,19 +193,19 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 				throw new NotFoundException("cannot find initial node of do while loop");
 			}
 			return n1;
-		} else if (statement instanceof CtIf) {
-			return g.findNode(((CtIf) statement).getCondition());
-		} else if (statement instanceof CtSwitch) {
-			return g.findNode(((CtSwitch) statement).getSelector());
-		} else if (statement instanceof CtBlock) {
-			return g.findNode(((CtBlock) statement).getStatement(0));
+		} else if (statement instanceof CtIf ifStatement) {
+			return g.findNode(ifStatement.getCondition());
+		} else if (statement instanceof CtSwitch<?> switchStatement) {
+			return g.findNode(switchStatement.getSelector());
+		} else if (statement instanceof CtBlock<?> blockStatement) {
+			return g.findNode(blockStatement.getStatement(0));
 		} else {
 			return g.findNode(statement);
 		}
 	}
 
 
-	private void defaultAction(BranchKind kind, CtStatement st) {
+	private void defaultAction(NodeKind kind, CtStatement st) {
 		ControlFlowNode n = new ControlFlowNode(st, result, kind);
 		tryAddEdge(lastNode, n);
 		lastNode = n;
@@ -281,7 +213,6 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	/**
 	 * Register the label of the statement
-	 *
 	 */
 	private void registerStatementLabel(CtStatement st) {
 		if (st.getLabel() == null || st.getLabel().isEmpty()) {
@@ -311,7 +242,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	 * @param breakDance indicates that the edge is a jump out of the block
 	 */
 	private void tryAddEdge(ControlFlowNode source, ControlFlowNode target, boolean isLooping, boolean breakDance) {
-		if (source != null && source.getKind() != BranchKind.CATCH && source.getStatement() != null && exceptionControlFlowStrategy != null) {
+		if (source != null && source.getKind() != NodeKind.CATCH && source.getStatement() != null && exceptionControlFlowStrategy != null) {
 			exceptionControlFlowStrategy.handleStatement(this, source);
 		}
 
@@ -319,79 +250,33 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		boolean isContinue = source != null && source.getStatement() instanceof CtContinue;
 
 		if (source != null && target != null
-			&& !result.containsEdge(source, target)
-			&& (isLooping || breakDance || !(isBreak || isContinue))) {
+				&& !result.containsEdge(source, target)
+				&& (isLooping || breakDance || !(isBreak || isContinue))) {
 			ControlFlowEdge e = result.addEdge(source, target);
 			e.setBackEdge(isLooping);
 		}
 
 	}
 
-
-	@Override
-	public <A extends Annotation> void visitCtAnnotation(CtAnnotation<A> annotation) {
-
-	}
-
-	@Override
-	public <T> void visitCtCodeSnippetExpression(CtCodeSnippetExpression<T> expression) {
-
-	}
-
-	@Override
-	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {
-
-	}
-
-	@Override
-	public <A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> annotationType) {
-
-	}
-
-	@Override
-	public void visitCtAnonymousExecutable(CtAnonymousExecutable anonymousExec) {
-
-	}
-
-	@Override
-	public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
-
-	}
-
-	@Override
-	public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
-
-	}
-
-	@Override
-	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
-
-	}
-
 	@Override
 	public <T> void visitCtAssert(CtAssert<T> asserted) {
-		defaultAction(BranchKind.STATEMENT, asserted);
+		defaultAction(NodeKind.STATEMENT, asserted);
 	}
 
 	@Override
-	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignement) {
+	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignment) {
 
-		registerStatementLabel(assignement);
+		registerStatementLabel(assignment);
 
-		if (assignement.getAssignment() instanceof CtConditional) {
-			visitConditional(assignement, (CtConditional) assignement.getAssignment());
+		if (assignment.getAssignment() instanceof CtConditional<?> conditionalAssignment) {
+			visitConditional(assignment, conditionalAssignment);
 		} else {
-			defaultAction(BranchKind.STATEMENT, assignement);
+			defaultAction(NodeKind.STATEMENT, assignment);
 		}
 	}
 
-	@Override
-	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
-
-	}
-
 	private <R> void travelStatementList(List<CtStatement> statements) {
-		ControlFlowNode begin = new ControlFlowNode(null, result, BranchKind.BLOCK_BEGIN);
+		ControlFlowNode begin = new ControlFlowNode(null, result, NodeKind.BLOCK_BEGIN);
 		tryAddEdge(lastNode, begin);
 		lastNode = begin;
 		for (CtStatement s : statements) {
@@ -399,7 +284,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			s.accept(this); // <- This should modify last node
 			//tryAddEdge(before, lastNode); //Probably the link is already added
 		}
-		ControlFlowNode end = new ControlFlowNode(null, result, BranchKind.BLOCK_END);
+		ControlFlowNode end = new ControlFlowNode(null, result, NodeKind.BLOCK_END);
 		tryAddEdge(lastNode, end);
 		lastNode = end;
 	}
@@ -418,28 +303,18 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			to = null;
 		}
 		if (to != null) {
-			defaultAction(BranchKind.STATEMENT, breakStatement);
+			defaultAction(NodeKind.STATEMENT, breakStatement);
 			tryAddEdge(lastNode, to, true, false);
-		} else if (!breakingBad.empty()) {
+		} else if (!breakingBad.isEmpty()) {
 			//Jump to the last guy who said I can jump to...
-			defaultAction(BranchKind.STATEMENT, breakStatement);
+			defaultAction(NodeKind.STATEMENT, breakStatement);
 			tryAddEdge(lastNode, breakingBad.peek(), false, true);
 		}
 	}
 
 	@Override
-	public void visitCtCatch(CtCatch catchBlock) {
-
-	}
-
-	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
-		defaultAction(BranchKind.STATEMENT, ctClass);
-	}
-
-	@Override
-	public <T> void visitCtConditional(CtConditional<T> conditional) {
-
+		defaultAction(NodeKind.STATEMENT, ctClass);
 	}
 
 	@Override
@@ -456,7 +331,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 			to = continueBad.peek();
 		}
 		if (to != null) {
-			defaultAction(BranchKind.STATEMENT, continueStatement);
+			defaultAction(NodeKind.STATEMENT, continueStatement);
 			tryAddEdge(lastNode, to, true, false);
 		}
 	}
@@ -465,15 +340,15 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	public void visitCtDo(CtDo doLoop) {
 		registerStatementLabel(doLoop);
 
-		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, NodeKind.CONVERGE);
 		continueBad.push(convergenceNode);
 		//to break out of the do loop
-		ControlFlowNode convergenceNodeOut = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		ControlFlowNode convergenceNodeOut = new ControlFlowNode(null, result, NodeKind.CONVERGE);
 		breakingBad.push(convergenceNodeOut);
 
 
 		tryAddEdge(lastNode, convergenceNode);
-		ControlFlowNode branch = new ControlFlowNode(doLoop.getLoopingExpression(), result, BranchKind.BRANCH);
+		ControlFlowNode branch = new ControlFlowNode(doLoop.getLoopingExpression(), result, NodeKind.BRANCH);
 		tryAddEdge(branch, convergenceNode, true, false);
 		tryAddEdge(branch, convergenceNodeOut);
 
@@ -489,41 +364,6 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 	@Override
-	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
-
-	}
-
-	@Override
-	public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
-
-	}
-
-	@Override
-	public <T> void visitCtField(CtField<T> f) {
-
-	}
-
-	@Override
-	public <T> void visitCtEnumValue(CtEnumValue<T> enumValue) {
-
-	}
-
-	@Override
-	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
-
-	}
-
-	@Override
-	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-
-	}
-
-	@Override
-	public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) {
-
-	}
-
-	@Override
 	public void visitCtFor(CtFor forLoop) {
 		registerStatementLabel(forLoop);
 
@@ -531,16 +371,16 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		if (forLoop.getForInit() != null) {
 			if (forLoop.getForInit().size() > 1) {
 				travelStatementList(forLoop.getForInit());
-			} else if (forLoop.getForInit().size() > 0) {
+			} else if (!forLoop.getForInit().isEmpty()) {
 				forLoop.getForInit().get(0).accept(this);
 			}
 		}
 
-		ControlFlowNode convergence = new ControlFlowNode(forLoop.getExpression(), result, BranchKind.CONVERGE);
+		ControlFlowNode convergence = new ControlFlowNode(forLoop.getExpression(), result, NodeKind.CONVERGE);
 		breakingBad.push(convergence);
 
 		//Next the branch
-		ControlFlowNode branch = new ControlFlowNode(forLoop.getExpression(), result, BranchKind.BRANCH);
+		ControlFlowNode branch = new ControlFlowNode(forLoop.getExpression(), result, NodeKind.BRANCH);
 		tryAddEdge(lastNode, branch);
 
 		//Node continue statements can continue to
@@ -556,7 +396,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		if (forLoop.getForUpdate() != null) {
 			if (forLoop.getForUpdate().size() > 1) {
 				travelStatementList(forLoop.getForUpdate());
-			} else if (forLoop.getForUpdate().size() > 0) {
+			} else if (!forLoop.getForUpdate().isEmpty()) {
 				forLoop.getForUpdate().get(0).accept(this);
 			}
 		}
@@ -577,14 +417,14 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	public void visitCtForEach(CtForEach foreach) {
 		registerStatementLabel(foreach);
 
-		ControlFlowNode convergence = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		ControlFlowNode convergence = new ControlFlowNode(null, result, NodeKind.CONVERGE);
 		breakingBad.push(convergence);
 
-		ControlFlowNode init = new ControlFlowNode(foreach.getVariable(), result, BranchKind.STATEMENT);
+		ControlFlowNode init = new ControlFlowNode(foreach.getVariable(), result, NodeKind.STATEMENT);
 		tryAddEdge(lastNode, init);
 		lastNode = init;
 
-		ControlFlowNode branch = new ControlFlowNode(foreach.getExpression(), result, BranchKind.BRANCH);
+		ControlFlowNode branch = new ControlFlowNode(foreach.getExpression(), result, NodeKind.BRANCH);
 		continueBad.push(branch);
 		tryAddEdge(lastNode, branch);
 
@@ -606,10 +446,10 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	public void visitCtIf(CtIf ifElement) {
 		registerStatementLabel(ifElement);
 
-		ControlFlowNode branch = new ControlFlowNode(ifElement.getCondition(), result, BranchKind.BRANCH);
+		ControlFlowNode branch = new ControlFlowNode(ifElement.getCondition(), result, NodeKind.BRANCH);
 		tryAddEdge(lastNode, branch);
 
-		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, NodeKind.CONVERGE);
 		if (ifElement.getThenStatement() != null) {
 			lastNode = branch;
 			ifElement.getThenStatement().accept(this);
@@ -627,49 +467,19 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 	@Override
-	public <T> void visitCtInterface(CtInterface<T> intrface) {
-
-	}
-
-	@Override
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		registerStatementLabel(invocation);
-		defaultAction(BranchKind.STATEMENT, invocation);
-	}
-
-	@Override
-	public <T> void visitCtLiteral(CtLiteral<T> literal) {
-
-	}
-
-	@Override
-	public void visitCtTextBlock(CtTextBlock literal) {
-
+		defaultAction(NodeKind.STATEMENT, invocation);
 	}
 
 	@Override
 	public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
 		registerStatementLabel(localVariable);
-		if (localVariable.getDefaultExpression() instanceof CtConditional) {
-			visitConditional(localVariable, (CtConditional) localVariable.getDefaultExpression());
+		if (localVariable.getDefaultExpression() instanceof CtConditional<?> conditionalDefaultExpression) {
+			visitConditional(localVariable, conditionalDefaultExpression);
 		} else {
-			defaultAction(BranchKind.STATEMENT, localVariable);
+			defaultAction(NodeKind.STATEMENT, localVariable);
 		}
-	}
-
-	@Override
-	public <T> void visitCtLocalVariableReference(CtLocalVariableReference<T> reference) {
-
-	}
-
-	@Override
-	public <T> void visitCtCatchVariable(CtCatchVariable<T> ctCatchVariable) {
-
-	}
-
-	@Override
-	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> ctCatchVariableReference) {
-
 	}
 
 	@Override
@@ -678,79 +488,24 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 	@Override
-	public <T> void visitCtAnnotationMethod(CtAnnotationMethod<T> annotationMethod) {
-
-	}
-
-	@Override
-	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
-
-	}
-
-	@Override
-	public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
-
-	}
-
-	@Override
-	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
-
-	}
-
-	@Override
-	public <T> void visitCtLambda(CtLambda<T> lambda) {
-
-	}
-
-	@Override
-	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> expression) {
-
-	}
-
-	@Override
 	public <T, A extends T> void visitCtOperatorAssignment(CtOperatorAssignment<T, A> assignment) {
 		registerStatementLabel(assignment);
-		defaultAction(BranchKind.STATEMENT, assignment);
-	}
-
-	@Override
-	public void visitCtPackage(CtPackage ctPackage) {
-
-	}
-
-	@Override
-	public void visitCtPackageReference(CtPackageReference reference) {
-
-	}
-
-	@Override
-	public <T> void visitCtParameter(CtParameter<T> parameter) {
-
-	}
-
-	@Override
-	public <T> void visitCtParameterReference(CtParameterReference<T> reference) {
-
+		defaultAction(NodeKind.STATEMENT, assignment);
 	}
 
 	@Override
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
 		registerStatementLabel(returnStatement);
-		ControlFlowNode n = new ControlFlowNode(returnStatement, result, BranchKind.STATEMENT);
+		ControlFlowNode n = new ControlFlowNode(returnStatement, result, NodeKind.STATEMENT);
 		tryAddEdge(lastNode, n);
 		tryAddEdge(n, exitNode);
 		lastNode = null; //Special case in which this node does not connect with the next, because is a return
 	}
 
 	@Override
-	public <R> void visitCtStatementList(CtStatementList statements) {
-
-	}
-
-	@Override
 	public <S> void visitCtCase(CtCase<S> caseStatement) {
 		registerStatementLabel(caseStatement);
-		ControlFlowNode caseNode = new ControlFlowNode(caseStatement.getCaseExpression(), result, BranchKind.STATEMENT);
+		ControlFlowNode caseNode = new ControlFlowNode(caseStatement.getCaseExpression(), result, NodeKind.STATEMENT);
 		tryAddEdge(lastNode, caseNode);
 		lastNode = caseNode;
 		travelStatementList(caseStatement.getStatements());
@@ -760,11 +515,11 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	public <S> void visitCtSwitch(CtSwitch<S> switchStatement) {
 		registerStatementLabel(switchStatement);
 		//Push the condition
-		ControlFlowNode switchNode = new ControlFlowNode(switchStatement.getSelector(), result, BranchKind.BRANCH);
+		ControlFlowNode switchNode = new ControlFlowNode(switchStatement.getSelector(), result, NodeKind.BRANCH);
 		tryAddEdge(lastNode, switchNode);
 
 		//Create a convergence node for all the branches to converge after this
-		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, NodeKind.CONVERGE);
 		//Push the convergence node so all non labeled breaks jumps there
 		breakingBad.push(convergenceNode);
 
@@ -773,7 +528,7 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 
 			//Visit Case
 			registerStatementLabel(caseStatement);
-			ControlFlowNode cn = new ControlFlowNode(caseStatement.getCaseExpression(), result, BranchKind.STATEMENT);
+			ControlFlowNode cn = new ControlFlowNode(caseStatement.getCaseExpression(), result, NodeKind.STATEMENT);
 			tryAddEdge(lastNode, cn);
 			if (lastNode != switchNode) {
 				tryAddEdge(switchNode, cn);
@@ -797,11 +552,6 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 	@Override
-	public void visitCtSynchronized(CtSynchronized synchro) {
-
-	}
-
-	@Override
 	public void visitCtThrow(CtThrow throwStatement) {
 		if (exceptionControlFlowStrategy != null) {
 			exceptionControlFlowStrategy.handleThrowStatement(this, throwStatement);
@@ -816,63 +566,18 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 	@Override
-	public void visitCtTryWithResource(CtTryWithResource ctTryWithResource) {
-
-	}
-
-	@Override
-	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
-
-	}
-
-	@Override
-	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
-
-	}
-
-	@Override
-	public void visitCtWildcardReference(CtWildcardReference wildcardReference) {
-
-	}
-
-	@Override
-	public <T> void visitCtIntersectionTypeReference(CtIntersectionTypeReference<T> reference) {
-
-	}
-
-	@Override
-	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
-
-	}
-
-	@Override
-	public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
-
-	}
-
-	@Override
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
-		defaultAction(BranchKind.STATEMENT, operator);
-	}
-
-	@Override
-	public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
-
-	}
-
-	@Override
-	public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
-
+		defaultAction(NodeKind.STATEMENT, operator);
 	}
 
 	@Override
 	public void visitCtWhile(CtWhile whileLoop) {
 		registerStatementLabel(whileLoop);
 
-		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+		ControlFlowNode convergenceNode = new ControlFlowNode(null, result, NodeKind.CONVERGE);
 		breakingBad.push(convergenceNode);
 
-		ControlFlowNode branch = new ControlFlowNode(whileLoop.getLoopingExpression(), result, BranchKind.BRANCH);
+		ControlFlowNode branch = new ControlFlowNode(whileLoop.getLoopingExpression(), result, NodeKind.BRANCH);
 		continueBad.push(branch);
 
 		tryAddEdge(lastNode, branch);
@@ -888,98 +593,4 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		continueBad.pop();
 	}
 
-	@Override
-	public <T> void visitCtAnnotationFieldAccess(CtAnnotationFieldAccess<T> annotationFieldAccess) {
-
-	}
-
-	@Override
-	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
-
-	}
-
-	@Override
-	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
-
-	}
-
-	@Override
-	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
-
-	}
-
-	@Override
-	public void visitCtComment(CtComment comment) {
-
-	}
-
-	@Override
-	public void visitCtJavaDoc(CtJavaDoc comment) {
-
-	}
-
-	@Override
-	public void visitCtJavaDocTag(CtJavaDocTag docTag) {
-
-	}
-
-	@Override
-	public void visitCtImport(CtImport ctImport) {
-
-	}
-
-	@Override
-	public void visitCtModule(CtModule module) {
-
-	}
-
-	@Override
-	public void visitCtModuleReference(CtModuleReference moduleReference) {
-
-	}
-
-	@Override
-	public void visitCtPackageExport(CtPackageExport moduleExport) {
-
-	}
-
-	@Override
-	public void visitCtModuleRequirement(CtModuleRequirement moduleRequirement) {
-
-	}
-
-	@Override
-	public void visitCtProvidedService(CtProvidedService moduleProvidedService) {
-
-	}
-
-	@Override
-	public void visitCtUsedService(CtUsedService usedService) {
-
-	}
-
-	@Override
-	public void visitCtCompilationUnit(CtCompilationUnit compilationUnit) {
-
-	}
-
-	@Override
-	public void visitCtPackageDeclaration(CtPackageDeclaration packageDeclaration) {
-
-	}
-
-	@Override
-	public void visitCtTypeMemberWildcardImportReference(CtTypeMemberWildcardImportReference wildcardReference) {
-
-	}
-
-	@Override
-	public void visitCtYieldStatement(CtYieldStatement ctYieldStatement) {
-
-	}
-
-	@Override
-	public void visitCtTypePattern(CtTypePattern pattern) {
-
-	}
 }

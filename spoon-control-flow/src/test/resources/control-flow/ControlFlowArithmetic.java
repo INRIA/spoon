@@ -33,7 +33,7 @@ import java.util.List;
 public class ControlFlowArithmetic {
 
 	/**
-	 * A simple break to example
+	 * A simple labeled continue example
 	 *
 	 * @return
 	 */
@@ -51,7 +51,7 @@ public class ControlFlowArithmetic {
 		return i;
 	}
 
-	//several constructions one after the other
+	// Several constructs one after the other
 	public int mixed(int a, int b) {
 		if (b % 2 == 0) {
 			return a + b;
@@ -62,7 +62,7 @@ public class ControlFlowArithmetic {
 		return a + b * 2;
 	}
 
-	//several constructions one after the other
+	// Method invocation
 	public int invocation(int a, int b) {
 		if (b % 2 == 0) {
 			return nestedIfs(a, b);
@@ -71,7 +71,7 @@ public class ControlFlowArithmetic {
 	}
 
 	/**
-	 * Simple example of break
+	 * Simple example of a labeled break
 	 *
 	 * @param args
 	 */
@@ -129,7 +129,7 @@ public class ControlFlowArithmetic {
 	}
 
 
-	//complex case of continue and breaks.
+	// Complex case of continue and breaks.
 	public void continueAndBreak() {
 		factorize_loop:
 		while (true) {
@@ -167,7 +167,7 @@ public class ControlFlowArithmetic {
 		}
 	}
 
-	//Some nested ifs some not returning
+	// Some nested ifs some not returning
 	public int nestedIfSomeNotReturning(int a, int b) {
 		if (a > 0) {
 			if (b > 0) return a * b;
@@ -181,7 +181,7 @@ public class ControlFlowArithmetic {
 		return b;
 	}
 
-	//Some nested ifs
+	// Some nested ifs that all have a return statement
 	public int nestedIfAllReturning(int a, int b) {
 		if (a > 0) {
 			if (b > 0) return a * b;
@@ -197,7 +197,7 @@ public class ControlFlowArithmetic {
 		//return 0;
 	}
 
-	//Some nested ifs
+	// Some nested ifs
 	public int nestedIfs(int a, int b) {
 		if (a > 0) {
 			if (b > 0) return a * b;
@@ -214,12 +214,12 @@ public class ControlFlowArithmetic {
 
 	public void dontReturn(int a) {
 		if (a > 0) System.out.print("otra cosa");
-		else System.out.print("A < 0!");
+		else System.out.print("A <= 0!");
 	}
 
 	public void returnVoid(int a) {
 		if (a > 0) return;
-		else System.out.print("A < 0!");
+		else System.out.print("A <= 0!");
 	}
 
 	public int nestedConditional(int a) {
@@ -302,13 +302,13 @@ public class ControlFlowArithmetic {
 		return b;
 	}
 
-	//A For to test the control flow in a for
+	// A For without a block to test the control flow in a for
 	public int ctFor(int a, int b) {
 		for (int i = 0; i < a; i++) b += a * b;
 		return b;
 	}
 
-	//A For to test the control flow in a for
+	// A For with a block to test the control flow in a for
 	public int ctForBlock(int a, int b) {
 		for (int i = 0; i < a; i++) {
 			int k = i * i;
@@ -317,13 +317,13 @@ public class ControlFlowArithmetic {
 		return b;
 	}
 
-	//Yet another dummy procedure to test some logic branches
+	// Yet another dummy procedure to test some logic branches
 	public int ifThen(int a, int b) {
 		if (b % 2 == 0) return a - b;
 		return 0;
 	}
 
-	//Yet another dummy procedure to test some logic branches
+	// Yet another dummy procedure to test some logic branches
 	public int ifThenElse(int a, int b) {
 		if (b % 2 == 0) return a - b;
 		else b = b + a;
@@ -331,7 +331,7 @@ public class ControlFlowArithmetic {
 	}
 
 
-	//Yet another dummy procedure to test some logic branches
+	// Yet another dummy procedure to test some logic branches
 	public int ifThenBlock(int a, int b) {
 		if (b % 2 == 0) {
 			a += b * b;
@@ -340,7 +340,7 @@ public class ControlFlowArithmetic {
 		return 0;
 	}
 
-	//Yet another dummy procedure to test some logic branches
+	// Yet another dummy procedure to test some logic branches
 	public int ifThenElseBlock(int a, int b) {
 		if (b % 2 == 0) {
 			a += b * b;
@@ -377,7 +377,7 @@ public class ControlFlowArithmetic {
 		return b;
 	}
 
-	//All lines will be tested in this method
+	// All lines will be tested in this method
 	public int simple(int a) {
 		a = a + a / 2;
 		return 10 * a;
@@ -417,7 +417,7 @@ public class ControlFlowArithmetic {
 		return a;
 	}
 
-	boolean m3() {
+	boolean method3() {
 		return true;
 	}
 
@@ -429,7 +429,7 @@ public class ControlFlowArithmetic {
 				phase -= 1.0;
 				baseIncrement = method1();
 			}
-		} else if ((i == 0) && ((starved) || (!(m3())))) {
+		} else if ((i == 0) && ((starved) || (!(method3())))) {
 			source = target = current;
 			phase = 0.0;
 			baseIncrement = method1();

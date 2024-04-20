@@ -20,18 +20,15 @@
  * THE SOFTWARE.
  */
 
-package fr.inria.dataflow;
+package spoon.controlflow;
 
-import fr.inria.controlflow.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import spoon.reflect.reference.CtVariableReference;
 
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class InitializedVariablesTest {
 
@@ -41,10 +38,10 @@ public class InitializedVariablesTest {
 				this.getClass().getResource("/initialized").toURI().getPath(), "simpleflow", true);
 		InitializedVariables vars = new InitializedVariables();
 		graph.simplify();
-		ControlFlowNode n = graph.findNodesOfKind(BranchKind.EXIT).get(0);
+		ControlFlowNode n = graph.findNodesOfKind(NodeKind.EXIT).get(0);
 		vars.run(n);
 
-		for (CtVariableReference v : vars.getInitialized()) {
+		for (CtVariableReference<?> v : vars.getInitialized()) {
 			assertFalse(v.getSimpleName().contains("notInitialized"));
 		}
 		assertEquals(vars.getInitialized().size(), 6);
@@ -64,7 +61,7 @@ public class InitializedVariablesTest {
 		vars.run(n);
 
 		HashSet<String> names = new HashSet<>();
-		for (CtVariableReference v : vars.getInitialized()) names.add(v.getSimpleName());
+		for (CtVariableReference<?> v : vars.getInitialized()) names.add(v.getSimpleName());
 
 		assertEquals(vars.getInitialized().size(), 11);
 		assertTrue(names.contains("wn4r"));
@@ -97,7 +94,7 @@ public class InitializedVariablesTest {
 		vars.run(n);
 
 		HashSet<String> names = new HashSet<>();
-		for (CtVariableReference v : vars.getInitialized()) names.add(v.getSimpleName());
+		for (CtVariableReference<?> v : vars.getInitialized()) names.add(v.getSimpleName());
 
 		assertEquals(vars.getInitialized().size(), 5);
 		assertTrue(names.contains("pp"));
@@ -119,10 +116,8 @@ public class InitializedVariablesTest {
 		ControlFlowNode n = ControlFlowBuilder.firstNode(graph, graph.branches().get(3).getStatement().getParent());
 		vars.run(n);
 
-		//boolean cwk1r = false;
-		//boolean cwk3r = false;
 		HashSet<String> names = new HashSet<>();
-		for (CtVariableReference v : vars.getInitialized()) names.add(v.getSimpleName());
+		for (CtVariableReference<?> v : vars.getInitialized()) names.add(v.getSimpleName());
 
 		assertEquals(vars.getInitialized().size(), 6);
 		assertTrue(names.contains("a"));
@@ -146,10 +141,8 @@ public class InitializedVariablesTest {
 		ControlFlowNode n = ControlFlowBuilder.firstNode(graph, graph.branches().get(0).getStatement().getParent());
 		vars.run(n);
 
-		//boolean cwk1r = false;
-		//boolean cwk3r = false;
 		HashSet<String> names = new HashSet<>();
-		for (CtVariableReference v : vars.getInitialized()) names.add(v.getSimpleName());
+		for (CtVariableReference<?> v : vars.getInitialized()) names.add(v.getSimpleName());
 		assertEquals(vars.getInitialized().size(), 2);
 		assertTrue(names.contains("eigenValues"));
 		assertTrue(names.contains("e"));
@@ -172,7 +165,7 @@ public class InitializedVariablesTest {
 		//boolean cwk1r = false;
 		//boolean cwk3r = false;
 		HashSet<String> names = new HashSet<>();
-		for (CtVariableReference v : vars.getInitialized()) names.add(v.getSimpleName());
+		for (CtVariableReference<?> v : vars.getInitialized()) names.add(v.getSimpleName());
 		assertEquals(2, vars.getInitialized().size());
 		assertFalse(names.contains("i"));
 	}

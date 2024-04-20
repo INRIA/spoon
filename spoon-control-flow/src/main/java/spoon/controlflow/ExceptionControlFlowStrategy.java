@@ -19,31 +19,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.inria.dataflow;
+package spoon.controlflow;
 
-import fr.inria.controlflow.ControlFlowNode;
+import spoon.reflect.code.CtThrow;
+import spoon.reflect.code.CtTry;
 
 /**
- * Created by marodrig on 13/11/2015.
+ * Base interface for exception control flow strategies.
  */
-public abstract class AbstractControlFlowVisitor implements ControlFlowVisitor {
+public interface ExceptionControlFlowStrategy {
+	/**
+	 * Handle a try-catch-finally construct.
+	 *
+	 * @param builder The builder
+	 * @param tryBlock A try statement
+	 */
+	void handleTryStatement(ControlFlowBuilder builder, CtTry tryBlock);
 
-	protected boolean visit(ControlFlowNode n) {
-		//Visit the node
-		switch (n.getKind()) {
-			case BEGIN:
-				return visitBegin(n);
-			case BLOCK_BEGIN:
-				return visitBlockBegin(n);
-			case BLOCK_END:
-				return visitBlockEnd(n);
-			case BRANCH:
-				return visitBranch(n);
-			case STATEMENT:
-				return visitStatement(n);
-			default:
-				return false;
-		}
-	}
+	/**
+	 * Handle a throw statement.
+	 *
+	 * @param builder The builder
+	 * @param throwStatement A throw statement
+	 */
+	void handleThrowStatement(ControlFlowBuilder builder, CtThrow throwStatement);
 
+	/**
+	 * Handle a statement node.
+	 *
+	 * @param builder The builder
+	 * @param source Statement node
+	 */
+	void handleStatement(ControlFlowBuilder builder, ControlFlowNode source);
+
+	/**
+	 * Apply any post-processing to the graph.
+	 *
+	 * @param graph Graph to post-process
+	 */
+	void postProcess(ControlFlowGraph graph);
 }

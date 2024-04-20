@@ -19,11 +19,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.inria.dataflow;
+package spoon.controlflow;
 
-import fr.inria.controlflow.BranchKind;
-import fr.inria.controlflow.ControlFlowEdge;
-import fr.inria.controlflow.ControlFlowNode;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
@@ -37,16 +34,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Find initialized variables in a control flow graph.
- * <p>
+ * Find initialized variables in access control flow graph.
+ * <previous>
  * The algorithms trust that the code from which the graph was created was successfully compiled. That's why
  * not only assigned variables are considered initialized, but also used variables.
- * </p>
- * Created by marodrig on 13/11/2015.
  */
 public class InitializedVariables {
 
-	private int depth = 0;
 	//See the algorithm description in the adjoint pdf
 
 	public boolean getIncludeDefinedInNode() {
@@ -62,27 +56,26 @@ public class InitializedVariables {
 	 */
 	private boolean includeDefinedInNode = false;
 
-	private class InitFactors {
-		//DO NOT INITIALIZE!!!!! Initial Null value needed by the algorithm
-		Set<CtVariableReference> defined = null;
-		//Initialize this one
-		Set<CtVariableReference> used = new HashSet<>();
+	private record InitFactors(Set<CtVariableReference<?>> defined, Set<CtVariableReference<?>> used) {
+		InitFactors() {
+			this(new HashSet<>(), new HashSet<>());
+		}
 	}
 
-	public Set<CtVariableReference> getInitialized() {
+	public Set<CtVariableReference<?>> getInitialized() {
 		return initialized;
 	}
 
-	Set<CtVariableReference> initialized = new HashSet<>();
+	Set<CtVariableReference<?>> initialized = new HashSet<>();
 
 	public void run(ControlFlowNode node) {
 		//Already calculated factors
 		HashMap<ControlFlowNode, InitFactors> factors = new HashMap<>();
 
 		if (node.getParent() != null) {
-			if (node.getParent().findNodesOfKind(BranchKind.BLOCK_END).size() > 0
-					|| node.getParent().findNodesOfKind(BranchKind.BLOCK_BEGIN).size() > 0
-					|| node.getParent().findNodesOfKind(BranchKind.CONVERGE).size() > 0) {
+			if (!node.getParent().findNodesOfKind(NodeKind.BLOCK_END).isEmpty()
+					|| !node.getParent().findNodesOfKind(NodeKind.BLOCK_BEGIN).isEmpty()
+					|| !node.getParent().findNodesOfKind(NodeKind.CONVERGE).isEmpty()) {
 				throw new RuntimeException("Invalid node types. Simplify the graph with the simplify() method.");
 			}
 		}
@@ -92,24 +85,23 @@ public class InitializedVariables {
 		initialized.addAll(fp.used);
 	}
 
-	private Set<CtVariableReference> defined(ControlFlowNode n) {
+	private Set<CtVariableReference<?>> defined(ControlFlowNode n) {
 		//Obtain the variables defined in this node
-		HashSet<CtVariableReference> def = new HashSet<>();
+		HashSet<CtVariableReference<?>> def = new HashSet<>();
 		if (n.getStatement() != null) {
-			if (n.getStatement() instanceof CtLocalVariable) {
-				CtLocalVariable lv = ((CtLocalVariable) n.getStatement());
-				if (lv.getDefaultExpression() != null) {
-					def.add(lv.getReference());
+			if (n.getStatement() instanceof CtLocalVariable<?> localVariable) {
+				if (localVariable.getDefaultExpression() != null) {
+					def.add(localVariable.getReference());
 				}
-			} else if (n.getStatement() instanceof CtAssignment) {
-				CtExpression e = ((CtAssignment) n.getStatement()).getAssigned();
-				if (e instanceof CtVariableAccess) {
-					def.add(((CtVariableAccess) e).getVariable());
-				} else if (e instanceof CtArrayAccess) {
-					CtExpression exp = ((CtArrayAccess) e).getTarget();
-					if (exp instanceof CtVariableAccess) {
-						CtVariableReference a = ((CtVariableAccess) exp).getVariable();
-						def.add(a);
+			} else if (n.getStatement() instanceof CtAssignment<?, ?> assignment) {
+				CtExpression<?> assignedExpression = assignment.getAssigned();
+				if (assignedExpression instanceof CtVariableAccess<?> variableAccess) {
+					def.add(variableAccess.getVariable());
+				} else if (assignedExpression instanceof CtArrayAccess<?, ?> arrayAccess) {
+					CtExpression<?> arrayExpression = arrayAccess.getTarget();
+					if (arrayExpression instanceof CtVariableAccess<?> variableAccess) {
+						CtVariableReference<?> array = variableAccess.getVariable();
+						def.add(array);
 					} else {
 						System.out.println("Could not obtain variable from expression");
 					}
@@ -119,25 +111,25 @@ public class InitializedVariables {
 		return def;
 	}
 
-	private Set<CtVariableReference> used(ControlFlowNode n) {
+	private Set<CtVariableReference<?>> used(ControlFlowNode n) {
 		if (n.getStatement() == null) {
 			return new HashSet<>();
 		}
 		//Obtain variables used in this node
-		HashSet<CtVariableReference> used = new HashSet<>();
-		for (CtVariableAccess a: n.getStatement().getElements(new TypeFilter<CtVariableAccess>(CtVariableAccess.class))) {
-			used.add(a.getVariable());
+		HashSet<CtVariableReference<?>> used = new HashSet<>();
+		for (CtVariableAccess<?> access : n.getStatement().getElements(new TypeFilter<>(CtVariableAccess.class))) {
+			used.add(access.getVariable());
 		}
 		return used;
 	}
 
 	/**
-	 * Finds the initialized variables at a given point in the control flow
+	 * Finds the initialized variables at access given point in the control flow
 	 *
 	 * @param n                    Node to find initialized variables
 	 * @param factors              already calculated factors for all nodes
-	 * @param includeDefinedInNode
-	 * @return
+	 * @param includeDefinedInNode Whether to include initializations and usages in the node n
+	 * @return An init factors object holding initialized and used variables for the given node
 	 */
 	private InitFactors initialized(ControlFlowNode n, HashMap<ControlFlowNode, InitFactors> factors, boolean includeDefinedInNode) {
 		//+ -> Union
@@ -151,44 +143,38 @@ public class InitializedVariables {
 		}
 
 
-		Set<CtVariableReference> defN = includeDefinedInNode ? defined(n) : new HashSet<CtVariableReference>();
+		Set<CtVariableReference<?>> defN = includeDefinedInNode ? defined(n) : new HashSet<>();
 		//[Used_n - Def_n]
-		Set<CtVariableReference> usedN = includeDefinedInNode ? used(n) : new HashSet<CtVariableReference>();
+		Set<CtVariableReference<?>> usedN = includeDefinedInNode ? used(n) : new HashSet<>();
 		usedN.removeAll(defN);
 
 		InitFactors result = new InitFactors();
 
-		for (ControlFlowEdge e : n.getParent().incomingEdgesOf(n)) {
-			if (e.isBackEdge()) {
+		boolean initialEdge = true;
+		for (ControlFlowEdge edge : n.getParent().incomingEdgesOf(n)) {
+			if (edge.isBackEdge()) {
 				continue;
 			}
-			ControlFlowNode p = e.getSourceNode();
-			depth++;
-			InitFactors fp;
-			if (factors.containsKey(p)) {
-				fp = factors.get(p);
+			ControlFlowNode previous = edge.getSourceNode();
+			InitFactors previousFactors;
+			if (factors.containsKey(previous)) {
+				previousFactors = factors.get(previous);
 			} else {
-				fp = initialized(p, factors, true);
+				previousFactors = initialized(previous, factors, true);
 			}
-			depth--;
 
 			//[Def_P for each P ]
-			if (result.defined == null) {
-				result.defined = new HashSet<>();
-				result.defined.addAll(fp.defined);
+			if (initialEdge) {
+				initialEdge = false;
+				result.defined.addAll(previousFactors.defined);
 			} else {
-				result.defined.retainAll(fp.defined);
+				result.defined.retainAll(previousFactors.defined);
 			}
 
-			fp.used.removeAll(fp.defined);
-			result.used.addAll(fp.used);
+			result.used.addAll(previousFactors.used);
 		}
 
-		if (result.defined == null) {
-			result.defined = defN;
-		} else {
-			result.defined.addAll(defN);
-		}
+		result.defined.addAll(defN);
 		result.used.addAll(usedN);
 		result.used.removeAll(result.defined);
 

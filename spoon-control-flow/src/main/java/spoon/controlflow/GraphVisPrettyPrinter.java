@@ -19,13 +19,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.inria.controlflow;
+package spoon.controlflow;
 
 import java.util.HashMap;
 /**
  * Prints the control flow in .Dot for GraphVis to visualize
- *
- * Created by marodrig on 14/10/2015.
  */
 public class GraphVisPrettyPrinter {
 
@@ -37,12 +35,11 @@ public class GraphVisPrettyPrinter {
 
 	public String print() {
 		StringBuilder sb = new StringBuilder("digraph ").append(graph.getName()).append(" { \n");
-		//sb.append("exit [shape=doublecircle];\n");
 		sb.append("node [fontsize = 8];\n");
 
 
 		int i = 0;
-		HashMap<ControlFlowNode, Integer> nodeIds = new HashMap<ControlFlowNode, Integer>();
+		HashMap<ControlFlowNode, Integer> nodeIds = new HashMap<>();
 		for (ControlFlowNode n : graph.vertexSet()) {
 			printNode(++i, n, sb);
 			nodeIds.put(n, i);
@@ -63,22 +60,17 @@ public class GraphVisPrettyPrinter {
 	}
 
 
-	private String printNode(int i, ControlFlowNode n, StringBuilder sb) {
-		String labelStr = " [shape=rectangle, label=\"";
-		if (n.getKind() == BranchKind.BRANCH) {
-			labelStr = " [shape=diamond, label=\"";
-		} else if (n.getKind() == BranchKind.BEGIN) {
-			labelStr = " [shape=Mdiamond, label=\"";
-		} else if (n.getKind() == BranchKind.BLOCK_BEGIN || n.getKind() == BranchKind.BLOCK_END) {
-			labelStr = " [shape=rectangle, style=filled, fillcolor=gray, label=\"";
-		} else if (n.getKind() == BranchKind.EXIT) {
-			labelStr = " [shape=doublecircle, label=\"";
-		} else if (n.getKind() == BranchKind.CONVERGE) {
-			labelStr = " [shape=point label=\"";
-		}
+	private void printNode(int i, ControlFlowNode n, StringBuilder sb) {
+		String labelString = switch (n.getKind()) {
+			case BRANCH -> " [shape=diamond, label=\"";
+			case BEGIN -> " [shape=Mdiamond, label=\"";
+			case BLOCK_BEGIN, BLOCK_END -> " [shape=rectangle, style=filled, fillcolor=gray, label=\"";
+			case EXIT -> " [shape=doublecircle, label=\"";
+			case CONVERGE -> " [shape=point label=\"";
+			default -> " [shape=rectangle, label=\"";
+		};
 
-		sb.append(i).append(labelStr).append(n.toString().replace("\"", "quot ")).append(" \"]").append(";\n");
-		return sb.toString();
+		sb.append(i).append(labelString).append(n.toString().replace("\"", "quot ")).append(" \"]").append(";\n");
 	}
 
 }

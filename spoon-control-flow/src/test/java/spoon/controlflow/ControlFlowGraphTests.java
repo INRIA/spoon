@@ -20,14 +20,15 @@
  * THE SOFTWARE.
  */
 
-package fr.inria.controlflow;
+package spoon.controlflow;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.support.reflect.code.CtIfImpl;
-import static fr.inria.controlflow.BranchKind.*;
+import static spoon.controlflow.NodeKind.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -36,13 +37,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Control flow graph tests
- *
- * Created by marodrig on 14/10/2015.
  */
 public class ControlFlowGraphTests {
 
 	@Test
-	public void testFindNodeNotFound() throws NotFoundException{
+	public void testFindNodeNotFound() {
 		assertThrows(NotFoundException.class, () -> {
 			ControlFlowGraph graph = new ControlFlowGraph();
 			CtStatement s = new CtIfImpl();
@@ -67,16 +66,20 @@ public class ControlFlowGraphTests {
 
 	/**
 	 *     Build this graph (* means fictitious nodes)
+	 *     <pre>
 	 *     X1 -X2 - O1
 	 *     |    |   |
 	 *     \ __*1 _/
 	 *          |
 	 *          O2
+	 *     </pre>
 	 *
 	 *     Simplify onto this
+	 *     <pre>
 	 *     X1 -X2 - O1
 	 *     |    |   |
 	 *     \__ O2 __/
+	 *     </pre>
 	 */
 	@Test
 	public void testSimplify() {
@@ -107,6 +110,7 @@ public class ControlFlowGraphTests {
 
 	/**
 	 *     Build this graph (* means fictitious nodes)
+	 *     <pre>
 	 *     X1 -X2 - O1
 	 *     |    |   |
 	 *     \ __*1 _/
@@ -114,11 +118,14 @@ public class ControlFlowGraphTests {
 	 *         *2
 	 *          |
 	 *          O2
-	 *
+	 *    </pre>
+	 * <p>
 	 *     Simplify onto this
+	 *     <pre>
 	 *     X1 -X2 - O1
 	 *     |    |   |
 	 *     \__ O2 __/
+	 *     </pre>
 	 */
 	@Test
 	public void testSimplify2() {
@@ -178,6 +185,6 @@ public class ControlFlowGraphTests {
 		ControlFlowBuilder builder = new ControlFlowBuilder();
 		Launcher launcher = new Launcher();
 		CtElement element = launcher.getFactory().createCodeSnippetStatement("while(true)").compile();
-		assertDoesNotThrow(() -> builder.build(element));
+		Assertions.assertDoesNotThrow(() -> builder.build(element));
 	}
 }

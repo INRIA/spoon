@@ -19,30 +19,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.inria.controlflow;
-
-import spoon.reflect.declaration.CtVariable;
+package spoon.controlflow;
 
 /**
- * Value traveling the data-flow
- *
- * Created by marodrig on 13/10/2015.
+ * The kind of a {@link ControlFlowNode}
  */
-public class Value {
-
-
-	public CtVariable getVariable() {
-		return variable;
-	}
-
-	public void setVariable(CtVariable variable) {
-		this.variable = variable;
-	}
-
+public enum NodeKind {
 	/**
-	 * Variable holding this value
+	 * Represents the start of a try block
 	 */
-	CtVariable variable;
-
-
+	TRY,
+	/**
+	 * Represents the start of a catch block
+	 */
+	CATCH,
+	/**
+	 * Represents the start of a finally block
+	 */
+	FINALLY,
+	/**
+	 * Represents a branch
+	 */
+	BRANCH,
+	/**
+	 * Represents an statement
+	 */
+	STATEMENT,
+	/**
+	 * Represents the beginning of a block
+	 */
+	BLOCK_BEGIN,
+	/**
+	 * Represents the end of a block
+	 */
+	BLOCK_END,
+	/**
+	 * The exit node of all branches. Depending on the analysis it may be convenient to leave them
+	 */
+	CONVERGE,
+	/**
+	 * The node, where all return statements point to
+	 */
+	EXIT,
+	/**
+	 * Entry point for the control flow graph
+	 */
+	BEGIN
 }

@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.inria.controlflow;
+package spoon.controlflow;
 
 import spoon.reflect.declaration.CtElement;
 
@@ -28,48 +28,37 @@ import java.util.List;
 
 /**
  * A node of the control flow
- *
- * Created by marodrig on 13/10/2015.
  */
 public class ControlFlowNode {
 
 	public static int count = 0;
 
-	private int id;
+	private final int id;
 
 	/**
-	 * Çontrol flow graph containing this node
+	 * Control flow graph containing this node
 	 */
 	ControlFlowGraph parent;
 
-	public BranchKind getKind() {
+	public NodeKind getKind() {
 		return kind;
 	}
 
-	public void setKind(BranchKind kind) {
+	public void setKind(NodeKind kind) {
 		this.kind = kind;
 	}
 
-	private BranchKind kind;
+	private NodeKind kind;
 
 	/**
 	 * Statement that is going to be pointed to by this node
 	 */
-	CtElement statement;
-
-	List<Value> input;
-
-	List<Value> output;
+	private CtElement statement;
 
 	//An object you can tag to the node
 	Object tag;
 
-	/**
-	 * Visitor containing the transfer functions for each node
-	 */
-	TransferFunctionVisitor visitor;
-
-	public ControlFlowNode(CtElement statement, ControlFlowGraph parent, BranchKind kind) {
+	public ControlFlowNode(CtElement statement, ControlFlowGraph parent, NodeKind kind) {
 		this.kind = kind;
 		this.parent = parent;
 		this.statement = statement;
@@ -85,26 +74,6 @@ public class ControlFlowNode {
 		id = count;
 	}
 
-	/**
-	 * Performs the transfer using a given visitor
-	 */
-	public void transfer(TransferFunctionVisitor visitor) {
-		this.visitor = visitor;
-		transfer();
-	}
-
-	/**
-	 * Perform the transfer function
-	 */
-	public void transfer() {
-		if (statement != null && visitor != null) {
-			output = visitor.transfer(statement);
-		} else {
-			throw new RuntimeException("Unable to perform the transfer function. Statement or visitor are null.");
-		}
-
-	}
-
 	public int getId() {
 		return id;
 	}
@@ -113,7 +82,7 @@ public class ControlFlowNode {
 	 * Obtains the siblings of a control node. Siblings are the nodes in parallel branches
 	 */
 	public List<ControlFlowNode> siblings() {
-		ArrayList<ControlFlowNode> result = new ArrayList<ControlFlowNode>();
+		ArrayList<ControlFlowNode> result = new ArrayList<>();
 		for (ControlFlowNode n : prev()) {
 			for (ControlFlowNode nn : n.next()) {
 				if (!nn.equals(this)) {
@@ -128,7 +97,7 @@ public class ControlFlowNode {
 	 * List of nodes that can be executed just after this one
 	 */
 	public List<ControlFlowNode> next() {
-		ArrayList<ControlFlowNode> result = new ArrayList<ControlFlowNode>();
+		ArrayList<ControlFlowNode> result = new ArrayList<>();
 		for (ControlFlowEdge e : parent.outgoingEdgesOf(this)) {
 			result.add(e.getTargetNode());
 		}
@@ -139,18 +108,11 @@ public class ControlFlowNode {
 	 * List of nodes that could be executed just before this one
 	 */
 	public List<ControlFlowNode> prev() {
-		ArrayList<ControlFlowNode> result = new ArrayList<ControlFlowNode>();
+		ArrayList<ControlFlowNode> result = new ArrayList<>();
 		for (ControlFlowEdge e : parent.incomingEdgesOf(this)) {
 			result.add(e.getSourceNode());
 		}
 		return result;
-	}
-
-	public List<Value> getOutput() {
-		if (output == null)  {
-			transfer();
-		}
-		return output;
 	}
 
 	public CtElement getStatement() {
@@ -159,14 +121,6 @@ public class ControlFlowNode {
 
 	public void setStatement(CtElement statement) {
 		this.statement = statement;
-	}
-
-	public List<Value> getInput() {
-		return input;
-	}
-
-	public void setInput(List<Value> input) {
-		this.input = input;
 	}
 
 	public ControlFlowGraph getParent() {
@@ -188,7 +142,7 @@ public class ControlFlowNode {
 	@Override
 	public String toString() {
 		if (statement != null) {
-			return id + " - " + statement.toString();
+			return id + " - " + statement;
 		} else {
 			return kind + "_" + id;
 		}
