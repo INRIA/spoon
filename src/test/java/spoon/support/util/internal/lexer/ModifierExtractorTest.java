@@ -28,20 +28,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ModifierExtractorTest {
 	private static final Map<String, ModifierKind> LOOKUP = Arrays.stream(ModifierKind.values())
-			.collect(Collectors.toMap(ModifierKind::toString, Function.identity()));
+		.collect(Collectors.toMap(ModifierKind::toString, Function.identity()));
 	private static final List<String> DELIMITER = List.of(
-			" ",
-			"(", ")",
-			"[", "]",
-			"{", "}",
-			";", ",",
-			".", "...",
-			"@",
-			"::",
-			"=", ">", "<", "!", "~", "?", ":", "->",
-			"==", ">=", "<=", "!=", "&&", "||", "++", "--",
-			"+", "-", "*", "/", "&", "|", "^", "%", "<<", ">>", ">>>",
-			"+=", "-=", "*=", "/=", "&=", "|=", "^=", "%=", "<<=", ">>=", ">>>="
+		" ",
+		"(", ")",
+		"[", "]",
+		"{", "}",
+		";", ",",
+		".", "...",
+		"@",
+		"::",
+		"=", ">", "<", "!", "~", "?", ":", "->",
+		"==", ">=", "<=", "!=", "&&", "||", "++", "--",
+		"+", "-", "*", "/", "&", "|", "^", "%", "<<", ">>", ">>>",
+		"+=", "-=", "*=", "/=", "&=", "|=", "^=", "%=", "<<=", ">>=", ">>>="
 	);
 
 	@ParameterizedTest
@@ -53,7 +53,7 @@ class ModifierExtractorTest {
 		ModifierKind kind = LOOKUP.get(input);
 		CtExtendedModifier extended = CtExtendedModifier.explicit(kind);
 		Map<ModifierKind, CtExtendedModifier> modifier = new HashMap<>(Map.of(
-				kind, extended
+			kind, extended
 		));
 
 		// act
@@ -66,8 +66,8 @@ class ModifierExtractorTest {
 
 	static Stream<Arguments> modifiers() {
 		return Arrays.stream(ModifierKind.values())
-				.map(ModifierKind::toString)
-				.map(Arguments::of);
+			.map(ModifierKind::toString)
+			.map(Arguments::of);
 	}
 
 	@ParameterizedTest
@@ -77,7 +77,7 @@ class ModifierExtractorTest {
 		ModifierExtractor extractor = new ModifierExtractor();
 		char[] chars = input.toCharArray();
 		Map<ModifierKind, CtExtendedModifier> allModifiers = Arrays.stream(ModifierKind.values())
-				.collect(Collectors.toMap(Function.identity(), CtExtendedModifier::explicit));
+			.collect(Collectors.toMap(Function.identity(), CtExtendedModifier::explicit));
 
 		// act
 		extractor.collectModifiers(chars, 0, input.length(), allModifiers, SimpleSourcePosition::new);
@@ -89,13 +89,13 @@ class ModifierExtractorTest {
 	static Stream<Arguments> mixedContents() {
 		Random random = new Random(42);
 		return Stream.generate(() -> {
-					StringBuilder builder = new StringBuilder();
-					includeAllModifiers(builder, random);
-					return builder.toString();
-				})
-				.filter(string -> !(string.contains("//") || string.contains("/*"))) // oops, we created a comment
-				.limit(10)
-				.map(Arguments::of);
+				StringBuilder builder = new StringBuilder();
+				includeAllModifiers(builder, random);
+				return builder.toString();
+			})
+			.filter(string -> !(string.contains("//") || string.contains("/*"))) // oops, we created a comment
+			.limit(10)
+			.map(Arguments::of);
 
 	}
 
@@ -118,45 +118,45 @@ class ModifierExtractorTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {
-			"/**/public",
-			"public/**/",
-			"/**/public/**/",
-			"public/*final*/",
-			"public//final",
-			"//\npublic",
+		"/**/public",
+		"public/**/",
+		"/**/public/**/",
+		"public/*final*/",
+		"public//final",
+		"//\npublic",
 	})
 	void testWithComments(String input) {
 		// arrange
 		ModifierExtractor extractor = new ModifierExtractor();
 		char[] chars = input.toCharArray();
 		Map<ModifierKind, CtExtendedModifier> allModifiers = Arrays.stream(ModifierKind.values())
-				.collect(Collectors.toMap(Function.identity(), CtExtendedModifier::explicit));
+			.collect(Collectors.toMap(Function.identity(), CtExtendedModifier::explicit));
 
 		// act
 		extractor.collectModifiers(chars, 0, input.length(), allModifiers, SimpleSourcePosition::new);
 
 		// assert
 		assertThat(allModifiers)
-				.doesNotContainKeys(ModifierKind.PUBLIC) // public should be removed
-				.containsKey(ModifierKind.FINAL); // final shouldn't be removed
+			.doesNotContainKeys(ModifierKind.PUBLIC) // public should be removed
+			.containsKey(ModifierKind.FINAL); // final shouldn't be removed
 	}
 
 	@ParameterizedTest
 	@ValueSource(strings = {
-			"try",
-			"synchronize", // not synchronized
-			"class",
-			"int",
-			"apublic",
-			"publica",
-			"non",
+		"try",
+		"synchronize", // not synchronized
+		"class",
+		"int",
+		"apublic",
+		"publica",
+		"non",
 	})
 	void testNonModifiers(String input) {
 		// arrange
 		ModifierExtractor extractor = new ModifierExtractor();
 		char[] chars = input.toCharArray();
 		Map<ModifierKind, CtExtendedModifier> allModifiers = Arrays.stream(ModifierKind.values())
-				.collect(Collectors.toMap(Function.identity(), CtExtendedModifier::explicit));
+			.collect(Collectors.toMap(Function.identity(), CtExtendedModifier::explicit));
 		List<SimpleSourcePosition> foundStartPositions = new ArrayList<>();
 		BiFunction<Integer, Integer, SourcePosition> createAndAdd = (start, end) -> {
 			SimpleSourcePosition position = new SimpleSourcePosition(start, end);

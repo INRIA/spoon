@@ -17,7 +17,7 @@ import static java.util.Comparator.comparingInt;
 /**
  * A stateless and immutable trie that maps strings to values.
  *
- * @param <T> the value type.
+ * @param <T> the value type
  */
 public interface Trie<T> {
 
@@ -30,8 +30,8 @@ public interface Trie<T> {
 	 */
 	static <T> Trie<T> ofWords(Map<String, T> words) {
 		IntSummaryStatistics statistics = words.keySet().stream()
-				.flatMapToInt(String::chars)
-				.summaryStatistics();
+			.flatMapToInt(String::chars)
+			.summaryStatistics();
 		char min = (char) statistics.getMin();
 		char max = (char) statistics.getMax();
 		String[] wordArray = words.keySet().toArray(String[]::new);
@@ -56,10 +56,10 @@ public interface Trie<T> {
 	/**
 	 * Finds the value for the range of given char array.
 	 *
-	 * @param input the array representing the key.
-	 * @param start the start offset of the range.
-	 * @param end the end offset of the range.
-	 * @return the value mapped to by the given input.
+	 * @param input the array representing the key
+	 * @param start the start offset of the range
+	 * @param end   the end offset of the range
+	 * @return the value mapped to by the given input
 	 */
 	Optional<T> findMatch(char[] input, int start, int end);
 }

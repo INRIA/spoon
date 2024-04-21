@@ -10,32 +10,20 @@ package spoon.support.util.internal.trie;
 import java.util.Optional;
 
 record SimpleTrie<T>(
-		char min,
-		char max,
-		Node<T> root
+	char min,
+	char max,
+	Node<T> root
 ) implements Trie<T> {
 
 	SimpleTrie(char min, char max) {
 		this(min, max, new Node<>(createFollows(min, max), null));
 	}
 
-	/**
-	 * Finds the value for the given char array.
-	 *
-	 * @param input the array representing the key.
-	 * @return the value mapped to by the given input.
-	 */
 	@Override
 	public Optional<T> findMatch(char[] input) {
 		return findMatch(input, 0, input.length);
 	}
 
-	/**
-	 * Finds the value for the range of given char array.
-	 *
-	 * @param input the array representing the key.
-	 * @return the value mapped to by the given input.
-	 */
 	@Override
 	public Optional<T> findMatch(char[] input, int start, int end) {
 		checkBounds(input.length, start, end);
@@ -85,8 +73,8 @@ record SimpleTrie<T>(
 	}
 
 	private record Node<T>(
-			Node<T>[] follows,
-			T value
+		Node<T>[] follows,
+		T value
 	) {
 
 		Node<T> advance(int index) {

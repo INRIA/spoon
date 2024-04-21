@@ -11,14 +11,15 @@ public class JavaLexerTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {
-			"\"Simple\"",
-			"\"\\\\\"",
-			"\"\\n\"",
-			"\"\"",
-			"\"\"\"\n\\\"\"\"\n\"\"\"",
-			"\"\"\"\n\\\"\"\"\n \"\"\"",
+		"\"Simple\"",
+		"\"\\\\\"",
+		"\"\\n\"",
+		"\"\"",
+		"\"\"\"\n\\\"\"\"\n\"\"\"",
+		"\"\"\"\n\\\"\"\"\n \"\"\"",
 	})
 	void testEscapedString(String raw) {
+		// contract: escaping in string literals/text blocks is handled correctly
 		JavaLexer javaLexer = new JavaLexer(raw.toCharArray(), 0, raw.length());
 		Token first = javaLexer.lex();
 		assertThat(first.type()).isEqualTo(TokenType.LITERAL);
@@ -28,20 +29,21 @@ public class JavaLexerTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {
-			"0",
-			"00",
-			"10",
-			"0x0",
-			"0X0",
-			"0xF",
-			"0xF",
-			"0X.0p+0f",
-			"0X1f.0eEfaP+0123d",
-			"0b0L",
-			"1f",
-			"1D",
+		"0",
+		"00",
+		"10",
+		"0x0",
+		"0X0",
+		"0xF",
+		"0xF",
+		"0X.0p+0f",
+		"0X1f.0eEfaP+0123d",
+		"0b0L",
+		"1f",
+		"1D",
 	})
 	void testNumericLiterals(String raw) {
+		// contract: numeric literals are lexed correctly
 		JavaLexer javaLexer = new JavaLexer(raw.toCharArray(), 0, raw.length());
 		Token first = javaLexer.lex();
 		assertThat(first.type()).isEqualTo(TokenType.LITERAL);
@@ -51,16 +53,17 @@ public class JavaLexerTest {
 
 	@ParameterizedTest
 	@CsvSource(textBlock = """
-			non,1
-			non-,2
-			non-se,3
-			non-sea,3
-			non-seal,3
-			non-seale,3
-			non-sealef,3
-			non-sealed2,3
-			""")
+		non,1
+		non-,2
+		non-se,3
+		non-sea,3
+		non-seal,3
+		non-seale,3
+		non-sealef,3
+		non-sealed2,3
+		""")
 	void testNonSealedInvalid(String raw, int tokens) {
+		// contract: almost "non-sealed" falls back correctly to multiple tokens
 		JavaLexer javaLexer = new JavaLexer(raw.toCharArray(), 0, raw.length());
 		Token first = javaLexer.lex();
 		assertThat(first.type()).isEqualTo(TokenType.IDENTIFIER);
@@ -81,6 +84,7 @@ public class JavaLexerTest {
 
 	@Test
 	void testNonSealedSeparatedByWhitespace() {
+		// contract: white spaces are significant in "non-sealed" keyword
 		String raw = "non - sealed";
 		JavaLexer javaLexer = new JavaLexer(raw.toCharArray(), 0, raw.length());
 		Token first = javaLexer.lex();
@@ -97,14 +101,58 @@ public class JavaLexerTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {
-			"non-sealed",
-			"non-sealed ?",
-			"non-sealed?",
-			"non-sealed-",
+		"non-sealed",
+		"non-sealed ?",
+		"non-sealed?",
+		"non-sealed-",
 	})
 	void testNonSealed(String raw) {
+		// contract: "non-sealed" with separators/operators is still "non-sealed"
 		JavaLexer javaLexer = new JavaLexer(raw.toCharArray(), 0, raw.length());
 		Token first = javaLexer.lex();
 		assertThat(first.type()).isEqualTo(TokenType.KEYWORD);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {
+		">",
+		"<",
+		">>",
+		"<<",
+		">>>",
+		">=",
+		"<=",
+		">>=",
+		"<<=",
+		">>>=",
+		"->"
+	})
+	void testValidAngleBracketOperators(String raw) {
+		// contract: variants of operations including brackets are lexed correctly
+		JavaLexer javaLexer = new JavaLexer(raw.toCharArray(), 0, raw.length());
+		Token first = javaLexer.lex();
+		assertThat(first).isNotNull();
+		assertThat(first.type()).isEqualTo(TokenType.OPERATOR);
+		assertThat(javaLexer.lex()).isNull();
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {
+		">>>>",
+		"<<<",
+		">>>>=",
+		"<<<=",
+		"->>"
+	})
+	void testInvalidAngleBracketOperators(String raw) {
+		// contract: too many angle brackets result in multiple operators
+		JavaLexer javaLexer = new JavaLexer(raw.toCharArray(), 0, raw.length());
+		Token first = javaLexer.lex();
+		assertThat(first).isNotNull();
+		assertThat(first.type()).isEqualTo(TokenType.OPERATOR);
+		Token second = javaLexer.lex();
+		assertThat(second).isNotNull();
+		assertThat(second.type()).isEqualTo(TokenType.OPERATOR);
+		assertThat(javaLexer.lex()).isNull();
 	}
 }

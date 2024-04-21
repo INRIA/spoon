@@ -77,7 +77,7 @@ public class SourcePositionTest {
 	private Factory factoryFor(String packageName, String className) throws Exception {
 		return build(packageName, className).getFactory();
 	}
-	
+
 	@Test
 	public void testSourcePositionOfSecondPrimitiveType() throws Exception {
 		/*
@@ -127,24 +127,24 @@ public class SourcePositionTest {
 	public void testSourcePositionWhenCommentInAnnotation(CtModel model) {
 		// contract: comment characters as element values in annotations should not break position assignment to modifiers
 		List<CtClassImpl> list = model.getElements(new TypeFilter<>(CtClassImpl.class));
-		assertEquals(4,list.get(0).getPosition().getLine());
+		assertEquals(4, list.get(0).getPosition().getLine());
 	}
 
 	@ModelTest(
-			value = "./src/test/resources/spoon/test/sourcePosition/ModifierSourcePositions.java",
-			complianceLevel = 17
+		value = "./src/test/resources/spoon/test/sourcePosition/ModifierSourcePositions.java",
+		complianceLevel = 17
 	)
 	void testModifiersHaveSourcePosition(CtModel model) {
 		// contract: all explicit modifiers should have a valid position
 		Executable[] executables = model.getElements(new TypeFilter<>(CtModifiable.class)).stream()
-				.flatMap(modifiable -> modifiable.getExtendedModifiers().stream())
-				.filter(modifier -> !modifier.isImplicit())
-				.map(mod -> (Executable) () -> assertThat(mod).matches(
-								m -> m.getPosition().isValidPosition(),
-								"is valid source position"
-						)
+			.flatMap(modifiable -> modifiable.getExtendedModifiers().stream())
+			.filter(modifier -> !modifier.isImplicit())
+			.map(mod -> (Executable) () -> assertThat(mod).matches(
+					m -> m.getPosition().isValidPosition(),
+					"is valid source position"
 				)
-				.toArray(Executable[]::new);
+			)
+			.toArray(Executable[]::new);
 		assertEquals(8, executables.length, "unexpected length of modifiers found");
 		assertAll(executables);
 	}

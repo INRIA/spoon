@@ -23,7 +23,8 @@ public record Token(TokenType type, int start, int end) {
 
 	/**
 	 * {@return the value this token represents for the original content}
-	 * @param content the original content.
+	 *
+	 * @param content the original content
 	 */
 	public String valueForContent(char[] content) {
 		return new String(content, this.start, this.end - this.start);
@@ -31,7 +32,8 @@ public record Token(TokenType type, int start, int end) {
 
 	/**
 	 * {@return a formatted string representing this token, given the original content}
-	 * @param content the original content.
+	 *
+	 * @param content the original content
 	 */
 	public String formatted(char[] content) {
 		String type = " ".repeat(10 - this.type.name().length()) + this.type.name();

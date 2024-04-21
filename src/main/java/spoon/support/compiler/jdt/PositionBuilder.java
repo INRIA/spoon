@@ -584,11 +584,11 @@ public class PositionBuilder {
 		}
 
 		extractor.collectModifiers(
-				contents,
-				start,
-				Math.max(start, end) + 1, //move end after the last char
-				explicitModifiersByKind,
-				(modStart, modEnd) -> cf.createSourcePosition(cu, modStart, modEnd, cu.getLineSeparatorPositions())
+			contents,
+			start,
+			Math.max(start, end) + 1, // move end after the last char, fixup weird end positions
+			explicitModifiersByKind,
+			(modStart, modEnd) -> cf.createSourcePosition(cu, modStart, modEnd, cu.getLineSeparatorPositions())
 		);
 		if (!explicitModifiersByKind.isEmpty()) {
 			throw new SpoonException("Position of CtExtendedModifiers: " + explicitModifiersByKind.keySet() + " not found in " + String.valueOf(contents, start, end - start));

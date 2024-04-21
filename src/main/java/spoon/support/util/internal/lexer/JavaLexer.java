@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 import static java.lang.Character.isJavaIdentifierPart;
 
 public class JavaLexer {
-	private static final char CHAR_ESCAPE_CHAR_CHAR = '\\';
+	private static final char ESCAPE_CHAR = '\\';
 	private static final Trie<JavaKeyword> KEYWORD_TRIE = Trie.ofWords(
-			Arrays.stream(JavaKeyword.values())
-					.collect(Collectors.toMap(JavaKeyword::toString, Function.identity()))
+		Arrays.stream(JavaKeyword.values())
+			.collect(Collectors.toMap(JavaKeyword::toString, Function.identity()))
 	);
 	private final char[] content;
 	private final CharRemapper charRemapper;
@@ -29,9 +29,10 @@ public class JavaLexer {
 
 	/**
 	 * Creates a java lexer for the given content and range.
+	 *
 	 * @param content the content to lex.
-	 * @param start the start offset of the range to lex (inclusive).
-	 * @param end the end offset of the range to lex (exclusive).
+	 * @param start   the start offset of the range to lex (inclusive)
+	 * @param end     the end offset of the range to lex (exclusive)
 	 */
 	public JavaLexer(char[] content, int start, int end) {
 		this.charRemapper = new CharRemapper(content, start, end);
@@ -40,7 +41,7 @@ public class JavaLexer {
 	}
 
 	/**
-	 * @return {@code null} if no more tokens can be lexed in the range of this lexer.
+	 * {@return {@code null} if no more tokens can be lexed in the range of this lexer}
 	 */
 	public @Nullable Token lex() {
 		if (!skipCommentsAndWhitespaces()) {
@@ -64,13 +65,13 @@ public class JavaLexer {
 				yield createToken(TokenType.OPERATOR, pos);
 			}
 			// no comment, already skipped
-			case '/', '=', '*', '^', '%', '!' -> singleOrDoubleOperator(pos, '=');
-			case '+' -> singleOrDoubleOperator(pos, '=', '+');
-			case '-' -> singleOrDoubleOperator(pos, '=', '-', '>');
-			case '&' -> singleOrDoubleOperator(pos, '=', '&');
-			case '|' -> singleOrDoubleOperator(pos, '=', '|');
-			case '>' -> angleBracket(pos, 1, 3, '>');
-			case '<' -> angleBracket(pos, 1, 2, '<');
+			case '/', '=', '*', '^', '%', '!' -> lexSingleOrDoubleOperator(pos, '=');
+			case '+' -> lexSingleOrDoubleOperator(pos, '=', '+');
+			case '-' -> lexSingleOrDoubleOperator(pos, '=', '-', '>');
+			case '&' -> lexSingleOrDoubleOperator(pos, '=', '&');
+			case '|' -> lexSingleOrDoubleOperator(pos, '=', '|');
+			case '>' -> lexAngleBracket(pos, 1, 3, '>');
+			case '<' -> lexAngleBracket(pos, 1, 2, '<');
 			case '\'' -> lexCharacterLiteral(pos);
 			case '"' -> lexStringLiteral(pos);
 			case '~', '?' -> createToken(TokenType.OPERATOR, pos);
@@ -85,7 +86,7 @@ public class JavaLexer {
 		return new Token(type, this.charRemapper.remapPosition(pos), this.charRemapper.remapPosition(this.nextPos));
 	}
 
-	private Token angleBracket(int pos, int found, int maxFound, char bracket) {
+	private Token lexAngleBracket(int pos, int found, int maxFound, char bracket) {
 		if (hasMore()) {
 			char peek = peek();
 			if (peek == '=') {
@@ -94,7 +95,7 @@ public class JavaLexer {
 			}
 			if (peek == bracket && found < maxFound) {
 				next();
-				return angleBracket(pos, found + 1, maxFound, bracket);
+				return lexAngleBracket(pos, found + 1, maxFound, bracket);
 			}
 		}
 		return createToken(TokenType.OPERATOR, pos);
@@ -132,7 +133,7 @@ public class JavaLexer {
 
 	private @Nullable Token lexLiteralOrKeywordOrIdentifier() {
 		int pos = this.nextPos;
-		char next = next(); // assuming next is available
+		char next = next(); // assuming next is available as `lex` already checks that
 		if (Character.isJavaIdentifierStart(next)) {
 			while (hasMore() && isJavaIdentifierPart(peek())) {
 				next();
@@ -142,8 +143,7 @@ public class JavaLexer {
 				return createToken(TokenType.KEYWORD, pos);
 			}
 			// special case: non-sealed is not a valid java identifier, but a keyword
-			if (isNonSealed(pos)
-			) {
+			if (isNonSealed(pos)) {
 				skip("sealed".length() + 1); // move behind
 				return createToken(TokenType.KEYWORD, pos);
 			}
@@ -158,11 +158,11 @@ public class JavaLexer {
 	private boolean isNonSealed(int pos) {
 		int requiredForNonSealed = "sealed".length();
 		boolean startsWithNonSealed = hasMore(requiredForNonSealed)
-				&& isNon(pos, this.content)
-				&& isDashSealed(content, this.nextPos);
+			&& isNon(pos, this.content)
+			&& isDashSealed(content, this.nextPos);
 		if (startsWithNonSealed) {
 			return !hasMore(requiredForNonSealed + 1)
-					|| !isJavaIdentifierPart(peek(requiredForNonSealed + 1));
+				|| !isJavaIdentifierPart(peek(requiredForNonSealed + 1));
 		}
 		return false;
 	}
@@ -237,9 +237,9 @@ public class JavaLexer {
 		while (hasMore()) {
 			char peek = peek();
 			if ('0' <= peek && peek <= '9'
-					|| 'A' <= peek && peek <= 'F'
-					|| 'a' <= peek && peek <= 'f'
-					|| peek == '_') {
+				|| 'A' <= peek && peek <= 'F'
+				|| 'a' <= peek && peek <= 'f'
+				|| peek == '_') {
 				next();
 			} else {
 				return;
@@ -254,7 +254,7 @@ public class JavaLexer {
 		}
 		while (hasMore()) {
 			char peek = peek();
-			if (peek == CHAR_ESCAPE_CHAR_CHAR) {
+			if (peek == ESCAPE_CHAR) {
 				next();
 				if (hasMore()) {
 					next(); // assuming the string is correct, we're skipping every escapable char, including "
@@ -269,7 +269,7 @@ public class JavaLexer {
 	private @Nullable Token lexTextBlockLiteral(int pos) {
 		while (hasMore(2)) {
 			char peek = peek();
-			if (peek == CHAR_ESCAPE_CHAR_CHAR) {
+			if (peek == ESCAPE_CHAR) {
 				next();
 				if (hasMore()) {
 					next(); // assuming the string is correct, we're skipping every escapable char, including "
@@ -287,7 +287,7 @@ public class JavaLexer {
 	private @Nullable Token lexCharacterLiteral(int startPos) {
 		while (hasMore()) {
 			char peek = peek();
-			if (peek == CHAR_ESCAPE_CHAR_CHAR) {
+			if (peek == ESCAPE_CHAR) {
 				skip(2);
 				continue; // "unsafe" check, assuming there is a closing '
 			} else if (peek == '\'') {
@@ -299,14 +299,14 @@ public class JavaLexer {
 		return null;
 	}
 
-	private Token singleOrDoubleOperator(int startPos, char nextForDouble) {
+	private Token lexSingleOrDoubleOperator(int startPos, char nextForDouble) {
 		if (hasMore() && peek() == nextForDouble) {
 			next();
 		}
 		return createToken(TokenType.OPERATOR, startPos);
 	}
 
-	private Token singleOrDoubleOperator(int startPos, char... anyNext) {
+	private Token lexSingleOrDoubleOperator(int startPos, char... anyNext) {
 		if (hasMore()) {
 			char peek = peek();
 			for (char c : anyNext) {
@@ -351,12 +351,12 @@ public class JavaLexer {
 	private static boolean isDashSealed(char[] content, int pos) {
 		int p = pos;
 		return content[p++] == '-'
-				&& content[p++] == 's'
-				&& content[p++] == 'e'
-				&& content[p++] == 'a'
-				&& content[p++] == 'l'
-				&& content[p++] == 'e'
-				&& content[p] == 'd';
+			&& content[p++] == 's'
+			&& content[p++] == 'e'
+			&& content[p++] == 'a'
+			&& content[p++] == 'l'
+			&& content[p++] == 'e'
+			&& content[p] == 'd';
 	}
 
 	private boolean skipWhitespaces() {
@@ -377,7 +377,7 @@ public class JavaLexer {
 					retry = true;
 				} else if (peek(1) == '*') {
 					if (!skipUntil("*/")) {
-						this.nextPos = this.content.length; //
+						this.nextPos = this.content.length; // comment does not end, but the content does
 						return false;
 					}
 					retry = true;

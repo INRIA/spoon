@@ -21,24 +21,25 @@ import java.util.stream.Collectors;
 
 public class ModifierExtractor {
 	private static final Trie<ModifierKind> MODIFIER_TRIE = Trie.ofWords(
-			Arrays.stream(ModifierKind.values())
-					.collect(Collectors.toMap(ModifierKind::toString, Function.identity()))
+		Arrays.stream(ModifierKind.values())
+			.collect(Collectors.toMap(ModifierKind::toString, Function.identity()))
 	);
 
 	/**
 	 * Collects modifiers from the content array into the modifiers map.
-	 * @param content the source code to extract modifiers from.
-	 * @param start the start offset when searching.
-	 * @param end the end offset when searching.
-	 * @param modifiers the map to insert the modifier data into.
-	 * @param createSourcePosition the function to create a source position object from location data.
+	 *
+	 * @param content              the source code to extract modifiers from
+	 * @param start                the start offset when searching
+	 * @param end                  the end offset when searching
+	 * @param modifiers            the map to insert the modifier data into
+	 * @param createSourcePosition the function to create a source position object from location data
 	 */
 	public void collectModifiers(
-			char[] content,
-			int start,
-			int end,
-			Map<ModifierKind, CtExtendedModifier> modifiers,
-			BiFunction<Integer, Integer, SourcePosition> createSourcePosition
+		char[] content,
+		int start,
+		int end,
+		Map<ModifierKind, CtExtendedModifier> modifiers,
+		BiFunction<Integer, Integer, SourcePosition> createSourcePosition
 	) {
 		JavaLexer lexer = new JavaLexer(content, start, end);
 		while (!modifiers.isEmpty()) {
