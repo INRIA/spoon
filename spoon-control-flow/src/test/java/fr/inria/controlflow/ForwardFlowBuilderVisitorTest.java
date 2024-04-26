@@ -358,6 +358,11 @@ public class ForwardFlowBuilderVisitorTest {
 	}
 
 	@Test
+	public void testConstructorCall() throws Exception {
+		testMethod("constructorCall", true, 0, 1, 5);
+	}
+
+	@Test
 	public void testtestCase() throws Exception {
 		//branchCount, stmntCount, totalCount
 		ControlFlowGraph graph = testMethod("complex1", true, null, null, null);

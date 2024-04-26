@@ -7,3 +7,4 @@ module simple_module {
     provides com.greetings.pkg.ConsumedService with com.greetings.pkg.ProvidedClass1, com.greetings.otherpkg.ProvidedClass2;
     provides java.logging.Service with com.greetings.logging.Logger;
 }
+

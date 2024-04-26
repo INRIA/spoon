@@ -48,7 +48,7 @@ class JavaOutputProcessorTest {
 		Factory factory = launcher.getFactory();
 
 		// use characters encoded differently in ISO-8859-01 and UTFs
-		String code = "class ÈmptyÇlàss {}";
+		String code = "class ÈmptyÇlàss {}" + System.lineSeparator();
 		CtClass<?> ctClass =  Launcher.parseClass(code);
 
 		JavaOutputProcessor javaOutputProcessor = new JavaOutputProcessor();
