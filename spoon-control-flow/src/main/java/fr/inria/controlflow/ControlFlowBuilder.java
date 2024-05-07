@@ -688,8 +688,8 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 	@Override
-	public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
-
+	public <T> void visitCtConstructorCall(CtConstructorCall<T> constructorCall) {
+		defaultAction(BranchKind.STATEMENT, constructorCall);
 	}
 
 	@Override

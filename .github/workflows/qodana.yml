@@ -14,7 +14,7 @@ jobs:
       runs-on: ubuntu-latest
       name: code-quality qodana
       steps:
-        - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
           with:
             fetch-depth: 0
         - name: 'Qodana Scan'
@@ -22,14 +22,14 @@ jobs:
           with:
             args: --source-directory,./src/main/java , --fail-threshold, 0
             post-pr-comment: "false"
-        - uses: github/codeql-action/upload-sarif@df5a14dc28094dc936e103b37d749c6628682b60 # v3
+        - uses: github/codeql-action/upload-sarif@d39d31e687223d841ef683f52467bd88e9b21c14 # v3
           with:
             sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
     code-quality-spoon-javadoc:
       runs-on: ubuntu-latest
       name: code-quality spoon-javadoc qodana
       steps:
-        - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
           with:
             fetch-depth: 0
         - name: 'Qodana Scan (spoon-javadoc)'
@@ -37,14 +37,14 @@ jobs:
           with:
             args: --source-directory,./spoon-javadoc/src/main/java , --fail-threshold, 0
             post-pr-comment: "false"
-        - uses: github/codeql-action/upload-sarif@df5a14dc28094dc936e103b37d749c6628682b60 # v3
+        - uses: github/codeql-action/upload-sarif@d39d31e687223d841ef683f52467bd88e9b21c14 # v3
           with:
             sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
     code-quality-spoon-control-flow:
       runs-on: ubuntu-latest
       name: code-quality spoon-controlflow qodana
       steps:
-        - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
           with:
             fetch-depth: 0
         - name: 'Qodana Scan (spoon-control-flow)'
@@ -52,6 +52,6 @@ jobs:
           with:
             args: --source-directory,./spoon-control-flow/src/main/java , --fail-threshold, 0
             post-pr-comment: "false"
-        - uses: github/codeql-action/upload-sarif@df5a14dc28094dc936e103b37d749c6628682b60 # v3
+        - uses: github/codeql-action/upload-sarif@d39d31e687223d841ef683f52467bd88e9b21c14 # v3
           with:
             sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
