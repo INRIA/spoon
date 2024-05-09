@@ -27,6 +27,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtTextBlock;
@@ -645,6 +646,19 @@ public class CodeFactory extends SubFactory {
 		final CtAnnotation<A> a = factory.Core().createAnnotation();
 		a.setAnnotationType(annotationType);
 		return a;
+	}
+
+	/**
+	 * Creates a return statement.
+	 *
+	 * @param expression
+	 * 		The expression to be returned.
+	 * @return a return.
+	 */
+	public <T> CtReturn<T> createCtReturn(CtExpression<T> expression) {
+		final CtReturn<T> result = factory.Core().createReturn();
+		result.setReturnedExpression(expression);
+		return result;
 	}
 
 	/**
