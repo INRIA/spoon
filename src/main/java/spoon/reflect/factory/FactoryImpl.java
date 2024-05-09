@@ -509,6 +509,11 @@ public class FactoryImpl implements Factory, Serializable {
 		return Code().createLocalVariable(type, name, defaultExpression);
 	}
 
+	@Override
+	public <T> CtReturn<T> createCtReturn(CtExpression<T> expression) {
+		return Code().createCtReturn(expression);
+	}
+
 	@SuppressWarnings(value = "unchecked")
 	@Override
 	public <T> CtNewArray<T[]> createLiteralArray(T[] value) {
