@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import spoon.JLSViolation;
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -19,6 +20,7 @@ import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -39,7 +41,16 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 		method.setType((CtTypeReference) getType());
 		method.setExtendedModifiers(Collections.singleton(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
 		method.setImplicit(true);
-		method.setBody(getFactory().createCodeSnippetStatement("return " + getSimpleName()));
+
+		// obtain the field from the record:
+		CtField<?> ctField = this.getType().getTypeDeclaration().getField(getSimpleName());
+		if (ctField == null) {
+			throw new SpoonException("Record component " + getSimpleName() + " does not have a corresponding field");
+		}
+
+		CodeFactory codeFactory = getFactory().Code();
+
+		method.setBody(codeFactory.createCtBlock(codeFactory.createCtReturn(codeFactory.createVariableRead(ctField.getReference(), false))));
 		return method;
 	}
 
@@ -115,4 +126,3 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 		return (E) this;
 	}
 }
-
