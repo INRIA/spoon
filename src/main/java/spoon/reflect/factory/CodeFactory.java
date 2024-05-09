@@ -651,8 +651,8 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a return statement.
 	 *
-	 * @param expression
-	 * 		The expression to be returned.
+	 * @param expression the expression to be returned.
+	 * @param <T> the type of the expression
 	 * @return a return.
 	 */
 	public <T> CtReturn<T> createCtReturn(CtExpression<T> expression) {

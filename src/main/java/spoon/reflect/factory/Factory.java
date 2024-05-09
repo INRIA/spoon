@@ -322,6 +322,9 @@ public interface Factory {
 	<T> CtLocalVariableReference<T> createLocalVariableReference(CtLocalVariable<T> localVariable);
 
 	/**
+	 * @param expression the expression to return
+	 * @param <T> the type of the expression
+	 * @return a return statement
 	 * @see CodeFactory#createCtReturn(CtExpression)
 	 */
 	<T> CtReturn<T> createCtReturn(CtExpression<T> expression);
