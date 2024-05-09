@@ -65,7 +65,7 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 		}
 
 		CtVariableAccess<?> ctVariableAccess = codeFactory.createVariableRead(fieldReference, false);
-		if (ctVariableAccess instanceof CtTargetedExpression<?,?> targetedExpression && targetedExpression.getTarget() != null) {
+		if (ctVariableAccess instanceof CtTargetedExpression<?, ?> targetedExpression && targetedExpression.getTarget() != null) {
 			// ensure the `this.` is implicit (important for passing some tests)
 			targetedExpression.getTarget().setImplicit(true);
 		}
