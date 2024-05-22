@@ -200,24 +200,24 @@ public class CtGenerationTest {
 	@Disabled("only meant to be run manually to make copying easier")
 	void copyGeneratedFiles() throws IOException {
 		copy(
-				"./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java",
-				"./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java"
+			"./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java",
+			"./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java"
 		);
 		copy(
-				"./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java",
-				"./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java"
+			"./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java",
+			"./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java"
 		);
 		copy(
-				"./target/generated/spoon/support/visitor/clone/CloneBuilder.java",
-				"./src/main/java/spoon/support/visitor/clone/CloneBuilder.java"
+			"./target/generated/spoon/support/visitor/clone/CloneBuilder.java",
+			"./src/main/java/spoon/support/visitor/clone/CloneBuilder.java"
 		);
 		copy(
-				"./target/generated/spoon/support/visitor/clone/CloneVisitor.java",
-				"./src/main/java/spoon/support/visitor/clone/CloneVisitor.java"
+			"./target/generated/spoon/support/visitor/clone/CloneVisitor.java",
+			"./src/main/java/spoon/support/visitor/clone/CloneVisitor.java"
 		);
 		copy(
-				"./target/generated/spoon/reflect/meta/impl/ModelRoleHandlers.java",
-				"./src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java"
+			"./target/generated/spoon/reflect/meta/impl/ModelRoleHandlers.java",
+			"./src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java"
 		);
 	}
 
@@ -228,19 +228,19 @@ public class CtGenerationTest {
 	private void configurePrinter(Launcher launcher) {
 		Environment environment = launcher.getEnvironment();
 		environment.setPrettyPrinterCreator(new Supplier<>() {
-            @Override
-            public PrettyPrinter get() {
+			@Override
+			public PrettyPrinter get() {
 				// we want to create a printer configured for the given environment,
 				// but we are who creates this printer - juggle around this StackOverflowError
-                environment.setPrettyPrinterCreator(null);
-                DefaultJavaPrettyPrinter printer = (DefaultJavaPrettyPrinter) environment.createPrettyPrinter();
-                environment.setPrettyPrinterCreator(this);
-                PrinterHelper printerHelper = new PrinterHelper(environment);
-                printerHelper.setPrefixBlockComments(true);
-                printer.setPrinterTokenWriter(new DefaultTokenWriter(printerHelper));
-                return printer;
-            }
-        });
+				environment.setPrettyPrinterCreator(null);
+				DefaultJavaPrettyPrinter printer = (DefaultJavaPrettyPrinter) environment.createPrettyPrinter();
+				environment.setPrettyPrinterCreator(this);
+				PrinterHelper printerHelper = new PrinterHelper(environment);
+				printerHelper.setPrefixBlockComments(true);
+				printer.setPrinterTokenWriter(new DefaultTokenWriter(printerHelper));
+				return printer;
+			}
+		});
 	}
 
 	private class RegexFilter implements Filter<CtType<?>> {
