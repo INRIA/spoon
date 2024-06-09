@@ -470,7 +470,7 @@ public class SpoonPom implements SpoonResource {
 			InvocationRequest request = new DefaultInvocationRequest();
 			request.setBatchMode(true);
 			request.setPomFile(pomFile);
-			request.setGoals(Collections.singletonList("dependency:build-classpath"));
+			request.addArg("dependency:build-classpath");
 			Properties properties = new Properties();
 			if (sourceType == MavenLauncher.SOURCE_TYPE.APP_SOURCE) {
 				properties.setProperty("includeScope", "runtime");
@@ -483,16 +483,14 @@ public class SpoonPom implements SpoonResource {
 				request.addShellEnvironment(entry.getKey(), entry.getValue());
 			}
 
+			request.setBaseDirectory(directory);
 			if (LOGGER != null) {
-				request.getOutputHandler(s -> LOGGER.debug(s));
-				request.getErrorHandler(s -> LOGGER.debug(s));
+				request.setOutputHandler(LOGGER::debug);
+				request.setErrorHandler(LOGGER::debug);
 			}
 
 			Invoker invoker = new DefaultInvoker();
 			invoker.setMavenHome(mvnHome);
-			invoker.setWorkingDirectory(directory);
-			invoker.setErrorHandler(s -> LOGGER.debug(s));
-			invoker.setOutputHandler(s -> LOGGER.debug(s));
 			try {
 				invoker.execute(request);
 			} catch (MavenInvocationException e) {
