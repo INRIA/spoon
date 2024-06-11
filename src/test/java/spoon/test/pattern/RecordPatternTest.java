@@ -31,7 +31,6 @@ public class RecordPatternTest {
 	private static CtModel createModelFromString(String code) {
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(21);
-		launcher.getEnvironment().setPreviewFeaturesEnabled(true);
 		launcher.addInputResource(new VirtualFile(code));
 		return launcher.buildModel();
 	}
