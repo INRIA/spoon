@@ -24,6 +24,7 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
+import spoon.support.reflect.code.CtLocalVariableImpl;
 
 import java.util.Set;
 
@@ -78,6 +79,10 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 		return (C) this;
 	}
 
+	@Override
+	public boolean isUnnamed() {
+		return CtLocalVariableImpl.isUnnamed(this);
+	}
 	@Override
 	public boolean isPartOfJointDeclaration() {
 		// a parameter can never be part of a joint declaration
