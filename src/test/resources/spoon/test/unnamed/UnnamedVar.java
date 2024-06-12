@@ -13,7 +13,7 @@ class UnnamedVar {
     }
 
     void tryWithResources(Supplier<AutoCloseable> resourceProvider) {
-        try (AutoCloseable _ = resourceProvider.get()) {
+        try (java.lang.AutoCloseable _ = resourceProvider.get()) {
 
         }
     }
@@ -21,7 +21,7 @@ class UnnamedVar {
     record MyRecord(String s) {}
     void pattern(Object o) {
         switch (o) {
-            case MyRecord(String _) -> {}
+            case MyRecord(java.lang.String _) -> {}
             default -> {}
         }
     }
@@ -29,12 +29,16 @@ class UnnamedVar {
     void exception() {
         try {
 
-        } catch (Exception _) {
+        } catch (java.lang.Exception _) {
 
         }
     }
 
     void lambda() {
         Stream.empty().map(_ -> null);
+    }
+
+    void lambda2() {
+        Stream.empty().map((var _) -> null);
     }
 }
