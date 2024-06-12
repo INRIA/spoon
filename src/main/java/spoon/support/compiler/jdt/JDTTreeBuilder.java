@@ -174,7 +174,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
-import spoon.support.reflect.code.CtLocalVariableImpl;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
@@ -1362,34 +1361,21 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(LocalDeclaration localDeclaration, BlockScope scope) {
 		// an unnamed pattern does not have a type in the source, but the binding holds the inferred type
 		CtElement element;
-		if (localDeclaration.type == null
-			&& localDeclaration.binding != null
-			&& localDeclaration.isUnnamed(scope)
-		) {
+		CtLocalVariable<Object> v = factory.Core().createLocalVariable();
 
-			CtUnnamedPattern unnamedPattern = factory.Core().createUnnamedPattern();
-			// we know the type, and it might be useful for analysis
-			CtTypeReference<?> type = references.getTypeReference(localDeclaration.binding.type).setImplicit(true);
-			unnamedPattern.setType(type);
-			element = unnamedPattern;
-			throw new UnsupportedOperationException();
-		} else {
-			CtLocalVariable<Object> v = factory.Core().createLocalVariable();
+		boolean isVar = localDeclaration.type != null && localDeclaration.type.isTypeNameVar(scope);
 
-			boolean isVar = localDeclaration.type != null && localDeclaration.type.isTypeNameVar(scope);
-
-			if (isVar) {
-				v.setInferred(true);
-			}
-			v.setSimpleName(CharOperation.charToString(localDeclaration.name));
-			if (localDeclaration.binding != null) {
-				v.setExtendedModifiers(getModifiers(localDeclaration.binding.modifiers, true, ModifierTarget.LOCAL_VARIABLE));
-			}
-			for (CtExtendedModifier extendedModifier : getModifiers(localDeclaration.modifiers, false, ModifierTarget.LOCAL_VARIABLE)) {
-				v.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
-			}
-			element = v;
+		if (isVar) {
+			v.setInferred(true);
 		}
+		v.setSimpleName(CharOperation.charToString(localDeclaration.name));
+		if (localDeclaration.binding != null) {
+			v.setExtendedModifiers(getModifiers(localDeclaration.binding.modifiers, true, ModifierTarget.LOCAL_VARIABLE));
+		}
+		for (CtExtendedModifier extendedModifier : getModifiers(localDeclaration.modifiers, false, ModifierTarget.LOCAL_VARIABLE)) {
+			v.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+		}
+		element = v;
 
 		context.enter(element, localDeclaration);
 		return true;
