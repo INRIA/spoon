@@ -13,60 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import spoon.experimental.CtUnresolvedImport;
-import spoon.reflect.code.CtAnnotationFieldAccess;
-import spoon.reflect.code.CtArrayRead;
-import spoon.reflect.code.CtArrayWrite;
-import spoon.reflect.code.CtAssert;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtBreak;
-import spoon.reflect.code.CtCase;
-import spoon.reflect.code.CtCasePattern;
-import spoon.reflect.code.CtCatch;
-import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtCodeSnippetExpression;
-import spoon.reflect.code.CtCodeSnippetStatement;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtConditional;
-import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtContinue;
-import spoon.reflect.code.CtDo;
-import spoon.reflect.code.CtExecutableReferenceExpression;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldRead;
-import spoon.reflect.code.CtFieldWrite;
-import spoon.reflect.code.CtFor;
-import spoon.reflect.code.CtForEach;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtJavaDoc;
-import spoon.reflect.code.CtJavaDocTag;
-import spoon.reflect.code.CtLambda;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtNewArray;
-import spoon.reflect.code.CtNewClass;
-import spoon.reflect.code.CtOperatorAssignment;
-import spoon.reflect.code.CtRecordPattern;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatementList;
-import spoon.reflect.code.CtSuperAccess;
-import spoon.reflect.code.CtSwitch;
-import spoon.reflect.code.CtSwitchExpression;
-import spoon.reflect.code.CtSynchronized;
-import spoon.reflect.code.CtTextBlock;
-import spoon.reflect.code.CtThisAccess;
-import spoon.reflect.code.CtThrow;
-import spoon.reflect.code.CtTry;
-import spoon.reflect.code.CtTryWithResource;
-import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtTypePattern;
-import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.code.CtWhile;
-import spoon.reflect.code.CtYieldStatement;
+import spoon.reflect.code.*;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
@@ -116,59 +63,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.reflect.CtExtendedModifier;
-import spoon.support.reflect.code.CtAnnotationFieldAccessImpl;
-import spoon.support.reflect.code.CtArrayReadImpl;
-import spoon.support.reflect.code.CtArrayWriteImpl;
-import spoon.support.reflect.code.CtAssertImpl;
-import spoon.support.reflect.code.CtAssignmentImpl;
-import spoon.support.reflect.code.CtBinaryOperatorImpl;
-import spoon.support.reflect.code.CtBlockImpl;
-import spoon.support.reflect.code.CtBreakImpl;
-import spoon.support.reflect.code.CtCaseImpl;
-import spoon.support.reflect.code.CtCasePatternImpl;
-import spoon.support.reflect.code.CtCatchImpl;
-import spoon.support.reflect.code.CtCatchVariableImpl;
-import spoon.support.reflect.code.CtCodeSnippetExpressionImpl;
-import spoon.support.reflect.code.CtCodeSnippetStatementImpl;
-import spoon.support.reflect.code.CtCommentImpl;
-import spoon.support.reflect.code.CtConditionalImpl;
-import spoon.support.reflect.code.CtConstructorCallImpl;
-import spoon.support.reflect.code.CtContinueImpl;
-import spoon.support.reflect.code.CtDoImpl;
-import spoon.support.reflect.code.CtExecutableReferenceExpressionImpl;
-import spoon.support.reflect.code.CtFieldReadImpl;
-import spoon.support.reflect.code.CtFieldWriteImpl;
-import spoon.support.reflect.code.CtForEachImpl;
-import spoon.support.reflect.code.CtForImpl;
-import spoon.support.reflect.code.CtIfImpl;
-import spoon.support.reflect.code.CtInvocationImpl;
-import spoon.support.reflect.code.CtJavaDocImpl;
-import spoon.support.reflect.code.CtJavaDocTagImpl;
-import spoon.support.reflect.code.CtLambdaImpl;
-import spoon.support.reflect.code.CtLiteralImpl;
-import spoon.support.reflect.code.CtLocalVariableImpl;
-import spoon.support.reflect.code.CtNewArrayImpl;
-import spoon.support.reflect.code.CtNewClassImpl;
-import spoon.support.reflect.code.CtOperatorAssignmentImpl;
-import spoon.support.reflect.code.CtRecordPatternImpl;
-import spoon.support.reflect.code.CtReturnImpl;
-import spoon.support.reflect.code.CtStatementListImpl;
-import spoon.support.reflect.code.CtSuperAccessImpl;
-import spoon.support.reflect.code.CtSwitchExpressionImpl;
-import spoon.support.reflect.code.CtSwitchImpl;
-import spoon.support.reflect.code.CtSynchronizedImpl;
-import spoon.support.reflect.code.CtTextBlockImpl;
-import spoon.support.reflect.code.CtThisAccessImpl;
-import spoon.support.reflect.code.CtThrowImpl;
-import spoon.support.reflect.code.CtTryImpl;
-import spoon.support.reflect.code.CtTryWithResourceImpl;
-import spoon.support.reflect.code.CtTypeAccessImpl;
-import spoon.support.reflect.code.CtTypePatternImpl;
-import spoon.support.reflect.code.CtUnaryOperatorImpl;
-import spoon.support.reflect.code.CtVariableReadImpl;
-import spoon.support.reflect.code.CtVariableWriteImpl;
-import spoon.support.reflect.code.CtWhileImpl;
-import spoon.support.reflect.code.CtYieldStatementImpl;
+import spoon.support.reflect.code.*;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.BodyHolderSourcePositionImpl;
 import spoon.support.reflect.cu.position.CompoundSourcePositionImpl;
@@ -1126,6 +1021,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.declaration.CtReceiverParameter.class)) {
 			return createReceiverParameter();
 		}
+		if (klass.equals(spoon.reflect.code.CtUnnamedPattern.class)) {
+			return createUnnamedPattern();
+		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
 
@@ -1229,5 +1127,12 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		CtReceiverParameter receiverParameter = new CtReceiverParameterImpl();
 		receiverParameter.setFactory(getMainFactory());
 		return receiverParameter;
+	}
+
+	@Override
+	public CtUnnamedPattern createUnnamedPattern() {
+		CtUnnamedPattern unnamedPattern = new CtUnnamedPatternImpl();
+		unnamedPattern.setFactory(getMainFactory());
+		return unnamedPattern;
 	}
 }

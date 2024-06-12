@@ -125,29 +125,7 @@ import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.SpoonException;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtArrayAccess;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtBreak;
-import spoon.reflect.code.CtCase;
-import spoon.reflect.code.CtCatch;
-import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtContinue;
-import spoon.reflect.code.CtExecutableReferenceExpression;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLambda;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtOperatorAssignment;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtTry;
-import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtTypePattern;
-import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.LiteralBase;
-import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.code.*;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotationMethod;
@@ -173,6 +151,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
+import spoon.support.reflect.code.CtLocalVariableImpl;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
@@ -1358,22 +1337,38 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(LocalDeclaration localDeclaration, BlockScope scope) {
-		CtLocalVariable<Object> v = factory.Core().createLocalVariable();
+		// an unnamed pattern does not have a type in the source, but the binding holds the inferred type
+		CtElement element;
+		if (localDeclaration.type == null
+			&& localDeclaration.binding != null
+			&& localDeclaration.isUnnamed(scope)
+		) {
 
-		boolean isVar = localDeclaration.type.isTypeNameVar(scope);
+			CtUnnamedPattern unnamedPattern = factory.Core().createUnnamedPattern();
+			// we know the type, and it might be useful for analysis
+			CtTypeReference<?> type = references.getTypeReference(localDeclaration.binding.type).setImplicit(true);
+			unnamedPattern.setType(type);
+			element = unnamedPattern;
+			throw new UnsupportedOperationException();
+		} else {
+			CtLocalVariable<Object> v = factory.Core().createLocalVariable();
 
-		if (isVar) {
-			v.setInferred(true);
-		}
-		v.setSimpleName(CharOperation.charToString(localDeclaration.name));
-		if (localDeclaration.binding != null) {
-			v.setExtendedModifiers(getModifiers(localDeclaration.binding.modifiers, true, ModifierTarget.LOCAL_VARIABLE));
-		}
-		for (CtExtendedModifier extendedModifier : getModifiers(localDeclaration.modifiers, false, ModifierTarget.LOCAL_VARIABLE)) {
-			v.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+			boolean isVar = localDeclaration.type != null && localDeclaration.type.isTypeNameVar(scope);
+
+			if (isVar) {
+				v.setInferred(true);
+			}
+			v.setSimpleName(CharOperation.charToString(localDeclaration.name));
+			if (localDeclaration.binding != null) {
+				v.setExtendedModifiers(getModifiers(localDeclaration.binding.modifiers, true, ModifierTarget.LOCAL_VARIABLE));
+			}
+			for (CtExtendedModifier extendedModifier : getModifiers(localDeclaration.modifiers, false, ModifierTarget.LOCAL_VARIABLE)) {
+				v.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+			}
+			element = v;
 		}
 
-		context.enter(v, localDeclaration);
+		context.enter(element, localDeclaration);
 		return true;
 	}
 
@@ -1754,9 +1749,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypePattern anyPattern, BlockScope scope) {
-		CtTypePattern typePattern = factory.Core().createTypePattern();
-		context.enter(typePattern, anyPattern);
-		return true;
+		boolean unnamedPattern = isUnnamedPattern(anyPattern);
+		CtPattern pattern;
+		if (unnamedPattern) {
+			CtTypeReference<?> type = references.getTypeReference(anyPattern.local.binding.type).setImplicit(true);
+			pattern = factory.Core().createUnnamedPattern().setType(type);
+		} else {
+			pattern = factory.Core().createTypePattern();
+		}
+		context.enter(pattern, anyPattern);
+		// when we have an unnamed pattern, we don't want to visit the local variable declaration anymore
+		return !unnamedPattern;
+	}
+
+	// only '_', NOT 'Type _'
+	private boolean isUnnamedPattern(TypePattern pattern) {
+		return pattern.isUnnamed() && pattern.local.type == null && pattern.local.binding != null;
 	}
 
 	@Override

@@ -30,7 +30,7 @@ public class RecordPatternTest {
 
 	private static CtModel createModelFromString(String code) {
 		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setComplianceLevel(21);
+		launcher.getEnvironment().setComplianceLevel(22);
 		launcher.addInputResource(new VirtualFile(code));
 		System.out.println(code);
 		return launcher.buildModel();
@@ -169,7 +169,7 @@ public class RecordPatternTest {
 
 	@Test
 	void testUnnamedPatternInRecordPattern() {
-		CtSwitch<?> ctSwitch = createFromSwitch("record Int(int i) {}", "Int(_)");
+		CtSwitch<?> ctSwitch = createFromSwitch("var i = 1; record Int(int i) {}", "Int(_)");
 		System.out.println(ctSwitch);
 	}
 

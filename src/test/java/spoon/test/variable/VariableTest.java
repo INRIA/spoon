@@ -200,8 +200,7 @@ public class VariableTest {
     @Test
     void testUnnamedVariable() {
         Launcher launcher = new Launcher();
-        launcher.getEnvironment().setComplianceLevel(21);
-        launcher.getEnvironment().setPreviewFeaturesEnabled(true);
+        launcher.getEnvironment().setComplianceLevel(22);
         launcher.addInputResource("./src/test/resources/spoon/test/unnamed/UnnamedVar.java");
         launcher.buildModel();
         CtType<?> type = launcher.getFactory().Type().get("spoon.test.unnamed.UnnamedVar");

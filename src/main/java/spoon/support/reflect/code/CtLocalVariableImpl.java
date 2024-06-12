@@ -72,8 +72,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	static boolean isUnnamed(CtVariable<?> variable) {
 		return variable.getSimpleName().equals(UNNAMED_VARIABLE_NAME)
-				// TODO (456) should be 22
-				&& variable.getFactory().getEnvironment().getComplianceLevel() >= 21;
+				&& variable.getFactory().getEnvironment().getComplianceLevel() >= 22;
 	}
 
 	@Override

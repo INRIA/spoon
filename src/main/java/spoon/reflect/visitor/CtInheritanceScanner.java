@@ -7,75 +7,7 @@
  */
 package spoon.reflect.visitor;
 
-import spoon.reflect.code.CtAbstractInvocation;
-import spoon.reflect.code.CtAbstractSwitch;
-import spoon.reflect.code.CtAnnotationFieldAccess;
-import spoon.reflect.code.CtArrayAccess;
-import spoon.reflect.code.CtArrayRead;
-import spoon.reflect.code.CtArrayWrite;
-import spoon.reflect.code.CtAssert;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtBodyHolder;
-import spoon.reflect.code.CtBreak;
-import spoon.reflect.code.CtCFlowBreak;
-import spoon.reflect.code.CtCase;
-import spoon.reflect.code.CtCasePattern;
-import spoon.reflect.code.CtCatch;
-import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtCodeSnippetExpression;
-import spoon.reflect.code.CtCodeSnippetStatement;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtConditional;
-import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtContinue;
-import spoon.reflect.code.CtDo;
-import spoon.reflect.code.CtExecutableReferenceExpression;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
-import spoon.reflect.code.CtFieldRead;
-import spoon.reflect.code.CtFieldWrite;
-import spoon.reflect.code.CtFor;
-import spoon.reflect.code.CtForEach;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtJavaDoc;
-import spoon.reflect.code.CtJavaDocTag;
-import spoon.reflect.code.CtLabelledFlowBreak;
-import spoon.reflect.code.CtLambda;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtLoop;
-import spoon.reflect.code.CtNewArray;
-import spoon.reflect.code.CtNewClass;
-import spoon.reflect.code.CtOperatorAssignment;
-import spoon.reflect.code.CtPattern;
-import spoon.reflect.code.CtRHSReceiver;
-import spoon.reflect.code.CtRecordPattern;
-import spoon.reflect.code.CtResource;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtStatementList;
-import spoon.reflect.code.CtSuperAccess;
-import spoon.reflect.code.CtSwitch;
-import spoon.reflect.code.CtSwitchExpression;
-import spoon.reflect.code.CtSynchronized;
-import spoon.reflect.code.CtTargetedExpression;
-import spoon.reflect.code.CtTextBlock;
-import spoon.reflect.code.CtThisAccess;
-import spoon.reflect.code.CtThrow;
-import spoon.reflect.code.CtTry;
-import spoon.reflect.code.CtTryWithResource;
-import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtTypePattern;
-import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableAccess;
-import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.code.CtWhile;
-import spoon.reflect.code.CtYieldStatement;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -1132,4 +1064,13 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtShadowable(e);
 	}
 
+	@Override
+	public void visitCtUnnamedPattern(CtUnnamedPattern pattern) {
+		scanCtPattern(pattern);
+		scanCtExpression(pattern);
+		scanCtTypedElement(pattern);
+		scanCtCodeElement(pattern);
+		scanCtElement(pattern);
+		scanCtVisitable(pattern);
+	}
 }
