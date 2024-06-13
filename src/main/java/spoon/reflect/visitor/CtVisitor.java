@@ -103,7 +103,6 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.support.reflect.code.CtUnnamedPatternImpl;
 
 /**
  * This interface defines the visitor for the Spoon metamodel, as defined in

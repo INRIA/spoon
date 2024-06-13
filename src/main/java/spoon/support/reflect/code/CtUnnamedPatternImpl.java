@@ -8,7 +8,8 @@
 package spoon.support.reflect.code;
 
 import spoon.SpoonException;
-import spoon.reflect.code.*;
+import spoon.reflect.code.CtRecordPattern;
+import spoon.reflect.code.CtUnnamedPattern;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtVisitor;
 
