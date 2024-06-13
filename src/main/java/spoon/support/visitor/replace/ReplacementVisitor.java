@@ -13,20 +13,6 @@ package spoon.support.visitor.replace;
  */
 public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	static class CtUnnamedPatternTypeCastsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.code.CtUnnamedPattern element;
-
-		CtUnnamedPatternTypeCastsReplaceListener(spoon.reflect.code.CtUnnamedPattern element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setTypeCasts(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	static class CtRecordPatternPatternListReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtRecordPattern element;
 
@@ -2447,7 +2433,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	@java.lang.Override
 	public void visitCtUnnamedPattern(spoon.reflect.code.CtUnnamedPattern unnamedPattern) {
-		replaceInListIfExist(unnamedPattern.getTypeCasts(), new spoon.support.visitor.replace.ReplacementVisitor.CtUnnamedPatternTypeCastsReplaceListener(unnamedPattern));
 		replaceInListIfExist(unnamedPattern.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(unnamedPattern));
 		replaceElementIfExist(unnamedPattern.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(unnamedPattern));
 		replaceInListIfExist(unnamedPattern.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(unnamedPattern));

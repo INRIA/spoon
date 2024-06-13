@@ -1194,7 +1194,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	public void visitCtUnnamedPattern(spoon.reflect.code.CtUnnamedPattern unnamedPattern) {
 		spoon.reflect.code.CtUnnamedPattern aCtUnnamedPattern = unnamedPattern.getFactory().Core().createUnnamedPattern();
 		this.builder.copy(unnamedPattern, aCtUnnamedPattern);
-		aCtUnnamedPattern.setTypeCasts(this.cloneHelper.clone(unnamedPattern.getTypeCasts()));
 		aCtUnnamedPattern.setAnnotations(this.cloneHelper.clone(unnamedPattern.getAnnotations()));
 		aCtUnnamedPattern.setType(this.cloneHelper.clone(unnamedPattern.getType()));
 		aCtUnnamedPattern.setComments(this.cloneHelper.clone(unnamedPattern.getComments()));
