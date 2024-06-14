@@ -14,8 +14,10 @@ import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtTypePattern;
+import spoon.reflect.code.CtUnnamedPattern;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
+import spoon.testing.assertions.SpoonAssertions;
 
 import java.util.List;
 
@@ -25,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 public class RecordPatternTest {
 
@@ -32,7 +35,6 @@ public class RecordPatternTest {
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(22);
 		launcher.addInputResource(new VirtualFile(code));
-		System.out.println(code);
 		return launcher.buildModel();
 	}
 
@@ -170,7 +172,18 @@ public class RecordPatternTest {
 	@Test
 	void testUnnamedPatternInRecordPattern() {
 		CtSwitch<?> ctSwitch = createFromSwitch("var i = 1; record Int(int i) {}", "Int(_)");
-		System.out.println(ctSwitch);
+		List<CtRecordPattern> recordPatterns = ctSwitch.getElements(new TypeFilter<>(CtRecordPattern.class));
+		assertThat(recordPatterns).hasSize(1);
+		CtRecordPattern pattern = recordPatterns.get(0);
+		assertThat(pattern).getPatternList().hasSize(1);
+		CtPattern component = pattern.getPatternList().get(0);
+		assertThat(component).isInstanceOf(CtUnnamedPattern.class);
+		assertThat((CtUnnamedPattern) component)
+			.getType()
+			.getSimpleName()
+			.isNotNull()
+			.isEqualTo("int");
+		assertThat(pattern).asString().contains("Int(_)");
 	}
 
 	@Test
