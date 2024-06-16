@@ -1358,8 +1358,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(LocalDeclaration localDeclaration, BlockScope scope) {
-		// an unnamed pattern does not have a type in the source, but the binding holds the inferred type
-		CtElement element;
 		CtLocalVariable<Object> v = factory.Core().createLocalVariable();
 
 		boolean isVar = localDeclaration.type != null && localDeclaration.type.isTypeNameVar(scope);
@@ -1374,9 +1372,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 		for (CtExtendedModifier extendedModifier : getModifiers(localDeclaration.modifiers, false, ModifierTarget.LOCAL_VARIABLE)) {
 			v.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
 		}
-		element = v;
 
-		context.enter(element, localDeclaration);
+		context.enter(v, localDeclaration);
 		return true;
 	}
 
@@ -1772,6 +1769,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	// only '_', NOT 'Type _'
 	private boolean isUnnamedPattern(TypePattern pattern) {
+		// an unnamed pattern does not have a type in the source, but the binding holds the inferred type
 		return pattern.isUnnamed() && pattern.local.type == null && pattern.local.binding != null;
 	}
 

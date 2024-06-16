@@ -62,6 +62,7 @@ public interface CtParameter<T> extends CtVariable<T>, CtShadowable {
 
 	/**
 	 * {@return whether this parameter is <a href="https://openjdk.org/jeps/456">unnamed</a>}
+	 * Unnamed parameters are always lambda parameters.
 	 */
 	@DerivedProperty
 	boolean isUnnamed();

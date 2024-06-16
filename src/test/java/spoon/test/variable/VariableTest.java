@@ -203,6 +203,9 @@ public class VariableTest {
 
     @ModelTest(value = "./src/test/resources/spoon/test/unnamed/UnnamedVar.java", complianceLevel = 22)
     void testUnnamedVariable(Factory factory) throws IOException {
+        // contract: each appearance of an unnamed variable is recognized and printed correctly
+        // each method in the source class has one unnamed variable
+        // we compare the output from printing to the original source
         CtType<?> type = factory.Type().get("spoon.test.unnamed.UnnamedVar");
         assertThat(type.getMethods()).isNotEmpty();
         List<String> lines = java.nio.file.Files.readAllLines(type.getPosition().getFile().toPath());
@@ -211,13 +214,13 @@ public class VariableTest {
             assertThat(locals).describedAs(method.getSimpleName()).hasSize(1);
             CtVariable<?> variable = locals.get(0);
             assertThat(variable).getSimpleName().isEqualTo("_");
-			if (variable instanceof CtLocalVariable<?> v) {
-				assertTrue(v.isUnnamed());
-			} else if (variable instanceof CtParameter<?> v) {
-				assertTrue(v.isUnnamed());
-			} else if (variable instanceof CtCatchVariable<?> v) {
-				assertTrue(v.isUnnamed());
-			}
+            if (variable instanceof CtLocalVariable<?> v) {
+                assertTrue(v.isUnnamed());
+            } else if (variable instanceof CtParameter<?> v) {
+                assertTrue(v.isUnnamed());
+            } else if (variable instanceof CtCatchVariable<?> v) {
+                assertTrue(v.isUnnamed());
+            }
             assertThat(variable).getPosition().isNotEqualTo(SourcePosition.NOPOSITION);
             String line = lines.get(variable.getPosition().getLine() - 1);
             assertThat(line).contains(variable.toString());

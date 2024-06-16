@@ -171,6 +171,7 @@ public class RecordPatternTest {
 
 	@Test
 	void testUnnamedPatternInRecordPattern() {
+		// contract: an unnamed pattern has the proper inferred type and is printed correctly
 		CtSwitch<?> ctSwitch = createFromSwitch("var i = 1; record Int(int i) {}", "Int(_)");
 		List<CtRecordPattern> recordPatterns = ctSwitch.getElements(new TypeFilter<>(CtRecordPattern.class));
 		assertThat(recordPatterns).hasSize(1);

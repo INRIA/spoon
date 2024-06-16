@@ -83,6 +83,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	public boolean isUnnamed() {
 		return CtLocalVariableImpl.isUnnamed(this);
 	}
+
 	@Override
 	public boolean isPartOfJointDeclaration() {
 		// a parameter can never be part of a joint declaration
