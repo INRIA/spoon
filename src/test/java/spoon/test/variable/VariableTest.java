@@ -163,7 +163,7 @@ public class VariableTest {
     @Test
     @DisabledForJreRange(max = JRE.JAVA_9)
     public void testInferredVariableArePrintedWithVar(@TempDir File outputDir) throws IOException {
-        // contract: if a variable is marked as inferred in the model, it must be pretty-printed with a 'var' keyword 
+        // contract: if a variable is marked as inferred in the model, it must be pretty-printed with a 'var' keyword
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setComplianceLevel(10);
         launcher.addInputResource("./src/test/resources/spoon/test/var/Main.java");
@@ -201,29 +201,29 @@ public class VariableTest {
         assertEquals("(var x,var y) -> x + y", lambda.toString()); // we should print var, if it was in the original code
     }
 
-    @ModelTest(value = "./src/test/resources/spoon/test/unnamed/UnnamedVar.java", complianceLevel = 22)
-    void testUnnamedVariable(Factory factory) throws IOException {
-        // contract: each appearance of an unnamed variable is recognized and printed correctly
-        // each method in the source class has one unnamed variable
-        // we compare the output from printing to the original source
-        CtType<?> type = factory.Type().get("spoon.test.unnamed.UnnamedVar");
-        assertThat(type.getMethods()).isNotEmpty();
-        List<String> lines = java.nio.file.Files.readAllLines(type.getPosition().getFile().toPath());
-        for (CtMethod<?> method : type.getMethods()) {
-            List<CtVariable<?>> locals = method.getBody().getElements(new TypeFilter<>(CtVariable.class));
-            assertThat(locals).describedAs(method.getSimpleName()).hasSize(1);
-            CtVariable<?> variable = locals.get(0);
-            assertThat(variable).getSimpleName().isEqualTo("_");
-            if (variable instanceof CtLocalVariable<?> v) {
-                assertTrue(v.isUnnamed());
-            } else if (variable instanceof CtParameter<?> v) {
-                assertTrue(v.isUnnamed());
-            } else if (variable instanceof CtCatchVariable<?> v) {
-                assertTrue(v.isUnnamed());
-            }
-            assertThat(variable).getPosition().isNotEqualTo(SourcePosition.NOPOSITION);
-            String line = lines.get(variable.getPosition().getLine() - 1);
-            assertThat(line).contains(variable.toString());
-        }
-    }
+	@ModelTest(value = "./src/test/resources/spoon/test/unnamed/UnnamedVar.java", complianceLevel = 22)
+	void testUnnamedVariable(Factory factory) throws IOException {
+		// contract: each appearance of an unnamed variable is recognized and printed correctly
+		// each method in the source class has one unnamed variable
+		// we compare the output from printing to the original source
+		CtType<?> type = factory.Type().get("spoon.test.unnamed.UnnamedVar");
+		assertThat(type.getMethods()).isNotEmpty();
+		List<String> lines = java.nio.file.Files.readAllLines(type.getPosition().getFile().toPath());
+		for (CtMethod<?> method : type.getMethods()) {
+			List<CtVariable<?>> locals = method.getBody().getElements(new TypeFilter<>(CtVariable.class));
+			assertThat(locals).describedAs(method.getSimpleName()).hasSize(1);
+			CtVariable<?> variable = locals.get(0);
+			assertThat(variable).getSimpleName().isEqualTo("_");
+			if (variable instanceof CtLocalVariable<?> v) {
+				assertTrue(v.isUnnamed());
+			} else if (variable instanceof CtParameter<?> v) {
+				assertTrue(v.isUnnamed());
+			} else if (variable instanceof CtCatchVariable<?> v) {
+				assertTrue(v.isUnnamed());
+			}
+			assertThat(variable).getPosition().isNotEqualTo(SourcePosition.NOPOSITION);
+			String line = lines.get(variable.getPosition().getLine() - 1);
+			assertThat(line).contains(variable.toString());
+		}
+	}
 }
