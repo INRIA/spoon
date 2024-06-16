@@ -2388,6 +2388,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void visitCtUnnamedPattern(CtUnnamedPattern unnamedPattern) {
-		printer.writeKeyword(CtLocalVariableImpl.UNNAMED_VARIABLE_NAME);
+		printer.writeKeyword(CtLocalVariable.UNNAMED_VARIABLE_NAME);
 	}
 }

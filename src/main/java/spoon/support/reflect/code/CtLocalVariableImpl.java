@@ -23,6 +23,7 @@ import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
+import spoon.support.Internal;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
@@ -70,6 +71,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		return isUnnamed(this);
 	}
 
+	@Internal
 	public static boolean isUnnamed(CtVariable<?> variable) {
 		return variable.getSimpleName().equals(UNNAMED_VARIABLE_NAME)
 				&& variable.getFactory().getEnvironment().getComplianceLevel() >= 22;
