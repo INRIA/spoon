@@ -58,6 +58,7 @@ import org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.SyntheticFactoryMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.UnresolvedReferenceBinding;
@@ -422,7 +423,11 @@ public class ReferenceBuilder {
 		if (sourceStart >= 0 && sourceEnd >= 0) {
 			ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 		}
-		if (exec.isConstructor()) {
+		// JDT creates synthetic <factory> methods for inference of diamond constructors (We guess they had that
+		// lying around). If the type can not be completely resolved, e.g. due to no classpath, this factory is
+		// not replaced and appears in the AST. We need to fix its name so e.g. `CtExecutableReference#isConstructor`
+		// works.
+		if (exec.isConstructor() || exec.original() instanceof SyntheticFactoryMethodBinding) {
 			ref.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
 
 			// in case of constructor of an array, it's the return type that we want
@@ -1023,7 +1028,15 @@ public class ReferenceBuilder {
 			return getTypeReferenceOfBoundingType(binding).clone();
 		} else {
 			CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
-			ref.setSimpleName(new String(binding.sourceName()));
+			String name = new String(binding.sourceName());
+			if (binding.declaringElement instanceof SyntheticFactoryMethodBinding) {
+				// JDT uses these factory methods for type inference of diamond constructors. In no classpath mode they
+				// might be left around. They append a variable number of primes (') to the original name, which is not
+				// valid in Java. We undo this here and hope for the best.
+				name = name.replace("'", "");
+			}
+
+			ref.setSimpleName(name);
 			return ref;
 		}
 	}
