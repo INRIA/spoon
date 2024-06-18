@@ -949,6 +949,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVariableAccess(e);
 		scanCtExpression(e);
 		scanCtCodeElement(e);
+		scanCtResource(e);
 		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
