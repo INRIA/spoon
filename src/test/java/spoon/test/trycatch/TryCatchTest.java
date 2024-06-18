@@ -437,15 +437,15 @@ public class TryCatchTest {
 		List<CtResource<?>> resources = tryStmt.getResources();
 		assertEquals(1, resources.size());
 		final CtResource<?> ctResource = resources.get(0);
-		assertTrue(ctResource instanceof CtVariable);
-		assertEquals("resource", ((CtVariable<?>) ctResource).getSimpleName());
+		assertThat(ctResource).isInstanceOf(CtVariableRead.class);
+		assertThat(((CtVariableRead<?>) ctResource).getVariable().getSimpleName()).isEqualTo("resource");
 
 		// contract: pretty-printing of existing resources works
-		assertEquals("try (resource) {\n}", tryStmt.toString());
+		assertThat(tryStmt).asString().isEqualTo("try (resource) {\n}");
 
 		// contract: removeResource does remove the resource
 		tryStmt.removeResource(ctResource);
-		assertEquals(0, tryStmt.getResources().size());
+		assertThat(tryStmt.getResources()).isEmpty();
 		// contract: removeResource of nothing is graceful and accepts it
 		tryStmt.removeResource(ctResource);
 
