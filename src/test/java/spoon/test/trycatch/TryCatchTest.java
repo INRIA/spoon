@@ -34,19 +34,26 @@ import spoon.SpoonModelBuilder;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.trycatch.testclasses.Foo;
 import spoon.test.trycatch.testclasses.Main;
@@ -54,9 +61,7 @@ import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.LineSeparatorExtension;
 
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -236,6 +241,7 @@ public class TryCatchTest {
 			fail(e.getMessage());
 		}
 	}
+
 	@Test
 	public void testTryCatchVariableGetType() {
 		Factory factory = createFactory();
@@ -376,7 +382,7 @@ public class TryCatchTest {
 
 		CtCatch targetCatch = catches.get(0);
 		List<CtTypeReference<?>> paramTypes = targetCatch.getParameter().getMultiTypes();
-		assertThat(paramTypes.size(), equalTo(2));
+		assertThat(paramTypes).hasSize(2);
 		assertTrue(paramTypes.get(0).isSimplyQualified(), "first type reference is fully qualified");
 		assertTrue(paramTypes.get(1).isSimplyQualified(), "second type reference is fully qualified");
 	}
@@ -393,7 +399,7 @@ public class TryCatchTest {
 
 		CtCatch targetCatch = catches.get(0);
 		List<CtTypeReference<?>> paramTypes = targetCatch.getParameter().getMultiTypes();
-		assertThat(paramTypes.size(), equalTo(2));
+		assertThat(paramTypes).hasSize(2);
 		assertTrue(paramTypes.get(0).isSimplyQualified(), "first type reference should be unqualified");
 		assertFalse(paramTypes.get(1).isSimplyQualified(), "second type reference should be qualified");
 	}
@@ -411,10 +417,10 @@ public class TryCatchTest {
 
 		CtLocalVariableReference<?> varRef = model.filterChildren(CtLocalVariableReference.class::isInstance).first();
 
-		assertThat(varRef.getType().getQualifiedName(), equalTo("NonClosableGenericInTryWithResources.GenericType"));
+		assertThat(varRef.getType().getQualifiedName()).isEqualTo("NonClosableGenericInTryWithResources.GenericType");
 
 		// We don't extract the type arguments
-		assertThat(varRef.getType().getActualTypeArguments().size(), equalTo(0));
+		assertThat(varRef.getType().getActualTypeArguments()).isEmpty();
 	}
 
 	@ExtendWith(LineSeparatorExtension.class)
@@ -466,7 +472,7 @@ public class TryCatchTest {
 				.addCatcherAt(1, second);
 
 			// assert
-			assertThat(tryStatement.getCatchers(), contains(first, second, third));
+			assertThat(tryStatement.getCatchers()).containsExactlyInAnyOrder(first, second, third);
 		}
 
 		@Test
@@ -492,4 +498,80 @@ public class TryCatchTest {
 			);
 		}
 	}
+
+	@Test
+	void testFieldAsCtResource() {
+		// contract: Since java 9 normal variables, fields, parameters and catch variables are allowed
+		// in try-with-resources
+		CtModel model = createModelFromString("""
+			class ClosableException extends RuntimeException implements AutoCloseable {
+				@Override
+				public void close() throws Exception {}
+			}
+			class Foo {
+				final AutoCloseable field = null;
+				public void bar(AutoCloseable param) {
+					try { }
+					catch (ClosableException e) {
+						AutoCloseable localVar = param;
+						try (e; field; param; localVar; AutoCloseable inside = () -> {}) {
+						} catch (Exception ignored) {}
+					}
+				}
+			}
+			""");
+		CtClass<?> foo = (CtClass<?>) model.getAllTypes()
+			.stream()
+			.filter(it -> it.getSimpleName().equals("Foo"))
+			.findAny()
+			.orElseThrow();
+		CtMethod<?> bar = foo.getMethodsByName("bar").get(0);
+
+		CtCatchVariable<?> e = bar.getElements(new TypeFilter<>(CtCatchVariable.class)).get(0);
+		CtLocalVariable<?> localVar = bar.getElements(new TypeFilter<>(CtLocalVariable.class))
+			.stream()
+			.filter(it -> it.getSimpleName().equals("localVar"))
+			.findAny()
+			.orElseThrow();
+		CtField<?> field = foo.getField("field");
+		CtParameter<?> param = bar.getParameters().get(0);
+		CtLocalVariable<?> inside = bar.getElements(new TypeFilter<>(CtLocalVariable.class))
+			.stream()
+			.filter(it -> it.getSimpleName().equals("inside"))
+			.findAny()
+			.orElseThrow();
+
+		List<CtResource<?>> resources = bar.getElements(new TypeFilter<>(CtTryWithResource.class))
+			.get(0)
+			.getResources();
+		assertThat(resources).containsExactlyInAnyOrder(
+			getRead(field),
+			getRead(param.getReference()),
+			getRead(e.getReference()),
+			getRead(localVar.getReference()),
+			inside
+		);
+	}
+
+	private <T> CtVariableRead<T> getRead(CtVariableReference<T> ref) {
+		return ref.getFactory().<T>createVariableRead().<CtFieldRead<T>>setVariable(ref);
+	}
+
+	private <T> CtVariableRead<T> getRead(CtField<T> field) {
+		Factory factory = field.getFactory();
+		CtFieldRead<T> read = factory.createFieldRead();
+		read.setVariable(field.getReference());
+		read.setTarget(factory.createThisAccess(field.getDeclaringType().getReference()));
+
+		return read;
+	}
+
+	private static CtModel createModelFromString(String code) {
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(21);
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.addInputResource(new VirtualFile(code));
+		return launcher.buildModel();
+	}
+
 }
