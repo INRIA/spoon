@@ -9,6 +9,7 @@ package spoon.reflect.declaration;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtRHSReceiver;
+import spoon.reflect.code.CtResource;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
@@ -16,7 +17,7 @@ import spoon.support.UnsettableProperty;
 /**
  * This element defines a field declaration.
  */
-public interface CtField<T> extends CtVariable<T>, CtTypeMember, CtRHSReceiver<T>, CtShadowable {
+public interface CtField<T> extends CtVariable<T>, CtResource<T>, CtTypeMember, CtRHSReceiver<T>, CtShadowable {
 
 	/**
 	 * The separator for a string representation of a field.
