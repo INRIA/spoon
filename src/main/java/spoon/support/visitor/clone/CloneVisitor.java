@@ -1188,4 +1188,16 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		this.cloneHelper.tailor(recordPattern, aCtRecordPattern);
 		this.other = aCtRecordPattern;
 	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtUnnamedPattern(spoon.reflect.code.CtUnnamedPattern unnamedPattern) {
+		spoon.reflect.code.CtUnnamedPattern aCtUnnamedPattern = unnamedPattern.getFactory().Core().createUnnamedPattern();
+		this.builder.copy(unnamedPattern, aCtUnnamedPattern);
+		aCtUnnamedPattern.setAnnotations(this.cloneHelper.clone(unnamedPattern.getAnnotations()));
+		aCtUnnamedPattern.setType(this.cloneHelper.clone(unnamedPattern.getType()));
+		aCtUnnamedPattern.setComments(this.cloneHelper.clone(unnamedPattern.getComments()));
+		this.cloneHelper.tailor(unnamedPattern, aCtUnnamedPattern);
+		this.other = aCtUnnamedPattern;
+	}
 }

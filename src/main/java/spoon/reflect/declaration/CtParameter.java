@@ -61,6 +61,13 @@ public interface CtParameter<T> extends CtVariable<T>, CtShadowable {
 	<C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
 
 	/**
+	 * {@return whether this parameter is <a href="https://openjdk.org/jeps/456">unnamed</a>}
+	 * Unnamed parameters are always lambda parameters.
+	 */
+	@DerivedProperty
+	boolean isUnnamed();
+
+	/**
 	 * Returns true if this parameter is a lambda parameter with type defined using the `var` keyword (since Java 11).
 	 */
 	@PropertyGetter(role = IS_INFERRED)

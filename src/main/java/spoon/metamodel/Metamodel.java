@@ -128,6 +128,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtTypeAccess.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtTypePattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtUnaryOperator.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtUnnamedPattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtVariableAccess.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtVariableRead.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtVariableWrite.class));

@@ -475,6 +475,19 @@ int x = switch(i) { // <-- switch expression
     --x; // <-- unary --
 
 ```
+### CtUnnamedPattern
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtUnnamedPattern.html)
+
+```java
+
+    Object obj = new Object();
+    record X(int i) {}
+    int i = switch (obj) {
+        case X(_) -> 0; // an unnamed pattern does neither mention a type nor a name
+        case null, default -> -1;
+    };
+
+```
 ### CtVariableRead
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtVariableRead.html)
 

@@ -141,10 +141,10 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.LiteralBase;
 import spoon.reflect.code.UnaryOperatorKind;
@@ -1360,7 +1360,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(LocalDeclaration localDeclaration, BlockScope scope) {
 		CtLocalVariable<Object> v = factory.Core().createLocalVariable();
 
-		boolean isVar = localDeclaration.type.isTypeNameVar(scope);
+		boolean isVar = localDeclaration.type != null && localDeclaration.type.isTypeNameVar(scope);
 
 		if (isVar) {
 			v.setInferred(true);
@@ -1754,9 +1754,23 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypePattern anyPattern, BlockScope scope) {
-		CtTypePattern typePattern = factory.Core().createTypePattern();
-		context.enter(typePattern, anyPattern);
-		return true;
+		boolean unnamedPattern = isUnnamedPattern(anyPattern);
+		CtPattern pattern;
+		if (unnamedPattern) {
+			CtTypeReference<?> type = references.getTypeReference(anyPattern.local.binding.type).setImplicit(true);
+			pattern = factory.Core().createUnnamedPattern().setType(type);
+		} else {
+			pattern = factory.Core().createTypePattern();
+		}
+		context.enter(pattern, anyPattern);
+		// when we have an unnamed pattern, we don't want to visit the local variable declaration anymore
+		return !unnamedPattern;
+	}
+
+	// only '_', NOT 'Type _'
+	private boolean isUnnamedPattern(TypePattern pattern) {
+		// an unnamed pattern does not have a type in the source, but the binding holds the inferred type
+		return pattern.isUnnamed() && pattern.local.type == null && pattern.local.binding != null;
 	}
 
 	@Override
