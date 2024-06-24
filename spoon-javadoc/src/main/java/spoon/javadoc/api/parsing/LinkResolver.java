@@ -54,6 +54,8 @@ class LinkResolver {
 		// Format:
 		//   <classname>
 		//   <package name>
+		//   <field name>
+		//   <method name>
 		//   <classname>#<field name>
 		//   <classname>#<method name>
 		//   <classname>#<constructor name>
@@ -61,21 +63,36 @@ class LinkResolver {
 		//   <classname>#<method name>(<param type>[,<param type>])
 		//   <classname>#<method name>(<param type> [^,]*)
 		//   module/package.class#member label
+		String query = string;
 
-		if (!string.contains("#")) {
-			return resolveModulePackageOrClassRef(string);
+		if (!query.contains("#")) {
+			Optional<CtReference> existingTypePackageModule = resolveModulePackageOrClassRef(query);
+			if (existingTypePackageModule.isPresent()) {
+				return existingTypePackageModule;
+			}
+			// This is surely a module, no need to try as a member reference
+			if (query.endsWith("/")) {
+				return guessPackageOrModuleReferenceFromName(query);
+			}
+			// This contains a dot in the name (not a parameter), so this must be a type or module.
+			// Do not try as local member reference.
+			if (!query.contains("(") && query.contains(".")) {
+				return guessPackageOrModuleReferenceFromName(query);
+			}
+			// If we did not find it, try our luck as a member reference
+			query = "#" + query;
 		}
-		int fragmentIndex = string.indexOf('#');
-		String modulePackage = string.substring(0, fragmentIndex);
+		int fragmentIndex = query.indexOf('#');
+		String modulePackage = query.substring(0, fragmentIndex);
 		Optional<CtReference> contextRef = resolveModulePackageOrClassRef(modulePackage);
 
 		// Fragment qualifier only works on types (Foo#bar)
 		if (contextRef.isEmpty() || !(contextRef.get() instanceof CtTypeReference)) {
-			return contextRef;
+			return contextRef.or(() -> guessPackageOrModuleReferenceFromName(modulePackage));
 		}
 
 		CtType<?> outerType = ((CtTypeReference<?>) contextRef.get()).getTypeDeclaration();
-		String fragment = string.substring(fragmentIndex + 1);
+		String fragment = query.substring(fragmentIndex + 1);
 
 		return qualifyName(outerType, extractMemberName(fragment), extractParameters(fragment));
 	}
@@ -120,9 +137,9 @@ class LinkResolver {
 		}
 		if (name.endsWith("/")) {
 			// Format: "module/"
-			CtModule module = factory.Module().getModule(name.replace("/", ""));
-			if (module != null) {
-				return Optional.of(module.getReference());
+			Optional<CtReference> module = getModuleRef(name.replace("/", ""));
+			if (module.isPresent()) {
+				return module;
 			}
 		}
 
@@ -132,8 +149,24 @@ class LinkResolver {
 	private Optional<CtReference> resolveTypePackageModuleAsIs(String name) {
 		return qualifyTypeName(name).map(it -> (CtReference) it)
 			.or(() -> Optional.ofNullable(factory.Package().get(name)).map(CtPackage::getReference))
-			.or(() -> Optional.ofNullable(factory.Module().getModule(name)).map(CtModule::getReference))
-			.or(() -> guessPackageOrModuleReferenceFromName(name));
+			.or(() -> getModuleRef(name));
+	}
+
+	private Optional<CtReference> getModuleRef(String name) {
+		CtModule module = factory.Module().getModule(name);
+		if (module != null) {
+			return Optional.of(module.getReference());
+		}
+		ModuleLayer layer = factory.getEnvironment()
+			.getInputClassLoader()
+			.getUnnamedModule()
+			.getLayer();
+		if (layer == null) {
+			layer = ModuleLayer.boot();
+		}
+		Optional<Module> javaModule = layer.findModule(name);
+
+		return javaModule.map(it -> factory.Module().getOrCreate(it.getName()).getReference());
 	}
 
 	private Optional<CtReference> guessPackageOrModuleReferenceFromName(String name) {
@@ -143,10 +176,15 @@ class LinkResolver {
 		}
 
 		try {
-			if (name.contains("/")) {
+			if (name.endsWith("/")) {
 				return Optional.of(
 					factory.Core().createModuleReference().setSimpleName(name.replace("/", ""))
 				);
+			}
+			if (name.contains("/")) {
+				// We have something like java.base/java.lang.String but we do not know java.base/
+				// We can't properly handle this, return nothing and keep it as text.
+				return Optional.empty();
 			}
 			return Optional.of(factory.Package().createReference(name));
 		} catch (JLSViolation ignored) {
