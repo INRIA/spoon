@@ -12,16 +12,15 @@ import java.util.HashSet;
 import java.util.Set;
 import spoon.JLSViolation;
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.code.CtTargetedExpression;
-import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -40,45 +39,45 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 	public CtMethod<?> toMethod() {
 		CtMethod<?> method = this.getFactory().createMethod();
 		method.setSimpleName(getSimpleName());
-		method.setType((CtTypeReference) getType());
+		method.setType(getType());
 		method.setExtendedModifiers(Collections.singleton(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
 		method.setImplicit(true);
 
-		CtFieldReference<?> fieldReference = null;
-		// obtain the field from the record:
-		if (this.getType() != null && this.getType().getTypeDeclaration() != null) {
-			CtField<?> ctField = this.getType().getTypeDeclaration().getField(getSimpleName());
-			if (ctField != null) {
-				fieldReference = ctField.getReference();
-			}
-		}
+		CtFieldAccess<?> ctVariableAccess = (CtFieldAccess<?>) getFactory().Code()
+			.createVariableRead(getRecordFieldReference(), false);
+		// ensure the `this.` is implicit (important as we are also implicit)
+		ctVariableAccess.getTarget().setImplicit(true);
 
-		CodeFactory codeFactory = getFactory().Code();
-		// it isn't always possible to get the field of the record, in those cases we create a new field reference which points to something
-		// that doesn't exist in the model. (not my problem, fix your code)
-		if (fieldReference == null) {
-			fieldReference = getFactory().createFieldReference();
-			fieldReference.setFinal(true);
-			fieldReference.setStatic(false);
-			fieldReference.setSimpleName(getSimpleName());
-			fieldReference.setType(getType());
-		}
+		method.setBody(getFactory().Code().createCtReturn(ctVariableAccess));
 
-		CtVariableAccess<?> ctVariableAccess = codeFactory.createVariableRead(fieldReference, false);
-		if (ctVariableAccess instanceof CtTargetedExpression<?, ?> targetedExpression && targetedExpression.getTarget() != null) {
-			// ensure the `this.` is implicit (important for passing some tests)
-			targetedExpression.getTarget().setImplicit(true);
-		}
-
-		method.setBody(codeFactory.createCtReturn(ctVariableAccess));
 		return method;
+	}
+
+	private CtFieldReference<?> getRecordFieldReference() {
+		CtRecord parent = isParentInitialized() ? (CtRecord) getParent() : null;
+
+		// Reference the field we think should exist. It might be added to the record later on, so do not directly
+		// query for it.
+		CtFieldReference<?> reference = getFactory().createFieldReference()
+			.setFinal(true)
+			.setStatic(false)
+			.setType(getType())
+			.setSimpleName(getSimpleName());
+
+		// We have a parent record, make the field refer to it. Ideally we could do this all the time, but if we
+		// do not yet have a parent that doesn't work.
+		if (parent != null) {
+			reference.setDeclaringType(parent.getReference());
+		}
+
+		return reference;
 	}
 
 	@Override
 	public CtField<?> toField() {
 		CtField<?> field = this.getFactory().createField();
 		field.setSimpleName(getSimpleName());
-		field.setType((CtTypeReference) getType());
+		field.setType(getType());
 		Set<CtExtendedModifier> modifiers = new HashSet<>();
 		modifiers.add(new CtExtendedModifier(ModifierKind.PRIVATE, true));
 		modifiers.add(new CtExtendedModifier(ModifierKind.FINAL, true));
