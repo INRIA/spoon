@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
+import org.assertj.core.api.InstanceOfAssertFactory;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
@@ -31,6 +32,7 @@ import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.testing.assertions.SpoonAssertions;
 import spoon.testing.utils.ModelTest;
 
 public class CtRecordTest {
@@ -280,25 +282,29 @@ public class CtRecordTest {
 		assertEquals(constructor.getParameters().get(0).getSimpleName(), "x");
 	}
 
-	private <T> T head(Collection<T> collection) {
-		return collection.iterator().next();
-	}
-
 	@ModelTest(value = "./src/test/resources/records/GenericRecord.java", complianceLevel = 16)
 	void testProperReturnInRecordAccessor(Factory factory) {
-		// contract: the return statement in the accessor method should return a field read expression
+		// contract: the return statement in the accessor method should return a field read expression to the correct
+		// field
 		CtRecord record = head(factory.getModel().getElements(new TypeFilter<>(CtRecord.class)));
 
 		assertThat(record.getRecordComponents()).isNotEmpty();
 		for (CtRecordComponent component : record.getRecordComponents()) {
 			CtMethod<?> method = component.toMethod();
-			assertThat(method.getBody().<CtStatement>getLastStatement())
-				.isInstanceOf(CtReturn.class);
 
-			assertThat(method.getBody().<CtReturn<?>>getLastStatement())
+			assertThat(method.getBody().<CtStatement>getLastStatement())
+				.asInstanceOf(new InstanceOfAssertFactory<>(CtReturn.class, SpoonAssertions::assertThat))
 				.getReturnedExpression()
 				.self()
-				.isInstanceOf(CtFieldRead.class);
+				.asInstanceOf(new InstanceOfAssertFactory<>(CtFieldRead.class, SpoonAssertions::assertThat))
+				.getVariable()
+				.getDeclaringType()
+				.getSimpleName()
+				.isEqualTo(record.getSimpleName());
 		}
+	}
+
+	private <T> T head(Collection<T> collection) {
+		return collection.iterator().next();
 	}
 }
