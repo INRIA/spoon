@@ -39,7 +39,7 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 	public CtMethod<?> toMethod() {
 		CtMethod<?> method = this.getFactory().createMethod();
 		method.setSimpleName(getSimpleName());
-		method.setType(getType());
+		method.setType(getType().clone());
 		method.setExtendedModifiers(Collections.singleton(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
 		method.setImplicit(true);
 
