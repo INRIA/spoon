@@ -1169,7 +1169,7 @@ public class ParentExiter extends CtInheritanceScanner {
 	public void visitCtRecordPattern(CtRecordPattern pattern) {
 		CtElement child = adjustIfLocalVariableToTypePattern(this.child);
 		if (child instanceof CtTypeReference<?> typeReference) {
-			pattern.setRecordType(typeReference);
+			pattern.setRecordType(typeReference.clone());
 		} else if (child instanceof CtPattern innerPattern) {
 			pattern.addPattern(innerPattern);
 		}
