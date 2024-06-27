@@ -13,7 +13,10 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.support.Level;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This scanner checks that a program model is consistent with regards to the
@@ -30,11 +33,13 @@ public class ModelConsistencyChecker extends CtScanner {
 
 	Deque<CtElement> stack = new ArrayDeque<>();
 
+	List<InconsistentElements> inconsistentElements = new ArrayList<>();
+
 	/**
 	 * Creates a new model consistency checker.
 	 *
 	 * @param environment
-	 * 		the environment where to report errors
+	 * 		the environment where to report errors, if null, no errors are reported
 	 * @param fixInconsistencies
 	 * 		automatically fix the inconsistencies rather than reporting
 	 * 		warnings (to report warnings, set this to false)
@@ -49,21 +54,31 @@ public class ModelConsistencyChecker extends CtScanner {
 	}
 
 	/**
+	 * Lists the inconsistencies in the given element and its children.
+	 *
+	 * @param ctElement the element to check
+	 * @return a list of inconsistencies
+	 */
+	public static List<InconsistentElements> listInconsistencies(CtElement ctElement) {
+		ModelConsistencyChecker checker = new ModelConsistencyChecker(null, false, false);
+		checker.scan(ctElement);
+		return checker.inconsistentElements();
+	}
+
+	/**
 	 * Enters an element.
 	 */
 	@Override
 	public void enter(CtElement element) {
-		if (!stack.isEmpty()) {
-			if (!element.isParentInitialized() || element.getParent() != stack.peek()) {
-				if ((!element.isParentInitialized() && fixNullParents) || (element.getParent() != stack.peek() && fixInconsistencies)) {
-					element.setParent(stack.peek());
-				} else {
-					final String name = element instanceof CtNamedElement ? " - " + ((CtNamedElement) element).getSimpleName() : "";
-					environment.report(null, Level.WARN,
-							(element.isParentInitialized() ? "inconsistent" : "null") + " parent for " + element.getClass() + name + " - " + element.getPosition() + " - " + stack.peek()
-									.getPosition());
-					dumpStack();
-				}
+		if (!stack.isEmpty() && (!element.isParentInitialized() || element.getParent() != stack.peek())) {
+			InconsistentElements inconsistentElements = new InconsistentElements(element, stack);
+			this.inconsistentElements.add(inconsistentElements);
+
+			if ((!element.isParentInitialized() && fixNullParents) || (element.getParent() != stack.peek() && fixInconsistencies)) {
+				element.setParent(stack.peek());
+			} else if (environment != null) {
+				environment.report(null, Level.WARN, inconsistentElements.reason());
+				this.dumpStack();
 			}
 		}
 		stack.push(element);
@@ -77,11 +92,89 @@ public class ModelConsistencyChecker extends CtScanner {
 		stack.pop();
 	}
 
+	/**
+	 * Gets the list of elements that are considered inconsistent.
+	 * <p>
+	 * If {@link #fixInconsistencies} is set to true, this list will
+	 * contain all the elements that have been fixed.
+	 *
+	 * @return the invalid elements
+	 */
+	public List<InconsistentElements> inconsistentElements() {
+		return new ArrayList<>(inconsistentElements);
+	}
+
 	private void dumpStack() {
-		environment.debugMessage("model consistency checker stack:");
+		environment.debugMessage("model consistency checker expectedParents:");
 		for (CtElement e : stack) {
 			environment.debugMessage("    " + e.getClass().getSimpleName() + " " + (e.getPosition().isValidPosition() ? String.valueOf(e.getPosition()) : "(?)"));
 		}
 	}
 
+
+	/**
+	 * Represents an inconsistent element.
+	 *
+	 * @param element the element with the invalid parent
+	 * @param expectedParents the expected parents of the element
+	 */
+	public record InconsistentElements(CtElement element, Deque<CtElement> expectedParents) {
+		/**
+		 * Creates a new inconsistent element.
+		 *
+		 * @param element the element with the invalid parent
+		 * @param expectedParents the expected parents of the element
+		 */
+		public InconsistentElements {
+			expectedParents = new ArrayDeque<>(expectedParents);
+		}
+
+		private String reason() {
+			return "The element %s has the parent %s, but expected the parent %s".formatted(
+				formatElement(this.element),
+				this.element.isParentInitialized() ? formatElement(this.element.getParent()) : "null",
+				this.expectedParents.peek() != null ? formatElement(this.expectedParents.peek()) : "null"
+			);
+		}
+
+		private static String formatElement(CtElement ctElement) {
+			String name = ctElement instanceof CtNamedElement ctNamedElement ? " " + ctNamedElement.getSimpleName() : "";
+
+			return "%s%s".formatted(
+				ctElement.getClass().getSimpleName(),
+				name
+			);
+		}
+
+		private String dumpExpectedParents() {
+			return this.expectedParents.stream()
+				.map(ctElement -> "    %s %s".formatted(
+					ctElement.getClass().getSimpleName(),
+					ctElement.getPosition().isValidPosition() ? String.valueOf(ctElement.getPosition()) : "(?)"
+				))
+				.collect(Collectors.joining(System.lineSeparator()));
+		}
+
+		@Override
+		public String toString() {
+			return "%s%n%s".formatted(this.reason(), this.dumpExpectedParents());
+		}
+
+		@Override
+		public boolean equals(Object object) {
+			if (this == object) {
+				return true;
+			}
+			if (!(object instanceof InconsistentElements that)) {
+				return false;
+			}
+
+			return this.element == that.element();
+		}
+
+		@Override
+		public int hashCode() {
+			return System.identityHashCode(this.element);
+		}
+	}
 }
