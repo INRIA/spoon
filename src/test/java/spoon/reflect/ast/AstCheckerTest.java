@@ -21,6 +21,7 @@ import spoon.Launcher;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.support.modelobs.FineModelChangeListener;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
@@ -161,6 +162,24 @@ public class AstCheckerTest {
 					.collect(Collectors.joining(",\n"));
 			throw new AssertionError(error);
 		}
+	}
+
+	@ModelTest("src/main/java")
+	public void testBuiltSpoonModelConsistency(Factory factory) {
+		// contract: each elements direct descendants should have the element as parent
+		factory.getModel().getAllModules().forEach(ctModule -> {
+			var invalidElements = ModelConsistencyChecker.listInconsistencies(ctModule);
+
+			if (!invalidElements.isEmpty()) {
+				throw new IllegalStateException("Model is inconsistent, %d elements have invalid parents:%n%s".formatted(
+					invalidElements.size(),
+					invalidElements.stream()
+						.map(ModelConsistencyChecker.InconsistentElements::toString)
+						.limit(5)
+						.collect(Collectors.joining(System.lineSeparator()))
+				));
+			}
+		});
 	}
 
 	@Test
