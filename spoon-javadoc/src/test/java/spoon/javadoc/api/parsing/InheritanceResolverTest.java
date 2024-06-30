@@ -152,7 +152,7 @@ class InheritanceResolverTest {
 				public static class Sub extends Super {
 				%s
 				@Override
-				public int test(int a) throws IOException { return a; }
+				public <T> int test(int a) throws IOException { return a; }
 				}
 				""".formatted(packageName, InheritanceResolverTest.class.getName() + ".Super", javadoc),
 			subclassName.replace(".", "/")
@@ -179,10 +179,11 @@ class InheritanceResolverTest {
 		 * This is a foo method.
 		 *
 		 * @param a the a param
+		 * @param <T> a type param
 		 * @return foo
 		 * @throws IOException never.
 		 */
-		public int test(int a) throws IOException {
+		public <T> int test(int a) throws IOException {
 			return a;
 		}
 	}
@@ -191,7 +192,7 @@ class InheritanceResolverTest {
 		/**
 		 * A test.
 		 */
-		int test(int a) throws IOException;
+		<T> int test(int a) throws IOException;
 	}
 
 	private interface SuperInt2 extends SuperInt1 {
@@ -199,7 +200,7 @@ class InheritanceResolverTest {
 		 * @param a the a param
 		 */
 		@Override
-		int test(int a) throws IOException;
+		<T> int test(int a) throws IOException;
 	}
 
 	private interface SuperInt3 {
@@ -208,21 +209,21 @@ class InheritanceResolverTest {
 		 *
 		 * @throws IOException never
 		 */
-		int test(int a) throws IOException;
+		<T> int test(int a) throws IOException;
 	}
 
 	private interface SuperInt4 {
 		/**
 		 * @return foo
 		 */
-		int test(int a) throws IOException;
+		<T> int test(int a) throws IOException;
 	}
 
 	private static class SubMultiSuperParent {
 		/**
 		 * Never used in <22, shadowed by the interface.
 		 */
-		public int test(int a) throws IOException {
+		public <T> int test(int a) throws IOException {
 			return 0;
 		}
 	}
