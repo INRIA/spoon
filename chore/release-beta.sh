@@ -42,17 +42,17 @@ echo "::group::Running jreleaser"
 JRELEASER_PROJECT_VERSION="$NEXT_VERSION" jreleaser-cli release
 echo "::endgroup::"
 
-# Set next version (patch of release version) with -SNAPSHOT suffix
-NEXT_RELEASE_VERSION=$CURRENT_VERSION_WITH_SNAPSHOT
+# We reset the version to the current snapshot version
+SNAPSHOT_VERSION_TO_RESET_TO=$CURRENT_VERSION_WITH_SNAPSHOT
 
 echo "::group::Updating poms to next target version"
-mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_RELEASE_VERSION" -DprocessAllModules
-mvn --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_RELEASE_VERSION" -DprocessAllModules
-mvn -f spoon-javadoc --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_RELEASE_VERSION" -DprocessAllModules
+mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$SNAPSHOT_VERSION_TO_RESET_TO" -DprocessAllModules
+mvn --no-transfer-progress --batch-mode versions:set -DnewVersion="$SNAPSHOT_VERSION_TO_RESET_TO" -DprocessAllModules
+mvn -f spoon-javadoc --no-transfer-progress --batch-mode versions:set -DnewVersion="$SNAPSHOT_VERSION_TO_RESET_TO" -DprocessAllModules
 echo "::endgroup::"
 
 echo "::group::Committing changes"
-git commit -am "release: Setting SNAPSHOT version back to $NEXT_RELEASE_VERSION"
+git commit -am "release: Setting SNAPSHOT version back to $SNAPSHOT_VERSION_TO_RESET_TO"
 git push --set-upstream origin "$BRANCH_NAME"
 echo "::endgroup::"
 
