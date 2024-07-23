@@ -63,6 +63,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtUnnamedPattern;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -165,6 +166,7 @@ import spoon.support.reflect.code.CtTryWithResourceImpl;
 import spoon.support.reflect.code.CtTypeAccessImpl;
 import spoon.support.reflect.code.CtTypePatternImpl;
 import spoon.support.reflect.code.CtUnaryOperatorImpl;
+import spoon.support.reflect.code.CtUnnamedPatternImpl;
 import spoon.support.reflect.code.CtVariableReadImpl;
 import spoon.support.reflect.code.CtVariableWriteImpl;
 import spoon.support.reflect.code.CtWhileImpl;
@@ -1126,6 +1128,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.declaration.CtReceiverParameter.class)) {
 			return createReceiverParameter();
 		}
+		if (klass.equals(spoon.reflect.code.CtUnnamedPattern.class)) {
+			return createUnnamedPattern();
+		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
 
@@ -1229,5 +1234,12 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		CtReceiverParameter receiverParameter = new CtReceiverParameterImpl();
 		receiverParameter.setFactory(getMainFactory());
 		return receiverParameter;
+	}
+
+	@Override
+	public CtUnnamedPattern createUnnamedPattern() {
+		CtUnnamedPattern unnamedPattern = new CtUnnamedPatternImpl();
+		unnamedPattern.setFactory(getMainFactory());
+		return unnamedPattern;
 	}
 }

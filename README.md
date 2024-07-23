@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/maven-central/v/fr.inria.gforge.spoon/spoon-core.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22fr.inria.gforge.spoon%22%20AND%20a%3A%22spoon-core%22)
+[![Maven Central](https://img.shields.io/maven-central/v/fr.inria.gforge.spoon/spoon-core.svg)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22fr.inria.gforge.spoon%22%20AND%20a%3A%22spoon-core%22)
 [![GHA tests Workflow Status](https://github.com/INRIA/spoon/actions/workflows/tests.yml/badge.svg)](https://github.com/INRIA/spoon/actions/workflows/tests.yml)
 [![Coverage Status](https://coveralls.io/repos/INRIA/spoon/badge.svg)](https://coveralls.io/r/INRIA/spoon)
 [![Maintainability Rating](https://sonarqube.ow2.org/api/project_badges/measure?project=fr.inria.gforge.spoon%3Aspoon-core&metric=sqale_rating)](https://sonarqube.ow2.org/dashboard?id=fr.inria.gforge.spoon%3Aspoon-core)
@@ -10,7 +10,7 @@ Spoon is an open-source library to analyze, rewrite, transform, transpile Java s
 
 ## Documentation
 
-The latest official documentation is available at <http://spoon.gforge.inria.fr/>.
+The latest official documentation is available at <https://spoon.gforge.inria.fr/>.
 
 ### Academic usage
 
@@ -50,7 +50,7 @@ CtClass l = Launcher.parseClass("class A { void m() { System.out.println(\"yeah\
 
 Documentation:
 
-- Reference documentation: <http://spoon.gforge.inria.fr/> (contains the content of the [doc folder](https://github.com/INRIA/spoon/tree/master/doc))
+- Reference documentation: <https://spoon.gforge.inria.fr/> (contains the content of the [doc folder](https://github.com/INRIA/spoon/tree/master/doc))
 - Code examples: <https://github.com/SpoonLabs/spoon-examples>
 - Videos: [Spoon: Getting Started - Simon Urli @ OW2Con'18 (Paris)](https://www.youtube.com/watch?v=ZZzdVTIu-OY), [Generate Test Assertion with Spoon - Benjamin Danglot @ OW2Con'17 (Paris)](https://www.youtube.com/watch?v=JcCIbjnkfD4)
 
@@ -90,7 +90,7 @@ mvn test
 
 ### Download
 
-Latest version: <https://search.maven.org/remote_content?g=fr.inria.gforge.spoon&a=spoon-core&v=LATEST&c=jar-with-dependencies> - [Javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/index.html)
+Latest version: <https://search.maven.org/remote_content?g=fr.inria.gforge.spoon&a=spoon-core&v=LATEST&c=jar-with-dependencies> - [Javadoc](https://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/index.html)
 
 Maven:
 
@@ -98,7 +98,7 @@ Maven:
 <dependency>
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-core</artifactId>
-    <!-- See rendered release value at http://spoon.gforge.inria.fr/ -->
+    <!-- See rendered release value at https://spoon.gforge.inria.fr/ -->
     <version>{{site.spoon_release}}</version>
 </dependency>
 ```

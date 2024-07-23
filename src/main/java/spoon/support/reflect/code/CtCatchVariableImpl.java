@@ -108,6 +108,11 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	}
 
 	@Override
+	public boolean isUnnamed() {
+		return CtLocalVariableImpl.isUnnamed(this);
+	}
+
+	@Override
 	public boolean isPartOfJointDeclaration() {
 		return false;
 	}

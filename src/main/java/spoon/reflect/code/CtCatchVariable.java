@@ -40,6 +40,12 @@ public interface CtCatchVariable<T> extends CtVariable<T>, CtMultiTypedElement, 
 	<C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
 
 	/**
+	 * {@return whether this catch variable is <a href="https://openjdk.org/jeps/456">unnamed</a>}
+	 */
+	@DerivedProperty
+	boolean isUnnamed();
+
+	/**
 	 * Returns type reference of the exception variable in a catch.
 	 * If type is unknown, or any of the types in a multi-catch is unknown, returns null.
 	 */

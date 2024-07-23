@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.code;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
@@ -22,6 +23,7 @@ import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
+import spoon.support.Internal;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
@@ -57,8 +59,22 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	}
 
 	@Override
-	public CtLocalVariableReference<T> getReference() {
+	public @Nullable CtLocalVariableReference<T> getReference() {
+		if (isUnnamed()) {
+			return null;
+		}
 		return getFactory().Code().createLocalVariableReference(this);
+	}
+
+	@Override
+	public boolean isUnnamed() {
+		return isUnnamed(this);
+	}
+
+	@Internal
+	public static boolean isUnnamed(CtVariable<?> variable) {
+		return variable.getSimpleName().equals(UNNAMED_VARIABLE_NAME)
+				&& variable.getFactory().getEnvironment().getComplianceLevel() >= 22;
 	}
 
 	@Override

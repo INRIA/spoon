@@ -38,14 +38,31 @@ import static spoon.reflect.path.CtRole.IS_INFERRED;
  * @see spoon.reflect.declaration.CtExecutable
  */
 public interface CtLocalVariable<T> extends CtStatement, CtVariable<T>, CtRHSReceiver<T>, CtResource<T> {
+
+	/**
+	 * The {@link #getSimpleName() simple name} of a local variable that is
+	 * <a href="https://openjdk.org/jeps/456">unnamed</a>.
+	 */
+	String UNNAMED_VARIABLE_NAME = "_";
+
 	/*
 	 * (non-Javadoc)
 	 *
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
+	/**
+	 * {@inheritDoc}
+	 * If the variable is <a href="https://openjdk.org/jeps/456">unnamed</a>, {@code null} is returned.
+	 */
 	@Override
 	@DerivedProperty
 	CtLocalVariableReference<T> getReference();
+
+	/**
+	 * {@return whether this local variable is <a href="https://openjdk.org/jeps/456">unnamed</a>}
+	 */
+	@DerivedProperty
+	boolean isUnnamed();
 
 	/**
 	 * Useful proxy to {@link #getDefaultExpression()}.

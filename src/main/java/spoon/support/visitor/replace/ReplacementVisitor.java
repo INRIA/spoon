@@ -2429,4 +2429,12 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceElementIfExist(recordPattern.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(recordPattern));
 		replaceInListIfExist(recordPattern.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(recordPattern));
 	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public void visitCtUnnamedPattern(spoon.reflect.code.CtUnnamedPattern unnamedPattern) {
+		replaceInListIfExist(unnamedPattern.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(unnamedPattern));
+		replaceElementIfExist(unnamedPattern.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(unnamedPattern));
+		replaceInListIfExist(unnamedPattern.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(unnamedPattern));
+	}
 }

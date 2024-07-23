@@ -16,6 +16,7 @@ import org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
 import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.CastExpression;
+import org.eclipse.jdt.internal.compiler.ast.EitherOrMultiPattern;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ForStatement;
@@ -500,8 +501,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (node instanceof CaseStatement) {
 			caseStatement.setCaseKind(((CaseStatement) node).isExpr ? CaseKind.ARROW : CaseKind.COLON);
 		}
-		if (node instanceof CaseStatement && ((CaseStatement) node).constantExpressions != null && child instanceof CtExpression
-				&& caseStatement.getCaseExpressions().size() < ((CaseStatement) node).constantExpressions.length) {
+		if (shouldAddAsCaseExpression(caseStatement, node)) {
 			if (child instanceof CtPattern pattern) {
 				caseStatement.addCaseExpression((CtExpression<E>) jdtTreeBuilder.getFactory().Core().createCasePattern().setPattern(pattern));
 			} else {
@@ -515,6 +515,26 @@ public class ParentExiter extends CtInheritanceScanner {
 			caseStatement.setGuard(guard);
 		}
 		super.visitCtCase(caseStatement);
+	}
+
+	private <E> boolean shouldAddAsCaseExpression(CtCase<E> caseStatement, ASTNode node) {
+		if (!(node instanceof CaseStatement cs)) {
+			return false;
+		}
+		if (cs.constantExpressions == null) {
+			return false;
+		}
+		if (child instanceof CtExpression
+			&& caseStatement.getCaseExpressions().size() < cs.constantExpressions.length) {
+			return true;
+		}
+		// case A _, B _ -> {} is only one constantExpression in JDT, but an EitherOrMultiPattern
+		// so we need to unpack it and see how many case expressions it actually is
+		if (cs.constantExpressions.length == 1 && cs.constantExpressions[0] instanceof EitherOrMultiPattern eomp) {
+			// returns true if we still expect more case expressions to be added
+			return caseStatement.getCaseExpressions().size() < eomp.getAlternatives().length;
+		}
+		return false;
 	}
 
 	@Override

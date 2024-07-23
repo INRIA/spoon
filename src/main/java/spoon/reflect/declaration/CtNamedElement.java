@@ -34,7 +34,7 @@ public interface CtNamedElement extends CtElement {
 	<T extends CtNamedElement> T setSimpleName(String simpleName);
 
 	/**
-	 * Returns the corresponding reference.
+	 * {@return the corresponding reference}
 	 */
 	@DerivedProperty
 	CtReference getReference();

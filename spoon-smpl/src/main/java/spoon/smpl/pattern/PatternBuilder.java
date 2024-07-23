@@ -72,6 +72,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtUnnamedPattern;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -849,6 +850,11 @@ public class PatternBuilder implements CtVisitor {
 
 	@Override
 	public void visitCtRecordPattern(CtRecordPattern recordPattern) {
+		throw new NotImplementedException("Not implemented");
+	}
+
+	@Override
+	public void visitCtUnnamedPattern(CtUnnamedPattern unnamedPattern) {
 		throw new NotImplementedException("Not implemented");
 	}
 
