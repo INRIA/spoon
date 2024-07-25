@@ -21,7 +21,7 @@
                     jdk =
                       if javaVersion <= 23 then prev."jdk${toString javaVersion}"
                       else abort "Not set up yet :)";
-                    maven = prev.maven.override { inherit jdk; };
+                    maven = prev.maven.override { jdk_headless = jdk; };
                   };
                   extra = with base; {
                     gradle = prev.gradle.override { java = jdk; };
