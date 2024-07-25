@@ -1,35 +1,37 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-CURRENT_VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//')"
-CURRENT_VERSION_WITH_SNAPSHOT="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+# Version used to create the beta release
+OLD_VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//')"
+# Version that will be reset back to after the beta release
+OLD_VERSION_WITH_SNAPSHOT="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
 
-if [[ ! $CURRENT_VERSION_WITH_SNAPSHOT =~ .*-SNAPSHOT ]]; then
+if [[ ! $OLD_VERSION_WITH_SNAPSHOT =~ .*-SNAPSHOT ]]; then
   echo "Not a snapshot version, skipping"
   exit 78
 fi
 
 # Compute next beta number
 echo "::group::Computing next beta number"
-LAST_BETA_NUMBER="$(curl -L "http://search.maven.org/solrsearch/select?q=a:spoon-core+g:fr.inria.gforge.spoon&rows=40&wt=json&core=gav" | jq -r ".response.docs | map(.v) | map((match(\"$CURRENT_VERSION-beta-(.*)\") | .captures[0].string) // \"0\") | .[0]")"
+LAST_BETA_NUMBER="$(curl -L "http://search.maven.org/solrsearch/select?q=a:spoon-core+g:fr.inria.gforge.spoon&rows=40&wt=json&core=gav" | jq -r ".response.docs | map(.v) | map((match(\"$OLD_VERSION-beta-(.*)\") | .captures[0].string) // \"0\") | .[0]")"
 echo "LAST_BETA_NUMBER $LAST_BETA_NUMBER"
 
 NEW_BETA_NUMBER=$((LAST_BETA_NUMBER + 1))
 echo "NEW_BETA_NUMBER $NEW_BETA_NUMBER"
-NEXT_VERSION="$CURRENT_VERSION-beta-$NEW_BETA_NUMBER"
+NEXT_BETA_VERSION="$OLD_VERSION-beta-$NEW_BETA_NUMBER"
 echo "::endgroup::"
 
-BRANCH_NAME="beta-release/$NEXT_VERSION"
+BRANCH_NAME="beta-release/$NEXT_BETA_VERSION"
 
 echo "::group::Setting beta-release version"
-mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_VERSION" -DprocessAllModules
-mvn --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_VERSION" -DprocessAllModules
-mvn -f spoon-javadoc --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_VERSION" -DprocessAllModules
+mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_BETA_VERSION" -DprocessAllModules
+mvn --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_BETA_VERSION" -DprocessAllModules
+mvn -f spoon-javadoc --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_BETA_VERSION" -DprocessAllModules
 echo "::endgroup::"
 
 echo "::group::Commit & Push changes"
 git checkout -b "$BRANCH_NAME"
-git commit -am "release: Releasing version $NEXT_VERSION"
+git commit -am "release: Releasing version $NEXT_BETA_VERSION"
 git push --set-upstream origin "$BRANCH_NAME"
 echo "::endgroup::"
 
@@ -39,20 +41,17 @@ mvn --no-transfer-progress --batch-mode -Pjreleaser deploy:deploy-file -Dfile=".
 echo "::endgroup::"
 
 echo "::group::Running jreleaser"
-JRELEASER_PROJECT_VERSION="$NEXT_VERSION" jreleaser-cli release
+JRELEASER_PROJECT_VERSION="$NEXT_BETA_VERSION" jreleaser-cli release
 echo "::endgroup::"
 
-# We reset the version to the current snapshot version
-SNAPSHOT_VERSION_TO_RESET_TO=$CURRENT_VERSION_WITH_SNAPSHOT
-
-echo "::group::Updating poms to next target version"
-mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$SNAPSHOT_VERSION_TO_RESET_TO" -DprocessAllModules
-mvn --no-transfer-progress --batch-mode versions:set -DnewVersion="$SNAPSHOT_VERSION_TO_RESET_TO" -DprocessAllModules
-mvn -f spoon-javadoc --no-transfer-progress --batch-mode versions:set -DnewVersion="$SNAPSHOT_VERSION_TO_RESET_TO" -DprocessAllModules
+echo "::group::Updating poms to old SNAPSHOT version"
+mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$OLD_VERSION" -DprocessAllModules
+mvn --no-transfer-progress --batch-mode versions:set -DnewVersion="$OLD_VERSION" -DprocessAllModules
+mvn -f spoon-javadoc --no-transfer-progress --batch-mode versions:set -DnewVersion="$OLD_VERSION" -DprocessAllModules
 echo "::endgroup::"
 
 echo "::group::Committing changes"
-git commit -am "release: Setting SNAPSHOT version back to $SNAPSHOT_VERSION_TO_RESET_TO"
+git commit -am "release: Setting SNAPSHOT version back to $OLD_VERSION"
 git push --set-upstream origin "$BRANCH_NAME"
 echo "::endgroup::"
 
