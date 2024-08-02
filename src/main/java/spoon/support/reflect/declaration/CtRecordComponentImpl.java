@@ -39,7 +39,7 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 	public CtMethod<?> toMethod() {
 		CtMethod<?> method = this.getFactory().createMethod();
 		method.setSimpleName(getSimpleName());
-		method.setType(getType().clone());
+		method.setType(getType() != null ? getType().clone() : null);
 		method.setExtendedModifiers(Collections.singleton(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
 		method.setImplicit(true);
 
@@ -61,7 +61,7 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 		CtFieldReference<?> reference = getFactory().createFieldReference()
 			.setFinal(true)
 			.setStatic(false)
-			.setType(getType())
+			.setType(getType() != null ? getType().clone() : null)
 			.setSimpleName(getSimpleName());
 
 		// We have a parent record, make the field refer to it. Ideally we could do this all the time, but if we
@@ -77,7 +77,7 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 	public CtField<?> toField() {
 		CtField<?> field = this.getFactory().createField();
 		field.setSimpleName(getSimpleName());
-		field.setType(getType());
+		field.setType(getType() != null ? getType().clone() : null);
 		Set<CtExtendedModifier> modifiers = new HashSet<>();
 		modifiers.add(new CtExtendedModifier(ModifierKind.PRIVATE, true));
 		modifiers.add(new CtExtendedModifier(ModifierKind.FINAL, true));
