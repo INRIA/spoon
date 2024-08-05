@@ -4,7 +4,6 @@
 # and checks at each step if there aren't errors. To execute this
 # script, create a job in jenkins.
 #
-# is also run in Travis to check this script and the compatibility with Spoon Maven Plugin
 #
 # Typical usage:
 #
@@ -17,7 +16,7 @@ MAVEN_COMMAND="mvn $MVN_OPTS -Dmaven.javadoc.skip=true -Drat.skip=true -Denforce
 
 echo " "
 echo "-------------------------------------------------------"
-echo "Initizalizes project"
+echo "Initializes project"
 echo "-------------------------------------------------------"
 echo " "
 
@@ -28,12 +27,12 @@ git reset --hard
 ARTIFACT_ID=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -t -v "/x:project/x:artifactId" pom.xml)
 VERSION=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -t -v "/x:project/x:version" pom.xml)
 MODULES_JOB=$(cat pom.xml | grep "<modules>")
+
 if [ -z "$MODULES_JOB" ]; then
 	MODULES_JOB="./"
 else
 	MODULES_JOB=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -T -t -m "/x:project/x:modules/x:module" -v "." -o "/" -n pom.xml)
 fi
-
 # Gets some information from git.
 VERSION_ID=$(git rev-parse HEAD)
 
@@ -51,7 +50,6 @@ if [ ! -z HAS_ENFORCER ]; then
 	mv pom.bak.xml pom.xml
 fi
 
-JAVA_VERSION=`java -version  2>&1`
 
 # Displays variables used in the build.
 echo ""
@@ -77,8 +75,10 @@ else
 	echo "Has enforcer: false"
 fi
 echo "Git version id: $VERSION_ID"
-echo "Java version: $JAVA_VERSION"
+## maven uses the Java from JAVA_HOME, not from the home
 echo "Java home: $JAVA_HOME"
+JAVA_VERSION=`$JAVA_HOME/bin/java -version  2>&1`
+echo "Java version: $JAVA_VERSION"
 
 echo " "
 echo "-------------------------------------------------------"
@@ -146,10 +146,15 @@ echo " "
 # Edits pom xml to prepare project to spoon project.
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project" --type elem -n pluginRepositories -v "" pom.xml
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories" --type elem -n pluginRepository -v "" pom.xml
-xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n id -v "ow2.org-snapshot" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n id -v "spoon-snapshot" pom.xml
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n name -v "Maven repository for Spoon Snapshot" pom.xml
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n url -v "https://oss.sonatype.org/content/repositories/snapshots/" pom.xml
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n snapshots -v "" pom.xml
+
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories" --type elem -n pluginRepository -v "" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n id -v "spoon-beta" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n name -v "Maven repository for Spoon beta" pom.xml
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:pluginRepositories/x:pluginRepository[last()]" --type elem -n url -v "https://repo1.maven.org/maven2/" pom.xml
 
 
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins" --type elem -n plugin -v "" pom.xml
@@ -157,7 +162,7 @@ xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n artifactId -v "spoon-maven-plugin" pom.xml
 
 # we depend on the latest version of spoon-maven-plugin) 
-xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n version -v "3.8-SNAPSHOT" pom.xml 
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n version -v "3.8.0" pom.xml 
 
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n executions -v "" pom.xml
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions" --type elem -n execution -v "" pom.xml
@@ -172,14 +177,17 @@ xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies" --type elem -n dependency -v "" pom.xml
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n groupId -v "fr.inria.gforge.spoon" pom.xml
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n artifactId -v "spoon-core" pom.xml
-xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n version -v "[7.0.0-SNAPSHOT,)" pom.xml
+
+## note: before we used ranges [10.0.O,), but this does not work in plugins for some obscure reason
+# so we have to inject the latest version  instead
+xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n version -v $(curl -L "https://www.monperrus.net/martin/last-version-maven.py?groupId=fr.inria.gforge.spoon&artifactId=spoon-core") pom.xml
 
 # we add the spoon-core dependency to the project, resolve the ranges and remove it. The resolve ranges plugin only works for dependencies of the project, but not for plugins. But the rewrite engine of the plugin also updates the plugin version.
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:dependencies" -t elem -n dependency -v "" pom.xml
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:dependencies/x:dependency[last()]" --type elem -n groupId -v "fr.inria.gforge.spoon" pom.xml
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:dependencies/x:dependency[last()]" --type elem -n artifactId -v "spoon-core" pom.xml
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:dependencies/x:dependency[last()]" --type elem -n version -v "[7.0.0-SNAPSHOT,)" pom.xml
-MAVEN_COMMAND versions:resolve-ranges -DallowSnapshots=true
+$MAVEN_COMMAND versions:resolve-ranges -DallowSnapshots=true
 # remove the dependency again
 xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" -d "/x:project/x:dependencies/x:dependency[last()]" pom.xml
 # Purge the project from snapshots
