@@ -21,6 +21,8 @@ project:
 release:
   github:
     owner: INRIA
+    prerelease:
+      pattern: .*beta.*
     changelog:
       formatted: ALWAYS
       preset: conventional-commits
