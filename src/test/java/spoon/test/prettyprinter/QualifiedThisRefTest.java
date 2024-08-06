@@ -25,7 +25,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
@@ -41,6 +43,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.code.CtFieldAccessImpl;
+import spoon.support.reflect.code.CtTypeAccessImpl;
 import spoon.test.delete.testclasses.Adobada;
 import spoon.test.prettyprinter.testclasses.QualifiedThisRef;
 
@@ -158,7 +161,7 @@ public class QualifiedThisRefTest {
 				"        void write(java.nio.ByteBuffer input) {\n" +
 				"            int remaining = input.remaining();\n" +
 				"            if ((count + remaining) > buf.length) {\n" +
-				"                //buf = java.util.Arrays.copyOf(buf, count + remaining);\n" +
+				"                buf = java.util.Arrays.copyOf(buf, count + remaining);\n" +
 				"            }\n" +
 				"            input.get(buf, count, remaining);\n" +
 				"            count += remaining;\n" +
@@ -180,7 +183,11 @@ public class QualifiedThisRefTest {
 
 		CtClass<?> c = (CtClass<?>) launcher.buildModel().getAllTypes().iterator().next();
 		assertEquals(c.getSimpleName().toString(), "ExposedByteArrayOutputStream");
-		// contract: buf is not a static field
+
+		final List<Object> list = c.filterChildren(new TypeFilter<>(CtBinaryOperator.class)).list();
+		CtBinaryOperator<?> binaryOperator = (CtBinaryOperator<?>) list.get(0);
+		assertTrue(CtFieldRead.class.isAssignableFrom(binaryOperator.getRightHandOperand().getClass()));
+		assertEquals("(count + remaining) > buf.length", binaryOperator.toString());
 		assertFalse(c.toString().contains("ByteArrayOutputStream.buf"), "that will not compile for sure");
 
 	}
