@@ -303,7 +303,7 @@ public class TargetedExpressionTest {
 		CtInvocation<?> inv = invocations.get(0);
 		CtFieldRead<?> fieldRead = (CtFieldRead<?>) inv.getTarget();
 		// we do have the right type access in noclasspath mode
-		// the slight behavior change is that it adds one level of indirection
+		// the slight behavior change is that PR 5812 adds one level of indirection in the model, hence the filterChildren call
 		// however correct behavior is full classpath mode is higher priority, see https://github.com/INRIA/spoon/pull/5912
 		CtTypeAccess<?> target = (CtTypeAccess<?>) fieldRead.filterChildren(new TypeFilter<>(CtTypeAccess.class)).list().get(0);
 
