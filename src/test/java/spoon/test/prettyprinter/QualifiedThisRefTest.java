@@ -25,7 +25,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
@@ -39,7 +41,9 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.code.CtFieldAccessImpl;
+import spoon.support.reflect.code.CtTypeAccessImpl;
 import spoon.test.delete.testclasses.Adobada;
 import spoon.test.prettyprinter.testclasses.QualifiedThisRef;
 
@@ -142,6 +146,49 @@ public class QualifiedThisRefTest {
 		printer.visitCtClass(zeclass);
 
 		assertFalse(printer.getResult().isEmpty());
+
+	}
+
+	@Test
+	public void testGuavaBug() {
+		// contract: does not model buf as a typeaccess, does not write ByteArrayOutputStream.buf
+		// this bug was found by spooning Guava in Jenkins
+		final String code = "class ExposedByteArrayOutputStream extends java.io.ByteArrayOutputStream {\n" +
+				"        ExposedByteArrayOutputStream(int expectedInputSize) {\n" +
+				"            super(expectedInputSize);\n" +
+				"        }\n" +
+				"\n" +
+				"        void write(java.nio.ByteBuffer input) {\n" +
+				"            int remaining = input.remaining();\n" +
+				"            if ((count + remaining) > buf.length) {\n" +
+				"                buf = java.util.Arrays.copyOf(buf, count + remaining);\n" +
+				"            }\n" +
+				"            input.get(buf, count, remaining);\n" +
+				"            count += remaining;\n" +
+				"        }\n" +
+				"\n" +
+				"        byte[] byteArray() {\n" +
+				"            return buf;\n" +
+				"        }\n" +
+				"\n" +
+				"        int length() {\n" +
+				"            return count;\n" +
+				"        }\n" +
+				"    }";
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile(code));
+		launcher.getEnvironment().setNoClasspath(false);
+		launcher.getEnvironment().setAutoImports(true);
+
+		CtClass<?> c = (CtClass<?>) launcher.buildModel().getAllTypes().iterator().next();
+		assertEquals(c.getSimpleName().toString(), "ExposedByteArrayOutputStream");
+
+		final List<Object> list = c.filterChildren(new TypeFilter<>(CtBinaryOperator.class)).list();
+		CtBinaryOperator<?> binaryOperator = (CtBinaryOperator<?>) list.get(0);
+		assertTrue(CtFieldRead.class.isAssignableFrom(binaryOperator.getRightHandOperand().getClass()));
+		assertEquals("(count + remaining) > buf.length", binaryOperator.toString());
+		assertFalse(c.toString().contains("ByteArrayOutputStream.buf"), "that will not compile for sure");
 
 	}
 }

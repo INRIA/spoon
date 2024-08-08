@@ -217,15 +217,14 @@ class JDTTreeBuilderQuery {
 	}
 
 	/**
-	 * Check if the name reference is resolved in the JDT tree, i.e. that the declaration is available.
+	 * Check if the name reference is resolved as a field ref in the JDT tree.
 	 *
 	 * @param qualifiedNameReference
 	 * 		Reference which should contain a field binding.
 	 * @return true if the field has been resolved by the jdt builder.
 	 */
-	static boolean isResolvedField(QualifiedNameReference qualifiedNameReference) {
-		return qualifiedNameReference.binding instanceof FieldBinding
-				&& ((FieldBinding) qualifiedNameReference.binding).original().sourceField() != null;
+	static boolean isFieldReference(QualifiedNameReference qualifiedNameReference) {
+		return qualifiedNameReference.binding instanceof FieldBinding;
 	}
 
 
