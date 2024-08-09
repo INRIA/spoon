@@ -7,8 +7,10 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.ModelConsistencyChecker;
 
 import java.lang.reflect.Executable;
+import java.util.stream.Collectors;
 
 public class ModelTestParameterResolver implements ParameterResolver {
 
@@ -61,6 +63,23 @@ public class ModelTestParameterResolver implements ParameterResolver {
 			launcher.addInputResource(path);
 		}
 		launcher.buildModel();
+
+		// ensure that the model is valid
+		launcher.getModel().getAllModules().forEach(ctModule -> {
+			var invalidElements = ModelConsistencyChecker.listInconsistencies(ctModule);
+
+			if (!invalidElements.isEmpty()) {
+				throw new IllegalStateException("Model is inconsistent for %s, %d elements have invalid parents:%n%s".formatted(
+					method.getName(),
+					invalidElements.size(),
+					invalidElements.stream()
+						.map(ModelConsistencyChecker.InconsistentElements::toString)
+						.limit(5)
+						.collect(Collectors.joining(System.lineSeparator()))
+				));
+			}
+		});
+
 		return launcher;
 	}
 }
