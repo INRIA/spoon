@@ -12,14 +12,17 @@ import java.util.HashSet;
 import java.util.Set;
 import spoon.JLSViolation;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.CtExtendedModifier;
@@ -36,18 +39,45 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 	public CtMethod<?> toMethod() {
 		CtMethod<?> method = this.getFactory().createMethod();
 		method.setSimpleName(getSimpleName());
-		method.setType((CtTypeReference) getType());
+		method.setType(getType() != null ? getType().clone() : null);
 		method.setExtendedModifiers(Collections.singleton(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
 		method.setImplicit(true);
-		method.setBody(getFactory().createCodeSnippetStatement("return " + getSimpleName()));
+
+		CtFieldAccess<?> ctVariableAccess = (CtFieldAccess<?>) getFactory().Code()
+			.createVariableRead(getRecordFieldReference(), false);
+		// ensure the `this.` is implicit (important as we are also implicit)
+		ctVariableAccess.getTarget().setImplicit(true);
+
+		method.setBody(getFactory().Code().createCtReturn(ctVariableAccess));
+
 		return method;
+	}
+
+	private CtFieldReference<?> getRecordFieldReference() {
+		CtRecord parent = isParentInitialized() ? (CtRecord) getParent() : null;
+
+		// Reference the field we think should exist. It might be added to the record later on, so do not directly
+		// query for it.
+		CtFieldReference<?> reference = getFactory().createFieldReference()
+			.setFinal(true)
+			.setStatic(false)
+			.setType(getType() != null ? getType().clone() : null)
+			.setSimpleName(getSimpleName());
+
+		// We have a parent record, make the field refer to it. Ideally we could do this all the time, but if we
+		// do not yet have a parent that doesn't work.
+		if (parent != null) {
+			reference.setDeclaringType(parent.getReference());
+		}
+
+		return reference;
 	}
 
 	@Override
 	public CtField<?> toField() {
 		CtField<?> field = this.getFactory().createField();
 		field.setSimpleName(getSimpleName());
-		field.setType((CtTypeReference) getType());
+		field.setType(getType() != null ? getType().clone() : null);
 		Set<CtExtendedModifier> modifiers = new HashSet<>();
 		modifiers.add(new CtExtendedModifier(ModifierKind.PRIVATE, true));
 		modifiers.add(new CtExtendedModifier(ModifierKind.FINAL, true));
@@ -115,4 +145,3 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 		return (E) this;
 	}
 }
-
