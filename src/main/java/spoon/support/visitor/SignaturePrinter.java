@@ -47,7 +47,7 @@ public class SignaturePrinter extends CtScanner {
 
 	/** writes only the name and parameters' types */
 	public <T> void writeNameAndParameters(CtExecutableReference<T> reference) {
-		if (reference.isConstructor()) {
+		if (reference.isConstructor() && reference.getDeclaringType() != null) {
 			write(reference.getDeclaringType().getQualifiedName());
 		} else {
 			write(reference.getSimpleName());
