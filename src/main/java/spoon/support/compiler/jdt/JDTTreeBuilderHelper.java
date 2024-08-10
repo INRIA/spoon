@@ -723,7 +723,7 @@ public class JDTTreeBuilderHelper {
 		} else if (ref.isStatic()) {
 			target = createTypeAccess(qualifiedNameReference, ref);
 		} else if (!ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
-			if (!JDTTreeBuilderQuery.isResolvedField(qualifiedNameReference)) {
+			if (!JDTTreeBuilderQuery.isFieldReference(qualifiedNameReference)) {
 				target = createTypeAccessNoClasspath(qualifiedNameReference);
 			} else {
 				target = jdtTreeBuilder.getFactory().Code().createThisAccess(jdtTreeBuilder.getReferencesBuilder().<Object>getTypeReference(qualifiedNameReference.actualReceiverType), true);
