@@ -1,6 +1,6 @@
 #! /bin/python3
 """Script for injecting the latest SNAPSHOT version of Spoon into all pom.xml
-files it finds in the curren tworking directory or any subdirectory.
+files it finds in the current working directory or any subdirectory.
 
 Requires the ``defusedxml`` package to be installed separately.
 
@@ -24,7 +24,6 @@ MAVEN_NAMESPACE = "http://maven.apache.org/POM/4.0.0"
 NAMESPACES = {"": MAVEN_NAMESPACE}
 
 MAVEN_VERSIONS_COMMAND = "mvn -B -U versions:use-latest-versions -DallowSnapshots -Dincludes=fr.inria.gforge.spoon".split()
-PURGE_LOCAL_REPO_COMMAND = "mvn -B -U dependency:purge-local-repository -DmanualInclude='fr.inria.gforge.spoon:spoon-core' -DsnapshotsOnly=true".split()
 
 
 def main():
@@ -32,7 +31,7 @@ def main():
     pom_file = pathlib.Path("pom.xml")
     inject_snapshot_repo(pom_file)
     subprocess.run(MAVEN_VERSIONS_COMMAND, cwd=str(pom_file.parent))
-    subprocess.run(PURGE_LOCAL_REPO_COMMAND, cwd=str(pom_file.parent))
+
 
 
 def inject_snapshot_repo(pom_file: pathlib.Path) -> None:
