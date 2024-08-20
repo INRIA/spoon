@@ -62,7 +62,15 @@ public interface AnnotationProcessor<A extends Annotation, E extends CtElement>
 
 	/**
 	 * Returns true if this annotation should be removed from the processed code.
+     *
+     * @deprecated use {@link #shouldBeConsumed(CtAnnotation)} instead
 	 */
+	@Deprecated
 	boolean shoudBeConsumed(CtAnnotation<? extends Annotation> annotation);
+
+	/**
+	 * Returns true if this annotation should be removed from the processed code.
+	 */
+	boolean shouldBeConsumed(CtAnnotation<? extends Annotation> annotation);
 
 }
