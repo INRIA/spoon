@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.reference;
 
@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_SHADOW;
@@ -156,12 +157,14 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (isArray()) {
 			CtTypeReference<?> componentTypeReference = convertToComponentType();
 			if (componentTypeReference.isPrimitive()) {
-				return getPrimitiveType(componentTypeReference).map(this::arrayType).orElseThrow(() -> new SpoonException("Cant find primitive type: " + componentTypeReference));
+				return getPrimitiveType(componentTypeReference)
+					.map(this::asArrayTypeWithOurDimensions)
+					.orElseThrow(() -> new SpoonException("Cant find primitive type: " + componentTypeReference));
 			}
 			typeReference = componentTypeReference;
 		}
 		Class<T> actualClass = getClassFromThreadLocalCacheOrLoad(typeReference);
-		return isArray() ? arrayType(actualClass) : actualClass;
+		return isArray() ? asArrayTypeWithOurDimensions(actualClass) : actualClass;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -177,7 +180,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	 * @return  the component type of the type reference.
 	 */
 	private CtTypeReference<T> convertToComponentType() {
-		if (this.getQualifiedName().indexOf("[") == -1) {
+		if (!this.getQualifiedName().contains("[")) {
 			return this;
 		}
 		return getFactory().createReference(this.getQualifiedName().substring(0, this.getQualifiedName().indexOf("[")));
@@ -210,9 +213,13 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	 * @return  the array type.
 	 */
 	@SuppressWarnings("unchecked")
-	private <R> Class<R> arrayType(Class<R> clazz) {
-			return (Class<R>) Array.newInstance(clazz, 0).getClass();
+	private <R> Class<R> asArrayTypeWithOurDimensions(Class<R> clazz) {
+		String simpleName = getSimpleName();
+		int dimensionCount = (simpleName.length() - simpleName.indexOf('[')) / 2;
+		int[] dimensions = new int[dimensionCount];
+		return (Class<R>) Array.newInstance(clazz, dimensions).getClass();
 	}
+
 	@Override
 	public List<CtTypeReference<?>> getActualTypeArguments() {
 		return actualTypeArguments;
@@ -746,7 +753,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return declType;
 		}
 		CtTypeReference<?> contextTypeRef = contextType.getReference();
-		if (contextTypeRef != null && contextTypeRef.canAccess(declType) == false) {
+		if (contextTypeRef != null && !contextTypeRef.canAccess(declType)) {
 			//search for visible declaring type
 			CtTypeReference<?> visibleDeclType = null;
 			CtTypeReference<?> type = contextTypeRef;
@@ -780,7 +787,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (targetDeclType != null && sourceDeclType != null && targetDeclType.isSubtypeOf(sourceDeclType)) {
 			applyActualTypeArguments(targetDeclType, sourceDeclType);
 		}
-		if (targetTypeRef.isSubtypeOf(sourceTypeRef) == false) {
+		if (!targetTypeRef.isSubtypeOf(sourceTypeRef)) {
 			throw new SpoonException("Invalid arguments. targetTypeRef " + targetTypeRef.getQualifiedName() + " must be a sub type of sourceTypeRef " + sourceTypeRef.getQualifiedName());
 		}
 		List<CtTypeReference<?>> newTypeArgs = new ArrayList<>();

@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor.filter;
 
@@ -217,7 +217,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			try {
 				type = typeRef.getTypeDeclaration();
 			} catch (SpoonClassNotFoundException e) {
-				if (typeRef.getFactory().getEnvironment().getNoClasspath() == false) {
+				if (!typeRef.getFactory().getEnvironment().getNoClasspath()) {
 					throw e;
 				}
 				type = null;
@@ -225,7 +225,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 		}
 		//if the type is unknown, than we expect it is interface, otherwise we would visit java.lang.Object too, even for interfaces
 		isClass = type instanceof CtClass;
-		if (isClass == false && includingInterfaces == false) {
+		if (!isClass && !includingInterfaces) {
 			//the input is interface, but this scanner should visit only interfaces. Finish
 			return;
 		}
@@ -241,11 +241,11 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			}
 		}
 		if (mode == ScanningMode.NORMAL) {
-			if (isClass == false) {
+			if (!isClass) {
 				visitSuperInterfaces(typeRef, outputConsumer);
 				if (interfacesExtendObject) {
 					//last visit Object.class, because interface inherits all public type members of Object.class
-					sendResultWithListener(typeRef.getFactory().Type().OBJECT, isClass, outputConsumer, (ref) -> { });
+					sendResultWithListener(typeRef.getFactory().Type().objectType(), isClass, outputConsumer, (ref) -> { });
 				}
 			} else {
 				//call visitSuperClasses only for input of type class. The contract of visitSuperClasses requires that
@@ -276,7 +276,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 		if (superClassRef == null) {
 			//only CtClasses extend object,
 			//this method is called only for classes (not for interfaces) so we know we can visit java.lang.Object now too
-			superClassRef = superTypeRef.getFactory().Type().OBJECT;
+			superClassRef = superTypeRef.getFactory().Type().objectType();
 		}
 		sendResultWithListener(superClassRef, true,
 				outputConsumer, (classRef) -> visitSuperClasses(classRef, outputConsumer, includingInterfaces));
@@ -312,7 +312,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			return;
 		}
 		sendResult(classRef, outputConsumer);
-		if (mode == ScanningMode.NORMAL && query.isTerminated() == false) {
+		if (mode == ScanningMode.NORMAL && !query.isTerminated()) {
 			runNext.accept(classRef);
 		}
 		exit(classRef, isClass);

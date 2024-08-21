@@ -101,7 +101,7 @@ public class CtClassTest {
 		// as long as we have not changed the signature, getConstructors, which is based on signatures,
 		// thinks there is one single constructor (and that's OK)
 		assertEquals(3, foo.getConstructors().size());
-		cons.addParameter(cons.getFactory().createParameter().setType(cons.getFactory().Type().OBJECT));
+		cons.addParameter(cons.getFactory().createParameter().setType(cons.getFactory().Type().objectType()));
 		// now that we have changed the signature we can call getConstructors safely
 		assertEquals(4, foo.getConstructors().size());
 		// we cloned the first constructor, so it has the same position, and comes before the 2nd and 3rd constructor
@@ -261,7 +261,7 @@ public class CtClassTest {
 				"            return 0;" + newLine +
 				"        }" + newLine +
 				"    }.compare(1, 2);" + newLine +
-				"}", aClass2.toStringWithImports());
+				"}" + newLine, aClass2.toStringWithImports());
 
 		// contract: a class can be printed with full context in autoimports
 		aClass2.getFactory().getEnvironment().setAutoImports(true);
@@ -277,12 +277,12 @@ public class CtClassTest {
 				"            return 0;" + newLine +
 				"        }" + newLine +
 				"    }.compare(1, 2);" + newLine +
-				"}", aClass2.toStringWithImports());
+				"}" + newLine, aClass2.toStringWithImports());
 
 		// contract: toStringWithImports works with a new class with no position
 		assertEquals("package foo;" + newLine +
 				"import java.io.File;" + newLine +
-				"class Bar extends File {}", launcher2.getFactory().createClass("foo.Bar").setSuperclass(launcher2.getFactory().Type().get(File.class).getReference()).toStringWithImports());
+				"class Bar extends File {}" + newLine, launcher2.getFactory().createClass("foo.Bar").setSuperclass(launcher2.getFactory().Type().get(File.class).getReference()).toStringWithImports());
 	}
 
 	@Test

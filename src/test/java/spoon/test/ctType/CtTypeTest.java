@@ -35,7 +35,9 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.test.ctType.testclasses.X;
+import spoon.testing.utils.ModelTest;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -90,15 +92,10 @@ public class CtTypeTest {
 		assertTrue(yClass.hasMethod(superMethod));
 	}
 
-	@Test
-	public void testHasMethodInDefaultMethod() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/ctType/testclasses/X.java");
-		launcher.getEnvironment().setComplianceLevel(8);
-		launcher.run();
-
-		final CtClass<?> x = launcher.getFactory().Class().get("spoon.test.ctType.testclasses.W");
-		final CtInterface<?> z = launcher.getFactory().Interface().get("spoon.test.ctType.testclasses.Z");
+	@ModelTest(value = "./src/test/java/spoon/test/ctType/testclasses/X.java", complianceLevel = 8)
+	public void testHasMethodInDefaultMethod(Launcher launcher, Factory factory) {
+		final CtClass<?> x = factory.Class().get("spoon.test.ctType.testclasses.W");
+		final CtInterface<?> z = factory.Interface().get("spoon.test.ctType.testclasses.Z");
 		final CtMethod<?> superMethod = z.getMethods().iterator().next();
 
 		assertTrue(x.hasMethod(superMethod));
@@ -125,7 +122,7 @@ public class CtTypeTest {
 
 		CtType<?> oCtType = factory.Type().get("spoon.test.ctType.testclasses.O");
 		CtType<?> pCtType = factory.Type().get("spoon.test.ctType.testclasses.P");
-		CtTypeReference<?> objectCtTypeRef = factory.Type().OBJECT;
+		CtTypeReference<?> objectCtTypeRef = factory.Type().objectType();
 
 		List<CtTypeParameter> oTypeParameters = oCtType.getFormalCtTypeParameters();
 		assertTrue(oTypeParameters.size() == 1);
@@ -308,5 +305,29 @@ public class CtTypeTest {
 		assertThat(types.size(), is(1));
 		assertThat(types.stream().findFirst().get(), notNullValue());
 		assertThat(types.stream().findFirst().get().getQualifiedName(), is("keywordCompliance.enum.Foo"));
+	}
+
+	@Test
+	void testRecordInnerClassesHaveDefinition() {
+		// contract: Record inner classes should have a definition
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile("class Foo {\n" +
+			"  class Inner {\n" +
+			"    record Inner2(String name) {\n" +
+			"    }\n" +
+			"  }\n" +
+			"}"));
+		launcher.getEnvironment().setComplianceLevel(17);
+		CtType<?> foo = launcher.buildModel().getAllTypes().iterator().next();
+		assertEquals(foo, foo.getReference().getTypeDeclaration());
+		assertEquals(1, foo.getNestedTypes().size());
+
+		for (CtType<?> nestedType : foo.getNestedTypes()) {
+			assertEquals(nestedType, nestedType.getReference().getTypeDeclaration());
+			assertEquals(1, nestedType.getNestedTypes().size());
+			for (CtType<?> type : nestedType.getNestedTypes()) {
+				assertEquals(type, type.getReference().getTypeDeclaration());
+			}
+		}
 	}
 }

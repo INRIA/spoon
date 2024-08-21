@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor;
 
@@ -47,7 +47,7 @@ public class SignaturePrinter extends CtScanner {
 
 	/** writes only the name and parameters' types */
 	public <T> void writeNameAndParameters(CtExecutableReference<T> reference) {
-		if (reference.isConstructor()) {
+		if (reference.isConstructor() && reference.getDeclaringType() != null) {
 			write(reference.getDeclaringType().getQualifiedName());
 		} else {
 			write(reference.getSimpleName());

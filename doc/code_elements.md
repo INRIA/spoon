@@ -98,6 +98,19 @@ switch(x) {
       System.out.println("foo");
 }
 ```
+### CtCasePattern
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtCasePattern.html)
+
+```java
+
+Number num = Math.random() < 0.5 ? Integer.valueOf(1) : Double.valueOf(10.5);
+switch (num) {
+   case Integer i -> System.out.println("int: " + i);
+   case Double d when d > 0.5 -> System.out.println("double: " + d);
+   case null, default -> System.out.println("other");
+}
+
+```
 ### CtConditional
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtConditional.html)
 
@@ -287,6 +300,20 @@ switch(x) {
     x *= 3; // <-- a CtOperatorAssignment
 
 ```
+### CtRecordPattern
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtRecordPattern.html)
+
+```java
+
+    Object obj = null;
+    boolean longerThanTwo = false;
+    record MyRecord(String value) {}
+    // MyRecord(var string) is the record pattern
+    if (obj instanceof MyRecord(var string)) {
+        longerThanTwo = string.length() > 2;
+    }
+
+```
 ### CtReturn
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtReturn.html)
 
@@ -446,6 +473,19 @@ int x = switch(i) { // <-- switch expression
 
     int x=3;
     --x; // <-- unary --
+
+```
+### CtUnnamedPattern
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtUnnamedPattern.html)
+
+```java
+
+    Object obj = new Object();
+    record X(int i) {}
+    int i = switch (obj) {
+        case X(_) -> 0; // an unnamed pattern does neither mention a type nor a name
+        case null, default -> -1;
+    };
 
 ```
 ### CtVariableRead

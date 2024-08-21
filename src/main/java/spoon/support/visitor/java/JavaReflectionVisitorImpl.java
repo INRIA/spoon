@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.java;
 
@@ -15,12 +15,15 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.reflect.path.CtRole;
 import spoon.support.visitor.java.reflect.RtMethod;
@@ -38,7 +41,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T> void visitClass(Class<T> clazz) {
-		if (clazz.getPackage() != null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		try {
@@ -106,6 +109,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
+		scanPermittedTypes(clazz);
 	}
 
 	protected final <T> void visitType(Class<T> aClass) {
@@ -123,7 +127,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T> void visitInterface(Class<T> clazz) {
 		assert clazz.isInterface();
-		if (clazz.getPackage() != null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		try {
@@ -175,12 +179,13 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
+		scanPermittedTypes(clazz);
 	}
 
 	@Override
 	public <T> void visitEnum(Class<T> clazz) {
 		assert clazz.isEnum();
-		if (clazz.getPackage() != null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		try {
@@ -248,12 +253,13 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
+		scanPermittedTypes(clazz);
 	}
 
 	@Override
 	public <T extends Annotation> void visitAnnotationClass(Class<T> clazz) {
 		assert clazz.isAnnotation();
-		if (clazz.getPackage() != null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		try {
@@ -308,14 +314,14 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : constructor.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
-		int nrEnclosingClasses = getNumberOfEnclosingClasses(constructor.getDeclaringClass());
-		for (RtParameter parameter : RtParameter.parametersOf(constructor)) {
-			//ignore implicit parameters of enclosing classes
-			if (nrEnclosingClasses > 0) {
-				nrEnclosingClasses--;
+		RtParameter[] parametersOf = RtParameter.parametersOf(constructor);
+		Parameter[] parameters = constructor.getParameters();
+		for (int i = 0; i < parametersOf.length; i++) {
+			RtParameter rtParameter = parametersOf[i];
+			if (isImplicitParameter(parameters[i], constructor, i == 0)) {
 				continue;
 			}
-			visitParameter(parameter);
+			visitParameter(rtParameter);
 		}
 		for (TypeVariable<Constructor<T>> aTypeParameter : constructor.getTypeParameters()) {
 			visitTypeParameter(aTypeParameter);
@@ -325,12 +331,24 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		}
 	}
 
-	private int getNumberOfEnclosingClasses(Class<?> clazz) {
-		int depth = 0;
-		while (Modifier.isStatic(clazz.getModifiers()) == false && (clazz = clazz.getEnclosingClass()) != null) {
-			depth++;
+	/**
+	 * Check whether the constructor parameter is implicit.
+	 * It is not enough to simply use {@link Parameter#isImplicit()} as the class file format before Java 8
+	 * has no way to embed the required information. As of Java 8, the information is stored in the
+	 * MethodParameters attribute, however javac does not emit the attribute by default in current Java versions.
+	 */
+	private boolean isImplicitParameter(Parameter parameter, Constructor<?> constructor, boolean isFirstParameter) {
+		if (parameter.isImplicit()) {
+			return true;
 		}
-		return depth;
+		// best effort fallback for the implicit enclosing class parameter in non-static inner class constructors
+
+		// static inner classes have no implicit parameter
+		if (Modifier.isStatic(constructor.getDeclaringClass().getModifiers())) {
+			return false;
+		}
+
+		return isFirstParameter && parameter.getType() == constructor.getDeclaringClass().getEnclosingClass();
 	}
 
 	@Override
@@ -483,7 +501,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T> void visitTypeReference(CtRole role, Class<T> clazz) {
-		if (clazz.getPackage() != null && clazz.getEnclosingClass() == null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		if (clazz.getEnclosingClass() != null) {
@@ -583,8 +601,11 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	}
 
+	private static boolean isTopLevelType(Class<?> clazz) {
+		return clazz.getEnclosingClass() == null && clazz.getPackage() != null;
+	}
 
-	private static Class<?> getRecordClass() {
+	private static @Nullable Class<?> getRecordClass() {
 		try {
 			return Class.forName("java.lang.Record");
 		} catch (Exception e) {
@@ -597,4 +618,17 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	}
 
+	private void scanPermittedTypes(Class<?> clazz) {
+		Class<?>[] permittedSubclasses = MethodHandleUtils.getPermittedSubclasses(clazz);
+		if (permittedSubclasses == null) {
+			return;
+		}
+		for (Class<?> subclass : permittedSubclasses) {
+			try {
+				visitTypeReference(CtRole.PERMITTED_TYPE, subclass);
+			} catch (NoClassDefFoundError ignore) {
+				// partial classpath
+			}
+		}
+	}
 }

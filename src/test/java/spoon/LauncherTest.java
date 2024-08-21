@@ -25,11 +25,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.compiler.VirtualFile;
@@ -149,15 +151,30 @@ public class LauncherTest {
 		// contract: launcher can handle spaces in classpath URL
 		Launcher launcher = new Launcher();
 		URL[] classpath = {
-				Paths.get("./src/test/resources/path with spaces/lib/bar.jar").toAbsolutePath().toUri().toURL()
+				Paths.get("./src/test/resources/path with spaces +and+ plusses/lib/bar.jar")
+					.toAbsolutePath().toUri().toURL()
 		};
 		launcher.getEnvironment().setNoClasspath(false);
 		launcher.getEnvironment().setShouldCompile(true);
 		ClassLoader classLoader = new URLClassLoader(classpath);
 		launcher.getEnvironment().setInputClassLoader(classLoader);
-		launcher.addInputResource(Paths.get("./src/test/resources/path with spaces/Foo.java").toAbsolutePath().toString());
+		launcher.addInputResource(Paths.get("./src/test/resources/path with spaces +and+ plusses/Foo.java").toAbsolutePath().toString());
 		CtModel model = launcher.buildModel();
 
 		assertTrue(model.getAllTypes().stream().anyMatch(ct -> ct.getQualifiedName().equals("Foo")), "CtTxpe 'Foo' not present in model");
+	}
+
+	@Test
+	void testModulesInJars() {
+		Launcher spoon = new Launcher();
+		Environment environment = spoon.getEnvironment();
+		environment.setSourceModulePath(List.of("src/test/resources/modules/error-reporting-java-1.0.1.jar"));
+		environment.setNoClasspath(false);
+		environment.setComplianceLevel(11);
+		spoon.addInputResource(Path.of("src/test/resources/modules/5324").toString());
+		CtModel ctModel = assertDoesNotThrow(spoon::buildModel);
+		// unnamed and dummy.module
+		assertEquals(2, ctModel.getAllModules().size());
+
 	}
 }

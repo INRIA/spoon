@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.declaration;
 
@@ -12,6 +12,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -116,8 +117,8 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, String.format("%s method is native or abstract, both is not allowed",
 					member.getSimpleName()));
 		}
-		if (member instanceof CtAnonymousExecutable) {
-			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, "Anonymous executable is not allowed in a record");
+		if (member instanceof CtAnonymousExecutable && !member.isStatic()) {
+			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, "Instance initializer is not allowed in a record (JLS 17 $8.10.2)");
 		}
 		return super.addTypeMemberAt(position, member);
 	}
@@ -131,7 +132,14 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 					// TODO: this is not the best way to handle this, but it's the best we can do for now
 					if (annotationType != null) {
 						Target target = annotationType.getAnnotation(Target.class);
-						if (Arrays.stream(target.value()).anyMatch(e -> e == elementType)) {
+						// https://docs.oracle.com/javase/specs/jls/se19/html/jls-9.html#jls-9.6.4.1
+						// If an annotation of type java.lang.annotation.Target is not present on the declaration of
+						// an annotation interface A, then A is applicable in all declaration contexts and in no
+						// type contexts.
+						if (target == null && elementType == ElementType.TYPE_USE) {
+							continue;
+						}
+						if (target == null || Arrays.stream(target.value()).anyMatch(e -> e == elementType)) {
 							result.add(annotation.clone());
 						}
 					}
@@ -233,12 +241,35 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 	public <E extends CtElement> E setParent(CtElement parent) {
 		Set<CtExtendedModifier> extendedModifiers = new HashSet<>(getExtendedModifiers());
 		if (parent instanceof CtType) {
-			extendedModifiers.add(new CtExtendedModifier(ModifierKind.STATIC, true));
+			extendedModifiers.add(CtExtendedModifier.implicit(ModifierKind.STATIC));
 		} else {
-			extendedModifiers.remove(new CtExtendedModifier(ModifierKind.STATIC, true));
+			extendedModifiers.remove(CtExtendedModifier.implicit(ModifierKind.STATIC));
 		}
 		setExtendedModifiers(extendedModifiers);
 		return super.setParent(parent);
+	}
+
+	@Override
+	public Set<CtTypeReference<?>> getPermittedTypes() {
+		return Set.of();
+	}
+
+	@Override
+	@UnsettableProperty
+	public CtRecord setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
+		return this;
+	}
+
+	@Override
+	@UnsettableProperty
+	public CtRecord addPermittedType(CtTypeReference<?> type) {
+		return this;
+	}
+
+	@Override
+	@UnsettableProperty
+	public CtRecord removePermittedType(CtTypeReference<?> type) {
+		return this;
 	}
 
 	@Override

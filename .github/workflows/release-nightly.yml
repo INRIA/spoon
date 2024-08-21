@@ -1,0 +1,12 @@
+name: Release nightly version
+
+on:
+    schedule:
+      - cron: '0 0 * * *' # Every day at 00:00 UTC (https://crontab.guru/#0_0_*_*_*)
+
+jobs:
+  nightly:
+    uses: ./.github/workflows/jreleaser.yml
+    with:
+      release-script-to-run: chore/release-nightly.sh
+    secrets: inherit

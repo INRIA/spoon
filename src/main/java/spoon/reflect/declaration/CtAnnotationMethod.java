@@ -1,12 +1,13 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.declaration;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
@@ -54,4 +55,10 @@ public interface CtAnnotationMethod<T> extends CtMethod<T> {
 	@Override
 	@UnsettableProperty
 	<T1 extends CtExecutable<T>> T1 setParameters(List<CtParameter<?>> parameters);
+	@UnsettableProperty
+	CtExecutable<?> setReceiverParameter(CtReceiverParameter receiverParameter);
+
+	@UnsettableProperty
+	@Nullable
+	CtReceiverParameter getReceiverParameter();
 }

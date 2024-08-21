@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.pattern;
 
@@ -129,7 +129,7 @@ public class PatternParameterConfigurator {
 	}
 
 	public PatternParameterConfigurator setMaxOccurrence(int maxOccurrence) {
-		if (maxOccurrence == ParameterInfo.UNLIMITED_OCCURRENCES || maxOccurrence > 1 && currentParameter.isMultiple() == false) {
+		if (maxOccurrence == ParameterInfo.UNLIMITED_OCCURRENCES || maxOccurrence > 1 && !currentParameter.isMultiple()) {
 			throw new SpoonException("Cannot set maxOccurrences > 1 for single value parameter. Call setMultiple(true) first.");
 		}
 		currentParameter.setMaxOccurrences(maxOccurrence);
@@ -409,7 +409,7 @@ public class PatternParameterConfigurator {
 
 				CtTypeReference<?> paramType = paramField.getType();
 
-				if (paramType.isSubtypeOf(f.Type().ITERABLE) || paramType instanceof CtArrayTypeReference<?>) {
+				if (paramType.isSubtypeOf(f.Type().createReference(Iterable.class)) || paramType instanceof CtArrayTypeReference<?>) {
 					//parameter is a multivalue
 					// here we need to replace all named element and all references whose simpleName == stringMarker
 					parameter(parameterName).setContainerKind(ContainerKind.LIST).byNamedElement(stringMarker).byReferenceName(stringMarker);
@@ -530,7 +530,7 @@ public class PatternParameterConfigurator {
 			CtType<?> templateType = patternBuilder.getTemplateTypeRef().getTypeDeclaration();
 			//configure template parameters based on parameter values only - these without any declaration in Template
 			parameterValues.forEach((paramName, paramValue) -> {
-				if (isSubstituted(paramName) == false) {
+				if (!isSubstituted(paramName)) {
 					//and only these parameters whose name isn't already handled by explicit template parameters
 					//replace types whose name fits to name of parameter
 					parameter(paramName)
@@ -982,7 +982,7 @@ public class PatternParameterConfigurator {
 		CtElement element = pep.element;
 		while (element.isParentInitialized()) {
 			CtElement parent = element.getParent();
-			if ((parent instanceof CtBlock) == false || parent.isImplicit() == false) {
+			if (!(parent instanceof CtBlock) || !parent.isImplicit()) {
 				break;
 			}
 			element = parent;

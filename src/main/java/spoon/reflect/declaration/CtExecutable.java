@@ -1,19 +1,21 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.declaration;
 
+import org.jspecify.annotations.Nullable;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 
 import java.util.List;
 import java.util.Set;
@@ -118,20 +120,33 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	boolean removeThrownType(CtTypeReference<? extends Throwable> throwType);
 
 	/**
-	 * Gets the signature of this method or constructor.
-	 * The signature is composed of the method name and the parameter types, all fully-qualified, eg "int foo(java.lang.String)".
+	 * Gets the signature of this exectuable.
+	 * The signature is composed of the method name and the parameter types, all fully-qualified, eg
+	 * "{@code foo(java.lang.String)}".
 	 * The core contract is that in a type, there cannot be two methods with the same signature.
-	 *
-	 * Note that the concept of method signature in Java is not well defined (see chapter "8.4.2 Method Signature" of the Java specification, which defines what relations between signatures but not what a signature is exactly).
-	 *
-	 * Note also that the signature of a method reference is the same as the signature of the corresponding method if and only if the method parameters does not involve generics in their types. Otherwise, one has eg m(String) (reference) and m(T) (declaration)
-	 *
-	 * Reference: "In the Java programming language, a method signature is the method name and the number and type of its parameters. Return types and thrown exceptions are not considered to be a part of the method signature."
-	 * see https://stackoverflow.com/questions/16149285/does-a-methods-signature-in-java-include-its-return-type
-	 * see https://en.wikipedia.org/wiki/Type_signature
+	 * <p>
+	 * Note that the concept of method signature in Java is not well defined
+	 * (see chapter "8.4.2 Method Signature" of the Java specification, which defines what relations between signatures
+	 * but not what a signature is exactly).
+	 * <p>
+	 * Note also that the signature of a method reference is the same as the signature of the corresponding method if
+	 * and only if the method parameters does not involve generics in their types. Otherwise, one has eg m(String)
+	 * (reference) and m(T) (declaration)
+	 * <p>
+	 * Reference: "In the Java programming language, a method signature is the method name and the number and type of
+	 * its parameters. Return types and thrown exceptions are not considered to be a part of the method signature."
+	 * <br>see <a href="https://stackoverflow.com/questions/16149285/does-a-methods-signature-in-java-include-its-return-type">Stackoverflow</a>
+	 * <br>see <a href="https://en.wikipedia.org/wiki/Type_signature">Wikipedia</a>
 	 */
 	String getSignature();
 
 	@Override
 	CtExecutable<R> clone();
+
+	@PropertySetter(role = CtRole.RECEIVER_PARAMETER)
+	CtExecutable<?> setReceiverParameter(CtReceiverParameter receiverParameter);
+
+	@PropertyGetter(role = CtRole.RECEIVER_PARAMETER)
+	@Nullable
+	CtReceiverParameter getReceiverParameter();
 }

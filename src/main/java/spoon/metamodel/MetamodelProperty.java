@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.metamodel;
 
@@ -20,6 +20,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.jspecify.annotations.Nullable;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtField;
@@ -201,7 +203,7 @@ public class MetamodelProperty {
 		if (valueType instanceof CtTypeParameterReference) {
 			valueType = ((CtTypeParameterReference) valueType).getBoundingType();
 			if (valueType == null) {
-				valueType = f.Type().OBJECT;
+				valueType = f.Type().objectType();
 			}
 		}
 		if (valueType.isImplicit()) {
@@ -209,6 +211,7 @@ public class MetamodelProperty {
 			//never return type  with implicit==true, such type is then not pretty printed
 			valueType.setImplicit(false);
 		}
+		valueType.setAnnotations(List.of()); // clear annotations, not relevant here
 		this.valueType = valueType;
 		this.valueContainerType = containerKindOf(valueType.getActualClass());
 		if (valueContainerType != ContainerKind.SINGLE) {
@@ -335,8 +338,9 @@ public class MetamodelProperty {
 		CtTypeReference<?> returnType1 = methods.get(0).getActualCtMethod().getType();
 		CtTypeReference<?> returnType2 = methods.get(1).getActualCtMethod().getType();
 		Factory f = returnType1.getFactory();
-		boolean is1Iterable = returnType1.isSubtypeOf(f.Type().ITERABLE);
-		boolean is2Iterable = returnType2.isSubtypeOf(f.Type().ITERABLE);
+		CtTypeReference<?> iterableRef = f.Type().createReference(Iterable.class);
+		boolean is1Iterable = returnType1.isSubtypeOf(iterableRef);
+		boolean is2Iterable = returnType2.isSubtypeOf(iterableRef);
 		if (is1Iterable != is2Iterable) {
 			// they are not some. Only one of them is iterable
 			if (is1Iterable) {
@@ -405,7 +409,7 @@ public class MetamodelProperty {
 		}
 		CtTypeReference<?> itemValueType;
 		if (valueContainerType == ContainerKind.MAP) {
-			if (String.class.getName().equals(valueType.getActualTypeArguments().get(0).getQualifiedName()) == false) {
+			if (!String.class.getName().equals(valueType.getActualTypeArguments().get(0).getQualifiedName())) {
 				throw new SpoonException("Unexpected container of type: " + valueType.toString());
 			}
 			itemValueType = valueType.getActualTypeArguments().get(1);
@@ -416,7 +420,7 @@ public class MetamodelProperty {
 		if (itemValueType instanceof CtTypeParameterReference) {
 			itemValueType = ((CtTypeParameterReference) itemValueType).getBoundingType();
 			if (itemValueType == null) {
-				itemValueType = valueType.getFactory().Type().OBJECT;
+				itemValueType = valueType.getFactory().Type().objectType();
 			}
 		}
 		return itemValueType;
@@ -435,7 +439,7 @@ public class MetamodelProperty {
 	 * @param realType
 	 * @return new expectedType or null if it is not matching
 	 */
-	private MatchLevel getMatchLevel(CtTypeReference<?> expectedType, CtTypeReference<?> realType) {
+	private @Nullable MatchLevel getMatchLevel(CtTypeReference<?> expectedType, CtTypeReference<?> realType) {
 		if (expectedType.equals(realType)) {
 			return MatchLevel.EQUALS;
 		}
@@ -551,7 +555,7 @@ public class MetamodelProperty {
 			CtTypeReference<?> expectedValueType = this.getTypeOfField().getTypeErasure();
 			for (int i = 1; i < potentialRootSuperFields.size(); i++) {
 				MetamodelProperty superField = potentialRootSuperFields.get(i);
-				if (superField.getTypeOfField().getTypeErasure().equals(expectedValueType) == false) {
+				if (!superField.getTypeOfField().getTypeErasure().equals(expectedValueType)) {
 					break;
 				}
 				if (needsSetter && superField.getMethod(MMMethodKind.SET) == null) {

@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.reference;
 
@@ -19,11 +19,10 @@ import java.util.List;
 
 
 /**
- * This is the root interface for named program element references. References
- * can point to program element built in the model or not. In the latter case,
- * introspection methods fall back on runtime reflection (
- * <code>java.lang.reflect</code>) to access the program information, as long as
- * available in the classpath.
+ * This is the root interface for named program element references, such as fields, types,
+ * variables, and so on.
+ * If a reference refers to an element in the shadow model, all introspection methods
+ * fall back to reflection where possible, but not all information might be available.
  *
  * @see spoon.reflect.declaration.CtElement
  */

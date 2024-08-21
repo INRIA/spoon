@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.declaration;
 
@@ -59,6 +59,13 @@ public interface CtParameter<T> extends CtVariable<T>, CtShadowable {
 	@Override
 	@UnsettableProperty
 	<C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
+
+	/**
+	 * {@return whether this parameter is <a href="https://openjdk.org/jeps/456">unnamed</a>}
+	 * Unnamed parameters are always lambda parameters.
+	 */
+	@DerivedProperty
+	boolean isUnnamed();
 
 	/**
 	 * Returns true if this parameter is a lambda parameter with type defined using the `var` keyword (since Java 11).

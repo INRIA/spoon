@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor.chain;
 
@@ -377,7 +377,7 @@ public class CtQueryImpl implements CtQuery {
 		protected void onCallbackSet(String stackClass, String stackMethodName, Class<?> callbackClass, String callbackMethod, int nrOfParams, int idxOfInputParam) {
 			this.cceStacktraceClass = stackClass;
 			this.cceStacktraceMethodName = stackMethodName;
-			if (callbackClass.getName().contains("$$Lambda$")) {
+			if (callbackClass.getName().contains("$$Lambda")) {
 				//lambda expressions does not provide runtime information about type of input parameter
 				//clear it now. We can detect input type from first ClassCastException
 				this.expectedClass = null;

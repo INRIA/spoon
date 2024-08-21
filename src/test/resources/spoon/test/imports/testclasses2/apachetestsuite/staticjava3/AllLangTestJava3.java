@@ -20,10 +20,9 @@ package spoon.test.imports.testclasses2.apachetestsuite.staticjava3;
  * limitations under the License.
  */
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import java.util.List;
+import java.util.ArrayList;
+
 import spoon.test.imports.testclasses2.apachetestsuite.LangTestSuite;
 import spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite;
 
@@ -33,31 +32,28 @@ import spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite;
  * @author Stephen Colebourne
  * @version $Id$
  */
-public class AllLangTestJava3 extends TestCase {
+public class AllLangTestJava3 {
 
     /**
      * Construct a new instance.
      */
     public AllLangTestJava3(String name) {
-        super(name);
     }
 
     /**
      * Command-line interface.
      */
     public static void main(String[] args) {
-        TestRunner.run(truc());
     }
 
     /**
      * Get the suite of tests
      */
-    public static Test truc() {
-        TestSuite suite = new TestSuite();
-        suite.setName("Commons-Lang (all) Tests");
-        suite.addTest(LangTestSuite.suite());
-        suite.addTest(EnumTestSuite.suite());
-        suite.addTest(spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite());
+    public static List truc() {
+        List suite = new ArrayList();
+        suite.add(LangTestSuite.suite());
+        suite.add(EnumTestSuite.suite());
+        suite.add(spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite());
         return suite;
     }
 }

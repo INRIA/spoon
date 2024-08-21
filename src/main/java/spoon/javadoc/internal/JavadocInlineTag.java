@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 /**
  *  This file originally comes from JavaParser and is distributed under the terms of
@@ -20,7 +20,9 @@ import java.io.Serializable;
 * An inline tag contained in a Javadoc description.
 *
 * <p>For example <code>{@link String}</code>
+* @deprecated Use the new javadoc parser submodule, see <a href="https://spoon.gforge.inria.fr/spoon_javadoc.html">Javadoc Parser</a>.
 */
+@Deprecated(forRemoval = true, since = "11.0.0")
 public class JavadocInlineTag implements JavadocDescriptionElement, Serializable {
 	private static final long serialVersionUID = 1L;
 

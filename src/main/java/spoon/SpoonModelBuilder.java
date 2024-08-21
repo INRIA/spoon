@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon;
 
@@ -241,6 +241,25 @@ public interface SpoonModelBuilder {
 	 * Each element of the array is either a jar file or a folder containing bytecode files.
 	 */
 	void setSourceClasspath(String... classpath);
+
+	/**
+	 * Gets the module path used for sourcing the input modules.
+	 * The returned list is immutable and does not contain null values.
+	 *
+	 * @return A list of strings representing the module path. Each string element
+	 *         is the path to a directory or a module jar file.
+	 */
+	List<String> getSourceModulePath();
+
+	/**
+	 * Sets the module path that is used to build/compile the input sources.
+	 * This is the equivalent to the {@code --module-path} option of {@code javac} and {@code java} executables.
+	 *
+	 * @param sourceModulePath The new module path to be set. Each string element
+	 *                         should be the path to a directory or a module jar file.
+	 * @throws NullPointerException if the argument is null or an element of the list is null.
+	 */
+	void setSourceModulePath(List<String> sourceModulePath);
 
 	/**
 	 * Gets the classpath that is used to build the template sources.

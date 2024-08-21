@@ -443,8 +443,8 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 	@Override
-	public <T> void visitCtConstructor(CtConstructor<T> c) {
-
+	public <T> void visitCtConstructor(CtConstructor<T> constructor) {
+		constructor.getBody().accept(this);
 	}
 
 	@Override
@@ -688,8 +688,8 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 	}
 
 	@Override
-	public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
-
+	public <T> void visitCtConstructorCall(CtConstructorCall<T> constructorCall) {
+		defaultAction(BranchKind.STATEMENT, constructorCall);
 	}
 
 	@Override
@@ -878,7 +878,9 @@ public class ControlFlowBuilder extends CtAbstractVisitor {
 		tryAddEdge(lastNode, branch);
 		tryAddEdge(branch, convergenceNode);
 		lastNode = branch;
-		whileLoop.getBody().accept(this);
+		if (whileLoop.getBody() != null) {
+			whileLoop.getBody().accept(this);
+		}
 		tryAddEdge(lastNode, branch, true, false);
 		lastNode = convergenceNode;
 

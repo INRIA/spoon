@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -38,67 +40,31 @@ public class MainTest {
 		Launcher launcher;
 		CtPackage rootPackage;
 
-		// we have to remove the test-classes folder
-		// so that the precondition of --source-classpath is not violated
-		// (target/test-classes contains src/test/resources which itself contains Java files)
-		StringBuilder classpath = new StringBuilder();
-		for (String classpathEntry : System.getProperty("java.class.path").split(File.pathSeparator)) {
-			if (!classpathEntry.contains("test-classes")) {
-				classpath.append(classpathEntry);
-				classpath.append(File.pathSeparator);
-			}
-		}
-		String systemClassPath = classpath.substring(0, classpath.length() - 1);
-
 		launcher = new Launcher();
-
-		launcher.setArgs(new String[] {
-				"-o", "target/spooned",
-				"--destination","target/spooned-build",
-				"--source-classpath", systemClassPath,
-				"--compile", // compiling Spoon code itself on the fly
-				"--compliance", "8",
-				"--level", "OFF",
-		});
+		launcher.getEnvironment().setComplianceLevel(11);
 
 		// there are still some bugs with comments
 		launcher.getEnvironment().setCommentEnabled(false);
 
-		int n = 0;
-		Files.walk(Paths.get("src/test/java"))
-				.filter(path -> path.toFile().getAbsolutePath().contains("testclasses")
-						&& path.toFile().isFile() // only Java files, not directory
-				)
+		try (Stream<Path> stream = Files.walk(Paths.get("src/test/java"))) {
+			stream.filter(path -> path.toAbsolutePath().toString().contains("testclasses")
+							&& Files.isRegularFile(path) // only Java files, not directory
+					)
 
-				// by using testclasses, we find a lot of bugs
-				// I propose to put them under the carpet first (aka carpet debugging)
-				// in order to make progress on this important blocking first refactoring
+					// by using testclasses, we find a lot of bugs
+					// I propose to put them under the carpet first (aka carpet debugging)
+					// in order to make progress on this important blocking first refactoring
 
-				// bug 1: those three classes together trigger a bug somewhere in inner class
-				.filter(path -> !filePathContains(path, "fieldaccesses/testclasses/Tacos")) // carpet debugging
-				.filter(path -> !filePathContains(path, "fieldaccesses/testclasses/internal/Bar"))
-				.filter(path -> !filePathContains(path, "fieldaccesses/testclasses/internal/Foo"))
-				.filter(path -> !filePathContains(path, "reference/testclasses/Stream"))
+					// bug 1: those two classes together trigger a bug somewhere in inner class
+					.filter(path -> !filePathContains(path, "fieldaccesses/testclasses/Tacos")) // carpet debugging
+					.filter(path -> !filePathContains(path, "reference/testclasses/Stream"))
 
-				// bug 2: remove the filter to trigger it
-				.filter(path -> !filePathContains(path, "AccessibleClassFromNonAccessibleInterf"))
+					// bug 2: remove the filter to trigger it
+					.filter(path -> !filePathContains(path, "MethodeWithNonAccessibleTypeArgument"))
 
-				// bug 3: remove the filter to trigger it
-				.filter(path -> !filePathContains(path, "MethodeWithNonAccessibleTypeArgument"))
-
-				// bug 4: remove the filter to trigger it
-				.filter(path -> !filePathContains(path, "lambda/testclasses/Bar"))
-
-				// bug 5: remove the filter to trigger it
-				.filter(path -> !filePathContains(path, "LambdaRxJava"))
-
-				// bug 6: remove the filter to trigger it
-				.filter(path -> !filePathContains(path, "Tapas"))
-
-				.forEach(x -> {
-					launcher.addInputResource(x.toString());
-					}
-				);
+					.map(Path::toString)
+					.forEach(launcher::addInputResource);
+		}
 
 		launcher.buildModel();
 
@@ -134,7 +100,8 @@ public class MainTest {
 		// this helps a lot to easily automatically differentiate app classes and test classes
 		for (CtType t : launcher.getFactory().getModel().getAllTypes()) {
 			if ("spoon.metamodel".equals(t.getPackage().getQualifiedName())
-					|| t.getPackage().getQualifiedName().startsWith("spoon.generating")) {
+					|| t.getPackage().getQualifiedName().startsWith("spoon.generating")
+					|| t.getPackage().getQualifiedName().startsWith("spoon.support.util.compilation")) {
 				//Meta model classes doesn't have to follow test class naming conventions
 				continue;
 			}

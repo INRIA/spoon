@@ -105,7 +105,7 @@ public class CastTest {
 		assertEquals("T", getValueMethod.getType().getSimpleName());
 		assertEquals("T", getValueMethod.getParameters().get(0).getType().getActualTypeArguments().get(0).toString());
 
-		assertEquals(type.getFactory().Class().INTEGER, getValueInvocation.getType());
+		assertEquals(type.getFactory().Class().integerType(), getValueInvocation.getType());
 	}
 
 	@Test

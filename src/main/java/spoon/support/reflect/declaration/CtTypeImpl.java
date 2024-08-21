@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.declaration;
 
@@ -14,15 +14,20 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
@@ -81,7 +86,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@MetamodelPropertyField(role = {CtRole.TYPE_MEMBER, CtRole.FIELD, CtRole.CONSTRUCTOR, CtRole.ANNONYMOUS_EXECUTABLE, CtRole.METHOD, CtRole.NESTED_TYPE})
 	List<CtTypeMember> typeMembers = emptyList();
 
-	public CtTypeImpl() {
+	protected CtTypeImpl() {
 	}
 
 	@Override
@@ -347,7 +352,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	public <N extends CtType<?>> N getNestedType(final String name) {
 		class NestedTypeScanner extends EarlyTerminatingScanner<CtType<?>> {
 
-			private boolean checkType(CtType<?> type) {
+			private boolean typeIsTarget(CtType<?> type) {
 				if (type.getSimpleName().equals(name) && CtTypeImpl.this.equals(type.getDeclaringType())) {
 					setResult(type);
 					terminate();
@@ -357,49 +362,58 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			}
 
 			@Override
-			public <U> void visitCtClass(spoon.reflect.declaration.CtClass<U> ctClass) {
-				if (!checkType(ctClass)) {
-					final List<CtTypeMember> typeMembers = new ArrayList<>();
-					for (CtTypeMember typeMember : ctClass.getTypeMembers()) {
-						if (typeMember instanceof CtType || typeMember instanceof CtConstructor || typeMember instanceof CtMethod) {
-							typeMembers.add(typeMember);
-						}
-					}
-					scan(typeMembers);
-				}
+			public <U> void visitCtClass(CtClass<U> ctClass) {
+				visitType(ctClass);
 			}
 
 			@Override
-			public <U> void visitCtInterface(spoon.reflect.declaration.CtInterface<U> intrface) {
-				if (!checkType(intrface)) {
-					final List<CtTypeMember> typeMembers = new ArrayList<>();
-					for (CtTypeMember typeMember : intrface.getTypeMembers()) {
-						if (typeMember instanceof CtType || typeMember instanceof CtMethod) {
-							typeMembers.add(typeMember);
-						}
-					}
-					scan(typeMembers);
-				}
+			public <U> void visitCtInterface(CtInterface<U> intrface) {
+				visitType(intrface);
 			}
 
 			@Override
-			public <U extends java.lang.Enum<?>> void visitCtEnum(spoon.reflect.declaration.CtEnum<U> ctEnum) {
-				if (!checkType(ctEnum)) {
-					final List<CtTypeMember> typeMembers = new ArrayList<>();
-					for (CtTypeMember typeMember : ctEnum.getTypeMembers()) {
-						if (typeMember instanceof CtType || typeMember instanceof CtConstructor || typeMember instanceof CtMethod) {
-							typeMembers.add(typeMember);
-						}
-					}
-					scan(typeMembers);
-				}
+			public <U extends Enum<?>> void visitCtEnum(CtEnum<U> ctEnum) {
+				visitType(ctEnum);
 			}
 
 			@Override
 			public <A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> annotationType) {
-				if (!checkType(annotationType)) {
-					scan(annotationType.getNestedTypes());
+				visitType(annotationType);
+			}
+
+			@Override
+			public void visitCtRecord(CtRecord recordType) {
+				visitType(recordType);
+			}
+
+			@Override
+			public void visitCtTypeParameter(CtTypeParameter typeParameter) {
+				// ignored, can not harbour any nested types
+			}
+
+			@Override
+			protected void enter(CtElement e) {
+				if (e instanceof CtType) {
+					throw new SpoonException(
+						"Please open a bug report (https://github.com/INRIA/spoon/issues/new/choose) "
+							+ "with the following information: "
+							+ "Unhandled type detected in CtTypeImpl#getNestedType. "
+							+ "The scanner should probably be extended to cover " + e.getClass() + "."
+					);
 				}
+			}
+
+			private void visitType(CtType<?> type) {
+				if (typeIsTarget(type)) {
+					return;
+				}
+				final List<CtTypeMember> typeMembers = new ArrayList<>();
+				for (CtTypeMember typeMember : type.getTypeMembers()) {
+					if (typeMember instanceof CtType || typeMember instanceof CtConstructor || typeMember instanceof CtMethod) {
+						typeMembers.add(typeMember);
+					}
+				}
+				scan(typeMembers);
 			}
 		}
 		NestedTypeScanner scanner = new NestedTypeScanner();

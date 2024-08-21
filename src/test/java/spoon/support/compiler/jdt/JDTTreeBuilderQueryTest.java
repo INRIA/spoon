@@ -66,6 +66,8 @@ class JDTTreeBuilderQueryTest {
 		modifierMap.put(classFileConstant("AccSynchronized"), ModifierKind.SYNCHRONIZED);
 		modifierMap.put(classFileConstant("AccNative"), ModifierKind.NATIVE);
 		modifierMap.put(classFileConstant("AccStrictfp"), ModifierKind.STRICTFP);
+		modifierMap.put(extraCompilerModifier("AccSealed"), ModifierKind.SEALED);
+		modifierMap.put(extraCompilerModifier("AccNonSealed"), ModifierKind.NON_SEALED);
 		List<ModifierKind> remaining = Arrays.stream(ModifierKind.values())
 				.filter(k -> !modifierMap.containsValue(k))
 				.collect(Collectors.toList());
@@ -91,6 +93,15 @@ class JDTTreeBuilderQueryTest {
 	private static Field classFileConstant(String name) {
 		try {
 			return ClassFileConstants.class.getDeclaredField(name);
+		} catch (NoSuchFieldException e) {
+			fail(e);
+			return null;
+		}
+	}
+
+	private static Field extraCompilerModifier(String name) {
+		try {
+			return ExtraCompilerModifiers.class.getDeclaredField(name);
 		} catch (NoSuchFieldException e) {
 			fail(e);
 			return null;

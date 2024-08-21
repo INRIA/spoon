@@ -12,30 +12,16 @@
   <parent>
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-pom</artifactId>
-    <version>1.0</version>
+    <version>11.1.1-SNAPSHOT</version>
     <relativePath>spoon-pom</relativePath>
   </parent>
 
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>10.2.0-SNAPSHOT</version>
+  <version>11.1.1-SNAPSHOT</version>
   <name>Spoon Core</name>
   <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
-  <url>http://spoon.gforge.inria.fr/</url>
-
-  <licenses>
-      <license>
-          <name>CeCILL-C</name>
-          <comments>French equivalent to LGPL</comments>
-          <url>https://cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
-          <distribution>repo</distribution>
-      </license>
-      <license>
-          <name>MIT</name>
-          <url>https://opensource.org/licenses/MIT</url>
-          <distribution>repo</distribution>
-      </license>
-  </licenses>
+  <url>https://spoon.gforge.inria.fr/</url>
 
   <properties>
     <sonar.coverage.exclusions>
@@ -48,7 +34,7 @@
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.29.0</version>
+      <version>3.38.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.platform</groupId>
@@ -82,47 +68,59 @@
       <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.11.0</version>
+      <version>2.16.1</version>
     </dependency>
     <dependency>
+	<!-- We use this old version for maximum compatibility, as we use the system maven installation for all commands anyways. -->
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
-      <version>[3.6.0,)</version>
+      <version>3.6.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.12.0</version>
+      <version>3.16.0</version>
     </dependency>
   <!-- https://mvnrepository.com/artifact/org.tukaani/xz -->
 	<dependency>
     	<groupId>org.tukaani</groupId>
     	<artifactId>xz</artifactId>
-    	<version>1.9</version>
+    	<version>1.10</version>
         <scope>test</scope>
 	</dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.13.2.2</version>
+      <version>2.17.2</version>
     </dependency>
     <dependency>
       <!-- support for compressed serialized ASTs -->
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
-      <version>1.21</version>
+      <version>1.27.1</version>
 	</dependency>
+    <dependency>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.26.3</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <!-- to reproduce JTD error with nullable annotation -->
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>31.1-jre</version>
+      <version>33.3.0-jre</version>
       <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.2.11</version>
+        <version>1.5.7</version>
         <scope>test</scope>
     </dependency>
     <dependency>
@@ -149,7 +147,7 @@
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-invoker</artifactId>
-      <version>3.2.0</version>
+      <version>3.3.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
     <dependency>
@@ -168,7 +166,7 @@
     <dependency>
       <groupId>org.kohsuke.metainf-services</groupId>
       <artifactId>metainf-services</artifactId>
-      <version>1.9</version>
+      <version>1.11</version>
       <optional>true</optional>
       <scope>test</scope>
     </dependency>
@@ -176,58 +174,8 @@
   <build>
     <plugins>
         <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.8</version>
-            <executions>
-                <execution>
-                    <goals>
-                        <goal>prepare-agent</goal>
-                    </goals>
-                </execution>
-                <execution>
-                    <id>report</id>
-                    <phase>prepare-package</phase>
-                    <goals>
-                        <goal>report</goal>
-                    </goals>
-                </execution>
-                <execution>
-                  <!-- reference:
-                  * https://www.jacoco.org/jacoco/trunk/doc/check-mojo.html
-                  * https://stackoverflow.com/questions/41891739/how-to-fail-a-maven-build-if-junit-coverage-falls-below-certain-threshold
-                  -->
-                  <id>check-coverage</id>
-                  <goals>
-                    <goal>check</goal>
-                  </goals>
-                  <configuration>
-                    <rules>
-                    <rule implementation="org.jacoco.maven.RuleConfiguration">
-                      <element>CLASS</element>
-                      <excludes>
-                        <!-- we exclude the GUI classes, because we don't have Swing GUI tests in CI -->
-                        <exclude>spoon.support.gui.*</exclude>
-                        <!-- we exclude the generated inner classes of ReplacementVisitor -->
-                        <exclude>spoon.support.visitor.replace.ReplacementVisitor.*</exclude>
-                      </excludes>
-                      <limits>
-                        <limit implementation="org.jacoco.report.check.Limit">
-                          <counter>LINE</counter>
-                          <value>COVEREDRATIO</value>
-                          <minimum>0.1</minimum>
-                        </limit>
-                      </limits>
-                    </rule>
-                  </rules>
-                  </configuration>
-                </execution>
-          </executions>
-      </plugin>
-        <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
-            <version>3.3.0</version>
             <configuration>
                 <archive>
                     <manifest>
@@ -257,12 +205,13 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.1.2</version>
+        <version>3.4.0</version>
         <configuration>
           <failsOnError>true</failsOnError>
           <consoleOutput>true</consoleOutput>
           <!-- we exclude the generated files, see CtGenerationTest -->
           <excludes>spoon/support/visitor/clone/CloneBuilder.java</excludes>
+          <excludes>spoon/support/visitor/clone/CloneVisitor.java</excludes>
           <excludes>spoon/reflect/visitor/CtBiScannerDefault.java</excludes>
           <excludes>spoon/support/visitor/equals/EqualsVisitor.java</excludes>
           <excludes>spoon/support/visitor/replace/ReplacementVisitor.java</excludes>
@@ -279,7 +228,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M6</version>
         <configuration>
           <classpathDependencyExcludes>
             <classpathDependencyExclude>ch.qos.logback:logback-classic</classpathDependencyExclude>
@@ -287,24 +235,42 @@
           </classpathDependencyExcludes>
         </configuration>
       </plugin>
-
       <plugin>
-        <!-- see https://github.com/castor-software/depclean -->
-        <groupId>se.kth.castor</groupId>
-        <artifactId>depclean-maven-plugin</artifactId>
-        <version>2.0.2</version>
-        <executions>
-          <execution>
-              <goals>
-                <goal>depclean</goal>
-              </goals>
-             <configuration>
-               <!-- the build should fail if there are unused direct dependencies -->
-               <failIfUnusedDirect>true</failIfUnusedDirect>
-             </configuration>
-           </execution>
-        </executions>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.43.0</version>
+        <configuration>
+          <formats>
+            <format>
+              <includes>
+                <include>src/test/java/spoon/testing/assertions/**/*.java</include>
+              </includes>
+              <trimTrailingWhitespace/>
+              <endWithNewline/>
+              <indent>
+                <tabs>true</tabs>
+                <spacesPerTab>4</spacesPerTab>
+              </indent>
+            </format>
+          </formats>
+          <java>
+            <includes>
+              <include>src/test/java/spoon/testing/assertions/**/*.java</include>
+            </includes>
+            <palantirJavaFormat>
+              <version>2.40.0</version>
+              <style>PALANTIR</style>
+              <formatJavadoc>true</formatJavadoc>
+            </palantirJavaFormat>
+          </java>
+        </configuration>
       </plugin>
     </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
   </build>
 </project>

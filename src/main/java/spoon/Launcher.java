@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon;
 
@@ -551,7 +551,7 @@ public class Launcher implements SpoonAPI {
 
 	protected void reportClassPathMode() {
 		String cpmode = jsapActualArgs.getString("cpmode").toUpperCase();
-		factory.getEnvironment().report(null, Level.INFO, "Running in " + cpmode + " mode (doc: http://spoon.gforge.inria.fr/launcher.html).");
+		factory.getEnvironment().report(null, Level.DEBUG, "Running in " + cpmode + " mode (doc: http://spoon.gforge.inria.fr/launcher.html).");
 	}
 
 	/**
@@ -723,10 +723,9 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public void run() {
 		Environment env = modelBuilder.getFactory().getEnvironment();
-		env.reportProgressMessage(getVersionMessage());
-		env.reportProgressMessage("running Spoon...");
-
-		env.reportProgressMessage("start processing...");
+		env.debugMessage(getVersionMessage());
+		env.reportProgressMessage("Running Spoon...");
+		env.debugMessage("Start processing...");
 
 		long tstart = System.currentTimeMillis();
 
@@ -743,7 +742,7 @@ public class Launcher implements SpoonAPI {
 
 		long t = System.currentTimeMillis();
 
-		env.debugMessage("program spooning done in " + (t - tstart) + " ms");
+		env.debugMessage("Program spooning done in " + (t - tstart) + " ms");
 		env.reportEnd();
 
 	}
@@ -813,13 +812,13 @@ public class Launcher implements SpoonAPI {
 			for (File dirInputSource : modelBuilder.getInputSources()) {
 				if (dirInputSource.isDirectory()) {
 					final Path dirInputSourceAsPath = dirInputSource.toPath();
-					final Collection<?> resources = FileUtils.listFiles(dirInputSource, RESOURCES_FILE_FILTER, ALL_DIR_FILTER);
-					for (Object resource : resources) {
-						final Path resourcePath = ((File) resource).toPath();
+					final Collection<File> resources = FileUtils.listFiles(dirInputSource, RESOURCES_FILE_FILTER, ALL_DIR_FILTER);
+					for (File resource : resources) {
+						final Path resourcePath = resource.toPath();
 						final Path relativePath = dirInputSourceAsPath.relativize(resourcePath);
 						final Path targetPath = outputPath.resolve(relativePath).getParent();
 						try {
-							FileUtils.copyFileToDirectory((File) resource, targetPath.toFile());
+							FileUtils.copyFileToDirectory(resource, targetPath.toFile());
 						} catch (IOException e) {
 							throw new SpoonException(e);
 						}

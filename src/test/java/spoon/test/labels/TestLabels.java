@@ -28,8 +28,10 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import org.junit.jupiter.api.Test;
+import spoon.testing.utils.ModelTest;
 
 import java.util.List;
 
@@ -42,13 +44,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * Created by urli on 19/06/2017.
  */
 public class TestLabels {
-    @Test
-    public void testLabelsAreDetected() {
-        Launcher launcher = new Launcher();
-        launcher.addInputResource("./src/test/java/spoon/test/labels/testclasses/ManyLabels.java");
-        launcher.buildModel();
 
-        CtMethod mainMethod = launcher.getFactory().getModel().getElements(new NamedElementFilter<>(CtMethod.class,"main")).get(0);
+    @ModelTest("./src/test/java/spoon/test/labels/testclasses/ManyLabels.java")
+    public void testLabelsAreDetected(Factory factory) {
+        CtMethod mainMethod = factory.getModel().getElements(new NamedElementFilter<>(CtMethod.class,"main")).get(0);
 
         CtBlock body = mainMethod.getBody();
         assertEquals(2, body.getStatements().size());

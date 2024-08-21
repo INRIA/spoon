@@ -37,6 +37,7 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -51,10 +52,12 @@ import spoon.support.SpoonClassNotFoundException;
 import spoon.test.type.testclasses.Mole;
 import spoon.test.type.testclasses.Pozole;
 import spoon.test.type.testclasses.TypeMembersOrder;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -112,16 +115,9 @@ public class TypeTest {
 		assertFalse(op.getRightHandOperand().getType().isPrimitive());
 	}
 
-	@Test
-	public void testTypeAccessForTypeAccessInInstanceOf() {
+	@ModelTest("./src/test/java/spoon/test/type/testclasses")
+	public void testTypeAccessForTypeAccessInInstanceOf(Launcher launcher) {
 		// contract: the right hand operator must be a CtTypeAccess.
-		final String target = "./target/type";
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/type/testclasses");
-		launcher.setSourceOutputDirectory(target);
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.run();
-
 		final CtClass<Pozole> aPozole = launcher.getFactory().Class().get(Pozole.class);
 		final CtMethod<?> eat = aPozole.getMethodsByName("eat").get(0);
 
@@ -183,14 +179,9 @@ public class TypeTest {
 		assertFalse(typeAccesses.getAccessedType().isImplicit());
 	}
 
-	@Test
-	public void test() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/TorIntegration.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.buildModel();
-
-		CtType<?> ctType = launcher.getFactory().Class().getAll().get(0);
+	@ModelTest("./src/test/resources/noclasspath/TorIntegration.java")
+	public void test(Factory factory) {
+		CtType<?> ctType = factory.Class().getAll().get(0);
 		List<CtNewClass> elements = ctType.getElements(new TypeFilter<>(CtNewClass.class));
 		assertEquals(4, elements.size());
 		for (CtNewClass ctNewClass : elements) {
@@ -328,21 +319,16 @@ public class TypeTest {
 		assertNotNull(factory.Enum().create("fr.inria.ETest").getReference().getDeclaration());
 	}
 
-	@Test
-	public void testPolyTypBindingInTernaryExpression() {
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/ternary-bug");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.buildModel();
-
-		CtType<Object> aType = launcher.getFactory().Type().get("de.uni_bremen.st.quide.persistence.transformators.IssueTransformator");
+	@ModelTest("./src/test/resources/noclasspath/ternary-bug")
+	public void testPolyTypBindingInTernaryExpression(Factory factory) {
+		CtType<Object> aType = factory.Type().get("de.uni_bremen.st.quide.persistence.transformators.IssueTransformator");
 		CtConstructorCall ctConstructorCall = aType.getElements(new TypeFilter<CtConstructorCall>(CtConstructorCall.class) {
 			@Override
 			public boolean matches(CtConstructorCall element) {
 				return "TOIssue".equals(element.getExecutable().getType().getSimpleName()) && super.matches(element);
 			}
 		}).get(0);
-		assertEquals(launcher.getFactory().Type().objectType(), ctConstructorCall.getExecutable().getParameters().get(9));
+		assertEquals(factory.Type().objectType(), ctConstructorCall.getExecutable().getParameters().get(9));
 	}
 
 	@Test
@@ -402,17 +388,9 @@ public class TypeTest {
 
 	}
 
-	@Test
-	public void testTypeMemberOrder() {
-		// contract: The TypeMembers keeps order of members same like in source file 
-		final String target = "./target/type";
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/type/testclasses/TypeMembersOrder.java");
-		launcher.setSourceOutputDirectory(target);
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.run();
-
-		Factory f = launcher.getFactory();
+	@ModelTest("./src/test/java/spoon/test/type/testclasses/TypeMembersOrder.java")
+	public void testTypeMemberOrder(Factory f) {
+		// contract: The TypeMembers keeps order of members same like in source file
 		final CtClass<?> aTypeMembersOrder = f.Class().get(TypeMembersOrder.class);
 		{
 			List<String> typeMemberNames = new ArrayList<>();
@@ -440,5 +418,16 @@ public class TypeTest {
 		CtModel model = launcher.buildModel();
 		List<CtBinaryOperator> concats = model.getElements(new TypeFilter<>(CtBinaryOperator.class));
 		concats.forEach(c -> assertEquals("java.lang.String", c.getType().toString()));
+	}
+
+	@ModelTest(
+					value = {"./src/test/resources/noclasspath/issue5208/"},
+					noClasspath = true
+	)
+	void testClassNotReplacedInNoClasspathMode(Factory factory) {
+		// contract: ClassT1 is not replaced once present when looking up the ClassT1#classT3 field from ClassT2
+		CtType<?> type = factory.Type().get("p20.ClassT1");
+		assertNotNull(type);
+		assertNotEquals(SourcePosition.NOPOSITION, type.getPosition());
 	}
 }

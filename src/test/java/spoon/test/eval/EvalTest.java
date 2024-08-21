@@ -18,9 +18,19 @@ package spoon.test.eval;
 
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -28,26 +38,32 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.AccessibleVariablesFinder;
+import spoon.reflect.visitor.OperatorHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.eval.EvalHelper;
 import spoon.support.reflect.eval.InlinePartialEvaluator;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.eval.testclasses.Foo;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class EvalTest {
@@ -96,7 +112,7 @@ public class EvalTest {
 		CtBlock<?> b = type.getMethodsByName("testDoNotSimplifyCasts").get(0).getBody();
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
-		assertEquals("return ((U) ((java.lang.Object) (spoon.test.eval.testclasses.ToEvaluate.castTarget(element).getClass())))", b.getStatements().get(0).toString());
+		assertEquals("return ((U) (java.lang.Object) (spoon.test.eval.testclasses.ToEvaluate.castTarget(element).getClass()))", b.getStatements().get(0).toString());
 	}
 
 	@Test
@@ -161,7 +177,7 @@ public class EvalTest {
 	@Test
 	public void testVisitorPartialEvaluator_binary() {
 		Launcher launcher = new Launcher();
-		
+
 		{ // binary operator
 			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("0+1").compile();
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
@@ -311,7 +327,286 @@ public class EvalTest {
 
 	}
 
+	private static <T> CtTypeReference<?> inferType(CtBinaryOperator<T> ctBinaryOperator) {
+		switch (ctBinaryOperator.getKind()) {
+			case AND:
+			case OR:
+			case INSTANCEOF:
+			case EQ:
+			case NE:
+			case LT:
+			case LE:
+			case GT:
+			case GE:
+				return ctBinaryOperator.getFactory().Type().booleanPrimitiveType();
+			case SL:
+			case SR:
+			case USR:
+			case MUL:
+			case DIV:
+			case MOD:
+			case MINUS:
+			case PLUS:
+			case BITAND:
+			case BITXOR:
+			case BITOR:
+				return OperatorHelper.getPromotedType(
+					ctBinaryOperator.getKind(),
+					ctBinaryOperator.getLeftHandOperand(),
+					ctBinaryOperator.getRightHandOperand()
+				).orElseThrow();
+			default:
+				throw new IllegalArgumentException("Unknown operator: " + ctBinaryOperator.getKind());
+		}
+	}
+
 	private CtBinaryOperator<?> createBinaryOperatorOnLiterals(Factory factory, Object leftLiteral, Object rightLiteral, BinaryOperatorKind opKind) {
-		return factory.createBinaryOperator(factory.createLiteral(leftLiteral), factory.createLiteral(rightLiteral), opKind);
+		CtBinaryOperator<?> result = factory.createBinaryOperator(factory.createLiteral(leftLiteral), factory.createLiteral(rightLiteral), opKind);
+		if (result.getType() == null) {
+			result.setType(inferType(result));
+		}
+		return result;
+	}
+
+	@ParameterizedTest
+	@CsvSource(
+		delimiter = '|',
+		useHeadersInDisplayName = true,
+		value = {
+			" Literal  | Expected  ",
+			"-1.234567 | -1.234567 ",
+			"-2.345F   | -2.345F   ",
+			"-3        | -3        ",
+			"-4L       | -4L       "
+		}
+	)
+	void testDoublePrecisionLost(String literal, String expected) {
+		// contract: the partial evaluation of a binary operator on literals does not lose precision for double and float
+		String code = "public class Test {\n"
+		+ "	void test() {\n"
+		+ "		System.out.println(%s);\n"
+		+ "	}\n"
+		+ "}\n";
+		CtMethod<?> method =  Launcher.parseClass(String.format(code, literal)).getElements(new TypeFilter<>(CtMethod.class)).get(0);
+		CtInvocation<?> parameter = method.getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		method.setBody(method.getBody().partiallyEvaluate());
+		assertEquals(expected, parameter.getArguments().get(0).toString());
+	}
+
+	private static final Map<Class<?>, Function<Factory, CtLiteral<?>>> LITERAL_PROVIDER = Map.ofEntries(
+		Map.entry(byte.class, factory -> factory.createLiteral((byte) 1)),
+		Map.entry(short.class, factory -> factory.createLiteral((short) 1)),
+		Map.entry(int.class, factory -> factory.createLiteral((int) 1)),
+		Map.entry(long.class, factory -> factory.createLiteral(1L)),
+		Map.entry(float.class, factory -> factory.createLiteral(1.0f)),
+		Map.entry(double.class, factory -> factory.createLiteral(1.0d)),
+		Map.entry(boolean.class, factory -> factory.createLiteral(true)),
+		Map.entry(char.class, factory -> factory.createLiteral('a')),
+		Map.entry(String.class, factory -> factory.createLiteral("a")),
+		// null can be any type, so use Object.class
+		Map.entry(Object.class, factory -> factory.createLiteral(null))
+	);
+
+	// Returns a stream of all ordered pairs. For example, cartesianProduct([1, 2], [a, b])
+	// returns [(1, a), (1, b), (2, a), (2, b)]
+	private static <A, B> Stream<Map.Entry<A, B>> cartesianProduct(Collection<? extends A> left, Collection<? extends B> right) {
+		return left.stream().flatMap(l -> right.stream().map(r -> Map.entry(l, r)));
+	}
+
+	private static Stream<Arguments> provideBinaryOperatorsForAllLiterals() {
+		// This generates all combinations of binary operators and literals:
+		//
+		// There are 10 types, so 10 * 10 = 100 pairs
+		// For each pair, all operators are tested: 100 * 19 = 1900 tests
+		return cartesianProduct(LITERAL_PROVIDER.entrySet(), LITERAL_PROVIDER.entrySet())
+			.flatMap(tuple -> Arrays.stream(BinaryOperatorKind.values())
+				// not yet implemented and does not make sense on literals
+				.filter(operator -> operator != BinaryOperatorKind.INSTANCEOF)
+				.map(operator -> Arguments.of(operator, tuple.getKey().getKey(), tuple.getKey().getValue(), tuple.getValue().getKey(), tuple.getValue().getValue())));
+	}
+
+	@ParameterizedTest(name = "{0}({1}, {3})")
+	@MethodSource("provideBinaryOperatorsForAllLiterals")
+	void testVisitCtBinaryOperatorLiteralType(
+		BinaryOperatorKind operator,
+		Class<?> leftType,
+		Function<Factory, CtLiteral<?>> leftLiteralProvider,
+		Class<?> rightType,
+		Function<Factory, CtLiteral<?>> rightLiteralProvider
+	) {
+		// contract: the type is preserved during partial evaluation
+
+		Launcher launcher = new Launcher();
+
+		CtLiteral<?> leftLiteral = leftLiteralProvider.apply(launcher.getFactory());
+		CtLiteral<?> rightLiteral = rightLiteralProvider.apply(launcher.getFactory());
+
+		Optional<CtTypeReference<?>> expectedType = OperatorHelper.getPromotedType(operator, leftLiteral, rightLiteral);
+
+		if (expectedType.isEmpty()) {
+			return;
+		}
+		String code = "public class Test {\n"
+			+ "	void test() {\n"
+			+ "		System.out.println(%s);\n"
+			+ "	}\n"
+			+ "}\n";
+
+		launcher.addInputResource(new VirtualFile(String.format(
+			code,
+			String.format("(%s) %s (%s)", leftLiteral, OperatorHelper.getOperatorText(operator), rightLiteral)
+		)));
+
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setAutoImports(true);
+
+		CtClass<?> ctClass = (CtClass<?>) launcher.buildModel().getAllTypes().stream().findFirst().get();
+		CtBinaryOperator<?> ctBinaryOperator = ctClass
+			.getElements(new TypeFilter<>(CtBinaryOperator.class))
+			.get(0);
+
+		CtType<?> currentType = ctBinaryOperator.getType().getTypeDeclaration().clone();
+		CtExpression<?> evaluated = ctBinaryOperator.partiallyEvaluate();
+		assertNotNull(
+			evaluated.getType(),
+			String.format("type of '%s' is null after evaluation", ctBinaryOperator)
+		);
+		assertEquals(currentType, evaluated.getType().getTypeDeclaration());
+	}
+
+	@Test
+	void testEvaluateLiteralTypeCasts() {
+		String code = "public class Test {\n"
+			+ "	void test() {\n"
+			+ "		System.out.println((byte) 400 + 20);\n"
+			+ "	}\n"
+			+ "}\n";
+		CtBinaryOperator<?> ctBinaryOperator =  Launcher.parseClass(code)
+			.getElements(new TypeFilter<>(CtBinaryOperator.class))
+			.get(0);
+		CtLiteral<?> evaluated = ctBinaryOperator.partiallyEvaluate();
+		assertNotNull(
+			evaluated.getType(),
+			String.format("type of '%s' is null after evaluation", ctBinaryOperator)
+		);
+		assertEquals(
+			ctBinaryOperator.getFactory().Type().integerPrimitiveType(),
+			evaluated.getType()
+		);
+		assertEquals(
+			-92,
+			evaluated.getValue()
+		);
+	}
+
+	private static Stream<Arguments> provideUnaryOperatorsForAllLiterals() {
+		// This generates all combinations of unary operators and literals:
+		return LITERAL_PROVIDER.entrySet()
+			.stream()
+			// String cannot be used with unary operators
+			.filter(entry -> !entry.getKey().equals(String.class))
+			.flatMap(entry -> Arrays.stream(UnaryOperatorKind.values())
+				.map(operator -> Arguments.of(operator, entry.getKey(), entry.getValue()))
+			);
+	}
+
+	@ParameterizedTest(name = "{0}({1})")
+	@MethodSource("provideUnaryOperatorsForAllLiterals")
+	void testVisitCtUnaryOperatorLiteralType(UnaryOperatorKind operator, Class<?> type, Function<Factory, CtLiteral<?>> provider) {
+		// contract: the type is preserved during partial evaluation
+		Launcher launcher = new Launcher();
+
+		CtLiteral<?> literal = provider.apply(launcher.getFactory());
+
+		Optional<CtTypeReference<?>> expectedType = OperatorHelper.getPromotedType(operator, literal);
+
+		if (expectedType.isEmpty()) {
+			return;
+		}
+
+		String code = "public class Test {\n"
+			+ "	void test() {\n"
+			+ "		System.out.println(%s);\n"
+			+ "	}\n"
+			+ "}\n";
+
+		launcher.addInputResource(new VirtualFile(String.format(
+			code,
+			String.format("%s(%s)", OperatorHelper.getOperatorText(operator), literal)
+		)));
+
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setAutoImports(true);
+
+		CtClass<?> ctClass = (CtClass<?>) launcher.buildModel().getAllTypes().stream().findFirst().get();
+		CtUnaryOperator<?> ctUnaryOperator =  ctClass
+			.getElements(new TypeFilter<>(CtUnaryOperator.class))
+			.get(0);
+		CtType<?> currentType = ctUnaryOperator.getType().getTypeDeclaration().clone();
+		CtExpression<?> evaluated = ctUnaryOperator.partiallyEvaluate();
+		assertNotNull(
+			evaluated.getType(),
+			String.format("type of '%s' is null after evaluation", ctUnaryOperator)
+		);
+		assertEquals(currentType, evaluated.getType().getTypeDeclaration());
+	}
+
+	@Test
+	void testVisitCtFieldAccessLiteralType() {
+		// contract: the type is preserved during partial evaluation
+		String code = "public class Test {\n"
+			+ "	void test() {\n"
+			+ "		System.out.println(String.class);\n"
+			+ "	}\n"
+			+ "}\n";
+		CtFieldAccess<?> ctFieldAccess =  Launcher.parseClass(code)
+			.getElements(new TypeFilter<>(CtFieldAccess.class))
+			.get(0);
+		CtType<?> currentType = ctFieldAccess.getType().getTypeDeclaration();
+		CtExpression<?> evaluated = ctFieldAccess.partiallyEvaluate();
+		assertNotNull(
+			evaluated.getType(),
+			String.format("type of '%s' is null after evaluation", ctFieldAccess)
+		);
+		assertEquals(currentType, evaluated.getType().getTypeDeclaration());
+	}
+
+	@Test
+	void testVisitCtBinaryOperatorIntegerDivision() {
+		String code = "public class Test {\n"
+			+ "	void test() {\n"
+			+ "		System.out.println(1 / 0);\n"
+			+ "	}\n"
+			+ "}\n";
+		CtBinaryOperator<?> ctBinaryOperator =  Launcher.parseClass(code)
+			.getElements(new TypeFilter<>(CtBinaryOperator.class))
+			.get(0);
+		SpoonException exception = assertThrows(
+			SpoonException.class,
+			ctBinaryOperator::partiallyEvaluate
+		);
+
+		assertEquals(
+			"Expression '1 / 0' evaluates to '1 / 0' which can not be evaluated",
+			exception.getMessage()
+		);
+	}
+
+	@Test
+	void testVisitCtBinaryOperatorFloatingDivision() {
+		String code = "public class Test {\n"
+			+ "	void test() {\n"
+			+ "		System.out.println(1.0 / 0);\n"
+			+ "	}\n"
+			+ "}\n";
+		CtBinaryOperator<?> ctBinaryOperator =  Launcher.parseClass(code)
+			.getElements(new TypeFilter<>(CtBinaryOperator.class))
+			.get(0);
+		CtLiteral<?> ctLiteral = ctBinaryOperator.partiallyEvaluate();
+
+		assertEquals(
+			ctBinaryOperator.getFactory().createLiteral(Double.POSITIVE_INFINITY),
+			ctLiteral
+		);
 	}
 }

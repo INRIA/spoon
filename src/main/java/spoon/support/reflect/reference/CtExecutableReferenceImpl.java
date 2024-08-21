@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.reference;
 
@@ -260,7 +260,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public <C extends CtExecutableReference<T>> C setType(CtTypeReference<T> type) {
+	public <C extends CtExecutableReference<T>> C setType(CtTypeReference type) {
 		if (type != null) {
 			type.setParent(this);
 		}
@@ -383,7 +383,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 	@Override
 	public CtExecutableReference<?> getOverridingExecutable() {
-		CtTypeReference<Object> objectType = getFactory().Type().OBJECT;
+		CtTypeReference<Object> objectType = getFactory().Type().objectType();
 		CtTypeReference<?> declaringType = getDeclaringType();
 		if (declaringType == null) {
 			return getOverloadedExecutable(objectType, objectType);

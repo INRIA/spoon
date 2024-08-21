@@ -22,21 +22,18 @@ import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtReturn;
 import spoon.support.compiler.jdt.CompilationUnitFilter;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CUFilterTest {
 
-    @Test
-    public void testWithoutFilters() {
-        final Launcher launcher = new Launcher();
-        launcher.addInputResource("./src/test/resources/noclasspath/same-package");
-        launcher.buildModel();
-        final CtModel model = launcher.getModel();
-        assertEquals(2, model.getAllTypes().size());
-        assertEquals("spoon.test.same.B", model.getAllTypes().iterator().next()
-                .getMethod("createB").getType().getQualifiedName());
-    }
+	@ModelTest("./src/test/resources/noclasspath/same-package")
+	public void testWithoutFilters(CtModel model) {
+		assertEquals(2, model.getAllTypes().size());
+		assertEquals("spoon.test.same.B", model.getAllTypes().iterator().next()
+			.getMethod("createB").getType().getQualifiedName());
+	}
 
     @Test
     public void testSingleExcludeWithFilter() {

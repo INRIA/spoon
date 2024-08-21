@@ -1,23 +1,32 @@
 package spoon.test.record;
 
 import static java.lang.System.lineSeparator;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.testing.utils.ModelTest;
 
 public class CtRecordTest {
 
@@ -125,14 +134,18 @@ public class CtRecordTest {
 		CtModel model = createModelFromPath(code);
 		assertEquals(1, model.getAllTypes().size());
 		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
-		assertTrue(records.iterator().next().getConstructors().iterator().next().isCompactConstructor());
+		Set<CtConstructor<Object>> constructors = head(records).getConstructors();
+		assertEquals(1, constructors.size());
+		CtConstructor<Object> constructor = head(constructors);
+		assertTrue(constructor.isCompactConstructor());
+		assertFalse(constructor.isImplicit());
 		String correctConstructor =
 			"public Rational {" + lineSeparator()
 		+	"    int gcd = records.Rational.gcd(num, denom);" + lineSeparator()
 		+	"    num /= gcd;" + lineSeparator()
 		+	"    denom /= gcd;" + lineSeparator()
 		+	"}";
-		assertEquals(correctConstructor, head(head(records).getConstructors()).toString());
+		assertEquals(correctConstructor, constructor.toString());
 	}
 
 	@Test
@@ -142,14 +155,18 @@ public class CtRecordTest {
 		CtModel model = createModelFromPath(code);
 		assertEquals(1, model.getAllTypes().size());
 		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
-		assertTrue(records.iterator().next().getConstructors().iterator().next().isCompactConstructor());
+		Set<CtConstructor<Object>> constructors = head(records).getConstructors();
+		assertEquals(1, constructors.size());
+		CtConstructor<Object> constructor = head(constructors);
+		assertTrue(constructor.isCompactConstructor());
+		assertFalse(constructor.isImplicit());
 		String correctConstructor =
 			"public CompactConstructor2 {" + lineSeparator()
 		+	"    int gcd = records.CompactConstructor2.gcd(num, denom);" + lineSeparator()
 		+	"    num /= gcd;" + lineSeparator()
 		+	"    denom /= gcd;" + lineSeparator()
 		+	"}";
-		assertEquals(correctConstructor, head(head(records).getConstructors()).toString());
+		assertEquals(correctConstructor, constructor.toString());
 	}
 
 	@Test
@@ -200,6 +217,62 @@ public class CtRecordTest {
 		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
 		CtRecord record = head(records);
 		assertEquals("public record GenericRecord<T>(T a, T b) {}", record.toString());
+	}
+
+	@Test
+	void testBuildRecordModelWithStaticInitializer() {
+		// contract: a record can have static initializers
+		String code = "src/test/resources/records/WithStaticInitializer.java";
+		CtModel model = assertDoesNotThrow(() -> createModelFromPath(code));
+		List<CtAnonymousExecutable> execs = model.getElements(new TypeFilter<>(CtAnonymousExecutable.class));
+		assertThat(execs.size(), equalTo(2));
+	}
+
+	@ModelTest(value = "./src/test/resources/records/MultipleConstructors.java", complianceLevel = 16)
+	void testMultipleConstructors(Factory factory) {
+		// contract: we can have an explicit constructor delegating to the implicit canonical constructor
+		// Arrange
+		CtModel model = factory.getModel();
+		int totalTypes = model.getAllTypes().size();
+		assertEquals(1, totalTypes);
+		CtRecord firstRecord = model.getElements(new TypeFilter<>(CtRecord.class)).get(0);
+
+		// Act
+		Set<CtConstructor<Object>> recordConstructors = firstRecord.getConstructors();
+		assertEquals(2, recordConstructors.size());
+		CtConstructor<?>[] sortedConstructors = recordConstructors.toArray(CtConstructor[]::new);
+
+		// Sorting the constructors with implicit ones last
+		Arrays.sort(sortedConstructors, Comparator.comparing(CtConstructor::isImplicit));
+
+		// Assert
+		assertFalse(sortedConstructors[0].isImplicit());
+		assertEquals(sortedConstructors[0].getParameters().get(0).getSimpleName(), "s");
+		assertFalse(sortedConstructors[0].isCompactConstructor());
+
+		assertTrue(sortedConstructors[1].isImplicit());
+		assertEquals(sortedConstructors[1].getParameters().get(0).getSimpleName(), "i");
+		assertFalse(sortedConstructors[1].isCompactConstructor());
+	}
+
+	@ModelTest(value = "./src/test/resources/records/NonCompactCanonicalConstructor.java", complianceLevel = 16)
+	void testNonCompactCanonicalConstructor(Factory factory) {
+		// contract: we can have an explicit canonical constructor replacing the implicit canonical constructor
+		// Arrange
+		CtModel model = factory.getModel();
+		int totalTypes = model.getAllTypes().size();
+		assertEquals(1, totalTypes);
+		CtRecord firstRecord = model.getElements(new TypeFilter<>(CtRecord.class)).get(0);
+
+		// Act
+		List<CtConstructor<Object>> recordConstructors = firstRecord.getElements(new TypeFilter<>(CtConstructor.class));
+		assertEquals(1, recordConstructors.size());
+		CtConstructor<?> constructor = head(recordConstructors);
+
+		// Assert
+		assertFalse(constructor.isImplicit());
+		assertFalse(constructor.isCompactConstructor());
+		assertEquals(constructor.getParameters().get(0).getSimpleName(), "x");
 	}
 
 	private <T> T head(Collection<T> collection) {

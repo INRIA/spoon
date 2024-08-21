@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.adaption;
 
@@ -60,11 +60,7 @@ public class TypeAdaptor {
 	 * @param hierarchyStart the start of the hierarchy
 	 */
 	public TypeAdaptor(CtTypeReference<?> hierarchyStart) {
-		CtTypeReference<?> usedHierarchyStart = hierarchyStart;
-		if (hierarchyStart instanceof CtArrayTypeReference) {
-			usedHierarchyStart = ((CtArrayTypeReference<?>) hierarchyStart).getArrayType();
-		}
-		this.hierarchyStartReference = usedHierarchyStart;
+		this.hierarchyStartReference = hierarchyStart;
 		this.hierarchyStart = hierarchyStartReference.getTypeDeclaration();
 		this.initializedWithReference = true;
 	}
@@ -102,6 +98,12 @@ public class TypeAdaptor {
 		if (useLegacyTypeAdaption(superRef)) {
 			return getOldClassTypingContext().isSubtypeOf(superRef);
 		}
+		// This check is above the hierarchy start, as we can not build CtTypes for arrays of source-only types.
+		// Therefore, the hierarchyStart might be null for them.
+		if (hierarchyStartReference instanceof CtArrayTypeReference<?>) {
+			return handleArraySubtyping((CtArrayTypeReference<?>) hierarchyStartReference, superRef);
+		}
+
 		if (hierarchyStart == null) {
 			// We have no declaration, so we can't really do any subtype queries. This happens when the constructor was
 			// called with a type reference to a class not on the classpath. Any subtype relationships of that class are
@@ -113,10 +115,35 @@ public class TypeAdaptor {
 		if (!subtype) {
 			return false;
 		}
+		// No generics -> All good, no further analysis needed, we can say they are subtypes
 		if (hierarchyStartReference.getActualTypeArguments().isEmpty() && superRef.getActualTypeArguments().isEmpty()) {
 			return true;
 		}
+		// Generics? We need to check for subtyping relationships between wildcard and other parameters
+		// (co/contra variance). Delegate.
 		return new ClassTypingContext(hierarchyStartReference).isSubtypeOf(superRef);
+	}
+
+	/**
+	 * We need to special case array references, as we can not build a type declaration for them.
+	 * Array types do not exist in the source and no CtType can be built for them (unless they are shadow types).
+	 *
+	 * @param start the start reference
+	 * @param superRef the potential supertype
+	 * @return true if start is a subtype of superRef
+	 */
+	private static boolean handleArraySubtyping(CtArrayTypeReference<?> start, CtTypeReference<?> superRef) {
+		// array-array subtyping
+		if (superRef instanceof CtArrayTypeReference) {
+			CtTypeReference<?> superInner = ((CtArrayTypeReference<?>) superRef).getComponentType();
+			return new TypeAdaptor(start.getComponentType()).isSubtypeOf(superInner);
+		}
+		// array-normal subtyping
+		// https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.10.3
+		String superRefQualName = superRef.getQualifiedName();
+		return superRefQualName.equals("java.lang.Object")
+			|| superRefQualName.equals("java.io.Serializable")
+			|| superRefQualName.equals("java.lang.Cloneable");
 	}
 
 	/**
@@ -149,11 +176,31 @@ public class TypeAdaptor {
 		if (useLegacyTypeAdaption(base)) {
 			return new TypeAdaptor(base).isSubtypeOf(superRef);
 		}
+
+		// Handle shadow array types, as we can build a CtType for any Class, which includes arrays. We need to lower
+		// them to their innermost component type and then decide subtyping based on their relationship.
+		if (base.isArray() && superRef instanceof CtArrayTypeReference<?>) {
+			if (!base.isShadow()) {
+				throw new SpoonException("There are no source level array type declarations");
+			}
+			// Peel off one layer at a time. Slow, but easy to maintain. Can be optimized to directly peel of
+			// min(a.dim, b.dim) when necessary.
+			Class<?> actualClass = base.getActualClass();
+			return isSubtype(
+				base.getFactory().Type().get(actualClass.getComponentType()),
+				((CtArrayTypeReference<?>) superRef).getComponentType()
+			);
+		}
+		// Note that we have handle T[] < Object/Serializable/Cloneable by using a shadow type as `base`, which will
+		// implement the correct interfaces as read by reflection.
+
 		String superRefFqn = superRef.getTypeErasure().getQualifiedName();
 
-		return superRef.getQualifiedName().equals("java.lang.Object")
-			|| base.getQualifiedName().equals(superRefFqn)
-			|| supertypeReachableInInheritanceTree(base, superRefFqn);
+		if (superRef.getQualifiedName().equals("java.lang.Object") || base.getQualifiedName().equals(superRefFqn)) {
+			return true;
+		}
+
+		return supertypeReachableInInheritanceTree(base, superRefFqn);
 	}
 
 	/**
@@ -201,12 +248,27 @@ public class TypeAdaptor {
 	 * @return the input method but with the return type, parameter types and thrown types adapted to
 	 * 	the context of this type adapter
 	 */
-	@SuppressWarnings("unchecked")
 	public CtMethod<?> adaptMethod(CtMethod<?> inputMethod) {
+		return adaptMethod(inputMethod, true);
+	}
+
+	@SuppressWarnings("unchecked")
+	private CtMethod<?> adaptMethod(CtMethod<?> inputMethod, boolean cloneBody) {
 		if (useLegacyTypeAdaption(inputMethod)) {
 			return legacyAdaptMethod(inputMethod);
 		}
-		CtMethod<?> clonedMethod = inputMethod.clone();
+		CtMethod<?> clonedMethod;
+		if (cloneBody) {
+			clonedMethod = inputMethod.clone();
+		} else {
+			clonedMethod = inputMethod.getFactory().createMethod().setSimpleName(inputMethod.getSimpleName());
+			for (CtParameter<?> parameter : inputMethod.getParameters()) {
+				clonedMethod.addParameter(parameter.clone());
+			}
+			for (CtTypeParameter parameter : inputMethod.getFormalCtTypeParameters()) {
+				clonedMethod.addFormalCtTypeParameter(parameter.clone());
+			}
+		}
 
 		for (int i = 0; i < clonedMethod.getFormalCtTypeParameters().size(); i++) {
 			CtTypeParameter clonedParameter = clonedMethod.getFormalCtTypeParameters().get(i);
@@ -238,7 +300,7 @@ public class TypeAdaptor {
 			newParameter.setType(adaptType(inputMethod.getParameters().get(i).getType()));
 		}
 
-		Set<CtTypeReference<? extends Throwable>> newThrownTypes = clonedMethod.getThrownTypes()
+		Set<CtTypeReference<? extends Throwable>> newThrownTypes = inputMethod.getThrownTypes()
 			.stream()
 			.map(this::adaptType)
 			.map(it -> (CtTypeReference<? extends Throwable>) it)
@@ -402,9 +464,9 @@ public class TypeAdaptor {
 		if (!isSubtype(subDeclaringType, superDeclaringType.getReference())) {
 			return false;
 		}
-
+		// We don't need to clone the body here, so leave it out
 		CtMethod<?> adapted = new TypeAdaptor(subMethod.getDeclaringType())
-			.adaptMethod(superMethod);
+			.adaptMethod(superMethod, false);
 
 		for (int i = 0; i < subMethod.getParameters().size(); i++) {
 			CtParameter<?> subParam = subMethod.getParameters().get(i);
@@ -554,10 +616,19 @@ public class TypeAdaptor {
 		return Optional.of((CtExecutable<?>) parent);
 	}
 
-	private DeclarationNode buildHierarchyFrom(CtTypeReference<?> startReference, CtType<?> startType,
-		CtTypeReference<?> end) {
+	@SuppressWarnings("AssignmentToMethodParameter")
+	private DeclarationNode buildHierarchyFrom(
+		CtTypeReference<?> startReference,
+		CtType<?> startType,
+		CtTypeReference<?> end
+	) {
 		CtType<?> endType = findDeclaringType(end);
 		Map<CtTypeReference<?>, DeclarationNode> declarationNodes = new HashMap<>();
+
+		if (needToMoveStartTypeToEnclosingClass(end, endType)) {
+			startType = moveStartTypeToEnclosingClass(hierarchyStart, endType.getReference());
+			startReference = startType.getReference();
+		}
 
 		DeclarationNode root = buildDeclarationHierarchyFrom(
 			startType.getReference(),
@@ -578,6 +649,31 @@ public class TypeAdaptor {
 			.orElse(null);
 	}
 
+	private boolean needToMoveStartTypeToEnclosingClass(CtTypeReference<?> end, CtType<?> endType) {
+		if (!(end instanceof CtTypeParameterReference)) {
+			return false;
+		}
+		// Declaring type is not the same as the inner type (i.e. the type parameter was declared on an
+		// enclosing type)
+		CtType<?> parentType = end.getParent(CtType.class);
+		parentType = resolveTypeParameterToDeclarer(parentType);
+
+		return !parentType.getQualifiedName().equals(endType.getQualifiedName());
+	}
+
+	private CtType<?> moveStartTypeToEnclosingClass(CtType<?> start, CtTypeReference<?> endRef) {
+		CtType<?> current = start;
+		while (current != null) {
+			if (isSubtype(current, endRef)) {
+				return current;
+			}
+			current = current.getDeclaringType();
+		}
+		throw new SpoonException(
+			"Did not find a suitable enclosing type to start parameter type adaption from"
+		);
+	}
+
 	/**
 	 * This method attempts to find a suitable end type for building our hierarchy.
 	 * <br>
@@ -593,20 +689,33 @@ public class TypeAdaptor {
 	 */
 	private CtType<?> findDeclaringType(CtTypeReference<?> reference) {
 		CtType<?> type = null;
-		if (reference.isParentInitialized()) {
+		// Prefer declaration to parent. This will be different if the type parameter is declared on an
+		// enclosing class.
+		if (reference instanceof CtTypeParameterReference) {
+			type = reference.getTypeDeclaration();
+		}
+		if (type == null && reference.isParentInitialized()) {
 			type = reference.getParent(CtType.class);
 		}
 		if (type == null) {
 			type = reference.getTypeDeclaration();
 		}
-		if (type instanceof CtTypeParameter) {
-			CtFormalTypeDeclarer declarer = ((CtTypeParameter) type).getTypeParameterDeclarer();
+
+		return resolveTypeParameterToDeclarer(type);
+	}
+
+	private static CtType<?> resolveTypeParameterToDeclarer(CtType<?> parentType) {
+		if (parentType instanceof CtTypeParameter) {
+			CtFormalTypeDeclarer declarer = ((CtTypeParameter) parentType).getTypeParameterDeclarer();
 			if (declarer instanceof CtType) {
 				return (CtType<?>) declarer;
+			} else {
+				return declarer.getDeclaringType();
 			}
-			return declarer.getDeclaringType();
 		}
-		return type;
+		// Could not resolve type parameter declarer (no class path mode?).
+		// Type adaption results will not be accurate, this is just a wild (and probably wrong) guess.
+		return parentType;
 	}
 
 	private DeclarationNode buildDeclarationHierarchyFrom(

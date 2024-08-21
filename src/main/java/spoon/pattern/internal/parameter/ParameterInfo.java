@@ -1,11 +1,13 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.pattern.internal.parameter;
+
+import org.jspecify.annotations.Nullable;
 
 import spoon.pattern.Pattern;
 import spoon.pattern.Quantifier;
@@ -35,7 +37,7 @@ public interface ParameterInfo {
 	 * @param value the new, to be stored value
 	 * @return copy of `parameters` with new value or existing `parameters` if value is already there or null if value doesn't fit into these parameters
 	 */
-	ImmutableMap addValueAs(ImmutableMap parameters, Object value);
+	@Nullable ImmutableMap addValueAs(ImmutableMap parameters, Object value);
 
 	/**
 	 * Takes the value of parameter identified by this {@link ParameterInfo} from the `parameters`

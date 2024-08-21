@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.compiler;
 
@@ -88,7 +88,7 @@ public class SnippetCompilationHelper {
 			pkg = "package " + pkg + ";";
 		}
 		try {
-			build(f, pkg + clonedInitialClass.toString());
+			build(f, pkg + clonedInitialClass);
 		} finally {
 			// restore modifiers
 			initialClass.setModifiers(backup);
@@ -175,7 +175,7 @@ public class SnippetCompilationHelper {
 
 	public static CtStatement compileStatement(CtCodeSnippetStatement st)
 			throws SnippetCompilationError {
-		return internalCompileStatement(st, st.getFactory().Type().VOID_PRIMITIVE);
+		return internalCompileStatement(st, st.getFactory().Type().voidPrimitiveType());
 	}
 
 	public static CtStatement compileStatement(CtCodeSnippetStatement st, CtTypeReference returnType)
@@ -218,7 +218,7 @@ public class SnippetCompilationHelper {
 	public static <T> CtExpression<T> compileExpression(
 			CtCodeSnippetExpression<T> expr) throws SnippetCompilationError {
 
-		CtReturn<T> ret = (CtReturn<T>) internalCompileStatement(expr, expr.getFactory().Type().OBJECT);
+		CtReturn<T> ret = (CtReturn<T>) internalCompileStatement(expr, expr.getFactory().Type().objectType());
 
 		CtExpression<T> returnedExpression = ret.getReturnedExpression();
 

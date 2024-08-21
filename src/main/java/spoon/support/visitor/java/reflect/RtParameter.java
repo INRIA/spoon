@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.java.reflect;
 
@@ -11,6 +11,7 @@ import spoon.SpoonException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
 /**
@@ -143,7 +144,12 @@ public class RtParameter {
 	public static RtParameter[] parametersOf(RtMethod method) {
 		RtParameter[] parameters = new RtParameter[method.getParameterTypes().length];
 		for (int index = 0; index < method.getParameterTypes().length; index++) {
-			parameters[index] = new RtParameter(null, method.getParameterTypes()[index], method.getGenericParameterTypes()[index], method, null, index);
+			String name = null;
+			Parameter parameter = method.getMethod().getParameters()[index];
+			if (parameter.isNamePresent()) {
+				name = parameter.getName();
+			}
+			parameters[index] = new RtParameter(name, method.getParameterTypes()[index], method.getGenericParameterTypes()[index], method, null, index);
 		}
 		return parameters;
 	}
@@ -179,7 +185,12 @@ public class RtParameter {
 		}
 
 		for (int index = 0; index < constructor.getGenericParameterTypes().length; index++) {
-			parameters[index] = new RtParameter(null, constructor.getParameterTypes()[index + offset], constructor.getGenericParameterTypes()[index], null, constructor, index);
+			String name = null;
+			Parameter parameter = constructor.getParameters()[index + offset];
+			if (parameter.isNamePresent()) {
+				name = parameter.getName();
+			}
+			parameters[index] = new RtParameter(name, constructor.getParameterTypes()[index + offset], constructor.getGenericParameterTypes()[index], null, constructor, index);
 		}
 		return parameters;
 	}

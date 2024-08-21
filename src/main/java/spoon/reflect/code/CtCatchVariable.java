@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.code;
 
@@ -40,6 +40,12 @@ public interface CtCatchVariable<T> extends CtVariable<T>, CtMultiTypedElement, 
 	<C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
 
 	/**
+	 * {@return whether this catch variable is <a href="https://openjdk.org/jeps/456">unnamed</a>}
+	 */
+	@DerivedProperty
+	boolean isUnnamed();
+
+	/**
 	 * Returns type reference of the exception variable in a catch.
 	 * If type is unknown, or any of the types in a multi-catch is unknown, returns null.
 	 */
@@ -49,5 +55,5 @@ public interface CtCatchVariable<T> extends CtVariable<T>, CtMultiTypedElement, 
 
 	@Override
 	@UnsettableProperty
-	<C extends CtTypedElement> C setType(CtTypeReference<T> type);
+	<C extends CtTypedElement> C setType(CtTypeReference type);
 }

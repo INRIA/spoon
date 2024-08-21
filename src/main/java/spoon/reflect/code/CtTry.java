@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.code;
 
@@ -46,6 +46,18 @@ public interface CtTry extends CtStatement, TemplateParameter<Void>, CtBodyHolde
 	 */
 	@PropertySetter(role = CATCH)
 	<T extends CtTry> T addCatcher(CtCatch catcher);
+
+	/**
+	 * Adds a catch block at the specified position in the <code>try</code> statement.
+	 * Behaves similarly to {@link java.util.List#add(int, Object)}.
+	 *
+	 * @param position the position at which the <code>catcher</code> is to be inserted
+	 * @param catcher the catch statement to be inserted
+	 * @return this try statement
+	 * @throws IndexOutOfBoundsException if the position is out of range (position < 0 || position > number of catchers)
+	 */
+	@PropertySetter(role = CATCH)
+	CtTry addCatcherAt(int position, CtCatch catcher);
 
 	/**
 	 * Removes a catch block.

@@ -213,7 +213,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					"spoon.support.reflect.declaration.CtModifiableImpl", "spoon.support.reflect.declaration.CtMultiTypedElementImpl", //
 					"spoon.support.reflect.declaration.CtTypeMemberImpl", "spoon.support.reflect.code.CtRHSReceiverImpl", "spoon.support.reflect.code.CtResourceImpl",
 					"spoon.support.reflect.declaration.CtShadowableImpl", "spoon.support.reflect.code.CtBodyHolderImpl", "spoon.support.reflect.declaration.CtModuleDirectiveImpl",
-					"spoon.support.reflect.code.CtPatternImpl");
+					"spoon.support.reflect.code.CtPatternImpl", "spoon.support.reflect.declaration.CtSealableImpl");
 			private final List<String> excludesFields = Arrays.asList("factory", "elementValues", "target", "rootFragment", "originalSourceCode", "myPartialSourcePosition");
 			private final Set<String> collectionClasses = new HashSet<>(Arrays.asList(
 					List.class.getName(), Collection.class.getName(), Set.class.getName(),
@@ -566,7 +566,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 * Check if the type is a subtype of CtElement.
 			 */
 			private boolean isSubTypeOfCtElement(CtTypeReference<?> type) {
-				if (!type.isPrimitive() && !type.equals(factory.Type().STRING)) {
+				if (!type.isPrimitive() && !type.equals(factory.Type().stringType())) {
 					if (type.isSubtypeOf(factory.Type().createReference(CtElement.class))) {
 						return true;
 					}

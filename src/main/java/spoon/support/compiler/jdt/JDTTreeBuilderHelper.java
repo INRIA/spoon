@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.compiler.jdt;
 
@@ -12,12 +12,15 @@ import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.ExportsStatement;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
+import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
 import org.eclipse.jdt.internal.compiler.ast.OpensStatement;
+import org.eclipse.jdt.internal.compiler.ast.PackageVisibilityStatement;
 import org.eclipse.jdt.internal.compiler.ast.ProvidesStatement;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.Receiver;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.RequiresStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
@@ -37,6 +40,7 @@ import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
+import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExecutableReferenceExpression;
@@ -54,6 +58,8 @@ import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
+import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
@@ -71,10 +77,12 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
@@ -121,7 +129,7 @@ public class JDTTreeBuilderHelper {
 	 * @return a catch variable.
 	 */
 	CtCatchVariable<Throwable> createCatchVariable(TypeReference typeReference, Scope scope) {
-		final Argument jdtCatch = (Argument) jdtTreeBuilder.getContextBuilder().stack.peekFirst().node;
+		final Argument jdtCatch = (Argument) jdtTreeBuilder.getContextBuilder().getCurrentNode();
 		final Set<CtExtendedModifier> modifiers = getModifiers(jdtCatch.modifiers, false, ModifierTarget.LOCAL_VARIABLE);
 
 		CtCatchVariable<Throwable> result = jdtTreeBuilder.getFactory().Core().createCatchVariable();
@@ -210,9 +218,9 @@ public class JDTTreeBuilderHelper {
 
 				// find executable's corresponding jdt element
 				AbstractMethodDeclaration executableJDT = null;
-				for (final ASTPair astPair : contextBuilder.stack) {
-					if (astPair.element == executable) {
-						executableJDT = (AbstractMethodDeclaration) astPair.node;
+				for (final ASTPair astPair : contextBuilder.getAllContexts()) {
+					if (astPair.element() == executable) {
+						executableJDT = (AbstractMethodDeclaration) astPair.node();
 					}
 				}
 				assert executableJDT != null;
@@ -278,10 +286,11 @@ public class JDTTreeBuilderHelper {
 			int i = 0; //positions index;
 			va.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 			sourceStart = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32);
+			@Nullable TypeBinding declaringType = ((VariableBinding) qualifiedNameReference.binding).type;
 			for (FieldBinding b : qualifiedNameReference.otherBindings) {
 				isOtherBinding = qualifiedNameReference.otherBindings.length == i + 1;
 				CtFieldAccess<T> other = createFieldAccess(
-						jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
+						jdtTreeBuilder.getReferencesBuilder().getVariableReference(declaringType, b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
 				//set source position of fa
 				if (i + qualifiedNameReference.indexOfFirstFieldBinding >= qualifiedNameReference.otherBindings.length) {
 					sourceEnd = qualifiedNameReference.sourceEnd();
@@ -290,14 +299,16 @@ public class JDTTreeBuilderHelper {
 				}
 				other.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 				va = other;
+				declaringType = b != null ? b.type : null; // no classpath mode might cause b to be null
 				i++;
 			}
 		} else if (!(qualifiedNameReference.binding instanceof FieldBinding) && qualifiedNameReference.tokens.length > 1) {
 			sourceStart = (int) (positions[0] >>> 32);
 			for (int i = 1; i < qualifiedNameReference.tokens.length; i++) {
 				isOtherBinding = qualifiedNameReference.tokens.length == i + 1;
+				TypeBinding type = ((VariableBinding) qualifiedNameReference.binding).type;
 				CtFieldAccess<T> other = createFieldAccess(//
-						jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(null, qualifiedNameReference.tokens[i]), va, isOtherBinding && fromAssignment);
+						jdtTreeBuilder.getReferencesBuilder().getVariableReference(type, null, qualifiedNameReference.tokens[i]), va, isOtherBinding && fromAssignment);
 				//set source position of va;
 				sourceEnd = (int) (positions[i]);
 				va.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
@@ -357,7 +368,18 @@ public class JDTTreeBuilderHelper {
 			if (ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
 				va.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(ref.getDeclaringType(), true));
 			} else if (!ref.isStatic()) {
-				va.setTarget(jdtTreeBuilder.getFactory().Code().createThisAccess(jdtTreeBuilder.getReferencesBuilder().getTypeReference(singleNameReference.actualReceiverType), true));
+				TypeBinding fieldDeclarerType = singleNameReference.fieldBinding().declaringClass;
+				TypeBinding actualReceiverType = singleNameReference.actualReceiverType;
+				CtTypeReference<?> owningType = jdtTreeBuilder.getReferencesBuilder().getTypeReference(fieldDeclarerType);
+				if (Arrays.equals(fieldDeclarerType.qualifiedSourceName(), actualReceiverType.qualifiedSourceName())) {
+					va.setTarget(jdtTreeBuilder.getFactory().Code().createThisAccess(owningType, true));
+				} else {
+					va.setTarget(
+							jdtTreeBuilder.getFactory().createSuperAccess()
+									.setType(owningType)
+									.setImplicit(true)
+					);
+				}
 			}
 		}
 		return va;
@@ -387,6 +409,60 @@ public class JDTTreeBuilderHelper {
 			va.getVariable().setStatic(true);
 		}
 		return va;
+	}
+
+	boolean isProblemNameRefProbablyTypeRef(QualifiedNameReference qualifiedNameReference) {
+		ContextBuilder contextBuilder = jdtTreeBuilder.getContextBuilder();
+		if (contextBuilder.compilationunitdeclaration == null) {
+			return false;
+		}
+		if (contextBuilder.compilationunitdeclaration.imports == null) {
+			return false;
+		}
+		char[][] ourName = qualifiedNameReference.tokens;
+		for (ImportReference anImport : contextBuilder.compilationunitdeclaration.imports) {
+			char[][] importName = anImport.getImportName();
+			int i = indexOfSubList(importName, ourName);
+			if (i > 0) {
+				boolean extendsToEndOfImport = i + ourName.length == importName.length;
+				boolean isStaticImport = anImport.isStatic();
+				if (!isStaticImport) {
+					// import foo.bar.baz.A; => "A" is probably a type
+					// import foo.bar.baz.A; => "baz" is probably a type
+					return true;
+				}
+				// import static foo.Bar.bar; => bar is probably a method/field
+				// import static foo.Bar;     => Bar is probably a type
+				char[] simpleName = qualifiedNameReference.tokens[qualifiedNameReference.tokens.length - 1];
+				return !extendsToEndOfImport || !Character.isLowerCase(simpleName[0]);
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Finds the lowest index where {@code needle} appears in {@code haystack}. This is akin to a
+	 * substring search, but JDT uses a String[] to omit separators and a char[] to represent strings.
+	 * If we want to find out where "String" appears in "java.lang.String", we would call
+	 * {@code indexOfSubList(["java", "lang", "String"], ["lang", "String"])} and receive {@code 1}.
+	 *
+	 * @param haystack the haystack to search in
+	 * @param needle the needle to search
+	 * @return the first index where needle appears in haystack
+	 * @see java.util.Collections#indexOfSubList(List, List) Collections#indexOfSubList for a more
+	 *     general version that does not correctly handle array equality
+	 */
+	private static int indexOfSubList(char[][] haystack, char[][] needle) {
+		outer:
+		for (int i = 0; i < haystack.length - needle.length; i++) {
+			for (int j = 0; j < needle.length; j++) {
+				if (!Arrays.equals(haystack[i + j], needle[j])) {
+					continue outer;
+				}
+			}
+			return i;
+		}
+		return -1;
 	}
 
 	/**
@@ -427,7 +503,7 @@ public class JDTTreeBuilderHelper {
 		} else {
 			fieldAccess = jdtTreeBuilder.getFactory().Core().createFieldRead();
 		}
-		fieldAccess.setVariable(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(fieldReference.binding, fieldReference.token));
+		fieldAccess.setVariable(jdtTreeBuilder.getReferencesBuilder().getVariableReference(fieldReference.actualReceiverType, fieldReference.binding, fieldReference.token));
 		fieldAccess.setType(jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(fieldReference.resolvedType));
 		return fieldAccess;
 	}
@@ -468,7 +544,15 @@ public class JDTTreeBuilderHelper {
 					qualifiedNameReference.actualReceiverType.getPackage(),
 					qualifiedNameReference, fieldReference.getSimpleName(), typeAccess.getAccessedType());
 		} else {
-			typeAccess.setImplicit(qualifiedNameReference.isImplicitThis());
+			// If we have an implicit this, the type access is implicit.
+			//   This happens for calls without a target like "foo()"
+			// If the qualified name references has only two tokens it consists of "Target.fieldName".
+			//   This happens for field accesses on statically imported constants: "CONSTANT.foo"
+			boolean isStaticallyImportedConstantFieldAccess = (receiverType != null && receiverType.isStatic())
+				&& qualifiedNameReference.tokens.length == 2;
+			if (qualifiedNameReference.isImplicitThis() || isStaticallyImportedConstantFieldAccess) {
+				typeAccess.setImplicit(true);
+			}
 		}
 		return typeAccess;
 	}
@@ -639,7 +723,7 @@ public class JDTTreeBuilderHelper {
 		} else if (ref.isStatic()) {
 			target = createTypeAccess(qualifiedNameReference, ref);
 		} else if (!ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
-			if (!JDTTreeBuilderQuery.isResolvedField(qualifiedNameReference)) {
+			if (!JDTTreeBuilderQuery.isFieldReference(qualifiedNameReference)) {
 				target = createTypeAccessNoClasspath(qualifiedNameReference);
 			} else {
 				target = jdtTreeBuilder.getFactory().Code().createThisAccess(jdtTreeBuilder.getReferencesBuilder().<Object>getTypeReference(qualifiedNameReference.actualReceiverType), true);
@@ -672,6 +756,20 @@ public class JDTTreeBuilderHelper {
 	}
 
 	/**
+	 * Creates a receiver parameter for a method or constructor.
+	 *
+	 * @param argument the argument containing information about the parameter
+	 * @return the created CtReceiverParameter object
+	 */
+	CtReceiverParameter createReceiverParameter(Receiver argument) {
+		CtReceiverParameter p = jdtTreeBuilder.getFactory().Core().createReceiverParameter();
+		if (argument.type != null) {
+			p.setType(jdtTreeBuilder.getReferencesBuilder().getTypeReference(argument.type));
+		}
+		return p;
+	}
+
+	/**
 	 * Creates an executable reference expression.
 	 *
 	 * @param referenceExpression
@@ -680,7 +778,7 @@ public class JDTTreeBuilderHelper {
 	 */
 	<T, E extends CtExpression<?>> CtExecutableReferenceExpression<T, E> createExecutableReferenceExpression(ReferenceExpression referenceExpression) {
 		CtExecutableReferenceExpression<T, E> executableRef = jdtTreeBuilder.getFactory().Core().createExecutableReferenceExpression();
-		CtExecutableReference<T> executableReference = jdtTreeBuilder.getReferencesBuilder().getExecutableReference(referenceExpression.binding);
+		CtExecutableReference<T> executableReference = jdtTreeBuilder.getReferencesBuilder().getExecutableReference(referenceExpression);
 		if (executableReference == null) {
 			// No classpath mode.
 			executableReference = jdtTreeBuilder.getFactory().Core().createExecutableReference();
@@ -726,6 +824,26 @@ public class JDTTreeBuilderHelper {
 			for (TypeReference ref : typeDeclaration.superInterfaces) {
 				final CtTypeReference superInterface = jdtTreeBuilder.references.buildTypeReference(ref, null);
 				type.addSuperInterface(superInterface);
+			}
+		}
+		Consumer<CtTypeReference<?>> addPermittedType;
+		if (type instanceof CtSealable) {
+			addPermittedType = ((CtSealable) type)::addPermittedType;
+		} else {
+			addPermittedType = ref -> {
+				throw new SpoonException("Tried to add permitted type to " + type);
+			};
+		}
+		if (typeDeclaration.permittedTypes != null) {
+			for (TypeReference permittedType : typeDeclaration.permittedTypes) {
+				CtTypeReference<?> reference = jdtTreeBuilder.references.buildTypeReference(permittedType, typeDeclaration.scope);
+				addPermittedType.accept(reference);
+			}
+		} else if (typeDeclaration.binding != null && typeDeclaration.binding.permittedTypes != null) {
+			for (ReferenceBinding permittedType : typeDeclaration.binding.permittedTypes) {
+				CtTypeReference<?> reference = jdtTreeBuilder.references.getTypeReference(permittedType);
+				reference.setImplicit(true);
+				addPermittedType.accept(reference);
 			}
 		}
 
@@ -826,40 +944,18 @@ public class JDTTreeBuilderHelper {
 		return moduleRequirement;
 	}
 
-	CtPackageExport createModuleExport(ExportsStatement exportsStatement) {
-		String packageName = new String(exportsStatement.pkgName);
-		int sourceStart = exportsStatement.sourceStart;
-		int sourceEnd = exportsStatement.sourceEnd;
+	CtPackageExport createModuleExport(PackageVisibilityStatement statement) {
+		String packageName = new String(statement.pkgName);
+		int sourceStart = statement.sourceStart;
+		int sourceEnd = statement.sourceEnd;
 
 		CtPackageReference ctPackageReference = jdtTreeBuilder.references.getPackageReference(packageName);
 		CtPackageExport moduleExport = jdtTreeBuilder.getFactory().Module().createPackageExport(ctPackageReference);
 
-		if (exportsStatement.targets != null && exportsStatement.targets.length > 0) {
+		if (statement.targets != null && statement.targets.length > 0) {
 			List<CtModuleReference> moduleReferences = new ArrayList<>();
 
-			for (ModuleReference moduleReference : exportsStatement.targets) {
-				moduleReferences.add(this.jdtTreeBuilder.references.getModuleReference(moduleReference));
-			}
-
-			moduleExport.setTargetExport(moduleReferences);
-		}
-
-		moduleExport.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
-		return moduleExport;
-	}
-
-	CtPackageExport createModuleExport(OpensStatement opensStatement) {
-		String packageName = new String(opensStatement.pkgName);
-		int sourceStart = opensStatement.sourceStart;
-		int sourceEnd = opensStatement.sourceEnd;
-
-		CtPackageReference ctPackageReference = jdtTreeBuilder.references.getPackageReference(packageName);
-		CtPackageExport moduleExport = jdtTreeBuilder.getFactory().Module().createPackageExport(ctPackageReference);
-
-		if (opensStatement.targets != null && opensStatement.targets.length > 0) {
-			List<CtModuleReference> moduleReferences = new ArrayList<>();
-
-			for (ModuleReference moduleReference : opensStatement.targets) {
+			for (ModuleReference moduleReference : statement.targets) {
 				moduleReferences.add(this.jdtTreeBuilder.references.getModuleReference(moduleReference));
 			}
 

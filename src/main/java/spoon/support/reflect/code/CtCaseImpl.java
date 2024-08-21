@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.code;
 
@@ -36,6 +36,12 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 
 	@MetamodelPropertyField(role = CtRole.CASE_KIND)
 	CaseKind caseKind = CaseKind.COLON;
+
+	@MetamodelPropertyField(role = CtRole.DEFAULT_EXPRESSION)
+	private boolean includesDefault = false;
+
+	@MetamodelPropertyField(role = CtRole.CONDITION)
+	private CtExpression<?> guard;
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -107,6 +113,34 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.CASE_KIND, kind, this.caseKind);
 		caseKind = kind;
 		return (T) this;
+	}
+
+	@Override
+	public boolean getIncludesDefault() {
+		return this.includesDefault;
+	}
+
+	@Override
+	public CtCase<E> setIncludesDefault(boolean includesDefault) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.DEFAULT_EXPRESSION, includesDefault, this.includesDefault);
+		this.includesDefault = includesDefault;
+		return this;
+	}
+
+	@Override
+	public CtExpression<?> getGuard() {
+		return guard;
+	}
+
+	@Override
+	public CtCase<E> setGuard(CtExpression<?> guard) {
+		if (guard != null) {
+			guard.setParent(this);
+		}
+		getFactory().getEnvironment().getModelChangeListener()
+				.onObjectUpdate(this, CtRole.CONDITION, guard, this.guard);
+		this.guard = guard;
+		return this;
 	}
 
 	@Override

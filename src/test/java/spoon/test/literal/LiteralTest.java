@@ -25,10 +25,13 @@ import spoon.reflect.factory.CodeFactory;
 import spoon.test.literal.testclasses.Tacos;
 import spoon.Launcher;
 import spoon.reflect.code.LiteralBase;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.declaration.CtClass;
 import org.junit.jupiter.api.Test;
-
+import spoon.testing.utils.GitHubIssue;
+import spoon.testing.utils.ModelTest;
+import java.util.List;
 import java.util.TreeSet;
 
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -79,48 +82,48 @@ public class LiteralTest {
 		CtLiteral<?> literal = (CtLiteral<?>) ctType.getField("a").getDefaultExpression();
 		assertEquals(0, literal.getValue());
 		assertTrue(literal.getType().isPrimitive());
-		assertEquals(typeFactory.INTEGER_PRIMITIVE, literal.getType());
+		assertEquals(typeFactory.integerPrimitiveType(), literal.getType());
 
 
 		literal = (CtLiteral<?>) ctType.getField("b").getDefaultExpression();
 		assertEquals(0x0, literal.getValue());
 		assertTrue(literal.getType().isPrimitive());
-		assertEquals(typeFactory.INTEGER_PRIMITIVE, literal.getType());
+		assertEquals(typeFactory.integerPrimitiveType(), literal.getType());
 
 
 		literal = (CtLiteral<?>) ctType.getField("c").getDefaultExpression();
 		assertEquals(0f, literal.getValue());
 		assertTrue(literal.getType().isPrimitive());
-		assertEquals(typeFactory.FLOAT_PRIMITIVE, literal.getType());
+		assertEquals(typeFactory.floatPrimitiveType(), literal.getType());
 
 
 		literal = (CtLiteral<?>) ctType.getField("d").getDefaultExpression();
 		assertEquals(0L, literal.getValue());
 		assertTrue(literal.getType().isPrimitive());
-		assertEquals(typeFactory.LONG_PRIMITIVE, literal.getType());
+		assertEquals(typeFactory.longPrimitiveType(), literal.getType());
 
 
 		literal = (CtLiteral<?>) ctType.getField("e").getDefaultExpression();
 		assertEquals(0d, literal.getValue());
 		assertTrue(literal.getType().isPrimitive());
-		assertEquals(typeFactory.DOUBLE_PRIMITIVE, literal.getType());
+		assertEquals(typeFactory.doublePrimitiveType(), literal.getType());
 
 
 		literal = (CtLiteral<?>) ctType.getField("f").getDefaultExpression();
 		assertEquals('0', literal.getValue());
 		assertTrue(literal.getType().isPrimitive());
-		assertEquals(typeFactory.CHARACTER_PRIMITIVE, literal.getType());
+		assertEquals(typeFactory.characterPrimitiveType(), literal.getType());
 
 
 		literal = (CtLiteral<?>) ctType.getField("g").getDefaultExpression();
 		assertEquals("0", literal.getValue());
 		assertFalse(literal.getType().isPrimitive());
-		assertEquals(typeFactory.STRING, literal.getType());
+		assertEquals(typeFactory.stringType(), literal.getType());
 
 		literal = (CtLiteral<?>) ctType.getField("h").getDefaultExpression();
 		assertNull(literal.getValue());
 		assertFalse(literal.getType().isPrimitive());
-		assertEquals(typeFactory.NULL_TYPE, literal.getType());
+		assertEquals(typeFactory.nullType(), literal.getType());
 
 	}
 
@@ -147,16 +150,9 @@ public class LiteralTest {
 		assertEquals(factory.Type().stringType(), literal.getType());
 	}
 
-	@Test
-	public void testEscapedString() {
-
+	@ModelTest(value = "./src/test/java/spoon/test/literal/testclasses/EscapedLiteral.java", autoImport = true)
+	public void testEscapedString(Launcher launcher) {
 		/* test escaped char: spoon change octal values by equivalent unicode values */
-
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/literal/testclasses/EscapedLiteral.java");
-		launcher.getEnvironment().setCommentEnabled(true);
-		launcher.getEnvironment().setAutoImports(true);
-		launcher.buildModel();
 		final CtClass<?> ctClass = launcher.getFactory().Class().get("spoon.test.literal.testclasses.EscapedLiteral");
 
 		assertTrue('\u0000' == (char) ((CtLiteral) ctClass.getField("c1").getDefaultExpression()).getValue());
@@ -182,13 +178,10 @@ public class LiteralTest {
 		assertTrue('\u0002' == (char) ((CtLiteral) ctClass.getField("c9").getDefaultExpression()).getValue());
 	}
 
-	@Test
-	public void testLiteralBase() {
+	@ModelTest("./src/test/java/spoon/test/literal/testclasses/BasedLiteral.java")
+	public void testLiteralBase(Factory factory) {
 		// contract: CtLiteral should provide correct base (2, 8, 10, 16 or empty)
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/literal/testclasses/BasedLiteral.java");
-		launcher.buildModel();
-		final CtClass<?> ctClass = launcher.getFactory().Class().get("spoon.test.literal.testclasses.BasedLiteral");
+		final CtClass<?> ctClass = factory.Class().get("spoon.test.literal.testclasses.BasedLiteral");
 
 		assertEquals(LiteralBase.DECIMAL, ((CtLiteral) ctClass.getField("i1").getDefaultExpression()).getBase());
 		assertEquals(LiteralBase.DECIMAL, ((CtLiteral) ctClass.getField("i2").getDefaultExpression()).getBase());
@@ -223,15 +216,12 @@ public class LiteralTest {
 
 		assertNull(((CtLiteral) ctClass.getField("c1").getDefaultExpression()).getBase());
 		assertNull(((CtLiteral) ctClass.getField("s1").getDefaultExpression()).getBase());
-    }
+	}
 
-	@Test
-	public void testLiteralBasePrinter() {
+	@ModelTest("./src/test/java/spoon/test/literal/testclasses/BasedLiteral.java")
+	public void testLiteralBasePrinter(Factory factory) {
 		// contract: PrettyPrinter should output literals in the specified base
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/literal/testclasses/BasedLiteral.java");
-		launcher.buildModel();
-		final CtClass<?> ctClass = launcher.getFactory().Class().get("spoon.test.literal.testclasses.BasedLiteral");
+		final CtClass<?> ctClass = factory.Class().get("spoon.test.literal.testclasses.BasedLiteral");
 
 		assertEquals("42", ctClass.getField("i1").getDefaultExpression().toString());
 		((CtLiteral) ctClass.getField("i1").getDefaultExpression()).setBase(LiteralBase.OCTAL);
@@ -268,5 +258,30 @@ public class LiteralTest {
 
 		assertEquals("'c'", ctClass.getField("c1").getDefaultExpression().toString());
 		assertEquals("\"hello\"", ctClass.getField("s1").getDefaultExpression().toString());
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 5070, fixed = true)
+	void tooStrictEscaping() {
+		// contract: inside a string without a position ' are not escaped.
+		List<CtLiteral<?>> literals = Launcher.parseClass("class Foo { String s = \"'\"; }")
+				.getElements(new TypeFilter<>(CtLiteral.class));
+		CtLiteral<?> ctLiteral = literals.get(0);
+		ctLiteral.setPosition(SourcePosition.NOPOSITION);
+		String literal = (String) ctLiteral.getValue();
+		assertEquals("'", literal);
+		assertEquals("\"'\"", ctLiteral.toString());
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 5070, fixed = true)
+	void tooStrictEscapingCharTest() {
+		// contract: inside a string with a position ' are escaped.
+		List<CtLiteral<?>> literals = Launcher.parseClass("class Foo { char c = \'\\'\'; }")
+				.getElements(new TypeFilter<>(CtLiteral.class));
+		CtLiteral<?> ctLiteral = literals.get(0);
+		char literal = (char) ctLiteral.getValue();
+		assertEquals('\'', literal);
+		assertEquals("\'\\'\'", ctLiteral.toString());
 	}
 }

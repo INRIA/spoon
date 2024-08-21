@@ -19,19 +19,23 @@ package spoon.test.role;
 import org.junit.jupiter.api.Test;
 
 import spoon.SpoonException;
+import spoon.reflect.CtModel;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.code.CtAssertImpl;
 import spoon.support.reflect.declaration.CtAnonymousExecutableImpl;
 import spoon.support.reflect.declaration.CtConstructorImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
-
+import spoon.testing.utils.GitHubIssue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.test.SpoonTestHelpers.createModelFromString;
 
 public class TestCtRole {
     @Test
@@ -106,4 +110,33 @@ public class TestCtRole {
     		//OK
     	}
     }
+
+	@Test
+	@GitHubIssue(issueNumber = 4698, fixed = true)
+	void testArrayListRoleInParent() {
+		// contract: Printing an element should not cause getRoleInParent to fail afterwards
+		String code = "import java.util.ArrayList;\n" +
+			"public class A {\n" +
+			"  ArrayList<String> test;\n" +
+			"}";
+		CtModel model = createModelFromString(code, 14); // compliance doesn't really matter
+
+		var testReference = model.getElements(new TypeFilter<>(CtTypeReference.class))
+			.stream()
+			.filter(a -> a.getSimpleName().equals("ArrayList"))
+			.findFirst()
+			.orElseThrow();
+
+		var typeDeclaration = testReference.getTypeDeclaration();
+		// Grab it before toString
+		CtRole role = typeDeclaration.getRoleInParent();
+
+		// This statement triggers the bug, as the ImportConflictDetector causes a nested class to be scanned
+		typeDeclaration.toString();
+
+		// Verify it is still the same afterwards
+		assertEquals(CtRole.CONTAINED_TYPE, role);
+		assertEquals(CtRole.CONTAINED_TYPE, typeDeclaration.getRoleInParent());
+	}
+
 }

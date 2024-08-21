@@ -1,0 +1,21 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Next release version'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
+jobs:
+  release:
+    uses: ./.github/workflows/jreleaser.yml
+    with:
+      release-script-to-run: chore/release.sh ${{ github.event.inputs.version }}
+    secrets: inherit

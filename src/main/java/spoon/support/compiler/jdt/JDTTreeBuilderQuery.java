@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.compiler.jdt;
 
@@ -18,6 +18,7 @@ import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemFieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -28,6 +29,7 @@ import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.reflect.CtExtendedModifier;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -215,15 +217,14 @@ class JDTTreeBuilderQuery {
 	}
 
 	/**
-	 * Check if the name reference is resolved in the JDT tree, i.e. that the declaration is available.
+	 * Check if the name reference is resolved as a field ref in the JDT tree.
 	 *
 	 * @param qualifiedNameReference
 	 * 		Reference which should contain a field binding.
 	 * @return true if the field has been resolved by the jdt builder.
 	 */
-	static boolean isResolvedField(QualifiedNameReference qualifiedNameReference) {
-		return qualifiedNameReference.binding instanceof FieldBinding
-				&& ((FieldBinding) qualifiedNameReference.binding).original().sourceField() != null;
+	static boolean isFieldReference(QualifiedNameReference qualifiedNameReference) {
+		return qualifiedNameReference.binding instanceof FieldBinding;
 	}
 
 
@@ -237,7 +238,7 @@ class JDTTreeBuilderQuery {
 	 * @return true if the lhs is equals to the given expression.
 	 */
 	static boolean isLhsAssignment(ContextBuilder context, Expression lhs) {
-		return context.stack.peek().node instanceof Assignment && ((Assignment) context.stack.peek().node).lhs.equals(lhs);
+		return context.getCurrentNode() instanceof Assignment && ((Assignment) context.getCurrentNode()).lhs.equals(lhs);
 	}
 
 	/**
@@ -364,6 +365,13 @@ class JDTTreeBuilderQuery {
 		if ((modifier & ClassFileConstants.AccNative) != 0) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.NATIVE, implicit));
 		}
+		// AccSealed == AccPatternVariable == AccOverriding, so checking context is needed
+		// AccNonSealed == AccIsDefaultConstructor == AccBlankFinal, so checking context is needed
+		if ((modifier & ExtraCompilerModifiers.AccSealed) != 0 && intersect(target, ModifierTarget.TYPE)) {
+			modifiers.add(new CtExtendedModifier(ModifierKind.SEALED, implicit));
+		} else if ((modifier & ExtraCompilerModifiers.AccNonSealed) != 0 && intersect(target, ModifierTarget.TYPE)) {
+			modifiers.add(new CtExtendedModifier(ModifierKind.NON_SEALED, implicit));
+		}
 		return modifiers;
 	}
 
@@ -377,5 +385,13 @@ class JDTTreeBuilderQuery {
 	 */
 	static Set<CtExtendedModifier> getModifiers(int modifier, boolean implicit, ModifierTarget target) {
 		return getModifiers(modifier, implicit, target.asSingleton());
+	}
+
+	/**
+	 * Returns {@code true} if the given sets intersect, that means the intersection
+	 * of {@code first} and {@code second} is non-empty.
+	 */
+	private static <E> boolean intersect(Set<E> first, Set<E> second) {
+		return !Collections.disjoint(first, second);
 	}
 }

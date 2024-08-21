@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.generating.replace;
 
@@ -50,7 +50,7 @@ public class ReplaceScanner extends CtScanner {
 	public static final String GENERATING_REPLACE_PACKAGE = "spoon.generating.replace";
 	public static final String GENERATING_REPLACE_VISITOR = GENERATING_REPLACE_PACKAGE + ".ReplacementVisitor";
 
-	private final Map<String, CtClass> listeners = new HashMap<>();
+	private final Map<String, CtClass<?>> listeners = new HashMap<>();
 	private final CtClass<Object> target;
 	private final CtExecutableReference<?> element;
 	private final CtExecutableReference<?> list;
@@ -76,14 +76,14 @@ public class ReplaceScanner extends CtScanner {
 		factory.Annotation().annotate(clone, Override.class);
 		clone.getBody().getStatements().clear();
 		for (int i = 1; i < element.getBody().getStatements().size() - 1; i++) {
-			CtInvocation inv = element.getBody().getStatement(i);
+			CtInvocation<?> inv = element.getBody().getStatement(i);
 			List<CtExpression<?>> invArgs = new ArrayList<>(inv.getArguments());
 			if (invArgs.size() <= 1) {
 				throw new RuntimeException("You forget the role argument in line " + i + " of method " + element.getSimpleName() + " from " + element.getDeclaringType().getQualifiedName());
 			}
 			//remove role argument
 			invArgs.remove(0);
-			CtInvocation getter = (CtInvocation) invArgs.get(0);
+			CtInvocation<?> getter = (CtInvocation<?>) invArgs.get(0);
 
 			if (clone.getComments().isEmpty()) {
 				// Add auto-generated comment.
@@ -92,7 +92,7 @@ public class ReplaceScanner extends CtScanner {
 				comment.setContent("auto-generated, see " + ReplacementVisitorGenerator.class.getName());
 				clone.addComment(comment);
 			}
-			Class actualClass = getter.getType().getActualClass();
+			Class<?> actualClass = getter.getType().getActualClass();
 			CtInvocation<?> invocation = createInvocation(factory, element, invArgs, getter, actualClass);
 			clone.getBody().addStatement(invocation);
 		}
@@ -101,7 +101,7 @@ public class ReplaceScanner extends CtScanner {
 
 	private static Set<String> modelCollectionTypes = new HashSet<>(Arrays.asList(ModelList.class.getName(), ElementNameMap.class.getName()));
 	
-	private <T> CtInvocation<?> createInvocation(Factory factory, CtMethod<T> candidate, List<CtExpression<?>> invArgs, CtInvocation getter, Class getterTypeClass) {
+	private <T> CtInvocation<?> createInvocation(Factory factory, CtMethod<T> candidate, List<CtExpression<?>> invArgs, CtInvocation<?> getter, Class<?> getterTypeClass) {
 		CtInvocation<?> invocation;
 		Type type;
 		if (getterTypeClass.equals(Collection.class) || List.class.isAssignableFrom(getterTypeClass)) {
@@ -121,18 +121,18 @@ public class ReplaceScanner extends CtScanner {
 		final String name = getter.getExecutable().getSimpleName().substring(3);
 		final String listenerName = getter.getExecutable().getDeclaringType().getSimpleName() + name + "ReplaceListener";
 
-		CtClass listener;
+		CtClass<?> listener;
 		if (listeners.containsKey(listenerName)) {
 			listener = listeners.get(listenerName);
 		} else {
-			final CtTypeReference getterType = getGetterType(factory, getter);
+			final CtTypeReference<?> getterType = getGetterType(factory, getter);
 			CtTypeReference<?> setterParamType = getterType;
 			if (modelCollectionTypes.contains(setterParamType.getQualifiedName())) {
 				setterParamType = factory.Type().createReference(Collection.class);
 			}
 			listener = createListenerClass(factory, listenerName, setterParamType, type);
-			final CtMethod setter = getSetter(name, getter.getTarget().getType().getDeclaration());
-			final CtField field = updateField(listener, setter.getDeclaringType().getReference());
+			final CtMethod<?> setter = getSetter(name, getter.getTarget().getType().getDeclaration());
+			final CtField<?> field = updateField(listener, setter.getDeclaringType().getReference());
 			updateConstructor(listener, setter.getDeclaringType().getReference());
 			updateSetter(factory, (CtMethod<?>) listener.getMethodsByName("set").get(0), setterParamType, field, setter);
 			// Add auto-generated comment.
@@ -147,9 +147,9 @@ public class ReplaceScanner extends CtScanner {
 		return invocation;
 	}
 
-	private CtTypeReference getGetterType(Factory factory, CtInvocation getter) {
-		CtTypeReference getterType;
-		final CtTypeReference type = getter.getType();
+	private CtTypeReference<?> getGetterType(Factory factory, CtInvocation<?> getter) {
+		CtTypeReference<?> getterType;
+		final CtTypeReference<?> type = getter.getType();
 		if (type instanceof CtTypeParameterReference) {
 			getterType = getTypeFromTypeParameterReference((CtTypeParameterReference) getter.getExecutable().getDeclaration().getType());
 		} else {
@@ -159,14 +159,14 @@ public class ReplaceScanner extends CtScanner {
 		return getterType;
 	}
 
-	private CtTypeReference getTypeFromTypeParameterReference(CtTypeParameterReference ctTypeParameterRef) {
-		final CtMethod parentMethod = ctTypeParameterRef.getParent(CtMethod.class);
+	private CtTypeReference<?> getTypeFromTypeParameterReference(CtTypeParameterReference ctTypeParameterRef) {
+		final CtMethod<?> parentMethod = ctTypeParameterRef.getParent(CtMethod.class);
 		for (CtTypeParameter formal : parentMethod.getFormalCtTypeParameters()) {
 			if (formal.getSimpleName().equals(ctTypeParameterRef.getSimpleName())) {
 				return ((CtTypeParameterReference) formal).getBoundingType();
 			}
 		}
-		final CtInterface parentInterface = ctTypeParameterRef.getParent(CtInterface.class);
+		final CtInterface<?> parentInterface = ctTypeParameterRef.getParent(CtInterface.class);
 		for (CtTypeParameter formal : parentInterface.getFormalCtTypeParameters()) {
 			if (formal.getSimpleName().equals(ctTypeParameterRef.getSimpleName())) {
 				return formal.getReference().getBoundingType();
@@ -175,8 +175,8 @@ public class ReplaceScanner extends CtScanner {
 		throw new SpoonException("Can't get the type of the CtTypeParameterReference " + ctTypeParameterRef);
 	}
 
-	private CtClass createListenerClass(Factory factory, String listenerName, CtTypeReference getterType, Type type) {
-		CtClass listener;
+	private CtClass<?> createListenerClass(Factory factory, String listenerName, CtTypeReference<?> getterType, Type type) {
+		CtClass<?> listener;
 		// prototype class to use, we'll change its name and code later
 		listener = Launcher.parseClass("static class XXX implements ReplaceListener<CtElement> { \n"
 					       + "private final CtElement element XXX(CtElement element) { this.element = element; }\n"
@@ -185,13 +185,13 @@ public class ReplaceScanner extends CtScanner {
 		
 		listener.setSimpleName(listenerName);
 		target.addNestedType(listener);
-		final List<CtTypeReference> references = listener.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
+		final List<CtTypeReference<?>> references = listener.getElements(new TypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
 			@Override
-			public boolean matches(CtTypeReference reference) {
+			public boolean matches(CtTypeReference<?> reference) {
 				return (TARGET_REPLACE_PACKAGE + ".CtListener").equals(reference.getQualifiedName());
 			}
 		});
-		for (CtTypeReference reference : references) {
+		for (CtTypeReference<?> reference : references) {
 			reference.setPackage(listener.getPackage().getReference());
 		}
 		final CtTypeReference<Object> theInterface = factory.Class().createReference(TARGET_REPLACE_PACKAGE + "." + type.name);
@@ -202,38 +202,38 @@ public class ReplaceScanner extends CtScanner {
 		return listener;
 	}
 
-	private CtParameter<?> updateConstructor(CtClass listener, CtTypeReference type) {
-		final CtConstructor ctConstructor = (CtConstructor) listener.getConstructors().toArray(new CtConstructor[listener.getConstructors().size()])[0];
-		CtAssignment assign = (CtAssignment) ctConstructor.getBody().getStatement(1);
-		CtThisAccess fieldAccess = (CtThisAccess) ((CtFieldAccess) assign.getAssigned()).getTarget();
-		((CtTypeAccess) fieldAccess.getTarget()).getAccessedType().setImplicit(true);
+	private CtParameter<?> updateConstructor(CtClass<?> listener, CtTypeReference<?> type) {
+		final CtConstructor<?> ctConstructor = (CtConstructor<?>) listener.getConstructors().toArray(new CtConstructor[listener.getConstructors().size()])[0];
+		CtAssignment<?,?> assign = (CtAssignment<?,?>) ctConstructor.getBody().getStatement(1);
+		CtThisAccess<?> fieldAccess = (CtThisAccess<?>) ((CtFieldAccess<?>) assign.getAssigned()).getTarget();
+		((CtTypeAccess<?>) fieldAccess.getTarget()).getAccessedType().setImplicit(true);
 		final CtParameter<?> aParameter = (CtParameter<?>) ctConstructor.getParameters().get(0);
 		aParameter.setType(type);
 		return aParameter;
 	}
 
-	private CtField updateField(CtClass listener, CtTypeReference<?> type) {
-		final CtField field = listener.getField("element");
+	private CtField<?> updateField(CtClass<?> listener, CtTypeReference<?> type) {
+		final CtField<?> field = listener.getField("element");
 		field.setType(type);
 		return field;
 	}
 
-	private void updateSetter(Factory factory, CtMethod<?> setListener, CtTypeReference getterType, CtField<?> field, CtMethod setter) {
+	private void updateSetter(Factory factory, CtMethod<?> setListener, CtTypeReference<?> getterType, CtField<?> field, CtMethod<?> setter) {
 		setListener.getParameters().get(0).setType(getterType);
 
-		CtInvocation ctInvocation = factory.Code().createInvocation(//
+		CtInvocation<?> ctInvocation = factory.Code().createInvocation(//
 				factory.Code().createVariableRead(field.getReference(), false), //
 				setter.getReference(), //
 				factory.Code().createVariableRead(setListener.getParameters().get(0).getReference(), false) //
 		);
-		CtBlock ctBlock = factory.Code().createCtBlock(ctInvocation);
+		CtBlock<?> ctBlock = factory.Code().createCtBlock(ctInvocation);
 		setListener.setBody(ctBlock);
 	}
 
-	private CtMethod getSetter(String name, CtType declaration) {
-		Set<CtMethod> allMethods = declaration.getAllMethods();
-		CtMethod setter = null;
-		for (CtMethod aMethod : allMethods) {
+	private CtMethod<?> getSetter(String name, CtType<?> declaration) {
+		Set<CtMethod<?>> allMethods = declaration.getAllMethods();
+		CtMethod<?> setter = null;
+		for (CtMethod<?> aMethod : allMethods) {
 			if (("set" + name).equals(aMethod.getSimpleName())) {
 				setter = aMethod;
 				break;
@@ -242,7 +242,7 @@ public class ReplaceScanner extends CtScanner {
 		return setter;
 	}
 
-	private CtConstructorCall<?> getConstructorCall(CtClass listener, CtExpression argument) {
+	private CtConstructorCall<?> getConstructorCall(CtClass<?> listener, CtExpression<?> argument) {
 		return listener.getFactory().Code().createConstructorCall(listener.getReference(), argument);
 	}
 

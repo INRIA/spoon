@@ -1,18 +1,21 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static spoon.reflect.path.CtRole.VALUE;
 
@@ -80,4 +83,20 @@ public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 	@Override
 	@UnsettableProperty
 	<C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass);
+
+	@Override
+	@DerivedProperty
+	Set<CtTypeReference<?>> getPermittedTypes();
+
+	@Override
+	@UnsettableProperty
+	CtEnum<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes);
+
+	@Override
+	@UnsettableProperty
+	CtEnum<T> addPermittedType(CtTypeReference<?> type);
+
+	@Override
+	@UnsettableProperty
+	CtEnum<T> removePermittedType(CtTypeReference<?> type);
 }

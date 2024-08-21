@@ -53,6 +53,13 @@ entries:
           product: all
           version: all
 
+        - title: Javadoc Analysis
+          url: /spoon_javadoc.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
         - title: FAQ
           url: /faq.html
           audience: writers, designers

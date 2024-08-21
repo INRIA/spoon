@@ -22,6 +22,7 @@ import spoon.reflect.CtModelImpl;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtTypePattern;
+import spoon.reflect.code.CtUnnamedPattern;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -104,9 +105,12 @@ public class SetParentTest{
 	}
 
 	private static CtElement createCompatibleParent(CtType<?> e) {
-	    return CtTypePattern.class.getSimpleName().equals(e.getSimpleName())
-				? createInstanceOfBinaryOperator()
-				: e.getFactory().createAssignment();
+		if (CtUnnamedPattern.class.getSimpleName().equals(e.getSimpleName())) {
+			return factory.Core().createRecordPattern();
+		} else if (CtTypePattern.class.getSimpleName().equals(e.getSimpleName())) {
+			return createInstanceOfBinaryOperator();
+		}
+		return e.getFactory().createAssignment();
 	}
 
 	private static CtBinaryOperator<?> createInstanceOfBinaryOperator() {

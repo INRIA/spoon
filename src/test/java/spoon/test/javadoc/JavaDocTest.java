@@ -38,6 +38,7 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.imports.ImportTest;
 import spoon.test.javadoc.testclasses.Bar;
+import spoon.testing.utils.ModelTest;
 
 import java.util.List;
 
@@ -141,15 +142,9 @@ public class JavaDocTest {
 		assertEquals("foo", j.getTags().get(0).getContent());
 	}
 
-	@Test
-	public void testTagsParameters() {
+	@ModelTest("./src/test/java/spoon/test/javadoc/testclasses/A.java")
+	public void testTagsParameters(CtModel model) {
 		// contract: @throws and @exception should have proper params
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/javadoc/testclasses/A.java");
-		launcher.getEnvironment().setCommentEnabled(true);
-		launcher.getEnvironment().setNoClasspath(true);
-		CtModel model = launcher.buildModel();
-
 		List<CtJavaDoc> javadocs = model.getElements(new TypeFilter<>(CtJavaDoc.class));
 
 		CtJavaDocTag throwsTag = javadocs.get(0).getTags().get(0);
@@ -159,15 +154,9 @@ public class JavaDocTest {
 		assertEquals("FileNotFoundException", exceptionTag.getParam());
 	}
 
-	@Test
-	public void testJavadocTagNames() {
+	@ModelTest("./src/test/java/spoon/test/javadoc/testclasses/B.java")
+	public void testJavadocTagNames(CtModel model) {
 		//contract: we should handle all possible javadoc tags properly
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/javadoc/testclasses/B.java");
-		launcher.getEnvironment().setCommentEnabled(true);
-		launcher.getEnvironment().setNoClasspath(true);
-		CtModel model = launcher.buildModel();
-
 		CtType<?> type = model.getAllTypes().stream().findFirst().get();
 		assertEquals(TagType.VERSION, type.getElements(new TypeFilter<>(CtEnum.class)).get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
 		assertEquals(TagType.AUTHOR, type.getMethodsByName("m1").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());

@@ -1,33 +1,41 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.compiler;
 
+import org.apache.commons.io.FileUtils;
+import spoon.Launcher;
+import spoon.SpoonException;
+import spoon.compiler.SpoonFile;
+import spoon.compiler.SpoonFolder;
+import spoon.compiler.SpoonResourceHelper;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import spoon.Launcher;
-import spoon.SpoonException;
-import spoon.compiler.SpoonFile;
-import spoon.compiler.SpoonFolder;
-import spoon.compiler.SpoonResourceHelper;
 
 public class ZipFolder implements SpoonFolder {
 
@@ -57,20 +65,45 @@ public class ZipFolder implements SpoonFolder {
 		// Indexing content
 		if (files == null) {
 			files = new ArrayList<>();
-			try (ZipInputStream zipInput = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)));
-				ByteArrayOutputStream output = new ByteArrayOutputStream(2048)) {
+			try (FileSystem zip = FileSystems.newFileSystem(URI.create("jar:" + file.toURI()), Map.of())) {
+				Path tempFolder = Files.createTempDirectory("spoon-zip-file-proxy");
+				// Try to clean up - not guaranteed to work!
+				Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+					try {
+						FileUtils.deleteDirectory(tempFolder.toFile());
+					} catch (IOException e) {
+						throw new UncheckedIOException(e);
+					}
+				}));
 
-				ZipEntry entry;
-				while ((entry = zipInput.getNextEntry()) != null) {
-					zipInput.transferTo(output);
-					files.add(new ZipFile(this, entry.getName(), output.toByteArray()));
-					output.reset();
+
+				for (Path directory : zip.getRootDirectories()) {
+					copyFolder(directory, tempFolder);
 				}
 			} catch (Exception e) {
-				Launcher.LOGGER.error(e.getMessage(), e);
+				Launcher.LOGGER.error("Error copying zip file contents", e);
 			}
 		}
 		return files;
+	}
+
+	private void copyFolder(Path source, Path target) throws IOException {
+		try (Stream<Path> stream = Files.walk(source)) {
+			for (Path path : (Iterable<Path>) stream::iterator) {
+				// This little dance is needed, as resolve with the Path fails: The two paths are in different and
+				// incompatible file systems!
+				String relativePath = source.relativize(path).toString();
+				Path targetFile = target.resolve(relativePath);
+
+				if (Files.isDirectory(path)) {
+					Files.createDirectories(targetFile);
+				} else {
+					// walked in depth-first order, so we can just copy it and expect the parent to exist
+					Files.copy(path, targetFile);
+					files.add(new ZipFile(this, relativePath, targetFile));
+				}
+			}
+		}
 	}
 
 	@Override
@@ -127,8 +160,6 @@ public class ZipFolder implements SpoonFolder {
 	public File toFile() {
 		return file;
 	}
-
-
 
 	@Override
 	public int hashCode() {

@@ -20,12 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -51,7 +53,7 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
-import spoon.test.GitHubIssue;
+import spoon.testing.utils.GitHubIssue;
 
 @DisplayName("Switchcase Tests")
 public class SwitchCaseTest {
@@ -60,8 +62,11 @@ public class SwitchCaseTest {
 		return e.toString().replace("\n", "").replace("\r", "");
 	}
 	private static CtModel createModelFromString(String code) {
+		return createModelFromString(code, 21);
+	}
+	private static CtModel createModelFromString(String code, int complianceLevel) {
 		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setComplianceLevel(14);
+		launcher.getEnvironment().setComplianceLevel(complianceLevel);
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource(new VirtualFile(code));
 		return launcher.buildModel();
@@ -121,6 +126,78 @@ public class SwitchCaseTest {
 				assertEquals(String.class.getName(), aCase.getCaseExpression().getType().getTypeDeclaration().getQualifiedName());
 			}
 		}
+
+		@DisplayName("Switch over Enum with qualified names since Java 21")
+		@Test
+		public void testSwitchStatementOnAnEnum() {
+			CtModel model = createModelFromString(
+				"""
+					import java.nio.file.StandardCopyOption;
+					class C {
+						int m(StandardCopyOption option) {
+							return switch (option) {
+								case ATOMIC_MOVE -> 1;
+								case StandardCopyOption.COPY_ATTRIBUTES -> 2;
+								case java.nio.file.StandardCopyOption.REPLACE_EXISTING -> 3;
+							};
+						}
+					}
+					"""
+			);
+
+			CtSwitchExpression<?, ?> ctSwitch = model.getElements(new TypeFilter<CtSwitchExpression<?, ?>>(CtSwitchExpression.class)).get(0);
+
+			// Checks the selector is the enum.
+			assertEquals(StandardCopyOption.class.getName(), ctSwitch.getSelector().getType().getTypeDeclaration().getQualifiedName());
+
+			// Checks all cases are the matching enum constants.
+			var cases = ctSwitch.getCases();
+			List<String> expectedPrinterOutputForceFQP = List.of(
+				"case java.nio.file.StandardCopyOption.ATOMIC_MOVE ->",
+				"case java.nio.file.StandardCopyOption.COPY_ATTRIBUTES ->",
+				"case java.nio.file.StandardCopyOption.REPLACE_EXISTING ->"
+			);
+			List<String> expectedPrinterOutputForcePretty = List.of(
+				"case ATOMIC_MOVE ->",
+				"case StandardCopyOption.COPY_ATTRIBUTES ->",
+				"case StandardCopyOption.REPLACE_EXISTING ->"
+			);
+			for (int i = 0; i < cases.size(); i++) {
+				CtCase<?> aCase = cases.get(i);
+				// make sure all are qualified when using toString (printer with ForceFullyQualifiedProcessor)
+				Assertions.assertThat(aCase.toString()).contains(expectedPrinterOutputForceFQP.get(i));
+				// make sure the auto-import strips the package name but not the class name if not implicit
+				Assertions.assertThat(aCase.prettyprint()).contains(expectedPrinterOutputForcePretty.get(i));
+				assertEquals(StandardCopyOption.class.getName(), aCase.getCaseExpression().getType().getTypeDeclaration().getQualifiedName());
+			}
+		}
+
+		@DisplayName("Print switch on enum pre Java 21")
+		@Test
+		public void testSwitchStatementOnAnEnumPrintPre21() {
+			CtModel model = createModelFromString(
+				"""
+					import java.nio.file.StandardCopyOption;
+					class C {
+						int m(StandardCopyOption option) {
+							return switch (option) {
+								case ATOMIC_MOVE -> 1;
+								case COPY_ATTRIBUTES -> 2;
+								case REPLACE_EXISTING -> 3;
+							};
+						}
+					}
+					""",
+				20
+			);
+			CtSwitchExpression<?, ?> ctSwitch = model.getElements(new TypeFilter<CtSwitchExpression<?, ?>>(CtSwitchExpression.class)).get(0);
+			Assertions.assertThat(ctSwitch.toString()).contains(
+				"case ATOMIC_MOVE ->",
+				"case COPY_ATTRIBUTES ->",
+				"case REPLACE_EXISTING ->"
+			);
+		}
+
 		@DisplayName("Parent is set")
 		@Test
 		public void testParentInCaseExpressions() {
@@ -131,6 +208,24 @@ public class SwitchCaseTest {
 				launcher.buildModel();
 				List<CtLiteral<?>> caseStatement = launcher.getModel().getElements(new TypeFilter<>(CtLiteral.class));
 				assertTrue(caseStatement.stream().allMatch(CtLiteral::isParentInitialized));
+		}
+
+		@GitHubIssue(issueNumber = 2743, fixed = true)
+		@Test
+		void testNoSyntheticBreak() {
+			// contract: no synthetic break is introduced in the model
+			CtModel model = createModelFromString("""
+					class Main {
+						void main() {
+							switch(0) {
+								case 1 -> {
+								}
+							}
+						}
+					}
+					"""
+			);
+			Assertions.assertThat(model.getElements(new TypeFilter<>(CtBreak.class))).isEmpty();
 		}
 	}
 
@@ -233,6 +328,7 @@ public class SwitchCaseTest {
 			);
 		}
 
+		@Test
 		@GitHubIssue(issueNumber = 4696, fixed = true)
 		void testVariableScopeInSwitch() {
 			// contract: different cases do not introduce different scopes in colon-switches

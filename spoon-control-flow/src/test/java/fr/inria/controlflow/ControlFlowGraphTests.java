@@ -23,11 +23,14 @@
 package fr.inria.controlflow;
 
 import org.junit.jupiter.api.Test;
+import spoon.Launcher;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
 import spoon.support.reflect.code.CtIfImpl;
 import static fr.inria.controlflow.BranchKind.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -169,4 +172,12 @@ public class ControlFlowGraphTests {
 		assertEquals(3, graph.statementCount());
 	}
 
+	@Test
+	void issue4803() {
+		// contract: analyzing while(true); should not throw a NPE. See issue 4803
+		ControlFlowBuilder builder = new ControlFlowBuilder();
+		Launcher launcher = new Launcher();
+		CtElement element = launcher.getFactory().createCodeSnippetStatement("while(true)").compile();
+		assertDoesNotThrow(() -> builder.build(element));
+	}
 }

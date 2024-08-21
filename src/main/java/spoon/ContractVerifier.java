@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon;
 
@@ -217,7 +217,7 @@ public class ContractVerifier {
 					return;
 				}
 				final CtType<T> typeDeclaration = reference.getTypeDeclaration();
-				assertNotNull(reference.toString() + " cannot be found in ", typeDeclaration);
+				assertNotNull(reference + " cannot be found in ", typeDeclaration);
 				assertEquals(reference.getSimpleName(), typeDeclaration.getSimpleName());
 				assertEquals(reference.getQualifiedName(), typeDeclaration.getQualifiedName());
 
@@ -235,7 +235,7 @@ public class ContractVerifier {
 					return;
 				}
 				final CtExecutable<T> executableDeclaration = reference.getExecutableDeclaration();
-				assertNotNull("cannot find decl for " + reference.toString(), executableDeclaration);
+				assertNotNull("cannot find decl for " + reference, executableDeclaration);
 				assertEquals(reference.getSimpleName(), executableDeclaration.getSimpleName());
 
 				// when a generic type is used in a parameter and return type, the shadow type doesn't have these information.
@@ -265,7 +265,7 @@ public class ContractVerifier {
 				}
 
 				if (reference.getDeclaration() == null && CtShadowable.class.isAssignableFrom(executableDeclaration.getClass())) {
-					assertTrue("execDecl at " + reference.toString() + " must be shadow ", ((CtShadowable) executableDeclaration).isShadow());
+					assertTrue("execDecl at " + reference + " must be shadow ", ((CtShadowable) executableDeclaration).isShadow());
 				}
 
 			}
@@ -400,7 +400,7 @@ public class ContractVerifier {
 			CtExpression assigned = assign.getAssigned();
 			if (!(assigned instanceof CtFieldWrite
 					|| assigned instanceof CtVariableWrite || assigned instanceof CtArrayWrite)) {
-				throw new AssertionError("AssignmentContract error:" + assign.getPosition() + "\n" + assign.toString() + "\nAssigned is " + assigned.getClass());
+				throw new AssertionError("AssignmentContract error:" + assign.getPosition() + "\n" + assign + "\nAssigned is " + assigned.getClass());
 			}
 		}
 	}
@@ -464,7 +464,7 @@ public class ContractVerifier {
 			Exception firstStack = allElements.put(ele, secondStack);
 			if (firstStack != null) {
 				if (firstStack == dummyException) {
-					fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele.toString() + " is shared");
+					fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele + " is shared");
 				}
 				//the element ele was already visited. It means it used on more places
 				//report the stacktrace of first and second usage, so that place can be found easily

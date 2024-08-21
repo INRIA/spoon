@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.experimental;
 
@@ -32,12 +32,13 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 /**
  * Visitor that generates factory calls to recreate the AST visited.
@@ -47,8 +48,8 @@ public class SpoonifierVisitor extends CtScanner {
 //public class SpoonifierVisitor extends CtInheritanceScanner {
 	StringBuilder result = new StringBuilder();
 	Map<String, Integer> variableCount = new HashMap<>();
-	Stack<String> parentName = new Stack<>();
-	Stack<Map<CtRole, String>> roleContainer = new Stack<>();
+	Deque<String> parentName = new ArrayDeque<>();
+	Deque<Map<CtRole, String>> roleContainer = new ArrayDeque<>();
 
 	PropertyScanner propertyScanner = new PropertyScanner();
 
@@ -154,7 +155,7 @@ public class SpoonifierVisitor extends CtScanner {
 			} else if (o instanceof Set) {
 				handleContainer(element, parent, elementRoleInParent, variableName, "Set");
 			} else {
-				result.append(printTabs() + parentName.peek() + ".setValueByRole(CtRole." + elementRoleInParent.name() + ", " + variableName + ");\n");
+				result.append(printTabs() + parentName.getFirst() + ".setValueByRole(CtRole." + elementRoleInParent.name() + ", " + variableName + ");\n");
 			}
 		}
 
@@ -188,12 +189,12 @@ public class SpoonifierVisitor extends CtScanner {
 		}
 
 		String containerName;
-		if (!roleContainer.peek().containsKey(elementRoleInParent)) {
-			containerName = parentName.peek() + elementRoleInParent.toString().substring(0, 1).toUpperCase() + elementRoleInParent.toString().substring(1) + "s";
-			roleContainer.peek().put(elementRoleInParent, containerName);
+		if (!roleContainer.getFirst().containsKey(elementRoleInParent)) {
+			containerName = parentName.getFirst() + elementRoleInParent.toString().substring(0, 1).toUpperCase() + elementRoleInParent.toString().substring(1) + "s";
+			roleContainer.getFirst().put(elementRoleInParent, containerName);
 			result.append(printTabs() + container + " " + containerName + " = new " + concreteClass + "();\n");
 		} else {
-			containerName = roleContainer.peek().get(elementRoleInParent);
+			containerName = roleContainer.getFirst().get(elementRoleInParent);
 		}
 
 		if (container.equals("Map")) {
@@ -222,11 +223,11 @@ public class SpoonifierVisitor extends CtScanner {
 				&& isLeafTypeReference(element.getParent())) {
 			return;
 		}
-		if (!roleContainer.peek().isEmpty()) {
-			for (CtRole role: roleContainer.peek().keySet()) {
-				String variableName = roleContainer.peek().get(role);
+		if (!roleContainer.getFirst().isEmpty()) {
+			for (CtRole role: roleContainer.getFirst().keySet()) {
+				String variableName = roleContainer.getFirst().get(role);
 				result.append(printTabs())
-						.append(parentName.peek())
+						.append(parentName.getFirst())
 						.append(".setValueByRole(CtRole.")
 						.append(role.name())
 						.append(", ")

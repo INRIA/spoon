@@ -1,12 +1,13 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.code;
 
+import org.jspecify.annotations.Nullable;
 import spoon.LovecraftException;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
@@ -21,6 +22,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtTypedElement;
@@ -140,7 +142,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	private <R> CtMethod<R> getOverriddenMethodForNormalType(CtTypeReference<?> lambdaTypeRef) throws SpoonException {
 		CtType<?> lambdaType = lambdaTypeRef.getTypeDeclaration();
-		if (lambdaType.isInterface() == false) {
+		if (!lambdaType.isInterface()) {
 			throw new SpoonException("The lambda can be based on interface only. But type " + lambdaTypeRef.getQualifiedName() + " is not an interface");
 		}
 		Set<CtMethod<?>> lambdaTypeMethods = lambdaType.getAllMethods();
@@ -287,7 +289,19 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	@UnsettableProperty
+	public CtExecutable<?> setReceiverParameter(CtReceiverParameter receiverParameter) {
+		return this;
+	}
+
+	@Override
+	@UnsettableProperty
+	public @Nullable CtReceiverParameter getReceiverParameter() {
+		return null;
+	}
+
+	@Override
+	public <C extends CtTypedElement> C setType(CtTypeReference type) {
 		if (type != null) {
 			type.setImplicit(true);
 		}

@@ -11,12 +11,20 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.adaption.TypeAdaptor;
+import spoon.support.compiler.VirtualFile;
+import spoon.testing.utils.GitHubIssue;
+import spoon.testing.utils.ModelTest;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.Assert.assertThat;
 
@@ -387,5 +395,221 @@ class TypeAdaptorTest {
 
 		@Override
 		void crashyArray(String[] paramTypes);
+	}
+
+	@ModelTest("src/test/java/spoon/support/TypeAdaptorTest.java")
+	void testIsOverridingWithMethodDeclaredParameter(Factory factory) {
+		// contract: Overriding checks of a method with a generic throws clause work
+		CtType<?> parent = factory.Type().get(GenericThrowsParent.class.getName());
+		CtType<?> child = factory.Type().get(GenericThrowsChild.class.getName());
+
+		CtMethod<?> parentCrashyMethod = parent.getMethodsByName("orElseThrow").get(0);
+		CtMethod<?> childCrashyMethod = child.getMethodsByName("orElseThrow").get(0);
+
+		assertTrue(new TypeAdaptor(child).isOverriding(childCrashyMethod, parentCrashyMethod));
+		assertFalse(new TypeAdaptor(child).isOverriding(parentCrashyMethod, childCrashyMethod));
+	}
+
+	@ModelTest("src/test/java/spoon/support/TypeAdaptorTest.java")
+	void testOverridenOverloadingWithMethodDeclaredParameter(Factory factory) {
+		// contract: Overloading/Overriding distinction works with type parameters with different erasure
+		CtType<?> parent = factory.Type().get(GenericThrowsParent.class.getName());
+		CtType<?> child = factory.Type().get(GenericThrowsChild.class.getName());
+
+		CtMethod<?> parentOverloadedMethod = parent.getMethodsByName("overloaded").get(0);
+		CtMethod<?> childOverloadedMethod = child.getMethodsByName("overloaded").get(0);
+		CtMethod<?> parentOverriddenMethod = parent.getMethodsByName("overriden").get(0);
+		CtMethod<?> childOverriddenMethod = child.getMethodsByName("overriden").get(0);
+
+		assertFalse(new TypeAdaptor(child).isOverriding(childOverloadedMethod, parentOverloadedMethod));
+		assertFalse(new TypeAdaptor(child).isOverriding(parentOverloadedMethod, childOverloadedMethod));
+
+		assertTrue(new TypeAdaptor(child).isOverriding(childOverriddenMethod, parentOverriddenMethod));
+		assertFalse(new TypeAdaptor(child).isOverriding(parentOverriddenMethod, childOverriddenMethod));
+	}
+
+	private static abstract class GenericThrowsParent {
+		public abstract <E extends Throwable> void orElseThrow(E throwable) throws E;
+
+		public <T extends String> void overloaded(T t) {
+		}
+
+		public abstract <T extends String> void overriden(T t);
+	}
+
+	private static class GenericThrowsChild extends GenericThrowsParent {
+		@Override
+		public <E extends Throwable> void orElseThrow(E throwable) throws E {
+			throw throwable;
+		}
+
+		public <T extends CharSequence> void overloaded(T t) {
+		}
+
+		public <T extends String> void overriden(T t) {
+		}
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 5226, fixed = true)
+	void testAdaptingTypeFromEnclosingClass() {
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(11);
+		launcher.addInputResource("src/test/java/spoon/support/TypeAdaptorTest.java");
+		CtType<?> type = launcher.getFactory()
+			.Type()
+			.get(UseGenericFromEnclosingType.class);
+		@SuppressWarnings("rawtypes")
+		List<CtMethod> methods = type.getElements(new TypeFilter<>(CtMethod.class))
+			.stream()
+			.filter(it -> it.getSimpleName().equals("someMethod"))
+			.collect(Collectors.toList());
+		CtMethod<?> test1Method = methods.stream()
+			.filter(it -> !it.getDeclaringType().getSimpleName().startsWith("Extends"))
+			.findAny()
+			.orElseThrow();
+		CtMethod<?> test2Method = methods.stream()
+			.filter(it -> it.getDeclaringType().getSimpleName().startsWith("Extends"))
+			.findAny()
+			.orElseThrow();
+
+		assertTrue(test2Method.isOverriding(test1Method));
+		assertFalse(test1Method.isOverriding(test2Method));
+	}
+
+	public static class UseGenericFromEnclosingType {
+
+		public static class Enclosing<T> {
+
+			public class Enclosed<S> {
+
+				void someMethod(S s, T t) {
+				}
+			}
+		}
+
+		public static class ExtendsEnclosing extends Enclosing<String> {
+
+			public class ExtendsEnclosed extends Enclosed<Integer> {
+
+				@Override
+				void someMethod(Integer s, String t) {
+					throw new UnsupportedOperationException();
+				}
+			}
+		}
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 5462, fixed = true)
+	void testArraySubtypingShadow() {
+		// contract: Array subtyping should hold for shadow types
+		Factory factory = new Launcher().getFactory();
+		CtTypeReference<Integer> intType = factory.Type().integerType();
+		CtArrayTypeReference<?> intArr = factory.createArrayReference(intType, 1);
+		CtArrayTypeReference<?> intArr2 = factory.createArrayReference(intType, 2);
+
+		CtTypeReference<Number> numType = factory.createCtTypeReference(Number.class);
+		CtArrayTypeReference<?> numArr = factory.createArrayReference(numType, 1);
+		CtArrayTypeReference<?> numArr2 = factory.createArrayReference(numType, 2);
+
+		CtArrayTypeReference<?> objArr = factory.createArrayReference(factory.Type().objectType(), 1);
+
+		verifySubtype(intArr, numArr, true);
+		verifySubtype(intArr2, numArr2, true);
+
+		verifySubtype(intArr, numArr2, false);
+		verifySubtype(intArr, numType, false);
+		verifySubtype(intArr, intType, false);
+		verifySubtype(numArr, numType, false);
+		verifySubtype(numArr, intType, false);
+		verifySubtype(intArr2, numType, false);
+		verifySubtype(intArr2, intType, false);
+		verifySubtype(numArr2, numType, false);
+		verifySubtype(numArr2, intType, false);
+
+		// int[][] < Object[], as int[] < Object
+		verifySubtype(intArr2, objArr, true);
+		verifySubtype(numArr2, objArr, true);
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 5462, fixed = true)
+	void testArraySubtypingNoShadow() {
+		// contract: Array subtyping should hold for non-shadow types
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(false);
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.addInputResource(new VirtualFile(
+			"public class Foo {}",
+			"Foo.java"
+		));
+		launcher.addInputResource(new VirtualFile(
+			"public class Bar extends Foo {}",
+			"Bar.java"
+		));
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+
+		CtTypeReference<?> barType = factory.Type().get("Bar").getReference();
+		CtArrayTypeReference<?> barArr = factory.createArrayReference(barType, 1);
+		CtArrayTypeReference<?> barArr2 = factory.createArrayReference(barType, 2);
+
+		CtTypeReference<?> fooType = factory.Type().get("Foo").getReference();
+		CtArrayTypeReference<?> fooArr = factory.createArrayReference(fooType, 1);
+		CtArrayTypeReference<?> fooArr2 = factory.createArrayReference(fooType, 2);
+
+		verifySubtype(barArr, fooArr, true);
+		verifySubtype(barArr2, fooArr2, true);
+
+		verifySubtype(barArr, fooArr2, false);
+		verifySubtype(barArr, fooType, false);
+		verifySubtype(barArr, barType, false);
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 5462, fixed = true)
+	void testArraySubtypingInbuiltTypes() {
+		// contract: Array subtyping should hold for inbuilt types (Cloneable, Serializable, Object)
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(false);
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.addInputResource(new VirtualFile(
+			"public class Foo {}",
+			"Foo.java"
+		));
+		CtTypeReference<?> fooType = launcher.buildModel().getAllTypes().iterator().next().getReference();
+		Factory factory = launcher.getFactory();
+
+		CtArrayTypeReference<?> fooArray = factory.createArrayReference(fooType, 1);
+		CtArrayTypeReference<?> intArray = factory.createArrayReference(factory.Type().integerPrimitiveType(), 1);
+		CtArrayTypeReference<?> objArray = factory.createArrayReference(factory.Type().objectType(), 1);
+
+		verifySubtype(fooArray, factory.createCtTypeReference(Object.class), true);
+		verifySubtype(fooArray, factory.createCtTypeReference(Cloneable.class), true);
+		verifySubtype(fooArray, factory.createCtTypeReference(Serializable.class), true);
+
+		verifySubtype(intArray, factory.createCtTypeReference(Object.class), true);
+		verifySubtype(intArray, factory.createCtTypeReference(Cloneable.class), true);
+		verifySubtype(intArray, factory.createCtTypeReference(Serializable.class), true);
+
+		verifySubtype(objArray, factory.createCtTypeReference(Object.class), true);
+		verifySubtype(objArray, factory.createCtTypeReference(Cloneable.class), true);
+		verifySubtype(objArray, factory.createCtTypeReference(Serializable.class), true);
+	}
+
+	private static void verifySubtype(CtTypeReference<?> bottom, CtTypeReference<?> top, boolean shouldSubtype) {
+		String message = bottom + (shouldSubtype ? " < " : " !< ") + top;
+		boolean resultReference = bottom.isSubtypeOf(top);
+		boolean resultAdaptor = new TypeAdaptor(bottom).isSubtypeOf(top);
+		assertEquals(shouldSubtype, resultReference, message);
+		assertEquals(shouldSubtype, resultAdaptor, message);
+
+		// There are no type declarations for source level arrays
+		if (bottom.getTypeDeclaration() != null) {
+			boolean resultAdaptorTwo = TypeAdaptor.isSubtype(bottom.getTypeDeclaration(), top);
+			assertEquals(shouldSubtype, resultAdaptorTwo, message);
+		}
+
 	}
 }

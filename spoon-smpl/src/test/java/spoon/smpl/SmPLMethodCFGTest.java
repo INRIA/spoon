@@ -25,8 +25,11 @@ package spoon.smpl;
 import fr.inria.controlflow.*;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtFor;
+import spoon.reflect.code.CtForEach;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -131,5 +134,53 @@ public class SmPLMethodCFGTest {
 		ues.restore();
 
 		assertFalse(method.toString().contains("__SmPLUnsupported__"));
+	}
+
+	@Test
+	public void testForLoopUnsupportedSwap() {
+
+		// contract: the UnsupportedElementSwapper should replace CtFor elements
+
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(false);
+		launcher.addInputResource(new VirtualFile("class A {\n" +
+												  "  private void forLoop() {\n" +
+												  "    for (int i = 0; i < 10; ++i) {\n" +
+												  "      System.out.println(i);\n" +
+												  "    }\n" +
+												  "  }\n" +
+												  "}\n"));
+		launcher.buildModel();
+		CtMethod<?> method = launcher.getModel().getRootPackage().getType("A").getMethodsByName("forLoop").get(0);
+
+		assertTrue(method.filterChildren(new TypeFilter<>(CtFor.class)).list().size() == 1);
+
+		SmPLMethodCFG.UnsupportedElementSwapper ues = new SmPLMethodCFG.UnsupportedElementSwapper(method);
+
+		assertTrue(method.filterChildren(new TypeFilter<>(CtFor.class)).list().size() == 0);
+	}
+
+	@Test
+	public void testForEachLoopUnsupportedSwap() {
+
+		// contract: the UnsupportedElementSwapper should replace CtForEach elements
+
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(false);
+		launcher.addInputResource(new VirtualFile("class A {\n" +
+												  "  private void forEachLoop() {\n" +
+												  "    for (int i : Arrays.asList(1, 2, 3, 4)) {\n" +
+												  "      System.out.println(i);\n" +
+												  "    }\n" +
+												  "  }\n" +
+												  "}\n"));
+		launcher.buildModel();
+		CtMethod<?> method = launcher.getModel().getRootPackage().getType("A").getMethodsByName("forEachLoop").get(0);
+
+		assertTrue(method.filterChildren(new TypeFilter<>(CtForEach.class)).list().size() == 1);
+
+		SmPLMethodCFG.UnsupportedElementSwapper ues = new SmPLMethodCFG.UnsupportedElementSwapper(method);
+
+		assertTrue(method.filterChildren(new TypeFilter<>(CtForEach.class)).list().size() == 0);
 	}
 }
