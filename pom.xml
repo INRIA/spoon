@@ -12,13 +12,13 @@
   <parent>
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-pom</artifactId>
-    <version>11.1.1-beta-2</version>
+    <version>11.1.1-SNAPSHOT</version>
     <relativePath>spoon-pom</relativePath>
   </parent>
 
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>11.1.1-beta-2</version>
+  <version>11.1.1-SNAPSHOT</version>
   <name>Spoon Core</name>
   <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
   <url>https://spoon.gforge.inria.fr/</url>
