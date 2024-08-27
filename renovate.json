@@ -1,8 +1,9 @@
 {
    "extends":[
       "config:base",
-      "helpers:pinGitHubActionDigests"
-   ],
+      "helpers:pinGitHubActionDigests",
+      ":semanticCommitTypeAll(build)"
+],
    "ignoreDeps": ["org.apache.maven:maven-model"],
    "packageRules":[
       {
