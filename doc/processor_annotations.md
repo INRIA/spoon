@@ -73,7 +73,7 @@ public interface AnnotationProcessor<A extends Annotation, E extends CtElement> 
 	boolean inferConsumedAnnotationType();
 	Set<Class<? extends A>> getProcessedAnnotationTypes();
 	Set<Class<? extends A>> getConsumedAnnotationTypes();
-	boolean shoudBeConsumed(CtAnnotation<? extends Annotation> annotation);
+	boolean shouldBeConsumed(CtAnnotation<? extends Annotation> annotation);
 }
 ```
 
@@ -81,7 +81,7 @@ Annotation processors extend normal processors by stating the annotation type th
 carry (type parameter `A`), in addition of stating the kind of source code element they process 
 (type parameter `E`). The `process` method (line 4) receives as arguments both the `CtElement` and the 
 annotation it carries. The remaining four methods (`getProcessedAnnotationTypes`, `getConsumedAnnotationTypes`, 
-`inferConsumedAnnotationTypes` and `shoudBeConsumed`) configure the visiting of the AST during annotation 
+`inferConsumedAnnotationTypes` and `shouldBeConsumed`) configure the visiting of the AST during annotation 
 processing. The Spoon annotation processing runtime is able to infer the type of annotation a processor 
 handles from its type parameter `A`. This restricts each processor to handle a single annotation. To avoid this 
 restriction, a developer can override the `inferConsumedAnnotationType()` method to return `false`. When doing 

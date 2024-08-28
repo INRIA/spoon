@@ -114,7 +114,7 @@ public class ExecutableReferenceTest {
 		try {
 			aMethod.getType().getAllExecutables();
 		} catch (NullPointerException e) {
-			fail("We shoudn't have a NullPointerException when we call getAllExecutables.");
+			fail("We shouldn't have a NullPointerException when we call getAllExecutables.");
 		}
 	}
 
