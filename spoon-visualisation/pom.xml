@@ -41,6 +41,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <id>shade-jar</id>
@@ -96,6 +97,7 @@
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>spoon.visualisation/spoon.visualisation.Launcher</mainClass>
+                    <runtimePathOption>CLASSPATH</runtimePathOption>
                 </configuration>
             </plugin>
         </plugins>
