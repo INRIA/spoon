@@ -21,7 +21,7 @@ import spoon.Launcher;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.visitor.ModelConsistencyChecker;
+import spoon.reflect.visitor.ModelConsistencyCheckerTestHelper;
 import spoon.support.modelobs.FineModelChangeListener;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
@@ -121,14 +121,13 @@ public class AstCheckerTest {
 		launcher.buildModel();
 
 		final Factory factory = launcher.getFactory();
-
-		assertSpoonModelConsistency(factory);
-
 		final List<CtTypeReference<?>> collectionsRef = Arrays.asList(
 				factory.Type().createReference(Collection.class),
 				factory.Type().createReference(List.class),
 				factory.Type().createReference(Set.class),
 				factory.Type().createReference(Map.class));
+
+		ModelConsistencyCheckerTestHelper.assertModelIsConsistent(factory);
 
 		final List<CtInvocation<?>> invocations = Query.getElements(factory, new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
 			@Override
@@ -165,23 +164,6 @@ public class AstCheckerTest {
 					.collect(Collectors.joining(",\n"));
 			throw new AssertionError(error);
 		}
-	}
-
-	private void assertSpoonModelConsistency(Factory factory) {
-		// contract: each elements direct descendants should have the element as parent
-		factory.getModel().getAllModules().forEach(ctModule -> {
-			var invalidElements = ModelConsistencyChecker.listInconsistencies(ctModule);
-
-			if (!invalidElements.isEmpty()) {
-				throw new IllegalStateException("Model is inconsistent, %d elements have invalid parents:%n%s".formatted(
-					invalidElements.size(),
-					invalidElements.stream()
-						.map(ModelConsistencyChecker.InconsistentElements::toString)
-						.limit(5)
-						.collect(Collectors.joining(System.lineSeparator()))
-				));
-			}
-		});
 	}
 
 	@Test
