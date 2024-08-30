@@ -9,7 +9,7 @@
     <licenses>
         <license>
             <name>The MIT license</name>
-            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <url>https://www.opensource.org/licenses/mit-license.php</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -17,7 +17,7 @@
     <parent>
         <groupId>fr.inria.gforge.spoon</groupId>
         <artifactId>spoon-pom</artifactId>
-        <version>1.0</version>
+        <version>11.1.0</version>
         <relativePath>../spoon-pom</relativePath>
     </parent>
 
@@ -30,70 +30,9 @@
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.2</version>
                 <configuration>
                     <outputDirectory>${project.build.directory}/modules</outputDirectory>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.8.0</version>
-                <executions>
-                    <execution>
-                        <id>main deps</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <excludeClassifiers>linux,win,mac</excludeClassifiers>
-                            <outputDirectory>
-                                ${project.build.directory}/modules
-                            </outputDirectory>
-                            <includeScope>runtime</includeScope>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>JFX deps</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.build.directory}/modules
-                            </outputDirectory>
-                            <includeScope>runtime</includeScope>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.4.1</version>
-                <executions>
-                    <execution>
-                        <id>main module</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>${java.home}/bin/jar</executable>
-                            <arguments>
-                                <argument>--update</argument>
-                                <argument>--file=${project.build.directory}/modules/${project.build.finalName}.jar</argument>
-                                <argument>--main-class=spoon.visualisation.ShowMe</argument>
-                                <argument>--module-version=${project.version}</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
@@ -102,13 +41,14 @@
                 <configuration>
                     <testFailureIgnore>false</testFailureIgnore>
                     <useModulePath>false</useModulePath>
-                    <argLine>-Xmx2000m
-                        -Dglass.platform=Monocle
+                    <argLine>
+                        -Xmx2000m
                         -Dheadless.geometry=1280x1024-32
                         -Djava.awt.headless=true
                         -Dtestfx.robot=glass
                         -Dtestfx.headless=true
-                        -Dprism.order=sw</argLine>
+                        -Dprism.order=sw
+                    </argLine>
                 </configuration>
             </plugin>
         </plugins>
@@ -130,36 +70,6 @@
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
             <version>11.1.0</version>
-            <exclusions>
-                    <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>org.codehaus.plexus</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>org.apache.maven.shared</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>org.apache.maven</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>org.eclipse.platform</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>org.tukaani</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>commons-compress</artifactId>
-                        <groupId>org.apache.commons</groupId>
-                    </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -212,14 +122,4 @@
             </exclusions>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>spoon-snapshot</id>
-            <name>Maven Repository for Spoon Snapshots</name>
-            <url>https://repository.ow2.org/nexus/content/repositories/snapshots/</url>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
-        </repository>
-    </repositories>
 </project>
