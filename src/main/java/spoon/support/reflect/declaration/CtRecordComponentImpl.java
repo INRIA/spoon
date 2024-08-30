@@ -10,6 +10,8 @@ package spoon.support.reflect.declaration;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.jspecify.annotations.Nullable;
 import spoon.JLSViolation;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtFieldAccess;
@@ -43,12 +45,9 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 		method.setSimpleName(getSimpleName());
 		method.setType(getClonedType());
 		method.setExtendedModifiers(Collections.singleton(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
-		method.setImplicit(true);
 
 		CtFieldAccess<?> ctVariableAccess = (CtFieldAccess<?>) getFactory().Code()
 			.createVariableRead(getRecordFieldReference(), false);
-		// ensure the `this.` is implicit (important as we are also implicit)
-		ctVariableAccess.getTarget().setImplicit(true);
 
 		method.setBody(getFactory().Code().createCtReturn(ctVariableAccess));
 
@@ -92,8 +91,8 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 		return true;
 	}
 
+	@Nullable
 	private CtTypeReference<?> getClonedType() {
-		//noinspection ReturnOfNull
 		return getType() != null ? getType().clone() : null;
 	}
 
