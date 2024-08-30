@@ -91,8 +91,7 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 		return true;
 	}
 
-	@Nullable
-	private CtTypeReference<?> getClonedType() {
+	private @Nullable CtTypeReference<?> getClonedType() {
 		return getType() != null ? getType().clone() : null;
 	}
 
