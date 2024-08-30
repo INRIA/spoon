@@ -25,12 +25,14 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.testing.assertions.SpoonAssertions;
 import spoon.testing.utils.ModelTest;
@@ -93,14 +95,23 @@ public class CtRecordTest {
 				head(records).getFields().stream().map(String::valueOf).collect(Collectors.toList())
 		);
 
+		// Make them explicit so we can print them (but assert they were implicit initially)
+		assertThat(head(records)).getMethods().allSatisfy(CtElement::isImplicit);
+		head(records).getMethods().forEach(it -> it.accept(new CtScanner() {
+			@Override
+			protected void enter(CtElement e) {
+				e.setImplicit(false);
+			}
+		}));
+
 		// test methods
 		assertEquals(
 				Arrays.asList(
 						"int first() {\n" +
-					    "    return first;\n" +
+					    "    return this.first;\n" +
 					    "}",
 						"float second() {\n" +
-					    "    return second;\n" +
+					    "    return this.second;\n" +
 					    "}"
 				),
 				head(records).getMethods().stream()
