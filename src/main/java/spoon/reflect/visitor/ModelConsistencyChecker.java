@@ -10,6 +10,7 @@ package spoon.reflect.visitor;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.support.Internal;
 import spoon.support.Level;
 
 import java.util.ArrayDeque;
@@ -59,6 +60,7 @@ public class ModelConsistencyChecker extends CtScanner {
 	 * @param ctElement the element to check
 	 * @return a list of inconsistencies
 	 */
+	@Internal
 	public static List<InconsistentElements> listInconsistencies(CtElement ctElement) {
 		ModelConsistencyChecker checker = new ModelConsistencyChecker(null, false, false);
 		checker.scan(ctElement);
@@ -118,6 +120,7 @@ public class ModelConsistencyChecker extends CtScanner {
 	 * @param element the element with the invalid parent
 	 * @param expectedParents the expected parents of the element
 	 */
+	@Internal
 	public record InconsistentElements(CtElement element, Deque<CtElement> expectedParents) {
 		/**
 		 * Creates a new inconsistent element.
