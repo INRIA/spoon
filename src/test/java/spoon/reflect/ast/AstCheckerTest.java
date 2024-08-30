@@ -121,6 +121,9 @@ public class AstCheckerTest {
 		launcher.buildModel();
 
 		final Factory factory = launcher.getFactory();
+
+		assertSpoonModelConsistency(factory);
+
 		final List<CtTypeReference<?>> collectionsRef = Arrays.asList(
 				factory.Type().createReference(Collection.class),
 				factory.Type().createReference(List.class),
@@ -164,8 +167,7 @@ public class AstCheckerTest {
 		}
 	}
 
-	@ModelTest("src/main/java")
-	public void testBuiltSpoonModelConsistency(Factory factory) {
+	private void assertSpoonModelConsistency(Factory factory) {
 		// contract: each elements direct descendants should have the element as parent
 		factory.getModel().getAllModules().forEach(ctModule -> {
 			var invalidElements = ModelConsistencyChecker.listInconsistencies(ctModule);
