@@ -10,6 +10,7 @@ package spoon.support.reflect.declaration;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
 import spoon.JLSViolation;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtField;
@@ -36,7 +37,7 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 	public CtMethod<?> toMethod() {
 		CtMethod<?> method = this.getFactory().createMethod();
 		method.setSimpleName(getSimpleName());
-		method.setType((CtTypeReference) getType());
+		method.setType(getType() == null ? null : getType().clone());
 		method.setExtendedModifiers(Collections.singleton(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
 		method.setImplicit(true);
 		method.setBody(getFactory().createCodeSnippetStatement("return " + getSimpleName()));
@@ -92,6 +93,7 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, "The name '" + simpleName + "' is not allowed as record component name.");
 		}
 	}
+
 	private static Set<String> createForbiddenNames() {
 		return Set.of("clone", "finalize", "getClass", "notify", "notifyAll", "equals", "hashCode", "toString", "wait");
 	}
@@ -100,7 +102,6 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 	public CtRecordComponent clone() {
 		return (CtRecordComponent) super.clone();
 	}
-
 
 
 	@Override
@@ -115,4 +116,3 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 		return (E) this;
 	}
 }
-

@@ -78,7 +78,7 @@ public class SpoonArchitectureEnforcerTest {
 	@BeforeAll
 	static void beforeAll() {
 		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setComplianceLevel(11);
+		launcher.getEnvironment().setComplianceLevel(17);
 		launcher.addInputResource("src/main/java/");
 		spoonSrcMainModel = launcher.buildModel();
 		spoonSrcMainFactory = launcher.getFactory();
