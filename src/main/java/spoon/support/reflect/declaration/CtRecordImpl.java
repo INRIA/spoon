@@ -129,17 +129,6 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 		return super.addTypeMemberAt(position, member);
 	}
 
-	private void deleteExistingRecordField(String name) {
-		for (int i = 0; i < typeMembers.size(); i++) {
-			CtTypeMember typeMember = typeMembers.get(i);
-			if (typeMember instanceof CtField && name.equals(typeMember.getSimpleName())) {
-				typeMembers.remove(i);
-				typeMember.setParent(null);
-				return;
-			}
-		}
-	}
-
 	private List<CtAnnotation<?>> getAnnotationsWithName(String name, ElementType elementType) {
 		List<CtAnnotation<?>> result = new ArrayList<>();
 		for (CtRecordComponent component : components) {
