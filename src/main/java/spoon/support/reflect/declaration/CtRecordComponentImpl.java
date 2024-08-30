@@ -93,6 +93,7 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 	}
 
 	private CtTypeReference<?> getClonedType() {
+		//noinspection ReturnOfNull
 		return getType() != null ? getType().clone() : null;
 	}
 
