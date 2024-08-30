@@ -89,6 +89,15 @@
                     </argLine>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>spoon.visualisation/spoon.visualisation.Launcher</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
