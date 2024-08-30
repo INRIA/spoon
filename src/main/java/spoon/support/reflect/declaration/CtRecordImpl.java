@@ -107,12 +107,6 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 		String memberName = member.getSimpleName();
 
 		if (member instanceof CtField && !member.isStatic()) {
-			// We add the field in addRecordComponent. Afterward, however, JDT visits the Field itself -> Duplication.
-			// To combat this, we delete the existing field and trust JDTs version.
-			if (getRecordComponents().stream().anyMatch(it -> it.getSimpleName().equals(memberName))) {
-				deleteExistingRecordField(memberName);
-			}
-
 			member.setImplicit(true);
 			getAnnotationsWithName(memberName, ElementType.FIELD).forEach(member::addAnnotation);
 		}
