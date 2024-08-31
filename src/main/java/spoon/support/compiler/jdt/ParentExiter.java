@@ -251,8 +251,13 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		} else if (child instanceof CtEnumValue && type instanceof CtEnum) {
 			((CtEnum) type).addEnumValue((CtEnumValue) child);
-		} else if (child instanceof CtField) {
-			type.addField((CtField<?>) child);
+		} else if (child instanceof CtField<?> field) {
+			// We add the field in addRecordComponent. Afterward, however, JDT visits the Field itself -> Duplication.
+			// To combat this, we delete the existing field and trust JDTs version.
+			if (type instanceof CtRecord record) {
+				record.removeField(record.getField(field.getSimpleName()));
+			}
+			type.addField(field);
 			return;
 		} else if (child instanceof CtConstructor) {
 			return;
