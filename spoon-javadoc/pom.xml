@@ -5,14 +5,14 @@
     <parent>
         <artifactId>spoon-pom</artifactId>
         <groupId>fr.inria.gforge.spoon</groupId>
-        <version>11.1.1-SNAPSHOT</version>
+        <version>11.1.1-beta-6</version>
         <relativePath>../spoon-pom</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>spoon-javadoc</artifactId>
     <packaging>jar</packaging>
-    <version>11.1.1-SNAPSHOT</version>
+    <version>11.1.1-beta-6</version>
     <name>Spoon Javadoc</name>
     <description>A javadoc parser for the java source code analysis tool spoon.</description>
     <url>http://spoon.gforge.inria.fr/</url>
