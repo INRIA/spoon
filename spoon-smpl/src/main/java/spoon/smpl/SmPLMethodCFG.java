@@ -191,6 +191,14 @@ public class SmPLMethodCFG {
 		 * @param e Element about to be replaced
 		 */
 		private void logReplacementWarning(CtElement e) {
+			if (!e.getPosition().isValidPosition()) {
+				String code = e.toString();
+				LoggerFactory.getLogger("spoon-smpl")
+					.warn("Unsupported element excluded from control flow graph at unknown location: "
+						+ e.getClass().getSimpleName()
+						+ code.substring(0, Math.min(40, code.length())));
+				return;
+			}
 			String file = Optional.ofNullable(e.getPosition())
 									.map(x -> x.getFile())
 									.map(x -> x.getName())

@@ -1,13 +1,14 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.sniper.internal;
 
 
+import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtLiteral;
@@ -235,7 +236,7 @@ public class ElementSourceFragment implements SourceFragment {
 	 * @param otherElement {@link SourcePositionHolder} whose {@link ElementSourceFragment} has to be added to `parentFragment`
 	 * @return new {@link ElementSourceFragment} created for `otherElement` or null if `otherElement` cannot be included
 	 */
-	private ElementSourceFragment addChild(CtRole roleInParent, SourcePositionHolder otherElement) {
+	private @Nullable ElementSourceFragment addChild(CtRole roleInParent, SourcePositionHolder otherElement) {
 		SourcePosition otherSourcePosition = otherElement.getPosition();
 		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)
 				// method imports have child type references from other files, see https://github.com/INRIA/spoon/issues/3743
@@ -369,7 +370,7 @@ public class ElementSourceFragment implements SourceFragment {
 			return CMP.OTHER_IS_PARENT;
 		}
 		//the fragments overlap - it is not allowed
-		throw new SpoonException("Cannot compare this: [" + getStart() + ", " + getEnd() + "] with other: [\"" + other.getStart() + "\", \"" + other.getEnd() + "\"]");
+		throw new SpoonException("Cannot compare this: [" + getStart() + ", " + getEnd() + "] with other: [" + other.getStart() + ", " + other.getEnd() + "]");
 	}
 
 	/**
@@ -666,7 +667,7 @@ public class ElementSourceFragment implements SourceFragment {
 			throw new SpoonException("Inconsistent start/end. Start=" + start + " is greater then End=" + end);
 		}
 		String sourceCode = getOriginalSourceCode();
-		if (sourceCode.length() == 0) {
+		if (sourceCode.isEmpty()) {
 			return;
 		}
 		StringBuilder buff = new StringBuilder();
@@ -741,7 +742,7 @@ public class ElementSourceFragment implements SourceFragment {
 				o++;
 				while (o < len) {
 					c = buff[o];
-					if (Character.isJavaIdentifierPart(c) == false) {
+					if (!Character.isJavaIdentifierPart(c)) {
 						break;
 					}
 					o++;

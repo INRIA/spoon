@@ -1,0 +1,72 @@
+# Workflow for generating a software bill of materials (SBOM).
+#
+# Currently, this uses the slsa-framework/github-actions-demo action to
+# generate an in-toto attestation. This is the pushed to a remote repository
+# for storage.
+
+name: sbom
+on:
+  push:
+    branches:
+      - master
+
+env:
+  JAVA_DISTRIBUTION: temurin
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    environment: SBOM-store
+    env:
+      MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
+      SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+    name: Generate and store SBOM
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@2dfa2011c5b2a0f1489bf9e433881c92c1631f88 # v4.3.0
+        with:
+          java-version: 17
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+      - name: Get date for cache # see https://github.com/actions/cache README
+        id: get-date
+        run: echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
+        shell: bash
+      - name: Use Maven dependency cache
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+      - name: Build project
+        run: |
+          mvn -B test-compile
+      - name: Generate provenance
+        # Note that this action is a demo, meaning that it works fine now, but
+        # there are no guarantees of future support and development.
+        uses: slsa-framework/github-actions-demo@9474e92bbf825d5b4b46810fc9367dfc73429a2a # tag=v0.1
+        with:
+          artifact_path: .
+          output_path: provenance.json
+      - name: Add deployment SSH private key to agent
+        run: |
+          ssh-agent -a ${{ env.SSH_AUTH_SOCK }} > /dev/null
+          ssh-add - <<< "${{ secrets.SBOM_DEPLOY_SSH }}"
+          echo ${{ env.SSH_AUTH_SOCK }}
+      - name: Push provenance to remote
+        env:
+          # Target repo to upload provenance file 
+          REMOTE_REPO_URL: git@github.com:chains-project/sbom-files.git
+          GIT_USER: provenance-bot
+          GIT_EMAIL: spoon+sbom@kth.se
+        run: |
+          git config --global user.name "${{ env.GIT_USER }}"
+          git config --global user.email "${{ env.GIT_EMAIL }}"
+          git clone $REMOTE_REPO_URL
+          mkdir -p sbom-files/spoon/slsa
+          cp provenance.json sbom-files/spoon/slsa/$(date +%s)-${{ github.sha }}.sbom.json
+          cd sbom-files
+          git add .
+          git commit -m "Spoon: ${{ github.sha }}"
+          git push

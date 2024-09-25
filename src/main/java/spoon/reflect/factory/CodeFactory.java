@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.factory;
 
@@ -27,6 +27,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtTextBlock;
@@ -57,7 +58,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -177,7 +177,7 @@ public class CodeFactory extends SubFactory {
 	 * @param <T> the actual type of the decelerating type of the constructor if available
 	 * @return the constructor call
 	 */
-	public <T> CtConstructorCall<T> createConstructorCall(CtTypeReference<T> type, CtExpression<?>...parameters) {
+	public <T> CtConstructorCall<T> createConstructorCall(CtTypeReference<T> type, CtExpression<?>... parameters) {
 		CtConstructorCall<T> constructorCall = factory.Core()
 				.createConstructorCall();
 		CtExecutableReference<T> executableReference = factory.Core()
@@ -198,7 +198,7 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a new anonymous class.
 	 */
-	public <T> CtNewClass<T> createNewClass(CtType<T> superClass, CtExpression<?>...parameters) {
+	public <T> CtNewClass<T> createNewClass(CtType<T> superClass, CtExpression<?>... parameters) {
 		CtNewClass<T> ctNewClass = factory.Core().createNewClass();
 		CtConstructor<T> constructor = ((CtClass) superClass).getConstructor(Arrays.stream(parameters).map(x -> x.getType()).toArray(CtTypeReference[]::new));
 		if (constructor == null) {
@@ -279,7 +279,7 @@ public class CodeFactory extends SubFactory {
 	public CtTextBlock createTextBlock(String value) {
 		CtTextBlock textblock = factory.Core().createTextBlock();
 		textblock.setValue(value);
-		textblock.setType((CtTypeReference<String>) factory.Type().STRING);
+		textblock.setType(factory.Type().stringType());
 		return textblock;
 	}
 
@@ -355,8 +355,13 @@ public class CodeFactory extends SubFactory {
 	 * 		Modifiers of the catch variable
 	 * @return a new catch variable declaration
 	 */
-	public <T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, ModifierKind...modifierKinds) {
-		return factory.Core().<T>createCatchVariable().<CtCatchVariable<T>>setSimpleName(name).<CtCatchVariable<T>>setType(type).setModifiers(new HashSet<>(Arrays.asList(modifierKinds)));
+	public <T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, ModifierKind... modifierKinds) {
+		EnumSet<ModifierKind> modifiers = EnumSet.noneOf(ModifierKind.class);
+		modifiers.addAll(Arrays.asList(modifierKinds));
+		return factory.Core().<T>createCatchVariable()
+				.<CtCatchVariable<T>>setSimpleName(name)
+				.<CtCatchVariable<T>>setType(type)
+				.setModifiers(modifiers);
 	}
 
 	/**
@@ -592,16 +597,31 @@ public class CodeFactory extends SubFactory {
 		if (originalClass == null) {
 			return null;
 		}
-		CtTypeReference<T> typeReference = factory.Core().<T>createTypeReference();
-		typeReference.setSimpleName(originalClass.getSimpleName());
-		if (originalClass.isPrimitive()) {
-			return typeReference;
+		int arrayDimensionCount = 0;
+		Class<?> currentClass = originalClass;
+		while (currentClass.isArray()) {
+			currentClass = currentClass.getComponentType();
+			arrayDimensionCount++;
 		}
-		if (originalClass.getDeclaringClass() != null) {
-			// the inner class reference does not have package
-			return typeReference.setDeclaringType(createCtTypeReference(originalClass.getDeclaringClass()));
+		CtTypeReference<T> typeReference = factory.Core().createTypeReference();
+		if (currentClass.isAnonymousClass()) {
+			int end = currentClass.getName().lastIndexOf('$');
+			typeReference.setSimpleName(currentClass.getName().substring(end + 1));
+		} else {
+			typeReference.setSimpleName(currentClass.getSimpleName());
 		}
-		return typeReference.setPackage(createCtPackageReference(originalClass.getPackage()));
+		if (currentClass.getEnclosingClass() != null) {
+			typeReference.setDeclaringType(createCtTypeReference(currentClass.getEnclosingClass()));
+		}
+		if (currentClass.getPackage() != null) {
+			typeReference.setPackage(createCtPackageReference(currentClass.getPackage()));
+		}
+
+		if (arrayDimensionCount > 0) {
+			typeReference = (CtTypeReference<T>) factory.createArrayReference(typeReference, arrayDimensionCount);
+		}
+
+		return typeReference;
 	}
 
 	/**
@@ -626,6 +646,19 @@ public class CodeFactory extends SubFactory {
 		final CtAnnotation<A> a = factory.Core().createAnnotation();
 		a.setAnnotationType(annotationType);
 		return a;
+	}
+
+	/**
+	 * Creates a return statement.
+	 *
+	 * @param expression the expression to be returned.
+	 * @param <T> the type of the expression
+	 * @return a return.
+	 */
+	public <T> CtReturn<T> createCtReturn(CtExpression<T> expression) {
+		final CtReturn<T> result = factory.Core().createReturn();
+		result.setReturnedExpression(expression);
+		return result;
 	}
 
 	/**
@@ -720,7 +753,7 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a javadoc tag
 	 *
-	 * @param content The content of the javadoc tag with a possible paramater
+	 * @param content The content of the javadoc tag with a possible parameter
 	 * @param type The tag type
 	 * @return a new CtJavaDocTag
 	 */
@@ -748,7 +781,7 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a javadoc tag
 	 *
-	 * @param content The content of the javadoc tag with a possible paramater
+	 * @param content The content of the javadoc tag with a possible parameter
 	 * @param type The tag type
 	 * @param realName The real name of the tag
 	 * @return a new CtJavaDocTag

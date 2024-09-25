@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.pattern.internal;
 
@@ -34,6 +34,8 @@ import spoon.support.util.ImmutableMapImpl;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Drives generation process
  */
@@ -55,7 +57,7 @@ public class DefaultGenerator implements Generator {
 	 *
 	 * @return a generate value or null
 	 */
-	public <T> T generateSingleTarget(RootNode node, ImmutableMap parameters, Class<T> expectedType) {
+	public <T> @Nullable T generateSingleTarget(RootNode node, ImmutableMap parameters, Class<T> expectedType) {
 		ResultHolder.Single<T> result = new ResultHolder.Single<>(expectedType);
 		generateTargets(node, result, parameters);
 		return result.getResult();
@@ -166,7 +168,7 @@ public class DefaultGenerator implements Generator {
 	}
 	private void appendInnerTypedElements(StringBuilder result, CtType<?> mainType, CtElement ele) {
 		CtTypeMember typeMember = getFirst(ele, CtTypeMember.class);
-		if (typeMember != null && isMainType(typeMember, mainType) == false) {
+		if (typeMember != null && !isMainType(typeMember, mainType)) {
 			if (typeMember.isParentInitialized()) {
 				appendInnerTypedElements(result, mainType, typeMember.getParent());
 			}

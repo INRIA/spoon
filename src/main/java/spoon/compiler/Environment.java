@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.compiler;
 
@@ -25,7 +25,10 @@ import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.function.Supplier;
+
+import org.jspecify.annotations.Nullable;
 
 /**
  * This interface represents the environment in which Spoon is launched -
@@ -68,7 +71,7 @@ public interface Environment {
 	 *
 	 * most robust: {@link PRETTY_PRINTING_MODE#DEBUG}
 	 * most sophisticated: {@link PRETTY_PRINTING_MODE#AUTOIMPORT}
-     *
+	 *
 	 * @return the kind of pretty-printing expected.
 	 */
 	PRETTY_PRINTING_MODE getPrettyPrintingMode();
@@ -103,7 +106,7 @@ public interface Environment {
 	 * @param processorName fully qualified name of a processor
 	 * @return properties for the processor, or {@code null} if there is no processor by that name
 	 */
-	ProcessorProperties getProcessorProperties(String processorName);
+	@Nullable ProcessorProperties getProcessorProperties(String processorName);
 
 	/**
 	 * Sets the properties for a given processor.
@@ -221,7 +224,7 @@ public interface Environment {
 
 	/**
 	 * Sets Spoon to use tabulations in the source code.
-     *
+	 *
 	 * @param b	whether Spoon should use tabulations when pretty-printing
 	 */
 	void useTabulations(boolean b);
@@ -307,6 +310,25 @@ public interface Environment {
 	void setSourceClasspath(String[] sourceClasspath);
 
 	/**
+	 * Gets the module path used for sourcing the input modules.
+	 * The returned list is immutable and does not contain null values.
+	 *
+	 * @return A list of strings representing the module path. Each string element
+	 *         is the path to a directory or a module jar file.
+	 */
+	List<String> getSourceModulePath();
+
+	/**
+	 * Sets the module path that is used to build/compile the input sources.
+	 * This is the equivalent to the {@code --module-path} option of {@code javac} and {@code java} executables.
+	 *
+	 * @param sourceModulePath The new module path to be set. Each string element
+	 *                         should be the path to a directory or a module jar file.
+	 * @throws NullPointerException if the argument is null or an element of the list is null.
+	 */
+	void setSourceModulePath(List<String> sourceModulePath);
+
+	/**
 	 * Sets the option "noclasspath", use with caution (see explanation below).
 	 *
 	 * With this option, Spoon does not require the full classpath to build the
@@ -314,7 +336,7 @@ public interface Environment {
 	 * classpath are handled with the reference mechanism. The "simplename" of
 	 * the reference object refers to the unbound identifier.
 	 *
-	 * This option facilitates the use of Spoon when is is hard to have the
+	 * This option facilitates the use of Spoon when it is hard to have the
 	 * complete and correct classpath, for example for mining software
 	 * repositories.
 	 *
@@ -333,7 +355,7 @@ public interface Environment {
 
 	/**
 	 * Returns the value ot the option noclasspath
-     *
+	 *
 	 * @return true iff Spoon is currently in noclasspath mode
 	 */
 	boolean getNoClasspath();
@@ -383,7 +405,7 @@ public interface Environment {
 
 	/**
 	 * Gets the level of loggers asked by the user.
-     *
+	 *
 	 * @return the current logging level
 	 */
 	Level getLevel();
@@ -480,7 +502,7 @@ public interface Environment {
 
 	/**
 	 * Set the model change listener
-     *
+	 *
 	 * @param modelChangeListener change listener to set
 	 */
 	void setModelChangeListener(FineModelChangeListener modelChangeListener);
@@ -529,7 +551,7 @@ public interface Environment {
 
 	/**
 	 * Get the spoonProgress logger. This method mustn't return null.
-     *
+	 *
 	 * @return the spoonProgress
 	 */
 	SpoonProgress getSpoonProgress();
@@ -616,7 +638,7 @@ public interface Environment {
 	 * underlying JDT compiler. Type resolution can become unpredictable as the order in which types
 	 * are parsed becomes a determining factor in which duplicated type actually makes it into the
 	 * model.
-     *
+	 *
 	 * @param ignoreDuplicateDeclarations (default false)  set to true to allow spoon to create a model of a project that
 	 *                                 contains multiple times the same class
 	 */

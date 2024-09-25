@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor;
 
@@ -12,6 +12,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -21,6 +22,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -46,6 +48,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -61,6 +64,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtUnnamedPattern;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -76,17 +80,19 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtPackageExport;
-import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtRecord;
-import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
+import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.path.CtRole;
@@ -94,17 +100,16 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 
 /**
  * This visitor implements a deep-search scan on the model.
@@ -122,14 +127,14 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	/**
-	 * This method is upcalled by the scanner when entering a scanned element.
+	 * This method is called by the scanner when entering a scanned element.
 	 * To be overridden to implement specific scanners.
 	 */
 	protected void enter(CtElement e) {
 	}
 
 	/**
-	 * This method is upcalled by the scanner when exiting a scanned element. To
+	 * This method is called by the scanner when exiting a scanned element. To
 	 * be overridden to implement specific scanners.
 	 */
 	protected void exit(CtElement e) {
@@ -334,6 +339,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(caseStatement);
 		scan(CtRole.ANNOTATION, caseStatement.getAnnotations());
 		scan(CtRole.EXPRESSION, caseStatement.getCaseExpressions());
+		scan(CtRole.CONDITION, caseStatement.getGuard());
 		scan(CtRole.STATEMENT, caseStatement.getStatements());
 		scan(CtRole.COMMENT, caseStatement.getComments());
 		exit(caseStatement);
@@ -384,6 +390,7 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtConstructor(final CtConstructor<T> c) {
 		enter(c);
 		scan(CtRole.ANNOTATION, c.getAnnotations());
+		scan(CtRole.RECEIVER_PARAMETER, c.getReceiverParameter());
 		scan(CtRole.PARAMETER, c.getParameters());
 		scan(CtRole.THROWN, c.getThrownTypes());
 		scan(CtRole.TYPE_PARAMETER, c.getFormalCtTypeParameters());
@@ -584,6 +591,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.ANNOTATION, m.getAnnotations());
 		scan(CtRole.TYPE_PARAMETER, m.getFormalCtTypeParameters());
 		scan(CtRole.TYPE, m.getType());
+		scan(CtRole.RECEIVER_PARAMETER, m.getReceiverParameter());
 		scan(CtRole.PARAMETER, m.getParameters());
 		scan(CtRole.THROWN, m.getThrownTypes());
 		scan(CtRole.BODY, m.getBody());
@@ -1078,7 +1086,44 @@ public abstract class CtScanner implements CtVisitor {
 		exit(recordType);
 	}
 
+	@Override
+	public void visitCtReceiverParameter(CtReceiverParameter receiverParameter) {
+		enter(receiverParameter);
+		scan(CtRole.ANNOTATION, receiverParameter.getAnnotations());
+		scan(CtRole.TYPE, receiverParameter.getType());
+		scan(CtRole.COMMENT, receiverParameter.getComments());
+		exit(receiverParameter);
+	}
 
+	@Override
+	public void visitCtCasePattern(CtCasePattern casePattern) {
+		enter(casePattern);
+		scan(CtRole.CAST, casePattern.getTypeCasts());
+		scan(CtRole.ANNOTATION, casePattern.getAnnotations());
+		scan(CtRole.PATTERN, casePattern.getPattern());
+		scan(CtRole.TYPE, casePattern.getType());
+		scan(CtRole.COMMENT, casePattern.getComments());
+		exit(casePattern);
+	}
 
+	@Override
+	public void visitCtRecordPattern(CtRecordPattern recordPattern) {
+		enter(recordPattern);
+		scan(CtRole.TYPE_REF, recordPattern.getRecordType());
+		scan(CtRole.PATTERN, recordPattern.getPatternList());
+		scan(CtRole.ANNOTATION, recordPattern.getAnnotations());
+		scan(CtRole.TYPE, recordPattern.getType());
+		scan(CtRole.COMMENT, recordPattern.getComments());
+		exit(recordPattern);
+	}
+
+	@Override
+	public void visitCtUnnamedPattern(CtUnnamedPattern unnamedPattern) {
+		enter(unnamedPattern);
+		scan(CtRole.ANNOTATION, unnamedPattern.getAnnotations());
+		scan(CtRole.TYPE, unnamedPattern.getType());
+		scan(CtRole.COMMENT, unnamedPattern.getComments());
+		exit(unnamedPattern);
+	}
 }
 

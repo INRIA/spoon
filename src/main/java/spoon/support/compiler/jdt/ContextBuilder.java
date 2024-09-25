@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.compiler.jdt;
 
@@ -75,7 +75,7 @@ public class ContextBuilder {
 	/**
 	 * Stack of all parents elements
 	 */
-	Deque<ASTPair> stack = new ArrayDeque<>();
+	private final Deque<ASTPair> stack = new ArrayDeque<>();
 
 	private final JDTTreeBuilder jdtTreeBuilder;
 
@@ -97,7 +97,7 @@ public class ContextBuilder {
 		}
 
 		ASTPair pair = stack.peek();
-		CtElement current = pair.element;
+		CtElement current = pair.element();
 
 		if (current instanceof CtExpression) {
 			while (!casts.isEmpty()) {
@@ -118,22 +118,53 @@ public class ContextBuilder {
 
 	void exit(ASTNode node) {
 		ASTPair pair = stack.pop();
-		if (pair.node != node) {
-			throw new RuntimeException("Inconsistent Stack " + node + "\n" + pair.node);
+		if (pair.node() != node) {
+			throw new RuntimeException("Inconsistent Stack " + node + "\n" + pair.node());
 		}
-		CtElement current = pair.element;
+		CtElement current = pair.element();
 		if (!stack.isEmpty()) {
 			this.jdtTreeBuilder.getExiter().setChild(current);
-			this.jdtTreeBuilder.getExiter().setChild(pair.node);
+			this.jdtTreeBuilder.getExiter().setChild(pair.node());
 			ASTPair parentPair = stack.peek();
 			this.jdtTreeBuilder.getExiter().exitParent(parentPair);
 		}
 	}
 
+	/**
+	 * @return all {@link ASTPair}s currently on the stack
+	 */
+	Iterable<ASTPair> getAllContexts() {
+		return stack;
+	}
+
+	/**
+	 * @return {@code true} if there are any elements on the stack
+	 */
+	boolean hasCurrentContext() {
+		return !stack.isEmpty();
+	}
+
+	/**
+	 *
+	 * @return the {@link CtElement} on the top of the stack
+	 * @throws NullPointerException if the stack is empty
+	 */
+	CtElement getCurrentElement() {
+		return stack.peek().element();
+	}
+
+	/**
+	 * @return the {@link ASTNode} on the top of the stack
+	 * @throws NullPointerException if the stack is empty
+	 */
+	ASTNode getCurrentNode() {
+		return stack.peek().node();
+	}
+
 	CtElement getContextElementOnLevel(int level) {
 		for (ASTPair pair : stack) {
 			if (level == 0) {
-				return pair.element;
+				return pair.element();
 			}
 			level--;
 		}
@@ -142,8 +173,8 @@ public class ContextBuilder {
 
 	<T extends CtElement> T getParentElementOfType(Class<T> clazz) {
 		for (ASTPair pair : stack) {
-			if (clazz.isInstance(pair.element)) {
-				return (T) pair.element;
+			if (clazz.isInstance(pair.element())) {
+				return (T) pair.element();
 			}
 		}
 		return null;
@@ -151,7 +182,7 @@ public class ContextBuilder {
 
 	ASTPair getParentContextOfType(Class<? extends CtElement> clazz) {
 		for (ASTPair pair : stack) {
-			if (clazz.isInstance(pair.element)) {
+			if (clazz.isInstance(pair.element())) {
 				return pair;
 			}
 		}
@@ -168,7 +199,7 @@ public class ContextBuilder {
 			// note: this happens when using the new try(vardelc) structure
 			this.jdtTreeBuilder.getLogger().error(
 					format("Could not find declaration for local variable %s at %s",
-							name, stack.peek().element.getPosition()));
+							name, getCurrentElement().getPosition()));
 		}
 		return localVariable;
 	}
@@ -183,7 +214,7 @@ public class ContextBuilder {
 			// note: this happens when using the new try(vardelc) structure
 			this.jdtTreeBuilder.getLogger().error(
 					format("Could not find declaration for catch variable %s at %s",
-							name, stack.peek().element.getPosition()));
+							name, getCurrentElement().getPosition()));
 		}
 		return catchVariable;
 	}
@@ -195,7 +226,7 @@ public class ContextBuilder {
 			// note: this can happen when identifier is not a variable name but e.g. a Type name.
 			this.jdtTreeBuilder.getLogger().debug(
 					format("Could not find declaration for variable %s at %s.",
-							name, stack.peek().element.getPosition()));
+							name, getCurrentElement().getPosition()));
 		}
 		return variable;
 	}
@@ -228,14 +259,13 @@ public class ContextBuilder {
 			// the variable may have been declared directly by one of these elements
 			final ScopeRespectingVariableScanner<U> scanner =
 					new ScopeRespectingVariableScanner(name, clazz);
-			astPair.element.accept(scanner);
+			astPair.element().accept(scanner);
 			if (scanner.getResult() != null) {
 				return scanner.getResult();
 			}
 
 			// the variable may have been declared in a super class/interface
-			if (lookingForFields && astPair.node instanceof TypeDeclaration) {
-				final TypeDeclaration nodeDeclaration = (TypeDeclaration) astPair.node;
+			if (lookingForFields && astPair.node() instanceof TypeDeclaration nodeDeclaration) {
 				final Deque<ReferenceBinding> referenceBindings = new ArrayDeque<>();
 				// add super class if any
 				if (nodeDeclaration.superclass != null
@@ -257,7 +287,11 @@ public class ContextBuilder {
 						if (name.equals(new String(fieldBinding.readableName()))) {
 							final String qualifiedNameOfParent = getNormalQualifiedName(referenceBinding);
 
-							final CtType parentOfField = referenceBinding.isClass()
+							CtType<?> parentOfField = typeFactory.get(qualifiedNameOfParent);
+							if (parentOfField != null) {
+								return (U) parentOfField.getField(name);
+							}
+							parentOfField = referenceBinding.isClass()
 									? classFactory.create(qualifiedNameOfParent)
 									: interfaceFactory.create(qualifiedNameOfParent);
 
@@ -384,11 +418,10 @@ public class ContextBuilder {
 					// `stack`. This peculiarity calls for the second condition.
 					final CtElement parentOfPotentialVariable = potentialVariable.getParent();
 					for (final ASTPair astPair : stack) {
-						if (astPair.element == parentOfPotentialVariable) {
+						if (astPair.element() == parentOfPotentialVariable) {
 							finish(potentialVariable);
 							return;
-						} else if (astPair.element instanceof CtExecutable) {
-							final CtExecutable executable = (CtExecutable) astPair.element;
+						} else if (astPair.element() instanceof CtExecutable<?> executable) {
 							if (executable.getBody() == parentOfPotentialVariable) {
 								finish(potentialVariable);
 								return;

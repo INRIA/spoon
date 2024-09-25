@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.modelobs;
 
@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
@@ -35,7 +36,7 @@ public class ChangeCollector {
 	 * @param env to be checked {@link Environment}
 	 * @return {@link ChangeCollector} attached to the `env` or null if there is none
 	 */
-	public static ChangeCollector getChangeCollector(Environment env) {
+	public static @Nullable ChangeCollector getChangeCollector(Environment env) {
 		FineModelChangeListener mcl = env.getModelChangeListener();
 		if (mcl instanceof ChangeListener) {
 			return ((ChangeListener) mcl).getChangeCollector();

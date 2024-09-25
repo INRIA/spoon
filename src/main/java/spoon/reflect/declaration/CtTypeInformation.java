@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.declaration;
 
@@ -21,12 +21,11 @@ import static spoon.reflect.path.CtRole.MODIFIER;
 import static spoon.reflect.path.CtRole.SUPER_TYPE;
 
 /**
- * Returns information that can be obtained both at compile-time and run-time
+ * Returns information that can be obtained both at compile-time and run-time.
  *
- * For CtElement, the compile-time information is given
+ * For {@link CtElement}, the compile-time information is given.
  *
- * For CtTypeReference, the runtime information is given (using the Reflection API)
- *
+ * For {@link CtTypeReference}, the runtime information is given (using the Reflection API)
  */
 public interface CtTypeInformation {
 	/**
@@ -49,21 +48,37 @@ public interface CtTypeInformation {
 	Set<ModifierKind> getModifiers();
 
 	/**
-	 * Return {@code true} if the referenced type is a primitive type (int,
-	 * double, boolean...).
+	 * Checks if the referenced type is a primitive type.
+	 * <p>
+	 * It is a primitive type, if it is one of the following types:
+	 * <ul>
+	 *     <li>byte</li>
+	 *     <li>short</li>
+	 *     <li>int</li>
+	 *     <li>long</li>
+	 *     <li>float</li>
+	 *     <li>double</li>
+	 *     <li>boolean</li>
+	 *     <li>char</li>
+	 *     <li>void</li>
+	 * </ul>
+	 * <p>
+	 * For boxed types like {@link Integer} this method returns {@code false}.
+	 *
+	 * @return {@code true} if the referenced type is a primitive type
 	 */
 	boolean isPrimitive();
 
 	/**
-	 * Return {@code true} if the referenced type is a anonymous type
+	 * Return {@code true} if the referenced type is an anonymous type
 	 */
 	boolean isAnonymous();
 
 	/**
-	 * Return {@code true} if the referenced type is declared in an executable.
+	 * Returns {@code true} if the referenced type is declared in an executable.
 	 * e.g. a type declared in a method or a lambda.
 	 *
-	 * This corresponds to <code>isLocalClass</code> of <code>java.lang.Class</code>.
+	 * This corresponds to {@code isLocalClass} of {@code java.lang.Class}.
 	 *
 	 * <pre>
 	 *     // Type declared in a method.
@@ -115,18 +130,26 @@ public interface CtTypeInformation {
 	boolean isParameterized();
 
 	/**
-	 * Returns true if the referenced type is a sub-type of the given type.
-	 * Returns true is type is self, it means: typeX.isSubtypeOf(typeX) is true too
+	 * Checks if this type is a subtype of the given type.
+	 *
+	 * @param type the type that might be a parent of this type.
+	 * @return {@code true} if the referenced type is a subtype of the given type, otherwise {@code false}.
+	 *         If this type is the same as the given type ({@code typeX.isSubtypeOf(typeX)}),
+	 *         this method returns {@code true}.
 	 */
 	boolean isSubtypeOf(CtTypeReference<?> type);
 
 	/**
-	 * Returns the class type directly extended by this class.
+	 * Returns a reference to the type directly extended by this type.
+	 * <p>
+	 * To get the {@link CtType} of the super class, use {@link CtTypeReference#getDeclaration()}
+	 * or {@link CtTypeReference#getTypeDeclaration()} on the {@link CtTypeReference} returned by this method.
 	 *
-	 * getSuperClass().getDeclaration()/getTypeDeclaration() returns the corresponding CtType (if in the source folder of Spoon).
-	 *
-	 * @return the class type directly extended by this class, or null if there
-	 *         is none or if the super class is not in the classpath (in noclasspath mode)
+	 * @return the type explicitly extended by this type, or {@code null} if there
+	 *         is none or if the super type is not in the classpath (in noclasspath mode).
+	 *         If a class does not explicitly extend another class {@code null} is returned (<b>not</b> {@link Object}).
+	 *         For types like enums that implicitly extend a superclass like {@link Enum}, this method returns
+	 *         that class.
 	 */
 	@PropertyGetter(role = SUPER_TYPE)
 	CtTypeReference<?> getSuperclass();
@@ -147,14 +170,14 @@ public interface CtTypeInformation {
 	/**
 	 * Gets a field from its name.
 	 *
-	 * @return null if does not exit
+	 * @return a reference to the field with the name or {@code null} if it does not exist
 	 */
 	CtFieldReference<?> getDeclaredField(String name);
 
 	/**
 	 * Gets a field from this type or any super type or any implemented interface by field name.
 	 *
-	 * @return null if does not exit
+	 * @return a reference to the field with the name or {@code null} if it does not exist
 	 */
 	CtFieldReference<?> getDeclaredOrInheritedField(String fieldName);
 
@@ -180,15 +203,23 @@ public interface CtTypeInformation {
 	Collection<CtExecutableReference<?>> getAllExecutables();
 
 	/**
-	 * @return the type erasure, which is computed by the java compiler to ensure that no new classes are created for parametrized types so that generics incur no runtime overhead.
-	 * See https://docs.oracle.com/javase/tutorial/java/generics/erasure.html
+	 * This method returns a reference to the erased type.
+	 * <p>
+	 * For example, this will return {@code List} for {@code List<String>},
+	 * or {@code Enum} for the type parameter {@code E} in the enum
+	 * declaration.
+	 *
+	 * @return a reference to the erased type
+	 * @see <a href="https://docs.oracle.com/javase/specs/jls/se20/html/jls-4.html#jls-4.6">Type Erasure</a>
 	 */
 	@DerivedProperty
 	CtTypeReference<?> getTypeErasure();
 
 
 	/**
-	 * @return true if this represents an array e.g. Object[] or int[]
+	 * Returns true if this type represents an array like {@code Object[]} or {@code int[]}.
+	 *
+	 * @return true if this type represents an array like {@code Object[]} or {@code int[]}
 	 */
 	boolean isArray();
 }

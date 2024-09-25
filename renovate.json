@@ -1,12 +1,27 @@
 {
-  "extends": [
-    "config:base",
-    "helpers:pinGitHubActionDigests"
-  ],
-  "packageRules": [
-    {
-      "packageNames": ["org.mockito:mockito-core"],
-      "schedule": ["on monday"]
-    }
-  ]
+   "extends":[
+      "config:base",
+      "helpers:pinGitHubActionDigests",
+      ":semanticCommitTypeAll(build)"
+],
+   "ignoreDeps": ["org.apache.maven:maven-model"],
+   "packageRules":[
+      {
+         "matchUpdateTypes":[
+            "minor",
+            "patch",
+            "pin",
+            "digest",
+            "pinDigest",
+            "lockFileMaintenance"
+         ],
+         "automerge":true
+      }
+   ],
+   "nix": {
+      "enabled": true
+   },
+   "lockFileMaintenance": {
+      "enabled": true
+   }
 }

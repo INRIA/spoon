@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.annotation.testclasses.Pozole;
 import spoon.testing.utils.ModelUtils;
@@ -43,9 +44,10 @@ public class AnnotationLoopTest {
 		assertEquals("p", ((CtLocalVariable) aLoop.getForInit().get(1)).getSimpleName());
 		assertEquals("e", ((CtLocalVariable) aLoop.getForInit().get(2)).getSimpleName());
 
-		assertEquals(aPozole.getFactory().Type().STRING, ((CtLocalVariable) aLoop.getForInit().get(0)).getType());
-		assertEquals(aPozole.getFactory().Type().STRING, ((CtLocalVariable) aLoop.getForInit().get(1)).getType());
-		assertEquals(aPozole.getFactory().Type().STRING, ((CtLocalVariable) aLoop.getForInit().get(2)).getType());
+		CtTypeReference<?> stringRef = aPozole.getFactory().Type().stringType();
+		assertEquals(stringRef, ((CtLocalVariable) aLoop.getForInit().get(0)).getType());
+		assertEquals(stringRef, ((CtLocalVariable) aLoop.getForInit().get(1)).getType());
+		assertEquals(stringRef, ((CtLocalVariable) aLoop.getForInit().get(2)).getType());
 
 		final String nl = System.lineSeparator();
 		final String expected = "for (@java.lang.SuppressWarnings(\"rawtypes\")" + nl + "java.lang.String u = \"\", p = \"\", e = \"\"; u != e; u = p , p = \"\") {" + nl + "}";

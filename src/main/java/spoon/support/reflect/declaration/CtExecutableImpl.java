@@ -1,19 +1,22 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.declaration;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.util.QualifiedNameBasedSortedSet;
@@ -46,6 +49,8 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@MetamodelPropertyField(role = THROWN)
 	Set<CtTypeReference<? extends Throwable>> thrownTypes = emptySet();
+	@MetamodelPropertyField(role = CtRole.RECEIVER_PARAMETER)
+	private CtReceiverParameter receiverParameter;
 
 	public CtExecutableImpl() {
 	}
@@ -191,5 +196,19 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	@Override
 	public CtExecutable<R> clone() {
 		return (CtExecutable<R>) super.clone();
+	}
+
+	public CtExecutable<?> setReceiverParameter(CtReceiverParameter receiverParameter) {
+		if (receiverParameter != null) {
+			receiverParameter.setParent(this);
+		}
+		this.receiverParameter = receiverParameter;
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.RECEIVER_PARAMETER, receiverParameter, this.receiverParameter);
+		return this;
+	}
+
+	@Nullable
+	public CtReceiverParameter getReceiverParameter() {
+		return receiverParameter;
 	}
 }

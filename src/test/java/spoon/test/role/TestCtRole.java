@@ -28,8 +28,7 @@ import spoon.support.reflect.declaration.CtAnonymousExecutableImpl;
 import spoon.support.reflect.declaration.CtConstructorImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
-import spoon.test.GitHubIssue;
-
+import spoon.testing.utils.GitHubIssue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -112,6 +111,7 @@ public class TestCtRole {
     	}
     }
 
+	@Test
 	@GitHubIssue(issueNumber = 4698, fixed = true)
 	void testArrayListRoleInParent() {
 		// contract: Printing an element should not cause getRoleInParent to fail afterwards

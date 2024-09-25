@@ -1,0 +1,4 @@
+package mypkg;
+
+class Dummy {
+}

@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.pattern.internal.parameter;
 
@@ -74,10 +74,10 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	@Override
 	public ImmutableMap addValueAs(ImmutableMap parameters, Object value) {
 		Class<?> requiredType = getParameterValueType();
-		if (requiredType != null && value != null && requiredType.isInstance(value) == false) {
+		if (requiredType != null && value != null && !requiredType.isInstance(value)) {
 			return null;
 		}
-		if (matches(value) == false) {
+		if (!matches(value)) {
 			return null;
 		}
 		Object newContainer = addValueToContainer(parameters, existingValue -> {
@@ -187,7 +187,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	 * @return
 	 */
 	protected boolean matches(Object value) {
-		if (parameterValueType != null && (value == null || parameterValueType.isAssignableFrom(value.getClass()) == false)) {
+		if (parameterValueType != null && (value == null || !parameterValueType.isAssignableFrom(value.getClass()))) {
 			return false;
 		}
 		if (matchCondition == null) {
@@ -339,7 +339,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	 * @return 0 if there is no value. 1 if there is single value or null. Number of values in collection if there is a collection
 	 */
 	private int getNumberOfValues(ImmutableMap parameters) {
-		if (parameters.hasValue(getName()) == false) {
+		if (!parameters.hasValue(getName())) {
 			return 0;
 		}
 		Object value = parameters.getValue(getName());

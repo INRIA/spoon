@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.declaration;
 
@@ -45,13 +45,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 		@Override
 		public CtPackage put(String simpleName, CtPackage pack) {
-			if (pack == null) {
-				return null;
-			}
-			// they are the same
-			if (CtPackageImpl.this.getQualifiedName().equals(pack.getQualifiedName())) {
-				addAllTypes(pack, CtPackageImpl.this);
-				addAllPackages(pack, CtPackageImpl.this);
+			if (pack == null || pack == CtPackageImpl.this) {
 				return null;
 			}
 
@@ -248,7 +242,17 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public boolean isEmpty() {
-		return getPackages().isEmpty() && getTypes().isEmpty();
+		return !hasPackages() && !hasTypes();
+	}
+
+	@Override
+	public boolean hasTypes() {
+		return !types.isEmpty();
+	}
+
+	@Override
+	public boolean hasPackages() {
+		return !packs.isEmpty();
 	}
 
 	void updateTypeName(CtType<?> newType, String oldName) {

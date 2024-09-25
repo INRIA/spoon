@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.util.internal;
 
@@ -11,11 +11,19 @@ import static spoon.support.util.internal.ModelCollectionUtils.linkToParent;
 
 import java.io.Serializable;
 import java.util.AbstractMap;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.support.modelobs.FineModelChangeListener;
@@ -33,22 +41,42 @@ import spoon.support.modelobs.FineModelChangeListener;
  * <ul>
  *   <li>each inserted {@link CtElement} gets assigned correct parent</li>
  *   <li> each change is reported in {@link FineModelChangeListener}</li>
+ *   <li>The {@link ElementNameMap#entrySet()} method returns elements in the order they were inserted</li>
  * </ul>
  * <br>
  */
 public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<String, T>
 		implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 
 	// This can not be a "Map" as this class is Serializable and therefore Sorald wants this field
 	// to be serializable as well (Rule 1948).
 	// It doesn't seem smart enough to realize it is final and only assigned to a Serializable Map
 	// in the constructor.
-	private final ConcurrentSkipListMap<String, T> map;
+	private final ConcurrentHashMap<String, InsertOrderWrapper<T>> map;
+
+	private final AtomicInteger insertionNumber;
+
+	/**
+	 * Wrapper class that allows us to return entries in the order they were inserted.
+	 */
+	private static class InsertOrderWrapper<T extends Serializable> implements Serializable {
+		private static final long serialVersionUID = 1L;
+
+		final long insertionNumber;
+		final T value;
+
+		InsertOrderWrapper(T value, long insertionNumber) {
+			this.value = value;
+			this.insertionNumber = insertionNumber;
+		}
+	}
+
 
 	protected ElementNameMap() {
-		this.map = new ConcurrentSkipListMap<>();
+		this.map = new ConcurrentHashMap<>();
+		this.insertionNumber = new AtomicInteger();
 	}
 
 	protected abstract CtElement getOwner();
@@ -64,7 +92,7 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 	 *     if the element is actually replaced.
 	 */
 	@Override
-	public T put(String key, T e) {
+	public @Nullable T put(String key, T e) {
 		if (e == null) {
 			return null;
 		}
@@ -74,12 +102,19 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 
 		// We make sure that then last added type is kept (and previous types overwritten) as client
 		// code expects that
-		return map.put(key, e);
+		long currentInsertNumber = insertionNumber.incrementAndGet();
+		var wrapper = new InsertOrderWrapper<T>(e, currentInsertNumber);
+
+		return valueOrNull(map.put(key, wrapper));
+	}
+
+	private @Nullable T valueOrNull(InsertOrderWrapper<T> wrapper) {
+		return wrapper != null ? wrapper.value : null;
 	}
 
 	@Override
-	public T remove(Object key) {
-		T removed = map.remove(key);
+	public @Nullable T remove(Object key) {
+		T removed = valueOrNull(map.remove(key));
 
 		if (removed == null) {
 			return null;
@@ -97,24 +132,46 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 	}
 
 	@Override
+	public boolean isEmpty() {
+		return map.isEmpty();
+	}
+
+	@Override
 	public void clear() {
 		if (map.isEmpty()) {
 			return;
 		}
 		// Only an approximation as the concurrent map is only weakly consistent
-		Map<String, T> old = new LinkedHashMap<>(map);
+		var old = toInsertionOrderedMap();
 		map.clear();
+		var current = toInsertionOrderedMap();
 		getModelChangeListener().onMapDeleteAll(
 				getOwner(),
 				getRole(),
-				map,
+				current,
 				old
 		);
+	}
+
+	private LinkedHashMap<String, T> toInsertionOrderedMap() {
+		BinaryOperator<T> mergeFunction = (lhs, rhs) -> rhs;
+		return entriesByInsertionOrder().collect(Collectors.toMap(
+				Entry::getKey, Entry::getValue, mergeFunction, LinkedHashMap::new
+		));
 	}
 
 	@Override
 	public boolean containsKey(Object key) {
 		return map.containsKey(key);
+	}
+
+	@Override
+	public @Nullable T get(Object key) {
+		InsertOrderWrapper<T> wrapper = map.get(key);
+		if (wrapper == null) {
+			return null;
+		}
+		return wrapper.value;
 	}
 
 	/**
@@ -124,15 +181,21 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 	 * @param newKey the new key
 	 */
 	public void updateKey(String oldKey, String newKey) {
-		T type = map.remove(oldKey);
-		if (type != null) {
-			map.put(newKey, type);
+		InsertOrderWrapper<T> wrapper = map.remove(oldKey);
+		if (wrapper != null) {
+			map.put(newKey, wrapper);
 		}
 	}
 
 	@Override
 	public Set<Entry<String, T>> entrySet() {
-		return map.entrySet();
+		return entriesByInsertionOrder().collect(Collectors.toCollection(LinkedHashSet::new));
+	}
+
+	private Stream<Entry<String, T>> entriesByInsertionOrder() {
+		return map.entrySet().stream()
+				.sorted(Comparator.comparing(entry -> entry.getValue().insertionNumber))
+				.map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), entry.getValue().value));
 	}
 
 	private FineModelChangeListener getModelChangeListener() {

@@ -1,0 +1,75 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Describe the bug
+      description: Provide a general description of the bug, in plain text. Use the dedicated fields below for code snippets.
+      placeholder: Description of the bug
+    validations:
+      required: true
+  - type: textarea
+    id: java-input
+    attributes:
+      label: Source code you are trying to analyze/transform
+      description: Provide a minimal example of source code you are trying to analyze/transform that causes the bug to appear. This will be automatically formatted, so no need for backticks.
+      placeholder: System.out.println("Hello, world!");
+      render: Java
+    validations:
+      required: false
+  - type: textarea
+    id: spoon-code
+    attributes:
+      label: Source code for your Spoon processing
+      description: Provide your processing code that uses Spoon and causes the bug to appear. This will be automatically formatted, so no need for backticks.
+      placeholder: Launcher launcher = new Launcher();
+      render: Java
+    validations:
+      required: false
+  - type: textarea
+    id: output
+    attributes:
+      label: Actual output
+      description: The output that spoon provides, or a stacktrace if it crashes. This will be automatically formatted, so no need for backticks.
+      placeholder: System.out.println("Hello, world!");
+      render: Java
+    validations:
+      required: false
+  - type: textarea
+    id: expected-output
+    attributes:
+      label: Expected output
+      description: If you know what kind of output you expect to get, please provide it here. This will be automatically formatted, so no need for backticks.
+      placeholder: System.out.println("Hello, world!");
+      render: Java
+    validations:
+      required: false
+  - type: textarea
+    id: version
+    attributes:
+      label: Spoon Version
+      description: What version of Spoon are you using? Please note that we only actively support the latest major release. If you are using an older major version, your issue may be closed as non-actionable.
+      placeholder: X.Y.Z
+    validations:
+      required: true
+  - type: input
+    id: jvm-version
+    attributes:
+      label: JVM Version
+      description: Which JVM version are you running Spoon with? Note that Spoon is built for Java 11+, and we cannot maintain support for older versions.
+      placeholder: You can run 'java -version' to get this information.
+    validations:
+      required: true
+  - type: textarea
+    id: os
+    attributes:
+      label: What operating system are you using?
+    validations:
+      required: true

@@ -9,7 +9,7 @@
     <licenses>
         <license>
             <name>The MIT license</name>
-            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <url>https://www.opensource.org/licenses/mit-license.php</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -17,125 +17,88 @@
     <parent>
         <groupId>fr.inria.gforge.spoon</groupId>
         <artifactId>spoon-pom</artifactId>
-        <version>1.0</version>
+        <version>11.1.0</version>
         <relativePath>../spoon-pom</relativePath>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jfx.version>11.0.2</jfx.version>
+        <jfx.version>24-ea+5</jfx.version>
     </properties>
 
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.2</version>
-                <configuration>
-                    <outputDirectory>${project.build.directory}/modules</outputDirectory>
-                </configuration>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.3.0</version>
                 <executions>
                     <execution>
-                        <id>main deps</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <excludeClassifiers>linux,win,mac</excludeClassifiers>
-                            <outputDirectory>
-                                ${project.build.directory}/modules
-                            </outputDirectory>
-                            <includeScope>runtime</includeScope>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>JFX deps</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.build.directory}/modules
-                            </outputDirectory>
-                            <includeScope>runtime</includeScope>
-                        </configuration>
+                        <id>copy-dependencies</id>
+                        <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
-                        <id>main module</id>
-                        <phase>package</phase>
+                        <id>shade-jar</id>
                         <goals>
-                            <goal>exec</goal>
+                            <goal>shade</goal>
                         </goals>
-                        <configuration>
-                            <executable>${java.home}/bin/jar</executable>
-                            <arguments>
-                                <argument>--update</argument>
-                                <argument>--file=${project.build.directory}/modules/${project.build.finalName}.jar</argument>
-                                <argument>--main-class=spoon.visualisation.ShowMe</argument>
-                                <argument>--module-version=${project.version}</argument>
-                            </arguments>
-                        </configuration>
+                        <phase>package</phase>
                     </execution>
                 </executions>
+                <configuration>
+                    <finalName>spoon-${project.name}-all</finalName>
+                    <transformers>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <manifestEntries>
+                                <Main-Class>spoon.visualisation.Launcher</Main-Class>
+                            </manifestEntries>
+                        </transformer>
+                    </transformers>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M7</version>
                 <configuration>
                     <testFailureIgnore>false</testFailureIgnore>
                     <useModulePath>false</useModulePath>
-                    <argLine>-Xmx2000m
-                        -Dglass.platform=Monocle
+                    <argLine>
+                        -Xmx2000m
                         -Dheadless.geometry=1280x1024-32
                         -Djava.awt.headless=true
                         -Dtestfx.robot=glass
                         -Dtestfx.headless=true
-                        -Dprism.order=sw</argLine>
+                        -Dprism.order=sw
+                    </argLine>
                 </configuration>
             </plugin>
+
             <plugin>
-                <!-- see https://github.com/castor-software/depclean -->
-                <groupId>se.kth.castor</groupId>
-                <artifactId>depclean-maven-plugin</artifactId>
-                <version>2.0.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>depclean</goal>
-                        </goals>
-                        <configuration>
-                            <ignoreDependencies>
-                                <!-- DepClean should ignore these dependencies (they act as aggregators of others dependencies)-->
-                                <dependency>org.junit.jupiter:junit-jupiter-engine:5.7.1:test</dependency>
-                                <dependency>org.openjfx:javafx-graphics:11.0.2:compile</dependency>
-                                <dependency>org.openjfx:javafx-controls:11.0.2:compile</dependency>
-                                <dependency>org.openjfx:javafx-fxml:11.0.2:compile</dependency>
-                                <dependency>org.openjfx:javafx-base:11.0.2:compile</dependency>
-                            </ignoreDependencies>
-                            <!-- the build fails if there are unused direct dependencies -->
-                            <failIfUnusedDirect>true</failIfUnusedDirect>
-                        </configuration>
-                    </execution>
-                </executions>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>spoon.visualisation/spoon.visualisation.Launcher</mainClass>
+                    <runtimePathOption>CLASSPATH</runtimePathOption>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -155,37 +118,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>10.1.1</version>
-            <exclusions>
-                    <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>org.codehaus.plexus</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>org.apache.maven.shared</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>org.apache.maven</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>org.eclipse.platform</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>*</artifactId>
-                        <groupId>org.tukaani</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>commons-compress</artifactId>
-                        <groupId>org.apache.commons</groupId>
-                    </exclusion>
-            </exclusions>
+            <version>11.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -210,25 +143,25 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>23.0.0</version>
+            <version>24.1.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.8.2</version>
+            <version>5.11.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-junit5</artifactId>
-            <version>4.0.15-alpha</version>
+            <version>4.0.18</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>openjfx-monocle</artifactId>
-            <version>jdk-11+26</version>
+            <version>21.0.2</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -238,15 +171,4 @@
             </exclusions>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>spoon-snapshot</id>
-            <name>Maven Repository for Spoon Snapshots</name>
-            <url>https://repository.ow2.org/nexus/content/repositories/snapshots/</url>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
-        </repository>
-    </repositories>
 </project>
-

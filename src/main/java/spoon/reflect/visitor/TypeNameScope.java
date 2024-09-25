@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor;
 
@@ -170,8 +170,8 @@ class TypeNameScope extends NameScopeImpl {
 		CtPackage pack = compilationUnit.getDeclaredPackage();
 		if (pack != null) {
 			for (CtType<?> packageType : pack.getTypes()) {
-				if (packageType != getScopeElement() && !typesByName.containsKey(packageType.getSimpleName())) {
-					typesByName.put(packageType.getSimpleName(), packageType);
+				if (packageType != getScopeElement()) {
+					typesByName.putIfAbsent(packageType.getSimpleName(), packageType);
 				}
 			}
 		}
@@ -184,8 +184,6 @@ class TypeNameScope extends NameScopeImpl {
 			return;
 		}
 		String name = element.getSimpleName();
-		if (!map.containsKey(name)) {
-			map.put(name, element);
-		}
+		map.putIfAbsent(name, element);
 	}
 }

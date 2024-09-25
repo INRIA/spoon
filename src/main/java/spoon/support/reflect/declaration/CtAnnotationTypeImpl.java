@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.declaration;
 
@@ -20,7 +20,7 @@ import spoon.support.UnsettableProperty;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -90,7 +90,7 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 
 	@Override
 	public Set<CtAnnotationMethod<?>> getAnnotationMethods() {
-		Set<CtAnnotationMethod<?>> annotationsMethods = new HashSet<>();
+		Set<CtAnnotationMethod<?>> annotationsMethods = new LinkedHashSet<>();
 		for (CtMethod<?> method : getMethods()) {
 			if (method instanceof  CtAnnotationMethod) {
 				annotationsMethods.add((CtAnnotationMethod<?>) method);

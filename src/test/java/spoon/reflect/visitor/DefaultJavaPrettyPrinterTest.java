@@ -1,6 +1,11 @@
 package spoon.reflect.visitor;
 
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,19 +14,34 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
+import spoon.SpoonException;
+import spoon.SpoonModelBuilder;
+import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.test.SpoonTestHelpers;
+import spoon.testing.utils.GitHubIssue;
+import spoon.testing.utils.ModelTest;
 
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -32,6 +52,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static spoon.test.SpoonTestHelpers.containsRegexMatch;
 
 public class DefaultJavaPrettyPrinterTest {
@@ -52,7 +74,9 @@ public class DefaultJavaPrettyPrinterTest {
             "1 | 2 & 3",
             "(1 | 2) & 3",
             "1 | 2 ^ 3",
-            "(1 | 2) ^ 3"
+            "(1 | 2) ^ 3",
+            "((int) (1 + 2)) * 3",
+            "(int) (int) (1 + 1)",
     })
     public void testParenOptimizationCorrectlyPrintsParenthesesForExpressions(String rawExpression) {
         // contract: When input expressions are minimally parenthesized, pretty-printed output
@@ -66,7 +90,10 @@ public class DefaultJavaPrettyPrinterTest {
     @ValueSource(strings = {
             "int sum = 1 + 2 + 3",
             "java.lang.String s = \"Sum: \" + (1 + 2)",
-            "java.lang.String s = \"Sum: \" + 1 + 2"
+            "java.lang.String s = \"Sum: \" + 1 + 2",
+            "java.lang.System.out.println(\"1\" + \"2\" + \"3\" + \"4\")",
+            "int myInt = (int) 0.0",
+            "int myInt = (int) (float) 0.0",
     })
     public void testParenOptimizationCorrectlyPrintsParenthesesForStatements(String rawStatement) {
         // contract: When input expressions as part of statements are minimally parenthesized,
@@ -245,5 +272,157 @@ public class DefaultJavaPrettyPrinterTest {
                 Arguments.of(factory.Type().get("SealedInterfaceWithNestedSubclasses"), List.of()) // implicit
             );
         }
+    }
+
+    @Nested
+    class SquareBracketsForArrayInitialization_ArrayIsBuiltUsingFactoryMethods {
+        @Test
+        @GitHubIssue(issueNumber = 4887, fixed = true)
+        void bracketsShouldBeAttachedToTypeByDefault() {
+            // contract: the square brackets should be attached to type by default when array is built using factory methods
+            // arrange
+            Launcher launcher = new Launcher();
+            Factory factory = launcher.getFactory();
+
+            CtArrayTypeReference<Integer> arrayTypeReference = factory.createArrayTypeReference();
+            arrayTypeReference.setComponentType(factory.Type().integerPrimitiveType());
+            CtNewArray<Integer> newArray = factory.createNewArray();
+            newArray.setValueByRole(CtRole.TYPE, arrayTypeReference);
+            List<CtLiteral<Integer>> elements = new ArrayList<>(List.of(factory.createLiteral(3)));
+            newArray.setValueByRole(CtRole.EXPRESSION, elements);
+            CtLocalVariable<Integer> localVariable = factory.createLocalVariable(arrayTypeReference, "intArray", newArray);
+
+            // act
+            String actualStringRepresentation = localVariable.toString();
+
+            // assert
+            assertThat(actualStringRepresentation, equalTo("int[] intArray = new int[]{ 3 }"));
+        }
+
+        @Test
+        void bracketsShouldBeAttachedToIdentifierIfSpecified() {
+            // contract: the square brackets should be attached to identifier if specified explicitly
+            // arrange
+            Launcher launcher = new Launcher();
+            Factory factory = launcher.getFactory();
+
+            CtArrayTypeReference<CtElement> arrayTypeReference = factory.createArrayTypeReference();
+            CtTypeReference<CtElement> arrayType = factory.Type().createReference(CtElement.class);
+            arrayTypeReference.setComponentType(arrayType);
+            CtNewArray<CtElement> newArray = factory.createNewArray();
+            newArray.setValueByRole(CtRole.TYPE, arrayTypeReference);
+            List<CtElement> elements = new ArrayList<>(List.of(factory.createLiteral(1.0f)));
+            newArray.setValueByRole(CtRole.EXPRESSION, elements);
+            CtLocalVariable<CtElement> localVariable = factory.createLocalVariable(arrayTypeReference, "spoonElements", newArray);
+
+
+            // act
+            ((CtArrayTypeReferenceImpl<?>) arrayTypeReference).setDeclarationKind(CtArrayTypeReferenceImpl.DeclarationKind.IDENTIFIER);
+            String actualStringRepresentation = localVariable.toString();
+
+            // assert
+            assertThat(actualStringRepresentation,
+                    equalTo("spoon.reflect.declaration.CtElement spoonElements[] = new spoon.reflect.declaration.CtElement[]{ 1.0F }"));
+        }
+    }
+
+    @ModelTest(value = "src/test/resources/patternmatching/InstanceofGenerics.java", complianceLevel = 16)
+    void testKeepGenericType(Factory factory) {
+        // contract: generic type parameters can appear in instanceof expressions if they are only carried over
+        CtType<?> x = factory.Type().get("InstanceofGenerics");
+        String printed = x.toString();
+        assertThat(printed, containsString("Set<T>"));
+        assertThat(printed, containsString("List<T> list"));
+        assertThat(printed, containsRegexMatch("Collection<.*String>"));
+        assertThat(printed, containsRegexMatch("List<.*List<T>>"));
+        assertThat(printed, containsRegexMatch("List<.*List<\\? extends T>>"));
+        assertThat(printed, containsRegexMatch("List<.*List<\\? super T>>"));
+    }
+
+    @Test
+    @GitHubIssue(issueNumber = 4881, fixed = true)
+    void bracketsShouldBeMinimallyPrintedForTypeCastOnFieldRead() throws FileNotFoundException {
+        // contract: the brackets should be minimally printed for type cast on field read
+        // arrange
+        Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
+        launcher.addInputResource("src/test/resources/printer-test/TypeCastOnFieldRead.java");
+        Launcher launcherForCompilingPrettyPrintedString = createLauncherWithOptimizeParenthesesPrinter();
+
+        // act
+        CtModel model = launcher.buildModel();
+        launcher.prettyprint();
+        SpoonModelBuilder spoonModelBuilder = launcherForCompilingPrettyPrintedString.createCompiler(SpoonResourceHelper.resources("spooned/TypeCastOnFieldRead.java"));
+
+        // assert
+        assertThat(spoonModelBuilder.build(), equalTo(true));
+
+        CtLocalVariable<Integer> localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+        assertThat(localVariable.toString(), equalTo("int myInt = (int) myDouble"));
+
+        CtLocalVariable<Integer> localVariable2 = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(1);
+        assertThat(localVariable2.toString(), equalTo("int myInt2 = ((java.lang.Double) myDouble).intValue()"));
+
+        CtLocalVariable<Integer> localVariable3 = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(2);
+        assertThat(localVariable3.toString(), equalTo("double withoutTypeCast = myDoubleObject.doubleValue()"));
+    }
+
+    @Test
+    void bracketsShouldBeMinimallyPrintedOnShadowedFields() throws FileNotFoundException {
+        // contract: the brackets should be minimally printed for type cast on shadowed field read
+        // arrange
+        Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
+        launcher.addInputResource("src/test/resources/printer-test/ShadowFieldRead.java");
+        Launcher launcherForCompilingPrettyPrintedString = createLauncherWithOptimizeParenthesesPrinter();
+
+        // act
+        CtModel model = launcher.buildModel();
+        launcher.prettyprint();
+        SpoonModelBuilder spoonModelBuilder = launcherForCompilingPrettyPrintedString.createCompiler(SpoonResourceHelper.resources("spooned/ShadowFieldRead.java", "spooned/A.java", "spooned/C.java"));
+
+        // assert
+        assertThat(spoonModelBuilder.build(), equalTo(true));
+
+        CtLocalVariable<Integer> localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(1);
+        assertThat(localVariable.toString(), equalTo("int fieldReadOfA = ((A) c).a.i"));
+    }
+
+    @ParameterizedTest(name = "Printing literal ''{0}'' throws an error")
+    @ValueSource(doubles = {
+        Double.NEGATIVE_INFINITY,
+        Double.POSITIVE_INFINITY,
+        Double.NaN
+    })
+    void throwsExceptionWhenPrintingInvalidFloatingLiteral(double value) {
+        // contract: Printing invalid floating literals throws an exception
+        Factory factory = new Launcher().getFactory();
+
+        assertThrows(SpoonException.class, () -> factory.createLiteral(value).toString());
+        assertThrows(SpoonException.class, () -> factory.createLiteral((float) value).toString());
+    }
+
+    @ModelTest("src/test/java/spoon/reflect/visitor/DefaultJavaPrettyPrinterTest.java")
+    void printAnnotationsInOrphanTypeReference(Factory factory) {
+        // contract: Spoon should print annotations for orphaned type references
+        // Used by the test
+        java.lang.@TypeUseAnnotation String ignored;
+
+        CtTypeReference<?> type = factory.Type()
+          .get(getClass().getName())
+          .getMethodsByName("printAnnotationsInOrphanTypeReference")
+          .get(0)
+          .getElements(new TypeFilter<>(CtLocalVariable.class))
+          .get(0)
+          .getType();
+
+        assertEquals(
+          "java.lang.@spoon.reflect.visitor.DefaultJavaPrettyPrinterTest.TypeUseAnnotation String",
+          type.toString().replace(System.lineSeparator(), " ")
+        );
+    }
+
+    @Target({ElementType.TYPE_USE})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface TypeUseAnnotation {
+
     }
 }

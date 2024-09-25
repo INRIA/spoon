@@ -1,15 +1,16 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
@@ -45,7 +46,7 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 		}
 		if (!result.getActualTypeArguments().isEmpty()) {
 			//we have to adapt actual type arguments recursive too
-			if (isCopy == false) {
+			if (!isCopy) {
 				CtElement parent = result.isParentInitialized() ? result.getParent() : null;
 				result = result.clone();
 				if (parent != null) {
@@ -91,5 +92,5 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 	 * @return {@link CtTypeReference} or {@link CtTypeParameterReference} adapted to scope of this {@link GenericTypeAdapter}
 	 *  or null if `typeParam` cannot be adapted to target `scope`
 	 */
-	protected abstract CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam);
+	protected abstract @Nullable CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam);
 }

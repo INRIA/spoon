@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor;
 
@@ -63,6 +63,8 @@ public class PrinterHelper {
 	 * It helps to detect windows EOL, which is \r\n
 	 */
 	private boolean lastCharWasCR = false;
+
+	boolean prefixBlockComments;
 
 	public PrinterHelper() {
 	}
@@ -253,7 +255,7 @@ public class PrinterHelper {
 		SourcePosition sp = e.getPosition();
 		if ((sp.isValidPosition())
 				&& (sp.getCompilationUnit() == unitExpected)
-				&& (sp instanceof PartialSourcePositionImpl) == false) {
+				&& !(sp instanceof PartialSourcePositionImpl)) {
 			// only map elements coming from the source CU
 			putLineNumberMapping(e.getPosition().getLine());
 		} else {
@@ -297,5 +299,13 @@ public class PrinterHelper {
 
 	public void setShouldWriteTabs(boolean b) {
 		this.shouldWriteTabs = b;
+	}
+
+	/**
+	 * Sets whether lines in block comments should be prefixed by a {@code *}.
+	 * @param prefixBlockComments whether block comments should be prefixed.
+	 */
+	public void setPrefixBlockComments(boolean prefixBlockComments) {
+		this.prefixBlockComments = prefixBlockComments;
 	}
 }

@@ -1,4 +1,4 @@
-FROM stackbrew/ubuntu:16.04
+FROM stackbrew/ubuntu:16.04@sha256:cd39646de5628c8188396c506fdc76dd94c7652a82439cc4318cfc05cc93fbb7
 MAINTAINER Gerard Paligot "gerard.paligot@inria.fr"
 
 RUN apt-get update && apt-get clean

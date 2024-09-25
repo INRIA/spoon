@@ -1,11 +1,13 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor;
+
+import java.lang.annotation.Annotation;
 
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -16,6 +18,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -41,6 +44,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
@@ -55,6 +59,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtUnnamedPattern;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -69,36 +74,35 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtPackageExport;
-import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtRecord;
-import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
+import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
-
-import java.lang.annotation.Annotation;
 
 /**
  * This interface defines the visitor for the Spoon metamodel, as defined in
@@ -550,10 +554,34 @@ public interface CtVisitor {
 	 * @param recordType the record to visit.
 	 */
 	void visitCtRecord(CtRecord recordType);
+
 	/**
 	 * Visits a record component.
 	 * @param recordComponent  the record component to visit.
 	 */
-
 	void visitCtRecordComponent(CtRecordComponent recordComponent);
+
+	/**
+	 * Visits a case pattern
+	 * @param casePattern the case pattern to visit.
+	 */
+	void visitCtCasePattern(CtCasePattern casePattern);
+
+	/**
+	 * Visits a record pattern.
+	 * @param recordPattern the record pattern to visit.
+	 */
+	void visitCtRecordPattern(CtRecordPattern recordPattern);
+
+	/**
+	 * Visits a receiver parameter.
+	 * @param receiverParameter the receiver parameter to visit.
+	 */
+	void visitCtReceiverParameter(CtReceiverParameter receiverParameter);
+
+	/**
+	 * Visits an unnamed pattern.
+	 * @param unnamedPattern the unnamed pattern to visit.
+	 */
+	void visitCtUnnamedPattern(CtUnnamedPattern unnamedPattern);
 }

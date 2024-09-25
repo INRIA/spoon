@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.meta.impl;
 
@@ -108,7 +108,7 @@ public class RoleHandlerHelper {
 	 * @return {@link RoleHandler} handling relation from `element.getParent()` to `element`
 	 */
 	public static RoleHandler getRoleHandlerWrtParent(CtElement element) {
-		if (element.isParentInitialized() == false) {
+		if (!element.isParentInitialized()) {
 			return null;
 		}
 		CtElement parent = element.getParent();

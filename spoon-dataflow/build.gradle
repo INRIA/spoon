@@ -5,8 +5,8 @@ plugins {
     // always depends on the latest snapshot of Spoon
     // https://github.com/patrikerdes/gradle-use-latest-versions-plugin
     id 'se.patrikerdes.use-latest-versions' version '0.2.18'
-    id 'com.github.ben-manes.versions' version '0.42.0'
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id 'com.github.ben-manes.versions' version '0.51.0'
+    id "com.github.johnrengelman.shadow" version "8.1.1"
 }
 
 group 'fr.inria.gforge.spoon'
@@ -15,15 +15,16 @@ version '1.0'
 sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven { url 'https://raw.github.com/SpoonLabs/spoon-dependencies/master' }
 }
 
 dependencies {
     implementation group: 'fr.inria.gforge.spoon', name: 'spoon-core', version: '+'
-    implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
-    implementation group: 'com.microsoft', name: 'z3', version: '4.8.4'
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    implementation group: 'commons-cli', name: 'commons-cli', version: '1.9.0'
+    implementation group: 'tools.aqua', name: 'z3-turnkey', version: '4.13.0'
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
 }
 
 application {

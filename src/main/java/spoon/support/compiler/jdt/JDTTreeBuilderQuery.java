@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.compiler.jdt;
 
@@ -217,15 +217,14 @@ class JDTTreeBuilderQuery {
 	}
 
 	/**
-	 * Check if the name reference is resolved in the JDT tree, i.e. that the declaration is available.
+	 * Check if the name reference is resolved as a field ref in the JDT tree.
 	 *
 	 * @param qualifiedNameReference
 	 * 		Reference which should contain a field binding.
 	 * @return true if the field has been resolved by the jdt builder.
 	 */
-	static boolean isResolvedField(QualifiedNameReference qualifiedNameReference) {
-		return qualifiedNameReference.binding instanceof FieldBinding
-				&& ((FieldBinding) qualifiedNameReference.binding).original().sourceField() != null;
+	static boolean isFieldReference(QualifiedNameReference qualifiedNameReference) {
+		return qualifiedNameReference.binding instanceof FieldBinding;
 	}
 
 
@@ -239,7 +238,7 @@ class JDTTreeBuilderQuery {
 	 * @return true if the lhs is equals to the given expression.
 	 */
 	static boolean isLhsAssignment(ContextBuilder context, Expression lhs) {
-		return context.stack.peek().node instanceof Assignment && ((Assignment) context.stack.peek().node).lhs.equals(lhs);
+		return context.getCurrentNode() instanceof Assignment && ((Assignment) context.getCurrentNode()).lhs.equals(lhs);
 	}
 
 	/**

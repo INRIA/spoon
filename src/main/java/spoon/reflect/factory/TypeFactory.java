@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.factory;
 
@@ -62,190 +62,308 @@ public class TypeFactory extends SubFactory {
 			// TODO (leventov) it is questionable to me that nulltype should also be here
 			CtTypeReference.NULL_TYPE_NAME);
 
+	/**
+	 * @deprecated Use {@link #nullType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<?> NULL_TYPE = createReference(CtTypeReference.NULL_TYPE_NAME);
+	/**
+	 * @deprecated Use {@link #voidType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Void> VOID = createReference(Void.class);
+	/**
+	 * @deprecated Use {@link #stringType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<String> STRING = createReference(String.class);
+	/**
+	 * @deprecated Use {@link #booleanType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Boolean> BOOLEAN = createReference(Boolean.class);
+	/**
+	 * @deprecated Use {@link #byteType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Byte> BYTE = createReference(Byte.class);
+	/**
+	 * @deprecated Use {@link #characterType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Character> CHARACTER = createReference(Character.class);
+	/**
+	 * @deprecated Use {@link #integerType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Integer> INTEGER = createReference(Integer.class);
+	/**
+	 * @deprecated Use {@link #longType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Long> LONG = createReference(Long.class);
+	/**
+	 * @deprecated Use {@link #floatType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Float> FLOAT = createReference(Float.class);
+	/**
+	 * @deprecated Use {@link #doubleType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Double> DOUBLE = createReference(Double.class);
+	/**
+	 * @deprecated Use {@link #voidPrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Void> VOID_PRIMITIVE = createReference(void.class);
+	/**
+	 * @deprecated Use {@link #booleanPrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Boolean> BOOLEAN_PRIMITIVE = createReference(boolean.class);
+	/**
+	 * @deprecated Use {@link #bytePrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Byte> BYTE_PRIMITIVE = createReference(byte.class);
+	/**
+	 * @deprecated Use {@link #characterPrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Character> CHARACTER_PRIMITIVE = createReference(char.class);
+	/**
+	 * @deprecated Use {@link #integerPrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Integer> INTEGER_PRIMITIVE = createReference(int.class);
+	/**
+	 * @deprecated Use {@link #longPrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Long> LONG_PRIMITIVE = createReference(long.class);
+	/**
+	 * @deprecated Use {@link #floatPrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Float> FLOAT_PRIMITIVE = createReference(float.class);
+	/**
+	 * @deprecated Use {@link #doublePrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Double> DOUBLE_PRIMITIVE = createReference(double.class);
+	/**
+	 * @deprecated Use {@link #shortType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Short> SHORT = createReference(Short.class);
+	/**
+	 * @deprecated Use {@link #shortPrimitiveType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Short> SHORT_PRIMITIVE = createReference(short.class);
+	/**
+	 * @deprecated Use {@link #dateType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Date> DATE = createReference(Date.class);
+	/**
+	 * @deprecated Use {@link #objectType()} instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Object> OBJECT = createReference(Object.class);
+	/**
+	 * @deprecated Use {@link #createReference(Class) TypeFactory#createReference(Iterable.class)}  instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Iterable> ITERABLE = createReference(Iterable.class);
+	/**
+	 * @deprecated Use {@link #createReference(Class) TypeFactory#createReference(Collection.class)}  instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Collection> COLLECTION = createReference(Collection.class);
+	/**
+	 * @deprecated Use {@link #createReference(Class) TypeFactory#createReference(List.class)}  instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<List> LIST = createReference(List.class);
+	/**
+	 * @deprecated Use {@link #createReference(Class) TypeFactory#createReference(Set.class)}  instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Set> SET = createReference(Set.class);
+	/**
+	 * @deprecated Use {@link #createReference(Class) TypeFactory#createReference(Map.class)}  instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Map> MAP = createReference(Map.class);
+	/**
+	 * @deprecated Use {@link #createReference(Class) TypeFactory#createReference(Enum.class)}  instead.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<Enum> ENUM = createReference(Enum.class);
+	/**
+	 * @deprecated Deprecated for removal without replacement.
+	 */
+	@Deprecated(since = "11.0.0", forRemoval = true)
 	public final CtTypeReference<?> OMITTED_TYPE_ARG_TYPE = createReference(CtTypeReference.OMITTED_TYPE_ARG_NAME);
 
-	private final Map<Class<?>, CtType<?>> shadowCache = new ConcurrentHashMap<>();
+	// This map MUST provide a useful computeIfAbsent method in the face of concurrency.
+	// Therefore, we declare it as a ConcurrentHashMap directly.
+	private final ConcurrentHashMap<Class<?>, CtType<?>> shadowCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Returns a reference on the null type (type of null).
 	 */
 	public CtTypeReference<?> nullType() {
-		return NULL_TYPE.clone();
+		return ((CtTypeReference<?>) createReference(CtTypeReference.NULL_TYPE_NAME)).clone();
 	}
 
 	/**
 	 * Returns a reference on the void type.
 	 */
 	public CtTypeReference<Void> voidType() {
-		return VOID.clone();
+		return createReference(Void.class);
 	}
 
 	/**
 	 * Returns a reference on the void primitive type.
 	 */
 	public CtTypeReference<Void> voidPrimitiveType() {
-		return VOID_PRIMITIVE.clone();
+		return createReference(void.class);
 	}
 
 	/**
 	 * Returns a reference on the string type.
 	 */
 	public CtTypeReference<String> stringType() {
-		return STRING.clone();
+		return createReference(String.class);
 	}
 
 	/**
 	 * Returns a reference on the boolean type.
 	 */
 	public CtTypeReference<Boolean> booleanType() {
-		return BOOLEAN.clone();
+		return createReference(Boolean.class);
 	}
 
 	/**
 	 * Returns a reference on the boolean primitive type.
 	 */
 	public CtTypeReference<Boolean> booleanPrimitiveType() {
-		return BOOLEAN_PRIMITIVE.clone();
+		return createReference(boolean.class);
 	}
 
 	/**
 	 * Returns a reference on the byte type.
 	 */
 	public CtTypeReference<Byte> byteType() {
-		return BYTE.clone();
+		return createReference(Byte.class);
 	}
 
 	/**
 	 * Returns a reference on the byte primitive type.
 	 */
 	public CtTypeReference<Byte> bytePrimitiveType() {
-		return BYTE_PRIMITIVE.clone();
+		return createReference(byte.class);
 	}
 
 	/**
 	 * Returns a reference on the character type.
 	 */
 	public CtTypeReference<Character> characterType() {
-		return CHARACTER.clone();
+		return createReference(Character.class);
 	}
 
 	/**
 	 * Returns a reference on the character primitive type.
 	 */
 	public CtTypeReference<Character> characterPrimitiveType() {
-		return CHARACTER_PRIMITIVE.clone();
+		return createReference(char.class);
 	}
 
 	/**
 	 * Returns a reference on the integer type.
 	 */
 	public CtTypeReference<Integer> integerType() {
-		return INTEGER.clone();
+		return createReference(Integer.class);
 	}
 
 	/**
 	 * Returns a reference on the integer primitive type.
 	 */
 	public CtTypeReference<Integer> integerPrimitiveType() {
-		return INTEGER_PRIMITIVE.clone();
+		return createReference(int.class);
 	}
 
 	/**
 	 * Returns a reference on the long type.
 	 */
 	public CtTypeReference<Long> longType() {
-		return LONG.clone();
+		return createReference(Long.class);
 	}
 
 	/**
 	 * Returns a reference on the long primitive type.
 	 */
 	public CtTypeReference<Long> longPrimitiveType() {
-		return LONG_PRIMITIVE.clone();
+		return createReference(long.class);
 	}
 
 	/**
 	 * Returns a reference on the float type.
 	 */
 	public CtTypeReference<Float> floatType() {
-		return FLOAT.clone();
+		return createReference(Float.class);
 	}
 
 	/**
 	 * Returns a reference on the float primitive type.
 	 */
 	public CtTypeReference<Float> floatPrimitiveType() {
-		return FLOAT_PRIMITIVE.clone();
+		return createReference(float.class);
 	}
 
 	/**
 	 * Returns a reference on the double type.
 	 */
 	public CtTypeReference<Double> doubleType() {
-		return DOUBLE.clone();
+		return createReference(Double.class);
 	}
 
 	/**
 	 * Returns a reference on the double primitive type.
 	 */
 	public CtTypeReference<Double> doublePrimitiveType() {
-		return DOUBLE_PRIMITIVE.clone();
+		return createReference(double.class);
 	}
 
 	/**
 	 * Returns a reference on the short type.
 	 */
 	public CtTypeReference<Short> shortType() {
-		return SHORT.clone();
+		return createReference(Short.class);
 	}
 
 	/**
 	 * Returns a reference on the short primitive type.
 	 */
 	public CtTypeReference<Short> shortPrimitiveType() {
-		return SHORT_PRIMITIVE.clone();
+		return createReference(short.class);
 	}
 
 	/**
 	 * Returns a reference on the date type.
 	 */
 	public CtTypeReference<Date> dateType() {
-		return DATE.clone();
+		return createReference(Date.class);
 	}
 
 	/**
 	 * Returns a reference on the object type.
 	 */
 	public CtTypeReference<Object> objectType() {
-		return OBJECT.clone();
+		return createReference(Object.class);
 	}
 
 	/**
@@ -290,6 +408,9 @@ public class TypeFactory extends SubFactory {
 	 */
 	public CtArrayTypeReference<?> createArrayReference(CtTypeReference<?> reference, int n) {
 		CtTypeReference<?> componentType;
+		if (n < 1) {
+			throw new SpoonException("Array dimension must be >= 1");
+		}
 		if (n == 1) {
 			return createArrayReference(reference);
 		}
@@ -462,7 +583,7 @@ public class TypeFactory extends SubFactory {
 				// If the class name is an integer, the class is an anonymous class, otherwise,
 				// it is a standard class.
 				//TODO reset cache when type is modified
-				return getFromCache(t, className, k -> {
+				return getAnonymousTypeFromCache(t, className, k -> {
 					//the searching for declaration of anonymous class is expensive
 					//do that only once and store it in cache of CtType
 					final List<CtNewClass> anonymousClasses = t.getElements(new TypeFilter<CtNewClass>(CtNewClass.class) {
@@ -483,15 +604,19 @@ public class TypeFactory extends SubFactory {
 		return null;
 	}
 
-	private static final String CACHE_KEY = TypeFactory.class.getName() + "-AnnonymousTypeCache";
+	private static final String ANONYMOUS_TYPES_CACHE_KEY = TypeFactory.class.getName() + "-AnnonymousTypeCache";
 
-	private <T, K> T getFromCache(CtElement element, K key, Function<K, T> valueResolver) {
-		Map<K, T> cache = (Map<K, T>) element.getMetadata(CACHE_KEY);
-		if (cache == null) {
-			cache = new HashMap<>();
-			element.putMetadata(CACHE_KEY, cache);
+	private <T, K> T getAnonymousTypeFromCache(CtElement element, K key, Function<K, T> valueResolver) {
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
+		synchronized (element) {
+			@SuppressWarnings("unchecked")
+			Map<K, T> cache = (Map<K, T>) element.getMetadata(ANONYMOUS_TYPES_CACHE_KEY);
+			if (cache == null) {
+				cache = new HashMap<>();
+				element.putMetadata(ANONYMOUS_TYPES_CACHE_KEY, cache);
+			}
+			return cache.computeIfAbsent(key, valueResolver);
 		}
-		return cache.computeIfAbsent(key, valueResolver);
 	}
 
 	private boolean isNumber(String str) {
@@ -552,35 +677,33 @@ public class TypeFactory extends SubFactory {
 	public <T> CtType<T> get(Class<?> cl) {
 		final CtType<T> aType = get(cl.getName());
 		if (aType == null) {
-			final CtType<T> shadowClass = (CtType<T>) this.shadowCache.get(cl);
-			if (shadowClass == null) {
-				CtType<T> newShadowClass;
-				try {
-					newShadowClass = new JavaReflectionTreeBuilder(getShadowFactory()).scan((Class<T>) cl);
-				} catch (Throwable e) {
-					Launcher.LOGGER.warn("cannot create shadow class: {}", cl.getName(), e);
-
-					newShadowClass = getShadowFactory().Core().createClass();
-					newShadowClass.setSimpleName(cl.getSimpleName());
-					newShadowClass.setShadow(true);
-					getShadowFactory().Package().getOrCreate(cl.getPackage().getName()).addType(newShadowClass);
-				}
-				newShadowClass.setFactory(factory);
-				newShadowClass.accept(new CtScanner() {
-					@Override
-					public void scan(CtElement element) {
-						if (element != null) {
-							element.setFactory(factory);
-						}
-					}
-				});
-				this.shadowCache.put(cl, newShadowClass);
-				return newShadowClass;
-			} else {
-				return shadowClass;
-			}
+			return (CtType<T>) this.shadowCache.computeIfAbsent(cl, this::buildNewShadowClass);
 		}
 		return aType;
+	}
+
+	private CtType<?> buildNewShadowClass(Class<?> cl) {
+		CtType<?> newShadowClass;
+		try {
+			newShadowClass = new JavaReflectionTreeBuilder(getShadowFactory()).scan(cl);
+		} catch (Throwable e) {
+			Launcher.LOGGER.warn("cannot create shadow class: {}", cl.getName(), e);
+
+			newShadowClass = getShadowFactory().Core().createClass();
+			newShadowClass.setSimpleName(cl.getSimpleName());
+			newShadowClass.setShadow(true);
+			getShadowFactory().Package().getOrCreate(cl.getPackage().getName()).addType(newShadowClass);
+		}
+		newShadowClass.setFactory(factory);
+		newShadowClass.accept(new CtScanner() {
+			@Override
+			public void scan(CtElement element) {
+				if (element != null) {
+					element.setFactory(factory);
+				}
+			}
+		});
+		return newShadowClass;
 	}
 
 	private transient Factory shadowFactory;
@@ -721,7 +844,7 @@ public class TypeFactory extends SubFactory {
 	 * Returns the default bounding type value
 	 */
 	public CtTypeReference getDefaultBoundingType() {
-		return OBJECT;
+		return objectType();
 	}
 
 	/**

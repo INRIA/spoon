@@ -4,11 +4,11 @@
 set -e
 
 build() {
-  mvn clean package -DskipDepClean -DskipTests -Dmaven.javadoc.skip > /dev/null
+  mvn -f spoon-pom clean package -DskipDepClean -DskipTests -Dmaven.javadoc.skip > /dev/null
 }
 
 compare_files() {
-  sudo docker run --rm -t -w $(pwd) -v $(pwd):$(pwd):ro \
+  sudo docker run --rm -t -w "$(pwd)" -v "$(pwd):$(pwd):ro" \
         registry.salsa.debian.org/reproducible-builds/diffoscope "$1" "$2"
 }
 
@@ -19,6 +19,7 @@ build
 # Save artifacts
 mkdir -p saved_artifacts
 cp target/spoon-core-*.jar saved_artifacts
+cp spoon-javadoc/target/spoon-javadoc*.jar saved_artifacts
 
 # Build again, will overwrite target jars
 build
@@ -33,7 +34,10 @@ CORE_EXIT="$?"
 compare_files target/spoon-core-*dependencies.jar saved_artifacts/spoon-core-*dependencies.jar
 DEPS_EXIT="$?"
 
-if [[ "$CORE_EXIT" == 0 && "$DEPS_EXIT" == 0 ]]; then
+compare_files spoon-javadoc/target/spoon-javadoc*.jar saved_artifacts/spoon-javadoc*.jar
+JAVADOC_EXIT="$?"
+
+if [[ "$CORE_EXIT" == 0 && "$DEPS_EXIT" == 0 && "$JAVADOC_EXIT" == 0 ]]; then
   echo -e "\033[1;32mThe jars were reproducible!\033[0m"
   exit 0
 fi
@@ -47,6 +51,9 @@ if [[ "$DEPS_EXIT" != 0 ]]; then
 fi
 if [[ "$CORE_EXIT" != 0 ]]; then
   echo -e "  \033[31mspoon-core-VERSION.jar was not reproducible!\033[0m"
+fi
+if [[ "$JAVADOC_EXIT" != 0 ]]; then
+  echo -e "  \033[31mspoon-javadoc-VERSION.jar was not reproducible!\033[0m"
 fi
 
 

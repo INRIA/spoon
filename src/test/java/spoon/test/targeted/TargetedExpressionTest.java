@@ -17,10 +17,7 @@
 package spoon.test.targeted;
 
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtExpression;
@@ -44,6 +41,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.CtLineElementComparator;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.code.CtConstructorCallImpl;
 import spoon.support.reflect.code.CtFieldReadImpl;
 import spoon.support.reflect.code.CtThisAccessImpl;
@@ -54,7 +52,13 @@ import spoon.test.targeted.testclasses.InternalSuperCall;
 import spoon.test.targeted.testclasses.Pozole;
 import spoon.test.targeted.testclasses.SuperClass;
 import spoon.test.targeted.testclasses.Tapas;
+import spoon.testing.utils.ModelTest;
 
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -292,12 +296,16 @@ public class TargetedExpressionTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/targeted/StaticFieldReadOnly.java");
+
 		CtModel model = launcher.buildModel();
 
 		List<CtInvocation<?>> invocations = model.getElements(e -> e.getExecutable().getSimpleName().equals("error"));
 		CtInvocation<?> inv = invocations.get(0);
 		CtFieldRead<?> fieldRead = (CtFieldRead<?>) inv.getTarget();
-		CtExpression<?> target = fieldRead.getTarget();
+		// we do have the right type access in noclasspath mode
+		// the slight behavior change is that PR 5812 adds one level of indirection in the model, hence the filterChildren call
+		// however correct behavior is full classpath mode is higher priority, see https://github.com/INRIA/spoon/pull/5912
+		CtTypeAccess<?> target = (CtTypeAccess<?>) fieldRead.filterChildren(new TypeFilter<>(CtTypeAccess.class)).list().get(0);
 
 		assertTrue(target instanceof CtTypeAccess);
 		assertEquals("Launcher", ((CtTypeAccess<?>) target).getAccessedType().getSimpleName());
@@ -400,13 +408,29 @@ public class TargetedExpressionTest {
 		final List<CtInvocation<?>> elements = innerInvMethod.getElements(new TypeFilter<>(CtInvocation.class));
 		assertEquals(8, elements.size());
 		expectedThisAccess.setType(expectedInnerClass);
-		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("inv()"), elements.get(0));
+		assertThat(elements.get(0).getTarget().isImplicit(), is(true));
+		assertThat(elements.get(0).getTarget(), is(instanceOf(CtThisAccess.class)));
+		assertThat(
+			((CtTypeAccess<?>) ((CtThisAccess<?>) elements.get(0).getTarget()).getTarget())
+				.getAccessedType()
+				.getQualifiedName(),
+			is("spoon.test.targeted.testclasses.Foo")
+		);
+		assertThat(elements.get(0).getExecutable().getSimpleName(), is("inv"));
 		expectedThisAccess.setType(expectedType);
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("this.inv()"), elements.get(1));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(fooTypeAccess).result("spoon.test.targeted.testclasses.Foo.staticMethod()"), elements.get(2));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(fooTypeAccess).result("spoon.test.targeted.testclasses.Foo.staticMethod()"), elements.get(3));
 		expectedSuperThisAccess.setType(expectedInnerClass);
-		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedSuperClassType).target(expectedSuperThisAccess).result("superMethod()"), elements.get(4));
+		assertThat(elements.get(4).getTarget().isImplicit(), is(true));
+		assertThat(elements.get(4).getTarget(), is(instanceOf(CtThisAccess.class)));
+		assertThat(
+			((CtTypeAccess<?>) ((CtThisAccess<?>) elements.get(4).getTarget()).getTarget())
+				.getAccessedType()
+				.getQualifiedName(),
+			is("spoon.test.targeted.testclasses.Foo")
+		);
+		assertThat(elements.get(4).getExecutable().getSimpleName(), is("superMethod"));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedSuperClassType).target(expectedThisAccess).result("this.superMethod()"), elements.get(5));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("method()"), elements.get(6));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("this.method()"), elements.get(7));
@@ -484,14 +508,10 @@ public class TargetedExpressionTest {
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedFoo).target(expectedThisAccess).result("this.bar"), elements.get(0));
 	}
 
-	@Test
-	public void testUnqualifiedStaticMethodCallNoclasspath() {
+	@ModelTest("./src/test/resources/noclasspath/UnqualifiedStaticMethodCall.java")
+	public void testUnqualifiedStaticMethodCallNoclasspath(CtModel model) {
 		// contract: If a static method of some other type is accessed without qualification, any qualification attached
 		// to it must be implicit. See #3370 for details
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/UnqualifiedStaticMethodCall.java");
-		launcher.getEnvironment().setNoClasspath(true);
-		CtModel model = launcher.buildModel();
 		List<CtTypeAccess<?>> typeAccesses = model.getElements(e -> e.getAccessedType().getSimpleName().equals("SomeClass"));
 
 		assertEquals(1, typeAccesses.size(), "There should only be one reference to SomeClass, check the resource!");
@@ -521,6 +541,33 @@ public class TargetedExpressionTest {
 		final CtTypeReference<Object> thirdExpectedInner = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$4InnerSubscriber");
 		expectedThisAccess = type.getFactory().Code().createThisAccess(thirdExpectedInner);
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(thirdExpectedInner).target(expectedThisAccess).type(CtFieldWrite.class).result("this.index").isLocal(), elements.get(2));
+	}
+
+	@Test
+	void testUnqualifiedSuperFieldAccess() {
+		// contract: Unqualified super field accesses are modeled by an implicit CtSuperAccess
+		Launcher launcher = new Launcher();
+
+		launcher.getEnvironment().setComplianceLevel(17);
+		launcher.addInputResource(new VirtualFile(
+			"class A {\n" +
+			"    int a;\n" +
+			"}\n" +
+			"\n" +
+			"class B extends A {\n" +
+			"    void foo() {\n" +
+			"        super.a = a;\n" +
+			"    }\n" +
+			"}\n"
+		));
+
+		CtModel ctModel = launcher.buildModel();
+
+		CtFieldRead<?> read = ctModel.getElements(new TypeFilter<>(CtFieldRead.class)).get(0);
+		assertTrue(read.getTarget() instanceof CtSuperAccess<?>, "Target was no super access");
+		assertTrue(read.getTarget().isImplicit(), "super target was not implicit");
+		assertEquals("A", read.getTarget().getType().getQualifiedName());
+		assertEquals(read.toString(), "a", "super target was still printed");
 	}
 
 	private void assertEqualsFieldAccess(ExpectedTargetedExpression expected, CtFieldAccess<?> fieldAccess) {

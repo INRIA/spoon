@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.testing.utils;
 
@@ -26,7 +26,9 @@ public final class ModelUtils {
 	}
 
 	public static Factory createFactory() {
-		return new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
+		StandardEnvironment environment = new StandardEnvironment();
+		environment.setComplianceLevel(17);
+		return new FactoryImpl(new DefaultCoreFactory(), environment);
 	}
 
 	/** Utility method for testing: creates the model of `packageName` from src/test/java and returns the CtType corresponding to `className` */

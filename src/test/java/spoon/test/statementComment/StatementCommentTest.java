@@ -38,10 +38,8 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.support.reflect.code.CtCatchImpl;
-import spoon.testing.utils.LineSeperatorExtension;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.Assert.assertEquals;
+import spoon.testing.utils.LineSeparatorExtension;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StatementCommentTest {
 	String EOL = "\n";
@@ -91,7 +89,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testBlockStatementWithinBody(){
 		// contract: test a CtBlock within body is commented out as a block comment
 		Launcher launcher = setUpTest();
@@ -108,7 +106,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testMethodBodyEmptyStatement(){
 		// contract: test that a CtBlock representing empty method body doesn't change anything
 		Launcher launcher = setUpTest();
@@ -120,7 +118,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testMethodBodyNonEmptyStatement(){
 		// contract: test CtBlock representing method body is commented out by commenting all contained statements individually
 		Launcher launcher = setUpTest();
@@ -175,7 +173,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testIfStatement(){
 		// contract: test commenting of if statement
 		Launcher launcher = setUpTest();
@@ -208,7 +206,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testLoopStatement(){
 		// contract: test commenting of loop statement
 		Launcher launcher = setUpTest();
@@ -224,7 +222,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testSwitchStatement(){
 		// contract: test commenting of switch statement
 		Launcher launcher = setUpTest();
@@ -245,7 +243,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testSynchronousStatement(){
 		// contract: test commenting of synchronous statement
 		Launcher launcher = setUpTest();
@@ -261,7 +259,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testTryStatement(){
 		// contract: test commenting of try-catch statement
 		Launcher launcher = setUpTest();

@@ -16,15 +16,15 @@
  */
 package spoon.test.field;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,16 +35,19 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.field.testclasses.A;
 import spoon.test.field.testclasses.AddFieldAtTop;
 import spoon.test.field.testclasses.BaseClass;
-import spoon.testing.utils.LineSeperatorExtension;
+import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelTest;
 
 public class FieldTest {
@@ -95,9 +98,9 @@ public class FieldTest {
 
 		assertEquals(1, aClass.getFields().size());
 
-		final CtField<String> generated = aClass.getFactory().Field().create(null, new HashSet<>(), aClass.getFactory().Type().STRING, "generated");
+		final CtField<String> generated = aClass.getFactory().Field().create(null, new HashSet<>(), aClass.getFactory().Type().stringType(), "generated");
 		aClass.addFieldAtTop(generated);
-		final CtField<String> generated2 = aClass.getFactory().Field().create(null, new HashSet<>(), aClass.getFactory().Type().STRING, "generated2");
+		final CtField<String> generated2 = aClass.getFactory().Field().create(null, new HashSet<>(), aClass.getFactory().Type().stringType(), "generated2");
 		aClass.addFieldAtTop(generated2);
 
 		assertEquals(3, aClass.getFields().size());
@@ -123,7 +126,7 @@ public class FieldTest {
 	private CtField<Integer> createField(Factory factory, HashSet<ModifierKind> modifiers, String name) {
 		final CtField<Integer> first = factory.Core().createField();
 		first.setModifiers(modifiers);
-		first.setType(factory.Type().INTEGER_PRIMITIVE);
+		first.setType(factory.Type().integerPrimitiveType());
 		first.setSimpleName(name);
 		return first;
 	}
@@ -186,7 +189,7 @@ public class FieldTest {
 	}
 
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void bugAfterRefactoringImports() {
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
@@ -213,9 +216,82 @@ public class FieldTest {
 				"import java.io.File;\n" +
 				"class A {\n" +
 				"    public static final String separator = File.separator;\n" +
-				"}", klass.toStringWithImports());
+				"}\n", klass.toStringWithImports());
 
 	}
 
+	@ModelTest(
+					"./src/test/java/spoon/test/field/testclasses/AnnoWithConst.java"
+	)
+	void testGetActualFieldForConstantInAnnotation(CtModel ctModel) {
+		// contract: CtFieldReference#getActualField() returns the field for constants in annotations
+		CtFieldReference<?> access = ctModel.getElements(new TypeFilter<CtFieldReference<?>>(CtFieldReference.class))
+						.stream()
+						.filter(field -> field.getSimpleName().equals("VALUE"))
+						.findFirst()
+						.orElseGet(() -> fail("No reference to VALUE found"));
+		assertNotNull(assertDoesNotThrow(access::getActualField));
+	}
+
+	@Test
+	void testArrayLengthDeclaringType() {
+		// contract: the "length" field of arrays has a proper declaring type
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile("public class Example {\n" +
+																							"    static final String[] field;\n" +
+																							"    public static void main(String[] args) {\n" +
+																							"        int i = args.length;\n" +
+																							"        int j = field.length;\n" +
+																							"    }\n" +
+																							"}\n"));
+		CtModel ctModel = launcher.buildModel();
+		List<CtFieldReference<?>> elements = ctModel.getElements(new TypeFilter<CtFieldReference<?>>(CtFieldReference.class))
+						.stream()
+						.filter(field -> field.getSimpleName().equals("length"))
+						.collect(Collectors.toList());
+		CtType<?> component = launcher.getFactory().Type().get(String.class);
+		CtTypeReference<?> arrayType = launcher.getFactory().Type().createArrayReference(component);
+
+		assertEquals(2, elements.size(), "Unexpected number of .length references");
+
+		assertEquals(arrayType, elements.get(0).getDeclaringType());
+		assertEquals(arrayType, elements.get(1).getDeclaringType());
+	}
+
+	@Test
+	void testArrayLengthModifiers() {
+		// contract: the "length" field in arrays has exactly the modifiers "public" and "final"
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile("public class Example {\n" +
+						"    public static void main(String[] args) {\n" +
+						"        int i = args.length;\n" +
+						"    }\n" +
+						"}\n"));
+		CtModel ctModel = launcher.buildModel();
+		List<CtFieldReference<?>> elements = ctModel.getElements(new TypeFilter<>(CtFieldReference.class));
+		assertEquals(1, elements.size());
+		assertEquals(Set.of(ModifierKind.PUBLIC, ModifierKind.FINAL), elements.get(0).getModifiers());
+	}
+
+	@Test
+	void testArrayLengthDeclaringTypeNested() {
+		// contract: the declaring type of a "length" access on arrays is set even when nested
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile(
+						"public class Example {\n" +
+						"	public String[] array = new String[4];\n" +
+						"	public static void main(String[] args) {\n" +
+						"		Example other = new Example();\n" +
+						"		int i = other.array.length;\n" +
+						"	}\n" +
+						"}"
+		));
+
+		CtModel ctModel = launcher.buildModel();
+		List<CtFieldReference<?>> elements = ctModel.getElements(new TypeFilter<>(CtFieldReference.class));
+		assertEquals(2, elements.size());
+		CtArrayTypeReference<?> stringArrayRef = launcher.getFactory().createArrayReference("java.lang.String");
+		assertEquals(stringArrayRef, elements.get(1).getDeclaringType());
+	}
 
 }

@@ -308,7 +308,7 @@ public class APITest {
 
 		final CtMethod aMethod = spoon.getFactory().Core().createMethod();
 		aMethod.setSimpleName("foo");
-		aMethod.setType(spoon.getFactory().Type().BOOLEAN_PRIMITIVE);
+		aMethod.setType(spoon.getFactory().Type().booleanPrimitiveType());
 		aMethod.setBody(spoon.getFactory().Core().createBlock());
 		aClass.addMethod(aMethod);
 
@@ -692,7 +692,7 @@ public class APITest {
 
 	@Test
 	public void testOutputWithNoOutputProduceNoFolder() {
-		// contract: when using "NO_OUTPUT" output type, no output folder shoud be created
+		// contract: when using "NO_OUTPUT" output type, no output folder should be created
 		String destPath = "./target/nooutput_" + UUID.randomUUID().toString();
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");

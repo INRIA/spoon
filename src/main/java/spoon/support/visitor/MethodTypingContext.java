@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor;
 
@@ -15,6 +15,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -61,7 +62,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 			}
 			if (classTypingContext.getAdaptationScope() != declType) {
 				//the method is declared in different type. We have to adapt it to required classTypingContext
-				if (classTypingContext.isSubtypeOf(declType.getReference()) == false) {
+				if (!classTypingContext.isSubtypeOf(declType.getReference())) {
 					throw new SpoonException("Cannot create MethodTypingContext for method declared in different ClassTypingContext");
 				}
 				/*
@@ -170,7 +171,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 	 *  or null if `typeParam` cannot be adapted to target `scope`
 	 */
 	@Override
-	protected CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam) {
+	protected @Nullable CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam) {
 		if (typeParam == null) {
 			return null;
 		}
@@ -180,11 +181,11 @@ public class MethodTypingContext extends AbstractTypingContext {
 		}
 		//only method to method or constructor to constructor can be adapted
 		if (typeParamDeclarer instanceof CtMethod<?>) {
-			if ((scopeMethod instanceof CtMethod<?>) == false) {
+			if (!(scopeMethod instanceof CtMethod)) {
 				return null;
 			}
 		} else if (typeParamDeclarer instanceof CtConstructor<?>) {
-			if ((scopeMethod instanceof CtConstructor<?>) == false) {
+			if (!(scopeMethod instanceof CtConstructor)) {
 				return null;
 			}
 		} else {
@@ -198,7 +199,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 		 * 2) Where A1, ..., An are the type parameters of M and B1, ..., Bn are the type parameters of N, let T=[B1:=A1, ..., Bn:=An].
 		 * Then, for all i (1 ≤ i ≤ n), the bound of Ai is the same type as T applied to the bound of Bi.
 		 */
-		if (hasSameMethodFormalTypeParameters(typeParamDeclarer) == false) {
+		if (!hasSameMethodFormalTypeParameters(typeParamDeclarer)) {
 			//the methods formal type parameters are different. We cannot adapt such parameters
 			return null;
 		}
@@ -232,7 +233,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 			//the methods has same count of formal parameters
 			//check that bounds of formal type parameters are same after adapting
 			for (int i = 0; i < thisTypeParameters.size(); i++) {
-				if (isSameMethodFormalTypeParameter(thisTypeParameters.get(i), thatTypeParameters.get(i)) == false) {
+				if (!isSameMethodFormalTypeParameter(thisTypeParameters.get(i), thatTypeParameters.get(i))) {
 					return false;
 				}
 			}
@@ -260,7 +261,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 	private static CtTypeReference<?> getBound(CtTypeParameter typeParam) {
 		CtTypeReference<?> bound = typeParam.getSuperclass();
 		if (bound == null) {
-			bound = typeParam.getFactory().Type().OBJECT;
+			bound = typeParam.getFactory().Type().objectType();
 		}
 		return bound;
 	}

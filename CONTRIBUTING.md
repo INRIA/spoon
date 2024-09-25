@@ -17,16 +17,17 @@ How to become integrator? The integrators are the developers who have made signi
 
 Current integrators:
 
-- Simon Larsén [@slarse](https://github.com/slarse/)
-    - Email: slarse@slar.se
-    - GPG fingerprint: [70345F27028C791C8D82D3DE1CEF06827CEA5C29](https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x70345F27028C791C8D82D3DE1CEF06827CEA5C29)
 - Nicolas Harrand [@nharrand](https://github.com/nharrand/)
     - Email: nicolas.harrand@gmail.com
 - Martin Monperrus [@monperrus](https://github.com/monperrus/)
     - Email: martin.monperrus@gnieh.org
-    - GPG fingerprint: [074F73B36D8DD649B132BAC18035014A2B7BFA92](https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x074F73B36D8DD649B132BAC18035014A2B7BFA92)
+    - GPG fingerprint: [AF7B251DA8126C30896FAFF77D398AD45AEEEC93](https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xAF7B251DA8126C30896FAFF77D398AD45AEEEC93)
 - Martin Wittlinger [@MartinWitt](https://github.com/MartinWitt)
     - Email: wittlinger.martin@gmail.com
+- Hannes Greule [@SirYwell](https://github.com/SirYwell)
+    - Email: hannesgreule@outlook.de
+- [@I-Al-Istannen](https://github.com/I-Al-Istannen)
+    - Email: me@ialistannen.de
 
 Guidelines for pull requests
 ----------------------------
@@ -66,7 +67,7 @@ Guidelines for feature pull-requests:
 Other kinds of pull-requests:
 
 1. Pull requests with passing test cases only are welcome, they specify previously unspecified behavior and are prefixed by "test:".
-1. Pull requests with failing test cases only are welcome, they reproduce bugs and are very useful for maintainers to fix them. You can prevent failing the CI with adding the annotation `@GitHubIssue(issueNumber = <your-issue-number>, fixed = false)`. If you fix a test case with such an annotation mark the test case as fixed with `@GitHubIssue(issueNumber = <your-issue-number>, fixed = true)`.
+2. Pull requests with failing test cases only are welcome, they reproduce bugs and are very useful for maintainers to fix them. You can prevent failing the CI with adding the annotation `@GitHubIssue(issueNumber = <your-issue-number>, fixed = false)`. If you fix a test case with such an annotation mark the test case as fixed with `@GitHubIssue(issueNumber = <your-issue-number>, fixed = true)`.
 1. "Chore" pull-requests modify the CI setup.
 1. If there is no activity on an issue or on a pull request for 3 months it's closed.
 
@@ -79,3 +80,22 @@ The public API is composed of all public classes and methods, except those for w
 * located in a package called `internal`, including all subpackages, that is `**.internal.**`
 
 Classes annotated with `@Experimental` are planned to in the public API in the future, but are still considered unstable and can change in non-backward compatble manner.
+
+Submodule Policy
+----------
+
+By default, we favor adding new functionalities in spoon-core, in order to have the easiest possible integration for clients. We commit to maintain the code in spoon-core.
+
+We create submodules when
+
+1) the functionality would bloat the spoon-core binary too much
+
+OR
+
+2) the functionality is too experimental / too unstable to meet the high quality standard of spoon-core
+
+OR
+
+3) the integrator team welcomes the contribution, but cannot commit to maintaining it.
+
+Submodules are not published to Maven central, and so need to be built from source.

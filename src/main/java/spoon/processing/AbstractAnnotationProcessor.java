@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.processing;
 
@@ -124,7 +124,7 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	public final boolean isToBeProcessed(E element) {
 		if ((element != null) && (element.getAnnotations() != null)) {
 			for (CtAnnotation<? extends Annotation> a : element.getAnnotations()) {
-				if (shoudBeProcessed(a)) {
+				if (shouldBeProcessed(a)) {
 					return true;
 				}
 			}
@@ -137,13 +137,13 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	@SuppressWarnings("unchecked")
 	public final void process(E element) {
 		for (CtAnnotation<? extends Annotation> annotation : new ArrayList<>(element.getAnnotations())) {
-			if (shoudBeProcessed(annotation)) {
+			if (shouldBeProcessed(annotation)) {
 				try {
 					process((A) annotation.getActualAnnotation(), element);
 				} catch (Exception e) {
 					Launcher.LOGGER.error(e.getMessage(), e);
 				}
-				if (shoudBeConsumed(annotation)) {
+				if (shouldBeConsumed(annotation)) {
 					element.removeAnnotation(annotation);
 				}
 			}
@@ -154,13 +154,21 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	 * {@inheritDoc}
 	 *
 	 * Removes all annotations A on elements E.
+	 *
+	 * @deprecated use {@link #shouldBeConsumed(CtAnnotation)} instead
 	 */
+	@Deprecated
 	@Override
 	public boolean shoudBeConsumed(CtAnnotation<? extends Annotation> annotation) {
 		return consumedAnnotationTypes.containsKey(annotation.getAnnotationType().getQualifiedName());
 	}
 
-	private boolean shoudBeProcessed(CtAnnotation<? extends Annotation> annotation) {
+	@Override
+	public boolean shouldBeConsumed(CtAnnotation<? extends Annotation> annotation) {
+		return consumedAnnotationTypes.containsKey(annotation.getAnnotationType().getQualifiedName());
+	}
+
+	private boolean shouldBeProcessed(CtAnnotation<? extends Annotation> annotation) {
 		return processedAnnotationTypes.containsKey(annotation.getAnnotationType().getQualifiedName());
 	}
 

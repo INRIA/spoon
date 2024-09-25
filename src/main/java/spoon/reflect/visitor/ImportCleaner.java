@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor;
 
@@ -89,7 +89,12 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 		}
 
 		if (targetedExpression instanceof CtFieldRead) {
-			context.addImport(((CtFieldRead<?>) targetedExpression).getVariable());
+			// Type can be null in no-classpath => Just add a computed import to keep existing ones alive
+			// Only add an import for the field if the type of the target is implicit, to prevent adding imports
+			// for fully-qualified field accesses.
+			if (target.getType() == null || target.getType().isImplicit()) {
+				context.addImport(((CtFieldRead<?>) targetedExpression).getVariable());
+			}
 		}
 
 		if (target.isImplicit()) {
@@ -198,8 +203,10 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			if (packageRef == null) {
 				return;
 			}
-			if ("java.lang".equals(packageRef.getQualifiedName())) {
-				//java.lang is always imported implicitly. Ignore it
+			if ("java.lang".equals(packageRef.getQualifiedName())
+				&& !isStaticExecutableRef(ref)
+				&& !isStaticFieldRef(ref)) {
+				//java.lang is always imported implicitly. Ignore it, unless it is a static field or method import
 				return;
 			}
 			if (ref instanceof CtTypeReference && Objects.equals(packageQName, packageRef.getQualifiedName()) && !isStaticExecutableRef(ref)) {
@@ -220,10 +227,22 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 		}
 
 		private boolean isReferencePresentInImports(CtReference ref) {
+			boolean found = compilationUnit.getImports()
+				.stream()
+				.anyMatch(ctImport -> ctImport.getReference() != null
+					&& isEqualAfterSkippingRole(ctImport.getReference(), ref, CtRole.TYPE_ARGUMENT));
+
+			if (found) {
+				return true;
+			}
+			if (!(ref instanceof CtFieldReference)) {
+				return false;
+			}
 			return compilationUnit.getImports()
-					.stream()
-					.anyMatch(ctImport -> ctImport.getReference() != null
-							&& isEqualAfterSkippingRole(ctImport.getReference(), ref, CtRole.TYPE_ARGUMENT));
+				.stream()
+				.filter(it -> it.getReference() instanceof CtTypeMemberWildcardImportReference)
+				.map(it -> (CtTypeMemberWildcardImportReference) it.getReference())
+				.anyMatch(it -> it.getTypeReference().equals(((CtFieldReference<?>) ref).getDeclaringType()));
 		}
 
 		/**
@@ -470,5 +489,9 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 	private static boolean isStaticExecutableRef(CtElement element) {
 		return element instanceof CtExecutableReference<?>
 				&& ((CtExecutableReference<?>) element).isStatic();
+	}
+
+	private static boolean isStaticFieldRef(CtReference ref) {
+		return ref instanceof CtFieldReference<?> && ((CtFieldReference<?>) ref).isStatic();
 	}
 }

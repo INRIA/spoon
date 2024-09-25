@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.compiler.jdt;
 
@@ -23,6 +23,7 @@ import spoon.reflect.reference.CtReference;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -83,28 +84,35 @@ class JDTImportBuilder {
 					}
 				}
 			} else {
+				// A static import can be either a static field, a static method or a static type
+				// It is possible that this method will add duplicate imports
+				// Logically, if `foo` is a static method and `foo` is also a static field, then both should be
+				// imported with `import static example.Foo.foo;` repeated twice.
 				int lastDot = importName.lastIndexOf('.');
 				String className = importName.substring(0, lastDot);
-				String methodOrFieldName = importName.substring(lastDot + 1);
+				String methodOrFieldOrTypeName = importName.substring(lastDot + 1);
 
-				CtType klass = this.getOrLoadClass(className);
+				CtType<?> klass = this.getOrLoadClass(className);
 				if (klass != null) {
-					if ("*".equals(methodOrFieldName)) {
+					if (Objects.equals(methodOrFieldOrTypeName, "*")) {
 						this.imports.add(createImportWithPosition(factory.Type().createTypeMemberWildcardImportReference(klass.getReference()), importRef));
 					} else {
-						CtNamedElement methodOrField = null;
+						CtNamedElement methodOrFieldOrType;
 
-						methodOrField = klass.getField(methodOrFieldName);
-
-						if (methodOrField == null) {
-							List<CtMethod> methods = klass.getMethodsByName(methodOrFieldName);
-							if (methods.size() > 0) {
-								methodOrField = methods.get(0);
-							}
+						methodOrFieldOrType = klass.getField(methodOrFieldOrTypeName);
+						if (methodOrFieldOrType != null) {
+							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
 						}
 
-						if (methodOrField != null) {
-							this.imports.add(createImportWithPosition(methodOrField.getReference(), importRef));
+						List<CtMethod<?>> methods = klass.getMethodsByName(methodOrFieldOrTypeName);
+						if (methods.size() > 0) {
+							methodOrFieldOrType = methods.get(0);
+							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
+						}
+
+						methodOrFieldOrType = klass.getNestedType(methodOrFieldOrTypeName);
+						if (methodOrFieldOrType != null) {
+							this.imports.add(createImportWithPosition(methodOrFieldOrType.getReference(), importRef));
 						}
 					}
 				} else {

@@ -1,12 +1,13 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.LiteralBase;
@@ -43,13 +44,19 @@ abstract class LiteralHelper {
 	}
 
 	private static String getBasedString(Float value, LiteralBase base) {
+		if (value.isInfinite() || value.isNaN()) {
+			throw new SpoonException("Can not convert " + value + " to a float literal.");
+		}
 		if (base == LiteralBase.HEXADECIMAL) {
 			return Float.toHexString(value) + "F";
 		}
-		return Float.toString(value) + "F";
+		return value + "F";
 	}
 
 	private static String getBasedString(Double value, LiteralBase base) {
+		if (value.isInfinite() || value.isNaN()) {
+			throw new SpoonException("Can not convert " + value + " to a double literal.");
+		}
 		if (base == LiteralBase.HEXADECIMAL) {
 			return Double.toHexString(value);
 		}
@@ -61,10 +68,7 @@ abstract class LiteralHelper {
 	 * @return source code representation of the literal
 	 */
 	public static String getTextBlockToken(CtTextBlock literal) {
-		String token = "\"\"\"\n"
-				+ literal.getValue().replace("\\", "\\\\")
-				+ "\"\"\"";
-		return token;
+		return "\"\"\"\n" + literal.getValue().replace("\\", "\\\\") + "\"\"\"";
 	}
 
 	/**
@@ -95,7 +99,7 @@ abstract class LiteralHelper {
 			}
 			StringBuilder sb = new StringBuilder(10);
 			sb.append('\'');
-			appendCharLiteral(sb, (Character) literal.getValue(), mayContainsSpecialCharacter);
+			appendCharLiteral(sb, (Character) literal.getValue(), mayContainsSpecialCharacter, false);
 			sb.append('\'');
 			return sb.toString();
 		} else if (literal.getValue() instanceof String) {
@@ -116,7 +120,7 @@ abstract class LiteralHelper {
 		}
 	}
 
-	static void appendCharLiteral(StringBuilder sb, Character c, boolean mayContainsSpecialCharacter) {
+	static void appendCharLiteral(StringBuilder sb, Character c, boolean mayContainsSpecialCharacter, boolean isInsideString) {
 		if (!mayContainsSpecialCharacter) {
 			sb.append(c);
 		} else {
@@ -140,7 +144,11 @@ abstract class LiteralHelper {
 					sb.append("\\\""); //$NON-NLS-1$
 					break;
 				case '\'':
-					sb.append("\\'"); //$NON-NLS-1$
+					if (isInsideString) {
+						sb.append("'"); //$NON-NLS-1$
+					} else {
+						sb.append("\\'"); //$NON-NLS-1$
+					}
 					break;
 				case '\\': // take care not to display the escape as a potential
 					// real char
@@ -155,12 +163,11 @@ abstract class LiteralHelper {
 	static String getStringLiteral(String value, boolean mayContainsSpecialCharacter) {
 		if (!mayContainsSpecialCharacter) {
 			return value;
-		} else {
-			StringBuilder sb = new StringBuilder(value.length() * 2);
-			for (int i = 0; i < value.length(); i++) {
-				appendCharLiteral(sb, value.charAt(i), mayContainsSpecialCharacter);
-			}
-			return sb.toString();
 		}
+		StringBuilder sb = new StringBuilder(value.length() * 2);
+		for (int i = 0; i < value.length(); i++) {
+			appendCharLiteral(sb, value.charAt(i), true, true);
+		}
+		return sb.toString();
 	}
 }

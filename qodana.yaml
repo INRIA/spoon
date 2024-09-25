@@ -1,0 +1,39 @@
+profile:
+  name: qodana.recommended
+version: "1.0"
+include:
+  - name: Anonymous2MethodRef
+  - name: AssignmentToCatchBlockParameter
+  - name: AssignmentToLambdaParameter
+  - name: AssignmentToMethodParameter
+  # disabled as it does not support nullability annotations
+  #- name: AssignmentToNull
+  - name: Convert2Lambda
+  - name: DoubleBraceInitialization
+  - name: EqualsAndHashcode
+  - name: JavaLangImport
+  # Disabled for annotations applied to type
+  #- name: MissortedModifiers
+  - name: NestedAssignment
+  - name: NonShortCircuitBoolean
+  - name: RedundantFieldInitialization
+  - name: RedundantSuppression
+  - name: Reformat
+  - name: ReturnNull
+  - name: SamePackageImport
+  - name: StringEquality
+  - name: UnnecessaryBoxing
+  - name: UnnecessaryLocalVariable
+  - name: UnnecessaryUnboxing
+  - name: UNUSED_IMPORT
+  - name: PointlessBooleanExpression 
+exclude:
+  - name: UseOfClone
+  # Do not check generated code
+  - name: All
+    paths:
+      - src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java
+      - src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java
+      - src/main/java/spoon/support/visitor/clone/CloneBuilder.java
+      - src/main/java/spoon/support/visitor/clone/CloneVisitor.java
+      - src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java

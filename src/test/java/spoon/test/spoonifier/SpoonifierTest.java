@@ -229,6 +229,7 @@ public class SpoonifierTest {
 				"\t\t\t\tList ctBlock0Statements = new ArrayList();\n" +
 				"\t\t\t\tctBlock0Statements.add(ctInvocation0);\n" +
 				"\t\t\t\t\tCtExecutableReference ctExecutableReference0 = factory.createExecutableReference();\n" +
+				"\t\t\t\t\tctExecutableReference0.setImplicit(true);\n" +
 				"\t\t\t\t\tctExecutableReference0.setSimpleName(\"<init>\");\n" +
 				"\t\t\t\t\tctInvocation0.setValueByRole(CtRole.EXECUTABLE_REF, ctExecutableReference0);\n" +
 				"\t\t\t\t\t\tctExecutableReference0.setValueByRole(CtRole.DECLARING_TYPE, factory.Type().createReference(\"java.lang.Object\"));\n" +

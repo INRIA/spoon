@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.adaption;
 
@@ -69,12 +69,10 @@ class DeclarationNode {
 
 		// We try to find a glue node below us to delegate to. Glue nodes do the mapping so we can just
 		// pass it on unchanged.
-		Optional<GlueNode> glueNode = children.stream()
-			.filter(it -> it.isInducedBy(this.inducedBy))
-			.findFirst();
-
-		if (glueNode.isPresent()) {
-			return glueNode.get().resolveTypeParameter(reference);
+		if (!children.isEmpty()) {
+			// We pick a random child. Well-typed programs will converge to the same solution, no matter
+			// which path we pick.
+			return children.iterator().next().resolveTypeParameter(reference);
 		}
 
 		// If we have no glue node, we need to actually resolve the type parameter as we reached the

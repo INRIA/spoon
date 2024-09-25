@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.sniper;
 
@@ -374,7 +374,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	 */
 	private SourceFragmentPrinter detectCurrentContext(PrinterEvent event) {
 		SourceFragmentPrinter sfc;
-		while ((sfc = sourceFragmentContextStack.peek()) != null && sfc.knowsHowToPrint(event) == false) {
+		while ((sfc = sourceFragmentContextStack.peek()) != null && !sfc.knowsHowToPrint(event)) {
 			//this context handles only subset of roles, which just finished
 			//leave it and return back to parent context
 			sfc = popSourceFragmentContext();

@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.metamodel;
 
@@ -18,6 +18,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.jspecify.annotations.Nullable;
+
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.annotations.PropertyGetter;
@@ -30,6 +33,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
@@ -39,9 +43,9 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.adaption.TypeAdaptor;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.compiler.FileSystemFolder;
 
 /**
@@ -74,6 +78,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtBreak.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtCFlowBreak.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtCase.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtCasePattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtCatch.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtCatchVariable.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtCodeElement.class));
@@ -106,6 +111,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtOperatorAssignment.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtPattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtRHSReceiver.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtRecordPattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtResource.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtReturn.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtStatement.class));
@@ -122,6 +128,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtTypeAccess.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtTypePattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtUnaryOperator.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtUnnamedPattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtVariableAccess.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtVariableRead.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtVariableWrite.class));
@@ -190,6 +197,7 @@ public class Metamodel {
 		result.add(factory.Type().get(CtModuleDirective.class));
 		result.add(factory.Type().get(CtRecordComponent.class));
 		result.add(factory.Type().get(CtRecord.class));
+		result.add(factory.Type().get(CtReceiverParameter.class));
 		return result;
 	}
 
@@ -346,7 +354,7 @@ public class Metamodel {
 	 * @param iface the interface of spoon model element
 	 * @return {@link CtClass} of Spoon model which implements the spoon model interface. null if there is no implementation.
 	 */
-	public static CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
+	public static @Nullable CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
 		String impl = replaceApiToImplPackage(iface.getQualifiedName()) + CLASS_SUFFIX;
 		return (CtClass<?>) getType(impl, iface);
 	}
@@ -355,9 +363,9 @@ public class Metamodel {
 	 * @param impl the implementation class of a Spoon element
 	 * @return {@link CtInterface} of Spoon model which represents API of the spoon model class. null if there is no implementation.
 	 */
-	public static CtInterface<?> getInterfaceOfImplementation(CtClass<?> impl) {
+	public static @Nullable CtInterface<?> getInterfaceOfImplementation(CtClass<?> impl) {
 		String iface = impl.getQualifiedName();
-		if (iface.endsWith(CLASS_SUFFIX) == false || iface.startsWith("spoon.support.reflect.") == false) {
+		if (!iface.endsWith(CLASS_SUFFIX) || !iface.startsWith("spoon.support.reflect.")) {
 			throw new SpoonException("Unexpected spoon model implementation class: " + impl.getQualifiedName());
 		}
 		iface = iface.substring(0, iface.length() - CLASS_SUFFIX.length());
@@ -397,7 +405,7 @@ public class Metamodel {
 	private static final String modelApiImplPackage = "spoon.support.reflect";
 
 	private static String replaceApiToImplPackage(String modelInterfaceQName) {
-		if (modelInterfaceQName.startsWith(modelApiPackage) == false) {
+		if (!modelInterfaceQName.startsWith(modelApiPackage)) {
 			throw new SpoonException("The qualified name " + modelInterfaceQName + " doesn't belong to Spoon model API package: " + modelApiPackage);
 		}
 		return modelApiImplPackage + modelInterfaceQName.substring(modelApiPackage.length());
@@ -407,6 +415,7 @@ public class Metamodel {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.getEnvironment().setComplianceLevel(17);
 //		// Spoon model interfaces
 		Arrays.asList("spoon/reflect/code",
 				"spoon/reflect/declaration",

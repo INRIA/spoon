@@ -123,7 +123,7 @@ public class ConstructorTest {
 
 	@Test
 	public void testTypeAnnotationOnExceptionDeclaredInConstructors() {
-		final CtConstructor<?> aConstructor = aClass.getConstructor(factory.Type().OBJECT);
+		final CtConstructor<?> aConstructor = aClass.getConstructor(factory.Type().objectType());
 
 		assertEquals(1, aConstructor.getThrownTypes().size());
 		Set<CtTypeReference<? extends Throwable>> thrownTypes = aConstructor.getThrownTypes();
@@ -135,7 +135,7 @@ public class ConstructorTest {
 
 	@Test
 	public void testTypeAnnotationWithConstructorsOnFormalType() {
-		final CtConstructor<?> aConstructor = aClass.getConstructor(factory.Type().OBJECT);
+		final CtConstructor<?> aConstructor = aClass.getConstructor(factory.Type().objectType());
 
 		assertEquals(1, aConstructor.getFormalCtTypeParameters().size());
 

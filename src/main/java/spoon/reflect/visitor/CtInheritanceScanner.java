@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor;
 
@@ -21,6 +21,7 @@ import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeElement;
@@ -52,6 +53,7 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtRHSReceiver;
+import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
@@ -69,6 +71,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtUnnamedPattern;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -95,6 +98,7 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtModuleRequirement;
@@ -945,6 +949,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVariableAccess(e);
 		scanCtExpression(e);
 		scanCtCodeElement(e);
+		scanCtResource(e);
 		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
@@ -1102,5 +1107,40 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtShadowable(recordComponent);
 	}
 
+	@Override
+	public void visitCtCasePattern(CtCasePattern casePattern) {
+		scanCtExpression(casePattern);
+		scanCtTypedElement(casePattern);
+		scanCtCodeElement(casePattern);
+		scanCtElement(casePattern);
+		scanCtVisitable(casePattern);
+	}
 
+	@Override
+	public void visitCtRecordPattern(CtRecordPattern pattern) {
+		scanCtPattern(pattern);
+		scanCtExpression(pattern);
+		scanCtTypedElement(pattern);
+		scanCtCodeElement(pattern);
+		scanCtElement(pattern);
+		scanCtVisitable(pattern);
+	}
+
+	@Override
+	public void visitCtReceiverParameter(CtReceiverParameter e) {
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
+		scanCtShadowable(e);
+	}
+
+	@Override
+	public void visitCtUnnamedPattern(CtUnnamedPattern pattern) {
+		scanCtPattern(pattern);
+		scanCtExpression(pattern);
+		scanCtTypedElement(pattern);
+		scanCtCodeElement(pattern);
+		scanCtElement(pattern);
+		scanCtVisitable(pattern);
+	}
 }

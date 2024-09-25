@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.declaration;
 
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtMethod}.
@@ -64,7 +65,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public <C extends CtTypedElement> C setType(CtTypeReference type) {
 		if (type != null) {
 			type.setParent(this);
 		}
@@ -223,19 +224,18 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		});
 
 		// now removing the intermediate methods for which there exists a definition upper in the hierarchy
-		List<CtMethod<?>> finalMeths = new ArrayList<>(s);
-		for (CtMethod m1 : s) {
-			boolean m1IsIntermediate = false;
-			for (CtMethod m2 : s) {
-				if (context.isOverriding(m1, m2)) {
-					m1IsIntermediate = true;
-				}
-			}
-			if (!m1IsIntermediate) {
-				finalMeths.add(m1);
-			}
-		}
-		return finalMeths;
+		return s.stream()
+				.filter(ctMethod ->  isTopDefinition(ctMethod, s, context))
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Returns {@code true} if the {@code method} parameter is a top definition,
+	 * i.e. no other candidate overrides it.
+	 */
+	private boolean isTopDefinition(CtMethod<?> method, Collection<CtMethod<?>> allCandidates, TypeAdaptor context) {
+		return allCandidates.stream()
+				.noneMatch(candidate -> candidate != method && context.isOverriding(method, candidate));
 	}
 
 	@Override

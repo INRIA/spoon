@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.pattern;
 
@@ -41,7 +41,7 @@ public class Match {
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getMatchingElements(Class<T> clazz) {
 		for (Object object : matchingElements) {
-			if (object != null && clazz.isInstance(object) == false) {
+			if (object != null && !clazz.isInstance(object)) {
 				throw new SpoonException("Match contains a " + object.getClass() + " which cannot be cast to " + clazz);
 			}
 		}
@@ -77,7 +77,7 @@ public class Match {
 			throw new SpoonException("There is more then one match");
 		}
 		Object object = matchingElements.get(0);
-		if (object != null && clazz.isInstance(object) == false) {
+		if (object != null && !clazz.isInstance(object)) {
 			throw new SpoonException("Match contains a " + object.getClass() + " which cannot be cast to " + clazz);
 		}
 		return clazz.cast(object);

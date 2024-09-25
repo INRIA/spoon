@@ -28,6 +28,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
@@ -35,25 +36,34 @@ import spoon.metamodel.Metamodel;
 import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.CtModel;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtSuperAccess;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.adaption.TypeAdaptor;
+import spoon.testing.utils.ModelTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -62,14 +72,22 @@ import static spoon.metamodel.ConceptKind.ABSTRACT;
 
 public class SpoonArchitectureEnforcerTest {
 
+	private static CtModel spoonSrcMainModel;
+	private static Factory spoonSrcMainFactory;
+
+	@BeforeAll
+	static void beforeAll() {
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(11);
+		launcher.addInputResource("src/main/java/");
+		spoonSrcMainModel = launcher.buildModel();
+		spoonSrcMainFactory = launcher.getFactory();
+	}
+
 	@Test
 	public void statelessFactory() {
 		// the factories must be stateless
-		SpoonAPI spoon = new Launcher();
-		spoon.addInputResource("src/main/java/spoon/reflect/factory");
-		spoon.buildModel();
-
-		for (CtType t : spoon.getFactory().Package().getRootPackage().getElements(new AbstractFilter<CtType>() {
+		for (CtType t : spoonSrcMainFactory.Package().getRootPackage().getElements(new AbstractFilter<CtType>() {
 			@Override
 			public boolean matches(CtType element) {
 				return super.matches(element)
@@ -155,15 +173,9 @@ public class SpoonArchitectureEnforcerTest {
 	// we put them in the same test in order to only build the full model once
 	@Test
 	public void testSrcMainJava() {
-		Launcher spoon = new Launcher();
-		spoon.getEnvironment().setCommentEnabled(true);
-		spoon.addInputResource("src/main/java/");
-
 		// contract: all non-trivial public methods should be documented with proper API Javadoc
-		CtModel model = spoon.buildModel();
-
 		List<String> notDocumented = new ArrayList<>();
-		for (CtMethod method : spoon.getModel().getElements(new TypeFilter<>(CtMethod.class))) {
+		for (CtMethod method : spoonSrcMainModel.getElements(new TypeFilter<>(CtMethod.class))) {
 
 			// now we see whether this should be documented
 			if (method.hasModifier(ModifierKind.PUBLIC) // public methods should be documented
@@ -202,7 +214,7 @@ public class SpoonArchitectureEnforcerTest {
 		}
 
 		// contract: Spoon's code never uses TreeSet constructor, because they implicitly depend on Comparable (no static check, only dynamic checks)
-		List<CtConstructorCall> treeSetWithoutComparators = spoon.getFactory().Package().getRootPackage().filterChildren(new AbstractFilter<CtConstructorCall>() {
+		List<CtConstructorCall> treeSetWithoutComparators = spoonSrcMainFactory.Package().getRootPackage().filterChildren(new AbstractFilter<CtConstructorCall>() {
 			@Override
 			public boolean matches(CtConstructorCall element) {
 				return element.getType().getActualClass().equals(TreeSet.class) && element.getArguments().isEmpty();
@@ -211,9 +223,9 @@ public class SpoonArchitectureEnforcerTest {
 
 		assertEquals(0, treeSetWithoutComparators.size());
 		// contract: every private method in spoon must be called.
-		checkPrivateMethodInvocations(model);
+		checkPrivateMethodInvocations(spoonSrcMainModel);
 		// contract: every private field in spoons code is useful. Useful means it has a read.
-		checkFields(model);
+		checkFields(spoonSrcMainModel);
 
 	}
 
@@ -251,11 +263,7 @@ public class SpoonArchitectureEnforcerTest {
 		// reference: "By default, the Surefire Plugin will automatically include all test classes with the following wildcard patterns:"
 		// "**/Test*.java" and "**/*Test.java"
 		// http://maven.apache.org/surefire/maven-surefire-plugin/examples/inclusion-exclusion.html
-		SpoonAPI spoon = new Launcher();
-		spoon.addInputResource("src/test/java/");
-		spoon.buildModel();
-
-		for (CtMethod<?> meth : spoon.getModel().getElements(new TypeFilter<CtMethod>(CtMethod.class) {
+		for (CtMethod<?> meth : spoonSrcMainModel.getElements(new TypeFilter<CtMethod>(CtMethod.class) {
 			@Override
 			public boolean matches(CtMethod element) {
 				return super.matches(element) && element.getAnnotation(Test.class) != null;
@@ -271,7 +279,7 @@ public class SpoonArchitectureEnforcerTest {
 		// contract: the Spoon test suite does not depend on Junit 3 classes and methods
 		// otherwise, intellij automatically selects the junit3 runner, finds nothing
 		// and crashes with a dirty exception
-		assertEquals(0, spoon.getModel().getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
+		assertEquals(0, spoonSrcMainModel.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference element) {
 				CtMethod parent = element.getParent(CtMethod.class);
@@ -318,11 +326,7 @@ public class SpoonArchitectureEnforcerTest {
 //		spoon.testing.utils.ProcessorUtils
 //		spoon.testing.Assert
 
-		SpoonAPI spoon = new Launcher();
-		spoon.addInputResource("src/main/java/");
-		spoon.buildModel();
-
-		for (CtClass<?> klass : spoon.getModel().getElements(new TypeFilter<CtClass>(CtClass.class) {
+		for (CtClass<?> klass : spoonSrcMainModel.getElements(new TypeFilter<>(CtClass.class) {
 			@Override
 			public boolean matches(CtClass element) {
 				return element.getSuperclass() == null && super.matches(element) && !element.getMethods().isEmpty()
@@ -434,11 +438,8 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon");
 		officialPackages.add(""); // root package
 
-		SpoonAPI spoon = new Launcher();
-		spoon.addInputResource("src/main/java/");
-		spoon.buildModel();
 		final Set<String> currentPackages = new HashSet<>();
-		spoon.getModel().processWith(new AbstractProcessor<CtPackage>() {
+		spoonSrcMainModel.processWith(new AbstractProcessor<CtPackage>() {
 			@Override
 			public void process(CtPackage element) {
 				currentPackages.add(element.getQualifiedName());
@@ -533,4 +534,64 @@ public class SpoonArchitectureEnforcerTest {
 		fields.removeAll(fieldsWithRead);
 		assertEquals(Collections.emptyList(), fields, "Some Fields have no read/write");
 	}
+
+	@Test
+	void fluentSetterReturnsThis() {
+		// contract: Fluent API setters return this and not null
+		CtTypeReference<?> element = spoonSrcMainFactory.Type().get(CtElement.class).getReference();
+		for (CtModule module : spoonSrcMainModel.getAllModules()) {
+			module.accept(new CtScanner() {
+				@Override
+				public <T> void visitCtMethod(CtMethod<T> m) {
+					if (!TypeAdaptor.isSubtype(m.getDeclaringType(), element)) {
+						return;
+					}
+					if(!isFluentSetter(m)) {
+						return;
+					}
+
+					m.accept(new CtScanner() {
+						@Override
+						public <R> void visitCtReturn(CtReturn<R> returnStatement) {
+							if (returnStatement.getReturnedExpression() instanceof CtThisAccess) {
+								return;
+							}
+							if (returnStatement.getReturnedExpression() instanceof CtInvocation) {
+								CtInvocation<?> invocation = ((CtInvocation<R>) returnStatement.getReturnedExpression());
+								// returning "super.foo()" in "foo" is allowed
+								if (invocation.getTarget() instanceof CtSuperAccess) {
+									return;
+								}
+								// returning "this.bar()" in "foo" is allowed
+								if (invocation.getTarget() instanceof CtThisAccess) {
+									return;
+								}
+							}
+							fail(
+								"Return statement in property setter "
+									+ m.getDeclaringType().getQualifiedName() + "#" + m.getSignature()
+									+ " does not return this: " + returnStatement
+							);
+						}
+					});
+				}
+
+				private <T> boolean isFluentSetter(CtMethod<T> m) {
+					if (m.getType().isPrimitive()) {
+						return false;
+					}
+					if (m.hasAnnotation(PropertySetter.class)) {
+						return true;
+					}
+					for (CtMethod<?> topDefinition : m.getTopDefinitions()) {
+						if (topDefinition.hasAnnotation(PropertySetter.class)) {
+							return true;
+						}
+					}
+					return false;
+				}
+			});
+		}
+	}
+
 }

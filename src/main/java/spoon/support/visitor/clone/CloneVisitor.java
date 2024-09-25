@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.clone;
 /**
@@ -171,6 +171,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		this.builder.copy(caseStatement, aCtCase);
 		aCtCase.setAnnotations(this.cloneHelper.clone(caseStatement.getAnnotations()));
 		aCtCase.setCaseExpressions(this.cloneHelper.clone(caseStatement.getCaseExpressions()));
+		aCtCase.setGuard(this.cloneHelper.clone(caseStatement.getGuard()));
 		aCtCase.setStatements(this.cloneHelper.clone(caseStatement.getStatements()));
 		aCtCase.setComments(this.cloneHelper.clone(caseStatement.getComments()));
 		this.cloneHelper.tailor(caseStatement, aCtCase);
@@ -236,6 +237,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.declaration.CtConstructor<T> aCtConstructor = c.getFactory().Core().createConstructor();
 		this.builder.copy(c, aCtConstructor);
 		aCtConstructor.setAnnotations(this.cloneHelper.clone(c.getAnnotations()));
+		aCtConstructor.setReceiverParameter(this.cloneHelper.clone(c.getReceiverParameter()));
 		aCtConstructor.setParameters(this.cloneHelper.clone(c.getParameters()));
 		aCtConstructor.setThrownTypes(this.cloneHelper.clone(c.getThrownTypes()));
 		aCtConstructor.setFormalCtTypeParameters(this.cloneHelper.clone(c.getFormalCtTypeParameters()));
@@ -499,6 +501,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtMethod.setAnnotations(this.cloneHelper.clone(m.getAnnotations()));
 		aCtMethod.setFormalCtTypeParameters(this.cloneHelper.clone(m.getFormalCtTypeParameters()));
 		aCtMethod.setType(this.cloneHelper.clone(m.getType()));
+		aCtMethod.setReceiverParameter(this.cloneHelper.clone(m.getReceiverParameter()));
 		aCtMethod.setParameters(this.cloneHelper.clone(m.getParameters()));
 		aCtMethod.setThrownTypes(this.cloneHelper.clone(m.getThrownTypes()));
 		aCtMethod.setBody(this.cloneHelper.clone(m.getBody()));
@@ -1144,5 +1147,57 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtRecordComponent.setComments(this.cloneHelper.clone(recordType.getComments()));
 		this.cloneHelper.tailor(recordType, aCtRecordComponent);
 		this.other = aCtRecordComponent;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtReceiverParameter(spoon.reflect.declaration.CtReceiverParameter receiverParameter) {
+		spoon.reflect.declaration.CtReceiverParameter aCtReceiverParameter = receiverParameter.getFactory().Core().createReceiverParameter();
+		this.builder.copy(receiverParameter, aCtReceiverParameter);
+		aCtReceiverParameter.setAnnotations(this.cloneHelper.clone(receiverParameter.getAnnotations()));
+		aCtReceiverParameter.setType(this.cloneHelper.clone(receiverParameter.getType()));
+		aCtReceiverParameter.setComments(this.cloneHelper.clone(receiverParameter.getComments()));
+		this.cloneHelper.tailor(receiverParameter, aCtReceiverParameter);
+		this.other = aCtReceiverParameter;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtCasePattern(spoon.reflect.code.CtCasePattern casePattern) {
+		spoon.reflect.code.CtCasePattern aCtCasePattern = casePattern.getFactory().Core().createCasePattern();
+		this.builder.copy(casePattern, aCtCasePattern);
+		aCtCasePattern.setTypeCasts(this.cloneHelper.clone(casePattern.getTypeCasts()));
+		aCtCasePattern.setAnnotations(this.cloneHelper.clone(casePattern.getAnnotations()));
+		aCtCasePattern.setPattern(this.cloneHelper.clone(casePattern.getPattern()));
+		aCtCasePattern.setType(this.cloneHelper.clone(casePattern.getType()));
+		aCtCasePattern.setComments(this.cloneHelper.clone(casePattern.getComments()));
+		this.cloneHelper.tailor(casePattern, aCtCasePattern);
+		this.other = aCtCasePattern;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtRecordPattern(spoon.reflect.code.CtRecordPattern recordPattern) {
+		spoon.reflect.code.CtRecordPattern aCtRecordPattern = recordPattern.getFactory().Core().createRecordPattern();
+		this.builder.copy(recordPattern, aCtRecordPattern);
+		aCtRecordPattern.setRecordType(this.cloneHelper.clone(recordPattern.getRecordType()));
+		aCtRecordPattern.setPatternList(this.cloneHelper.clone(recordPattern.getPatternList()));
+		aCtRecordPattern.setAnnotations(this.cloneHelper.clone(recordPattern.getAnnotations()));
+		aCtRecordPattern.setType(this.cloneHelper.clone(recordPattern.getType()));
+		aCtRecordPattern.setComments(this.cloneHelper.clone(recordPattern.getComments()));
+		this.cloneHelper.tailor(recordPattern, aCtRecordPattern);
+		this.other = aCtRecordPattern;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtUnnamedPattern(spoon.reflect.code.CtUnnamedPattern unnamedPattern) {
+		spoon.reflect.code.CtUnnamedPattern aCtUnnamedPattern = unnamedPattern.getFactory().Core().createUnnamedPattern();
+		this.builder.copy(unnamedPattern, aCtUnnamedPattern);
+		aCtUnnamedPattern.setAnnotations(this.cloneHelper.clone(unnamedPattern.getAnnotations()));
+		aCtUnnamedPattern.setType(this.cloneHelper.clone(unnamedPattern.getType()));
+		aCtUnnamedPattern.setComments(this.cloneHelper.clone(unnamedPattern.getComments()));
+		this.cloneHelper.tailor(unnamedPattern, aCtUnnamedPattern);
+		this.other = aCtUnnamedPattern;
 	}
 }

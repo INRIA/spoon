@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.reference;
 
@@ -50,13 +50,26 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	/**
 	 * Gets the Java runtime class of the referenced type.
 	 *
-	 * This is a low-level feature, it should never been used.
-	 * For CtTypeReference, use {@link #getTypeDeclaration()} instead,
+	 * This is a low-level feature, it should never been used, use {@link #getTypeDeclaration()} instead
 	 * in order to only stay in the Spoon world and manipulate CtType instead of java.lang.Class.
+	 * <br/>
+	 * <br/>
+	 * Note (these are artifacts of the <em>current implementation</em> and might change at any time):
+	 * <ol>
+	 *     <li>
+	 *         it will return the version of the class your {@link spoon.compiler.Environment#getInputClassLoader()}
+	 *         loads. This might be a version spoon compiled
+	 *         (manually using {@link spoon.SpoonModelBuilder#compile(spoon.SpoonModelBuilder.InputType...)}
+	 *     	   or implicitly using {@link spoon.compiler.Environment#shouldCompile})
+	 *     	   or from your classpath (which might be null)
+	 *     </li>
+	 *     <li>it will run static initializers (executing arbitrary code from the analyzed project in the process)</li>
+	 *     <li>it will fail if the static initializers of the class fail</li>
+	 *     <li>the Class object may not reflect the CtType in case you made recent changes to it based on point 1</li>
+	 * </ol>
 	 *
 	 * @return the Java class or throws a {@link SpoonClassNotFoundException} if the class is not found.
 	 * @throws SpoonClassNotFoundException if the class is not in the classpath
-	 * @deprecated (Since Spoon 7.0.0) use {@link #getTypeDeclaration()} instead
 	 */
 	Class<T> getActualClass();
 

@@ -18,6 +18,7 @@ package spoon.test.enums;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,8 +29,10 @@ import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
@@ -37,6 +40,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.SpoonTestHelpers;
@@ -45,6 +49,7 @@ import spoon.test.enums.testclasses.Burritos;
 import spoon.test.enums.testclasses.EnumWithMembers;
 import spoon.test.enums.testclasses.NestedEnums;
 import spoon.test.enums.testclasses.Regular;
+import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -58,6 +63,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -280,6 +286,26 @@ public class EnumsTest {
 		));
 	}
 
+	@Test
+	@GitHubIssue(issueNumber = 4758, fixed = true)
+	@DisplayName("Implicit enum constructors do not contain a super call")
+	void testImplicitEnumConstructorSuperCall() {
+		CtEnum<?> myEnum = (CtEnum<?>) Launcher.parseClass("enum Foo { CONSTANT; }");
+		CtConstructor<?> constructor = myEnum.getConstructors().iterator().next();
+
+		assertThat(constructor.isImplicit(), is(true));
+		
+		for (CtStatement statement : constructor.getBody().getStatements()) {
+			if (!(statement instanceof CtInvocation)) {
+				continue;
+			}
+			CtExecutableReference<?> executable = ((CtInvocation<?>) statement).getExecutable();
+			if (!executable.getDeclaringType().getQualifiedName().equals("java.lang.Enum")) {
+				continue;
+			}
+			assertThat(executable.getSimpleName(), not(is("<init>")));
+		}
+	}
 
 	static class NestedEnumTypeProvider implements ArgumentsProvider {
 		private final CtType<?> ctClass;

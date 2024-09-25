@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.code;
 
@@ -64,16 +64,22 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 
 	@Override
 	public <T extends CtTry> T addCatcher(CtCatch catcher) {
+		addCatcherAt(catchers.size(), catcher);
+		return (T) this;
+	}
+
+	@Override
+	public CtTry addCatcherAt(int position, CtCatch catcher) {
 		if (catcher == null) {
-			return (T) this;
+			return this;
 		}
 		if (catchers == CtElementImpl.<CtCatch>emptyList()) {
 			catchers = new ArrayList<>(CATCH_CASES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		catcher.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CATCH, this.catchers, catcher);
-		catchers.add(catcher);
-		return (T) this;
+		catchers.add(position, catcher);
+		return this;
 	}
 
 	@Override

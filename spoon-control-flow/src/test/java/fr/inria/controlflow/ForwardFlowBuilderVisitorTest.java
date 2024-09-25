@@ -25,15 +25,17 @@ package fr.inria.controlflow;
 import org.junit.jupiter.api.Test;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.ProcessingManager;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.support.QueueProcessingManager;
 
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 
-import static fr.inria.controlflow.BranchKind.BRANCH;
-import static fr.inria.controlflow.BranchKind.STATEMENT;
+import static fr.inria.controlflow.BranchKind.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Created by marodrig on 14/10/2015.
@@ -329,6 +331,35 @@ public class ForwardFlowBuilderVisitorTest {
 		ControlFlowGraph graph = testMethod("invocation", true, 1, 2, null);
 		//Branches-Statement Branches-Branches sStatement-Statement total
 		testEdges(graph, 1, 0, 0, null);
+	}
+
+	@Test
+	public void testConstructor() throws URISyntaxException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+		ControlFlowBuilder visitor = new ControlFlowBuilder();
+
+		Factory factory = new SpoonMetaFactory().buildNewFactory(this.getClass().getResource("/control-flow").toURI().getPath(), 17);
+		ProcessingManager pm = new QueueProcessingManager(factory);
+		pm.addProcessor(new AbstractProcessor<CtConstructor<?>>() {
+			@Override
+			public void process(CtConstructor<?> element) {
+				if (!element.getBody().getStatements().isEmpty()) {
+					visitor.build(element);
+				}
+			}
+
+		});
+		pm.process(factory.getModel().getRootPackage());
+
+		ControlFlowGraph graph = visitor.getResult();
+		ControlFlowNode entryNode = graph.findNodesOfKind(BEGIN).get(0);
+		ControlFlowNode exitNode = graph.getExitNode();
+
+		assertFalse(graph.containsEdge(entryNode, exitNode), "Graph is missing statements");
+	}
+
+	@Test
+	public void testConstructorCall() throws Exception {
+		testMethod("constructorCall", true, 0, 1, 5);
 	}
 
 	@Test

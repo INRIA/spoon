@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,7 @@ import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -437,5 +439,17 @@ public class PackageTest {
 		assertEquals(Collections.singleton(survivingPackage), rootPackage.getPackages());
 		// The package can be found under its new name
 		assertSame(survivingPackage, rootPackage.getPackage("Overwritten"));
+	}
+
+
+	@ModelTest("./src/test/resources/noclasspath/MultipleClasses.java")
+	public void testGetTypesReturnsTypesInDeclarationOrder(CtModel model) {
+		// contract: Types should be stored in declaration order. This is important for the
+		// sniper printer to produce consistent output.
+
+		var types = model.getRootPackage().getTypes();
+
+		var typeNames = types.stream().map(CtType::getSimpleName).collect(Collectors.toList());
+		assertEquals(typeNames, List.of("A", "D", "C", "B"));
 	}
 }

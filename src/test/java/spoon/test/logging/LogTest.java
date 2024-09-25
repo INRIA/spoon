@@ -20,15 +20,23 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.ParameterizedTest;
+import spoon.FluentLauncher;
 import spoon.Launcher;
 import spoon.MavenLauncher;
+import spoon.processing.AbstractProcessor;
+import spoon.reflect.CtModel;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.Level;
+import spoon.testing.utils.GitHubIssue;
 import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
-
+import java.util.List;
 import java.util.stream.Stream;
-
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -66,7 +74,7 @@ public class LogTest {
 	private static Stream<Pair<Level, Integer>> getLogLevelsAndExpectedCounts() {
 		return Stream.of(
 				Pair.of(Level.DEBUG, 6),
-				Pair.of(Level.INFO, 2),
+				Pair.of(Level.INFO, 1),
 				Pair.of(Level.WARN, 0),
 				Pair.of(Level.ERROR, 0),
 				Pair.of(Level.OFF, 0)
@@ -102,5 +110,23 @@ public class LogTest {
 					"This is a message with level " + level.toString());
 		}
 		assertEquals(0, logger.getLoggingEvents().size());
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 4997, fixed = true)
+	void innerTypesCrashesLogging() {
+		// contract: when a class has inner types, the logging should not crash with a NPE
+		String codePath = "src/test/resources/logging/TestCase2.java";
+		var processor = new AbstractProcessor<CtConstructor<?>>() {
+			@Override
+			public void process(CtConstructor<?> element) {
+				// do nothing
+			}
+			public boolean isToBeProcessed(CtConstructor<?> candidate) {
+        			List<CtInvocation<?>> invocations = Query.getElements(candidate, new TypeFilter<>(CtInvocation.class));
+        			invocations.forEach(i -> getEnvironment().report(this, Level.INFO, i, "Message"));
+       				return false;
+	  		}};
+		assertDoesNotThrow(() -> new FluentLauncher().inputResource(codePath).processor(processor).buildModel());
 	}
 }

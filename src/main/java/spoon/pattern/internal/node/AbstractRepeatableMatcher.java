@@ -18,7 +18,7 @@ abstract class AbstractRepeatableMatcher extends AbstractNode implements Repeata
 
 	@Override
 	public TobeMatched matchTargets(TobeMatched targets, Matchers next) {
-		if (isRepeatable() == false) {
+		if (!isRepeatable()) {
 			//handle non repeatable Nodes
 			boolean isMandatory = isMandatory(targets.getParameters());
 			//match maximum one value
@@ -45,7 +45,7 @@ abstract class AbstractRepeatableMatcher extends AbstractNode implements Repeata
 			}
 			//check whether we have to match next
 			//we need this check because #isMandatory()==true for each state. In such case the #isTryNextMatch must be able to finish the cycle
-			if (isTryNextMatch(tmp.getParameters()) == false) {
+			if (!isTryNextMatch(tmp.getParameters())) {
 				//the `matcher` has all values. Match next
 				return next.matchAllWith(tmp);
 			}
@@ -57,7 +57,7 @@ abstract class AbstractRepeatableMatcher extends AbstractNode implements Repeata
 	}
 
 	private TobeMatched matchOptionalTargets(TobeMatched targets, Matchers next) {
-		if (isTryNextMatch(targets.getParameters()) == false) {
+		if (!isTryNextMatch(targets.getParameters())) {
 			//the `matcher` has all values. Match next
 			return next.matchAllWith(targets);
 		}

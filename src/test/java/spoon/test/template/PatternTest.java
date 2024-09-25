@@ -67,7 +67,7 @@ import spoon.test.template.testclasses.match.MatchWithParameterType;
 import spoon.test.template.testclasses.replace.DPPSample1;
 import spoon.test.template.testclasses.replace.OldPattern;
 import spoon.test.template.testclasses.types.AClassWithMethodsAndRefs;
-import spoon.testing.utils.LineSeperatorExtension;
+import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -1159,7 +1159,7 @@ public class PatternTest {
 	}
 
 	@Test
-	@ExtendWith(LineSeperatorExtension.class)
+	@ExtendWith(LineSeparatorExtension.class)
 	public void testPatternToString() {
 		//contract: Pattern can be printed to String and each parameter is defined there
 		String nl = System.getProperty("line.separator");

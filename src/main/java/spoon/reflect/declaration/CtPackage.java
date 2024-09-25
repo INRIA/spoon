@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.declaration;
 
@@ -59,6 +59,8 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 
 	/**
 	 * Gets the set of included child packages.
+	 * This method might take linear time (regarding the amount of packages in this package).
+	 * For emptiness-checks, {@link #hasPackages()} should be preferred.
 	 */
 	@PropertyGetter(role = SUB_PACKAGE)
 	Set<CtPackage> getPackages();
@@ -91,6 +93,8 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 
 	/**
 	 * Returns the set of the top-level types in this package.
+	 * This method might take linear time (regarding the amount of types in this package).
+	 * For emptiness-checks, {@link #hasTypes()} should be preferred.
 	 */
 	@PropertyGetter(role = CONTAINED_TYPE)
 	Set<CtType<?>> getTypes();
@@ -161,4 +165,24 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * @return true if the package contains no types nor any other packages
 	 */
 	boolean isEmpty();
+
+	/**
+	 * Returns true if this package contains any types.
+	 * This method is expected to provide constant-time performance
+	 * and should be preferred over {@link #getTypes()}{@code .isEmpty()}.
+	 *
+	 * @return true if the package contains any types.
+	 * @see #getTypes()
+	 */
+	boolean hasTypes();
+
+	/**
+	 * Returns true if this package contains any sub-packages.
+	 * This method is expected to provide constant-time performance
+	 * and should be preferred over {@link #getPackages()}{@code .isEmpty()}.
+	 *
+	 * @return true if the package contains any sub-packages
+	 * @see #getPackages()
+	 */
+	boolean hasPackages();
 }

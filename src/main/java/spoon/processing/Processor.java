@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.processing;
 
@@ -45,12 +45,12 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	boolean isToBeProcessed(E candidate);
 
 	/**
-	 * A callback method upcalled by the meta-model scanner to perform a
-	 * dedicated job on the currently scanned element. The way Spoon upcalls
+	 * A callback method called by the meta-model scanner to perform a
+	 * dedicated job on the currently scanned element. The way Spoon calls
 	 * this method depends on the processed element types (
 	 * {@link #getProcessedElementTypes()}), the traversal strategy (
 	 * {@link #getTraversalStrategy()}), and the used processing manager (
-	 * {@link Environment#getManager()}. Also, this method is upcalled only if
+	 * {@link Environment#getManager()}. Also, this method is called only if
 	 * the method {@link #isToBeProcessed(CtElement)} returns true for a given
 	 * scanned element. In order to manually scan the meta-model, one can define
 	 * the {@link #process()} method instead.
@@ -61,20 +61,20 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	void process(E element);
 
 	/**
-	 * A callback method upcalled by the manager so that this processor can
+	 * A callback method called by the manager so that this processor can
 	 * manually implement a processing job. On contrary to
 	 * {@link #process(CtElement)}, this method does not rely on a built-in
 	 * meta-model scanner and has to implement its own traversal strategy on the
 	 * meta-model, which is stored in the factory (
 	 * {@link FactoryAccessor#getFactory}). Note that if a processor implements
-	 * both process methods, this one is upcalled first. This method does
+	 * both process methods, this one is called first. This method does
 	 * nothing in default implementations (
 	 * {@link spoon.processing.AbstractProcessor}).
 	 */
 	void process();
 
 	/**
-	 * Do the processing job for a given element. This method is upcalled on an
+	 * Do the processing job for a given element. This method is called on an
 	 * element if the method {@link #isToBeProcessed(CtElement)} returns true.
 	 *
 	 * @param element
@@ -87,7 +87,7 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	Set<Class<? extends CtElement>> getProcessedElementTypes();
 
 	/**
-	 * This method is upcalled by the {@link ProcessingManager} when this
+	 * This method is called by the {@link ProcessingManager} when this
 	 * processor has finished a full processing round on the program's model. It
 	 * is convenient to override this method to tune the application's strategy
 	 * of a set of processors, for instance by dynamically adding processors to
@@ -97,7 +97,7 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	void processingDone();
 
 	/**
-	 * This method is upcalled to initialize the processor before each
+	 * This method is called to initialize the processor before each
 	 * processing round. It is convenient to override this method rather than
 	 * using a default constructor to initialize the processor, since the
 	 * factory is not initialized at construction time. When overriding, do not

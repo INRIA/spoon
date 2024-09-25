@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.java;
 
@@ -22,7 +22,10 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.Set;
-import spoon.reflect.code.CtLiteral;
+
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -30,7 +33,6 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -71,11 +73,12 @@ import spoon.support.visitor.java.reflect.RtParameter;
  * element comes from the reflection api, use {@link spoon.reflect.declaration.CtShadowable#isShadow()}.
  */
 public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
-	private Deque<RuntimeBuilderContext> contexts = new ArrayDeque<>();
-	private Factory factory;
+	private final Deque<RuntimeBuilderContext> contexts;
+	private final Factory factory;
 
 	public JavaReflectionTreeBuilder(Factory factory) {
 		this.factory = factory;
+		this.contexts = new ArrayDeque<>();
 	}
 
 	private void enter(RuntimeBuilderContext context) {
@@ -88,47 +91,67 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	/** transforms a java.lang.Class into a CtType (ie a shadow type in Spoon's parlance) */
 	public <T, R extends CtType<T>> R scan(Class<T> clazz) {
-		CtPackage ctPackage;
-		CtType<?> ctEnclosingClass;
-		if (clazz.getEnclosingClass() != null && !clazz.isAnonymousClass()) {
-			ctEnclosingClass = factory.Type().get(clazz.getEnclosingClass());
-			return ctEnclosingClass.getNestedType(clazz.getSimpleName());
-		} else {
-			if (clazz.getPackage() == null) {
-				ctPackage = factory.Package().getRootPackage();
+		// We modify and query our modified model in this part. If another thread were to do the same
+		// on the same model, things will explode (e.g. with a ParentNotInitialized exception).
+		// We only synchronize in the main entrypoint, as that should be enough for normal consumers.
+		// The shadow factory should not be modified in other places and nobody should be directly calling
+		// the visit methods.
+		synchronized (factory) {
+			CtType<?> ctEnclosingClass;
+			if (clazz.getEnclosingClass() != null && !clazz.isAnonymousClass()) {
+				ctEnclosingClass = factory.Type().get(clazz.getEnclosingClass());
+				return ctEnclosingClass.getNestedType(clazz.getSimpleName());
 			} else {
-				ctPackage = factory.Package().getOrCreate(clazz.getPackage().getName());
+				CtPackage ctPackage = getCtPackage(clazz);
+				if (contexts.isEmpty()) {
+					enter(new PackageRuntimeBuilderContext(ctPackage));
+				}
+				boolean visited = false;
+				if (clazz.isAnnotation()) {
+					visited = true;
+					visitAnnotationClass((Class<Annotation>) clazz);
+				}
+				if (clazz.isInterface() && !visited) {
+					visited = true;
+					visitInterface(clazz);
+				}
+				if (clazz.isEnum() && !visited) {
+					visited = true;
+					visitEnum(clazz);
+				}
+				if (MethodHandleUtils.isRecord(clazz) && !visited) {
+					visited = true;
+					visitRecord(clazz);
+				}
+				if (!visited) {
+					visitClass(clazz);
+				}
+				exit();
+				final R type = ctPackage.getType(clazz.getSimpleName());
+				if (clazz.isPrimitive() && type.getParent() instanceof CtPackage) {
+					type.setParent(null); // primitive type isn't in a package.
+				}
+				return type;
 			}
-			if (contexts.isEmpty()) {
-				enter(new PackageRuntimeBuilderContext(ctPackage));
-			}
-			boolean visited = false;
-			if (clazz.isAnnotation()) {
-				visited = true;
-				visitAnnotationClass((Class<Annotation>) clazz);
-			}
-			if (clazz.isInterface() && !visited) {
-				visited = true;
-				visitInterface(clazz);
-			}
-			if (clazz.isEnum() && !visited) {
-				visited = true;
-				visitEnum(clazz);
-			}
-			if (MethodHandleUtils.isRecord(clazz) && !visited) {
-				visited = true;
-				visitRecord(clazz);
-			}
-			if (!visited) {
-				visitClass(clazz);
-			}
-			exit();
-			final R type = ctPackage.getType(clazz.getSimpleName());
-			if (clazz.isPrimitive() && type.getParent() instanceof CtPackage) {
-				type.setParent(null); // primitive type isn't in a package.
-			}
-			return type;
 		}
+	}
+
+	private <T> CtPackage getCtPackage(Class<T> clazz) {
+		Package javaPackage = clazz.getPackage();
+		if (javaPackage == null && clazz.isArray()) {
+			javaPackage = getArrayType(clazz).getPackage();
+		}
+		if (javaPackage == null) {
+			return factory.Package().getRootPackage();
+		}
+		return factory.Package().getOrCreate(javaPackage.getName());
+	}
+
+	private static Class<?> getArrayType(Class<?> array) {
+		if (array.isArray()) {
+			return getArrayType(array.getComponentType());
+		}
+		return array;
 	}
 
 	@Override
@@ -170,7 +193,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitClass(Class<T> clazz) {
 		final CtClass ctClass = factory.Core().createClass();
 		ctClass.setSimpleName(clazz.getSimpleName());
-		setModifier(ctClass, clazz.getModifiers(), clazz.getDeclaringClass());
+		setModifier(ctClass, clazz.getModifiers() & Modifier.classModifiers());
 
 		enter(new TypeRuntimeBuilderContext(clazz, ctClass) {
 			@Override
@@ -197,7 +220,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitInterface(Class<T> clazz) {
 		final CtInterface<Object> ctInterface = factory.Core().createInterface();
 		ctInterface.setSimpleName(clazz.getSimpleName());
-		setModifier(ctInterface, clazz.getModifiers(), clazz.getDeclaringClass());
+		setModifier(ctInterface, clazz.getModifiers() & Modifier.classModifiers());
 
 		enter(new TypeRuntimeBuilderContext(clazz, ctInterface));
 		super.visitInterface(clazz);
@@ -210,7 +233,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitEnum(Class<T> clazz) {
 		final CtEnum ctEnum = factory.Core().createEnum();
 		ctEnum.setSimpleName(clazz.getSimpleName());
-		setModifier(ctEnum, clazz.getModifiers(), clazz.getDeclaringClass());
+		setModifier(ctEnum, clazz.getModifiers() & Modifier.classModifiers());
 
 		enter(new TypeRuntimeBuilderContext(clazz, ctEnum) {
 			@Override
@@ -233,7 +256,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T extends Annotation> void visitAnnotationClass(Class<T> clazz) {
 		final CtAnnotationType<?> ctAnnotationType = factory.Core().createAnnotationType();
 		ctAnnotationType.setSimpleName(clazz.getSimpleName());
-		setModifier(ctAnnotationType, clazz.getModifiers(), clazz.getDeclaringClass());
+		setModifier(ctAnnotationType, clazz.getModifiers() & Modifier.classModifiers());
 
 		enter(new TypeRuntimeBuilderContext(clazz, ctAnnotationType) {
 			@Override
@@ -289,7 +312,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitConstructor(Constructor<T> constructor) {
 		final CtConstructor<Object> ctConstructor = factory.Core().createConstructor();
 		ctConstructor.setBody(factory.Core().createBlock());
-		setModifier(ctConstructor, constructor.getModifiers(), constructor.getDeclaringClass());
+		setModifier(ctConstructor, constructor.getModifiers() & Modifier.constructorModifiers());
 
 		enter(new ExecutableRuntimeBuilderContext(constructor, ctConstructor));
 		super.visitConstructor(constructor);
@@ -305,10 +328,10 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		/**
 		 * java 8 static interface methods are marked as abstract but has body
 		 */
-		if (Modifier.isAbstract(method.getModifiers()) == false) {
+		if (!Modifier.isAbstract(method.getModifiers())) {
 			ctMethod.setBody(factory.Core().createBlock());
 		}
-		setModifier(ctMethod, method.getModifiers(), method.getDeclaringClass());
+		setModifier(ctMethod, method.getModifiers() & Modifier.methodModifiers());
 		ctMethod.setDefaultMethod(method.isDefault());
 
 		enter(new ExecutableRuntimeBuilderContext(method.getMethod(), ctMethod));
@@ -322,7 +345,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitField(Field field) {
 		final CtField<Object> ctField = factory.Core().createField();
 		ctField.setSimpleName(field.getName());
-		setModifier(ctField, field.getModifiers(), field.getDeclaringClass());
+		setModifier(ctField, field.getModifiers() & Modifier.fieldModifiers());
 
 		// we set the value of the shadow field if it is a public and static primitive value
 		try {
@@ -330,7 +353,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			if (modifiers.contains(ModifierKind.STATIC)
 					&& modifiers.contains(ModifierKind.PUBLIC)
 					&& (field.getType().isPrimitive() || String.class.isAssignableFrom(field.getType()))) {
-				CtLiteral<Object> defaultExpression = factory.createLiteral(field.get(null));
+				CtExpression<Object> defaultExpression = buildExpressionForValue(field.get(null));
 				ctField.setDefaultExpression(defaultExpression);
 			}
 		} catch (IllegalAccessException | ExceptionInInitializerError | UnsatisfiedLinkError e) {
@@ -344,11 +367,42 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		contexts.peek().addField(ctField);
 	}
 
+	private CtExpression<Object> buildExpressionForValue(Object value) {
+		if (value instanceof Double) {
+			double d = (double) value;
+			if (Double.isNaN(d)) {
+				return buildDivision(0.0d, 0.0d);
+			}
+			if (Double.POSITIVE_INFINITY == d) {
+				return buildDivision(1.0d, 0.0d);
+			}
+			if (Double.NEGATIVE_INFINITY == d) {
+				return buildDivision(-1.0d, 0.0d);
+			}
+		} else if (value instanceof Float) {
+			float f = (float) value;
+			if (Float.isNaN(f)) {
+				return buildDivision(0.0f, 0.0f);
+			}
+			if (Float.POSITIVE_INFINITY == f) {
+				return buildDivision(1.0f, 0.0f);
+			}
+			if (Float.NEGATIVE_INFINITY == f) {
+				return buildDivision(-1.0f, 0.0f);
+			}
+		}
+		return factory.createLiteral(value);
+	}
+
+	private CtBinaryOperator<Object> buildDivision(Object first, Object second) {
+		return factory.createBinaryOperator(factory.createLiteral(first), factory.createLiteral(second), BinaryOperatorKind.DIV);
+	}
+
 	@Override
 	public void visitEnumValue(Field field) {
 		final CtEnumValue<Object> ctEnumValue = factory.Core().createEnumValue();
 		ctEnumValue.setSimpleName(field.getName());
-		setModifier(ctEnumValue, field.getModifiers(), field.getDeclaringClass());
+		setModifier(ctEnumValue, field.getModifiers() & Modifier.fieldModifiers());
 
 		enter(new VariableRuntimeBuilderContext(ctEnumValue));
 		super.visitEnumValue(field);
@@ -459,7 +513,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		final CtWildcardReference wildcard = factory.Core().createWildcardReference();
 		//type.getUpperBounds() returns at least a single value array with Object.class
 		//so we cannot distinguish between <? extends Object> and <?>, which must be upper==true too!
-		wildcard.setUpper((type.getLowerBounds().length > 0) == false);
+		wildcard.setUpper(!(type.getLowerBounds().length > 0));
 
 		if (!type.getUpperBounds()[0].equals(Object.class)) {
 			if (hasProcessedRecursiveBound(type.getUpperBounds())) {
@@ -528,7 +582,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 
-	private void setModifier(CtModifiable ctModifiable, int modifiers, Class<?> declaringClass) {
+	private void setModifier(CtModifiable ctModifiable, int modifiers) {
 		if (Modifier.isAbstract(modifiers)) {
 			ctModifiable.addModifier(ModifierKind.ABSTRACT);
 		}
@@ -557,14 +611,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			ctModifiable.addModifier(ModifierKind.SYNCHRONIZED);
 		}
 		if (Modifier.isTransient(modifiers)) {
-			if (ctModifiable instanceof CtField) {
-				ctModifiable.addModifier(ModifierKind.TRANSIENT);
-			} else if (ctModifiable instanceof CtExecutable) {
-				//it happens when executable has a vararg parameter. But that is not handled by modifiers in Spoon model
-//				ctModifiable.addModifier(ModifierKind.VARARG);
-			} else {
-				throw new UnsupportedOperationException();
-			}
+			ctModifiable.addModifier(ModifierKind.TRANSIENT);
 		}
 		if (Modifier.isVolatile(modifiers)) {
 			ctModifiable.addModifier(ModifierKind.VOLATILE);
@@ -577,7 +624,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitRecord(Class<T> clazz) {
 		CtRecord ctRecord = factory.Core().createRecord();
 		ctRecord.setSimpleName(clazz.getSimpleName());
-		setModifier(ctRecord, clazz.getModifiers(), clazz.getDeclaringClass());
+		setModifier(ctRecord, clazz.getModifiers() & Modifier.classModifiers());
 
 		enter(new TypeRuntimeBuilderContext(clazz, ctRecord) {
 			@Override

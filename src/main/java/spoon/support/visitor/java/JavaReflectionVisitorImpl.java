@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.java;
 
@@ -22,6 +22,8 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.reflect.path.CtRole;
 import spoon.support.visitor.java.reflect.RtMethod;
@@ -39,7 +41,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T> void visitClass(Class<T> clazz) {
-		if (clazz.getPackage() != null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		try {
@@ -125,7 +127,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T> void visitInterface(Class<T> clazz) {
 		assert clazz.isInterface();
-		if (clazz.getPackage() != null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		try {
@@ -183,7 +185,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T> void visitEnum(Class<T> clazz) {
 		assert clazz.isEnum();
-		if (clazz.getPackage() != null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		try {
@@ -257,7 +259,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T extends Annotation> void visitAnnotationClass(Class<T> clazz) {
 		assert clazz.isAnnotation();
-		if (clazz.getPackage() != null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		try {
@@ -339,7 +341,13 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (parameter.isImplicit()) {
 			return true;
 		}
-		// best effort fallback
+		// best effort fallback for the implicit enclosing class parameter in non-static inner class constructors
+
+		// static inner classes have no implicit parameter
+		if (Modifier.isStatic(constructor.getDeclaringClass().getModifiers())) {
+			return false;
+		}
+
 		return isFirstParameter && parameter.getType() == constructor.getDeclaringClass().getEnclosingClass();
 	}
 
@@ -493,7 +501,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T> void visitTypeReference(CtRole role, Class<T> clazz) {
-		if (clazz.getPackage() != null && clazz.getEnclosingClass() == null) {
+		if (isTopLevelType(clazz)) {
 			visitPackage(clazz.getPackage());
 		}
 		if (clazz.getEnclosingClass() != null) {
@@ -593,8 +601,11 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	}
 
+	private static boolean isTopLevelType(Class<?> clazz) {
+		return clazz.getEnclosingClass() == null && clazz.getPackage() != null;
+	}
 
-	private static Class<?> getRecordClass() {
+	private static @Nullable Class<?> getRecordClass() {
 		try {
 			return Class.forName("java.lang.Record");
 		} catch (Exception e) {

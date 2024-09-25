@@ -32,6 +32,7 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -75,6 +76,7 @@ import spoon.reflect.visitor.filter.RegexFilter;
 import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
 import spoon.reflect.visitor.filter.SubtypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.reflect.visitor.filter.VariableAccessFilter;
 import spoon.support.comparator.DeepRepresentationComparator;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.support.visitor.SubInheritanceHierarchyResolver;
@@ -459,9 +461,8 @@ public class FilterTest {
 		List<CtMethod<?>> methods;
 
 		methods = orderByName(aTostada.getMethodsByName("make").get(0).getTopDefinitions());
-		assertEquals(2, methods.size());
-		assertEquals("AbstractTostada", methods.get(0).getDeclaringType().getSimpleName());
-		assertEquals("ITostada", methods.get(1).getDeclaringType().getSimpleName());
+		assertEquals(1, methods.size());
+		assertEquals("ITostada", methods.get(0).getDeclaringType().getSimpleName());
 
 		methods = orderByName(aTostada.getMethodsByName("prepare").get(0).getTopDefinitions());
 		assertEquals(1, methods.size());
@@ -1429,6 +1430,29 @@ public class FilterTest {
 		assertEquals("int x = 3", l.get(0).toString());
 		assertTrue(l.get(0).getPosition().toString().endsWith("src/test/java/spoon/test/filters/testclasses/FooLine.java:5)"));
 
+	}
+
+	@Test
+	public void testVariableAccessFilterWithGenericField() {
+		// contract: VariableAccessFilter returns all accesses to a given field, even if it is generic
+		CtClass<?> ctClass = Launcher.parseClass(
+			"public class Example<T> {\n" +
+			"    T field;\n" +
+			"\n" +
+			"    public static void main(String[] args) {\n" +
+			"        Example<String> example = new Example<>();\n" +
+			"\n" +
+			"        example.field = \"Hello\"; // write access to Example#field\n" +
+			"        System.out.println(example.field); // read access to Example#field\n" +
+			"    }\n" +
+			"}\n"
+		);
+
+		List<CtVariableAccess<?>> accesses = ctClass.getElements(
+			new VariableAccessFilter<>(ctClass.getField("field").getReference())
+		);
+
+		assertEquals(2, accesses.size());
 	}
 
 }

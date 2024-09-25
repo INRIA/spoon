@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  workflow_call:
+    inputs:
+      release-script-to-run:
+        required: true
+        type: string
+
+jobs:
+  jreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
+      - name: Setup env
+        uses: ./.github/actions/setup-tests
+
+      - name: Do release
+        run: nix develop .#jReleaser --command ${{ inputs.release-script-to-run }}
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.JRELEASER_GPG_PUBLIC_KEY }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
+          JRELEASER_NEXUS2_MAVEN_CENTRAL_USERNAME: ${{ secrets.JRELEASER_NEXUS2_MAVEN_CENTRAL_USERNAME }}
+          JRELEASER_NEXUS2_MAVEN_CENTRAL_PASSWORD: ${{ secrets.JRELEASER_NEXUS2_MAVEN_CENTRAL_PASSWORD }}
+
+        # Log failures
+      - name: JReleaser release output
+        if: always()
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
+        with:
+          name: jreleaser-release
+          path: |
+            out/jreleaser/trace.log
+            out/jreleaser/output.properties

@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2023 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.declaration;
 
@@ -358,6 +358,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * Note that that references are kept as is, and thus, so if you clone whole classes
 	 * or methods, some parts of the cloned element (eg executable references) may still point to the initial element.
 	 * In this case, consider using methods {@link spoon.refactoring.Refactoring#copyType(CtType)} and {@link spoon.refactoring.Refactoring#copyMethod(CtMethod)} instead which does additional work beyond cloning.
+	 * @return a clone of this element. All children are cloned, but the parent of the returned clone is set to null.
 	 */
 	CtElement clone();
 
@@ -414,6 +415,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * @return the source code of this element with the pretty-printing rules of Spoon
 	 * Warning: this is not side-effect free, this triggers some {@link spoon.reflect.visitor.ImportAnalyzer} which would change the model: add/remove imports, change the value `implicit` of some model elements, etc.
+	 * This method <strong>ignores</strong> the settings of {@link Environment#getPrettyPrintingMode()}. If this is not what you want, use {@link #toString()} instead.
 	 */
 	@Experimental
 	String prettyprint();
