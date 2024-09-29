@@ -1188,7 +1188,11 @@ public class ReferenceBuilder {
 
 		CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 		ref.setSimpleName(stripPackageName(readableName));
-		final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
+		CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
+		String packageName = getPackageName(readableName);
+		if (declaring == null && packageName != null) {
+			declaring = this.jdtTreeBuilder.getFactory().Package().createReference(packageName);
+		}
 		setPackageOrDeclaringType(ref, declaring);
 
 		return ref;
@@ -1205,6 +1209,18 @@ public class ReferenceBuilder {
 			s = idx + 1;
 		}
 		return fullyQualifiedName.substring(s);
+	}
+
+	private static String getPackageName(String fullyQualifiedName) {
+
+		if (fullyQualifiedName.indexOf('.') == -1) {
+			return null;
+		}
+		String className = stripPackageName(fullyQualifiedName);
+		if (fullyQualifiedName.equals(className)) {
+			return null;
+		}
+		return fullyQualifiedName.substring(0, fullyQualifiedName.indexOf(className) - 1);
 	}
 
 	private CtTypeReference<?> getTypeReferenceFromIntersectionTypeBinding(IntersectionTypeBinding18 binding) {
