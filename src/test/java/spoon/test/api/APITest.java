@@ -655,16 +655,20 @@ public class APITest {
 		assertEquals("io.example.other.Class2", add.get(0).getType().getActualTypeArguments().get(0).getQualifiedName());
 		String code2 = "package io.example.pack1.pack2;\n" +
 				"    public class Example{\n" +
-				"      void add(io.example.pack1.Class1<io.example.pack1.Class2> value){\n" +
+				"      void add(io.example.pack1.Class1<io.example.pack1.Class2> value1, Class1<Class2> value2){\n" +
 				"      }\n" +
 				"    }\n";
 		CtClass<?> class2 = Launcher.parseClass(code2);
 		List<CtParameter<?>> add2 = class2.getMethodsByName("add").get(0).getParameters();
-		assertEquals(1, add2.size());
-		assertEquals("value", add2.get(0).getSimpleName());
+		assertEquals(2, add2.size());
+		assertEquals("value1", add2.get(0).getSimpleName());
 		assertEquals("io.example.pack1.Class1", add2.get(0).getType().getQualifiedName());
 		assertEquals(1, add2.get(0).getType().getActualTypeArguments().size());
 		assertEquals("io.example.pack1.Class2", add2.get(0).getType().getActualTypeArguments().get(0).getQualifiedName());
+		assertEquals("value2", add2.get(1).getSimpleName());
+		assertEquals("io.example.pack1.pack2.Class1", add2.get(1).getType().getQualifiedName());
+		assertEquals(1, add2.get(1).getType().getActualTypeArguments().size());
+		assertEquals("io.example.pack1.pack2.Class2", add2.get(1).getType().getActualTypeArguments().get(0).getQualifiedName());
 	}
 
 }
