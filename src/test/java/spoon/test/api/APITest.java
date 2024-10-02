@@ -650,9 +650,10 @@ public class APITest {
 		List<CtParameter<?>> add = class1.getMethodsByName("add").get(0).getParameters();
 		assertEquals(1, add.size());
 		assertEquals("value", add.get(0).getSimpleName());
-		assertEquals("io.example.other.Class1", add.get(0).getType().getQualifiedName());
-		assertEquals(1, add.get(0).getType().getActualTypeArguments().size());
-		assertEquals("io.example.other.Class2", add.get(0).getType().getActualTypeArguments().get(0).getQualifiedName());
+		CtTypeReference<?> add1FirstParamType = add.get(0).getType();
+		assertEquals("io.example.other.Class1", add1FirstParamType.getQualifiedName());
+		assertEquals(1, add1FirstParamType.getActualTypeArguments().size());
+		assertEquals("io.example.other.Class2", add1FirstParamType.getActualTypeArguments().get(0).getQualifiedName());
 		String code2 = "package io.example.pack1.pack2;\n" +
 				"    public class Example{\n" +
 				"      void add(io.example.pack1.Class1<io.example.pack1.Class2> value1, Class1<Class2> value2){\n" +
@@ -662,13 +663,15 @@ public class APITest {
 		List<CtParameter<?>> add2 = class2.getMethodsByName("add").get(0).getParameters();
 		assertEquals(2, add2.size());
 		assertEquals("value1", add2.get(0).getSimpleName());
-		assertEquals("io.example.pack1.Class1", add2.get(0).getType().getQualifiedName());
-		assertEquals(1, add2.get(0).getType().getActualTypeArguments().size());
-		assertEquals("io.example.pack1.Class2", add2.get(0).getType().getActualTypeArguments().get(0).getQualifiedName());
+		CtTypeReference<?> add2FirstParamType = add2.get(0).getType();
+		assertEquals("io.example.pack1.Class1", add2FirstParamType.getQualifiedName());
+		assertEquals(1, add2FirstParamType.getActualTypeArguments().size());
+		assertEquals("io.example.pack1.Class2", add2FirstParamType.getActualTypeArguments().get(0).getQualifiedName());
 		assertEquals("value2", add2.get(1).getSimpleName());
-		assertEquals("io.example.pack1.pack2.Class1", add2.get(1).getType().getQualifiedName());
-		assertEquals(1, add2.get(1).getType().getActualTypeArguments().size());
-		assertEquals("io.example.pack1.pack2.Class2", add2.get(1).getType().getActualTypeArguments().get(0).getQualifiedName());
+		CtTypeReference<?> add2SecondParamType = add2.get(1).getType();
+		assertEquals("io.example.pack1.pack2.Class1", add2SecondParamType.getQualifiedName());
+		assertEquals(1, add2SecondParamType.getActualTypeArguments().size());
+		assertEquals("io.example.pack1.pack2.Class2", add2SecondParamType.getActualTypeArguments().get(0).getQualifiedName());
 	}
 
 }

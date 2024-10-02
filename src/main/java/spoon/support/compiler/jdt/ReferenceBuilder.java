@@ -1211,9 +1211,9 @@ public class ReferenceBuilder {
 		return fullyQualifiedName.substring(s);
 	}
 
-	private static String getPackageName(String fullyQualifiedName) {
+	private static @Nullable String getPackageName(String fullyQualifiedName) {
 
-		if (fullyQualifiedName.indexOf('.') == -1) {
+		if (!fullyQualifiedName.contains(".")) {
 			return null;
 		}
 		String className = stripPackageName(fullyQualifiedName);
