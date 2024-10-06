@@ -97,6 +97,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1189,9 +1190,9 @@ public class ReferenceBuilder {
 		CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 		ref.setSimpleName(stripPackageName(readableName));
 		CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
-		String packageName = getPackageName(readableName);
-		if (declaring == null && packageName != null) {
-			declaring = this.jdtTreeBuilder.getFactory().Package().createReference(packageName);
+		Optional<String> packageName = getPackageName(readableName);
+		if (declaring == null && packageName.isPresent()) {
+			declaring = this.jdtTreeBuilder.getFactory().Package().createReference(packageName.get());
 		}
 		setPackageOrDeclaringType(ref, declaring);
 
@@ -1211,16 +1212,15 @@ public class ReferenceBuilder {
 		return fullyQualifiedName.substring(s);
 	}
 
-	private static @Nullable String getPackageName(String fullyQualifiedName) {
-
+	private static Optional<String> getPackageName(String fullyQualifiedName) {
 		if (!fullyQualifiedName.contains(".")) {
-			return null;
+			return Optional.empty();
 		}
 		String className = stripPackageName(fullyQualifiedName);
 		if (fullyQualifiedName.equals(className)) {
-			return null;
+			return Optional.empty();
 		}
-		return fullyQualifiedName.substring(0, fullyQualifiedName.indexOf(className) - 1);
+		return Optional.of(fullyQualifiedName.substring(0, fullyQualifiedName.length() - className.length()));
 	}
 
 	private CtTypeReference<?> getTypeReferenceFromIntersectionTypeBinding(IntersectionTypeBinding18 binding) {
