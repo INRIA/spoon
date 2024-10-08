@@ -251,7 +251,7 @@ public class Launcher implements SpoonAPI {
 			// java compliance
 			opt2 = new FlaggedOption("compliance");
 			opt2.setLongFlag("compliance");
-			opt2.setHelp("Java source code compliance level (1,2,3,4,5, 6, 7 or 8).");
+			opt2.setHelp("Java source code compliance level (e.g. 21 for Java 21).");
 			opt2.setStringParser(JSAP.INTEGER_PARSER);
 			opt2.setDefault(DEFAULT_CODE_COMPLIANCE_LEVEL + "");
 			jsap.registerParameter(opt2);

@@ -26,6 +26,7 @@ import spoon.Launcher;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.PrettyPrinter;
+import spoon.support.StandardEnvironment;
 import spoon.test.variable.testclasses.Tacos;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -66,7 +67,7 @@ public class AccessFullyQualifiedFieldTest {
 
 		assertTrue(result.contains("import spoon.Launcher;"), "The java file should contain import for Launcher");
 		assertTrue(result.contains("xx = Launcher.SPOONED_CLASSES"), "The xx variable is attributed with Launcher.SPOONED_CLASSES");
-		canBeBuilt(output, 7);
+		canBeBuilt(output, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test
@@ -81,7 +82,7 @@ public class AccessFullyQualifiedFieldTest {
 		assertTrue(!result.contains("import java.util.Map"), "The java.util.Map is not imported");
 		assertTrue(result.contains("java.util.Map uneMap"), "The Map type use FQN");
 		assertTrue(result.contains("ForStaticVariables.Map"), "The other variable use FQN too");
-		canBeBuilt(output, 7);
+		canBeBuilt(output, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test
@@ -93,7 +94,7 @@ public class AccessFullyQualifiedFieldTest {
 		//the package name `spoon.test.variable.testclasses` cannot be used in FQN mode because it is shadowed by local variable `spoon`
 		//so use at least Type name
 		assertTrue(result.contains(" BurritosStaticMethod.toto();"), "The inner class should contain call using import");
-		canBeBuilt(output, 7);
+		canBeBuilt(output, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test
@@ -104,7 +105,7 @@ public class AccessFullyQualifiedFieldTest {
 		String result = this.buildResourceAndReturnResult(pathResource, output);
 		assertTrue(result.contains("import spoon.Launcher;"), "The java file should contain import for Launcher");
 		assertTrue(result.contains("xx = Launcher.SPOONED_CLASSES"), "The xx variable should be attributed with SPOONED_CLASSES");
-		canBeBuilt(output, 7);
+		canBeBuilt(output, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test
@@ -115,7 +116,7 @@ public class AccessFullyQualifiedFieldTest {
 		String result = this.buildResourceAndReturnResult(pathResource, output);
 		assertTrue(result.contains("import spoon.Launcher;"), "The java file should contain import for Launcher");
 		assertTrue(result.contains("xx = Launcher.SPOONED_CLASSES"), "The xx variable should be attributed with SPOONED_CLASSES");
-		canBeBuilt(output, 7);
+		canBeBuilt(output, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test
@@ -144,7 +145,7 @@ public class AccessFullyQualifiedFieldTest {
 		assertTrue(!result.contains("spoon.test.variable.testclasses.MultiBurritos.spoon = \"truc\";"), "The result should not contain a FQN for spoon access");
 		assertTrue(!result.contains("spoon.test.variable.testclasses.ForStaticVariables.foo();"), "The result should not contain a FQN for foo");
 
-		canBeBuilt(output, 7);
+		canBeBuilt(output, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test
@@ -156,7 +157,7 @@ public class AccessFullyQualifiedFieldTest {
 		assertTrue(result.contains("import static spoon.Launcher.SPOONED_CLASSES;"), "The result should contain a static import for spoon.Launcher.SPOONED_CLASSES");
 		assertTrue(!result.contains("spoon.test.variable.testclasses.ForStaticVariables.foo()"), "The result should not contain a FQN call for foo (i.e. spoon.test.variable.testclasses.ForStaticVariables.foo())");
 
-		canBeBuilt(output, 7);
+		canBeBuilt(output, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test
@@ -166,6 +167,6 @@ public class AccessFullyQualifiedFieldTest {
 		String result = this.buildResourceAndReturnResult(pathResource, output);
 		assertTrue(!result.contains("import static spoon.test.variable.testclasses.digest.DigestUtil.STREAM_BUFFER_LENGTH;"), "The result should not contain a static import for STREAM_BUFFER_LENGTH");
 
-		canBeBuilt(output, 7);
+		canBeBuilt(output, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 }

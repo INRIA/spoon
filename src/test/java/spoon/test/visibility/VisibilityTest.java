@@ -37,6 +37,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.StandardEnvironment;
 import spoon.test.visibility.testclasses.A;
 import spoon.test.visibility.testclasses.A2;
 
@@ -85,7 +86,7 @@ public class VisibilityTest {
 		assertNotNull(aFloat);
 		assertSame(spoon.test.visibility.testclasses.Float.class, aFloat.getActualClass());
 
-		canBeBuilt(new File("./target/spooned/spoon/test/visibility_package/testclasses/"), 7);
+		canBeBuilt(new File("./target/spooned/spoon/test/visibility_package/testclasses/"), StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test

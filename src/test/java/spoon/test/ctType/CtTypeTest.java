@@ -16,6 +16,7 @@
  */
 package spoon.test.ctType;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
@@ -295,6 +296,7 @@ public class CtTypeTest {
 	 * "enum" was only introduced in Java 5
 	 */
 	@Test
+	@Disabled("Compliance level 4 is not supported anymore")
 	public void testEnumPackage() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/keywordCompliance/enum/Foo.java");
