@@ -156,13 +156,6 @@
       <version>2.0.1.Final</version>
       <scope>test</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/uk.org.lidalia/slf4j-test -->
-    <dependency>
-      <groupId>uk.org.lidalia</groupId>
-      <artifactId>slf4j-test</artifactId>
-      <version>1.2.0</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.kohsuke.metainf-services</groupId>
       <artifactId>metainf-services</artifactId>
@@ -230,7 +223,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <classpathDependencyExcludes>
-            <classpathDependencyExclude>ch.qos.logback:logback-classic</classpathDependencyExclude>
             <trimStackTrace>false</trimStackTrace>
           </classpathDependencyExcludes>
         </configuration>
