@@ -21,7 +21,7 @@
  */
 package fr.inria.controlflow;
 
-import org.jgrapht.DirectedGraph;
+import org.jgrapht.Graph;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtVisitor;
@@ -41,18 +41,18 @@ public abstract class TransferFunctionVisitor implements CtVisitor {
 	/**
 	 * Control graph over the data flow is being exists
 	 */
-	DirectedGraph<CtStatement, CtStatement> controlGraph;
+	Graph<CtStatement, CtStatement> controlGraph;
 
 	/**
 	 * Outputs of the statement calling the transfer.
 	 */
 	protected List<Value> output;
 
-	public DirectedGraph<CtStatement, CtStatement> getControlGraph() {
+	public Graph<CtStatement, CtStatement> getControlGraph() {
 		return controlGraph;
 	}
 
-	public void setControlGraph(DirectedGraph<CtStatement, CtStatement> controlGraph) {
+	public void setControlGraph(Graph<CtStatement, CtStatement> controlGraph) {
 		this.controlGraph = controlGraph;
 	}
 
