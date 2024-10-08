@@ -12,7 +12,7 @@ runs:
       uses: DeterminateSystems/nix-installer-action@ab6bcb2d5af0e904d04aea750e2089e9dc4cbfdd # v13
     - uses: DeterminateSystems/magic-nix-cache-action@b46e247b898aa56e6d2d2e728dc6df6c84fdb738 # v7
     - name: Check Nixpkgs inputs
-      uses: DeterminateSystems/flake-checker-action@ae43dea95bc73541287cfd10e2dee994d1877291 # v8
+      uses: DeterminateSystems/flake-checker-action@078f5f7f47ee188aa6cb472527ca5984e195222d # v9
       with:
         fail-mode: true
     - name: Use Maven dependency cache
