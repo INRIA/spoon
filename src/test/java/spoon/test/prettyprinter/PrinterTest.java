@@ -44,6 +44,7 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.TokenWriter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.StandardEnvironment;
 import spoon.test.prettyprinter.testclasses.MissingVariableDeclaration;
 import spoon.testing.utils.ModelUtils;
 
@@ -213,7 +214,7 @@ public class PrinterTest {
 		String result = printer.getResult();
 
 		assertTrue(!result.contains("Rule.Phoneme.this.phonemeText"), "The result should contain direct this accessor for field: " + result);
-		canBeBuilt(output, 7);
+		canBeBuilt(output, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 
@@ -252,7 +253,7 @@ public class PrinterTest {
 		String result = printer.getResult();
 
 		assertTrue(!result.contains("Rule.Phoneme.this.phonemeText"), "The result should contain direct this accessor for field: " + result);
-		canBeBuilt(output, 7);
+		canBeBuilt(output, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test

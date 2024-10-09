@@ -53,6 +53,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.StandardEnvironment;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.trycatch.testclasses.Foo;
@@ -298,7 +299,7 @@ public class TryCatchTest {
 		String inputResource = "./src/test/java/spoon/test/trycatch/testclasses/Bar.java";
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(inputResource);
-		launcher.getEnvironment().setComplianceLevel(5);
+		launcher.getEnvironment().setComplianceLevel(StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 		launcher.buildModel();
 
 		CtTry tryStmt = launcher.getModel().getElements(new TypeFilter<>(CtTry.class)).get(0);
@@ -317,7 +318,7 @@ public class TryCatchTest {
 		launcher.addInputResource(inputResource);
 		launcher.setSourceOutputDirectory("./target/spoon-trycatch");
 		launcher.getEnvironment().setShouldCompile(true);
-		launcher.getEnvironment().setComplianceLevel(5);
+		launcher.getEnvironment().setComplianceLevel(StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 		launcher.run();
 
 		File f = new File("target/spoon-trycatch/spoon/test/trycatch/testclasses/Bar.java");
