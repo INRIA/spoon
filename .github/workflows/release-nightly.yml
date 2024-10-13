@@ -9,4 +9,5 @@ jobs:
     uses: ./.github/workflows/jreleaser.yml
     with:
       release-script-to-run: chore/release-nightly.sh
+      attest-artifacts: false
     secrets: inherit
