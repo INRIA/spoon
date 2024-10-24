@@ -9,7 +9,6 @@ package spoon.reflect.visitor.filter;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;

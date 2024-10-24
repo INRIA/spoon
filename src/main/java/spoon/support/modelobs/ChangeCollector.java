@@ -14,7 +14,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.jspecify.annotations.Nullable;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;

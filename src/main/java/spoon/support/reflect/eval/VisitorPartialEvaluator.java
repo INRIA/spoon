@@ -7,6 +7,9 @@
  */
 package spoon.support.reflect.eval;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import spoon.SpoonException;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtAssignment;
@@ -48,10 +51,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.OperatorHelper;
 import spoon.support.util.RtHelper;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  *

@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.metamodel.ConceptKind;
@@ -258,7 +257,7 @@ public class CtScannerTest {
 				super.exit(o);
 			}
 		});
-		
+
 		//top comment of file belongs to compilation unit which is not visited by standard scanning
 		//so count comments of these compilation units
 		int countOfCommentsInCompilationUnits = 0;

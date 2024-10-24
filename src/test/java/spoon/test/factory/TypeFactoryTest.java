@@ -16,9 +16,7 @@ package spoon.test.factory;
 
 
 import com.mysema.query.types.expr.ComparableExpressionBase;
-
 import java.io.File;
-
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtJavaDoc;

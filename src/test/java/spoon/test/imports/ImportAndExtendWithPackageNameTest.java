@@ -16,34 +16,33 @@
  */
 package spoon.test.imports;
 
+import java.util.Collection;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.Collection;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ImportAndExtendWithPackageNameTest {
 
-    private static final String inputResource =
-            "./src/test/resources/import-resources/ImportAndExtendWithPackageName.java";
+	private static final String inputResource =
+			"./src/test/resources/import-resources/ImportAndExtendWithPackageName.java";
 
-    @Test
-    public void testBuildModel() {
-        final Launcher runLaunch = new Launcher();
-        runLaunch.getEnvironment().setNoClasspath(true);
-        runLaunch.addInputResource(inputResource);
-        runLaunch.buildModel();
+	@Test
+	public void testBuildModel() {
+		final Launcher runLaunch = new Launcher();
+		runLaunch.getEnvironment().setNoClasspath(true);
+		runLaunch.addInputResource(inputResource);
+		runLaunch.buildModel();
 
-        final Collection<CtType<?>> types = runLaunch.getModel().getAllTypes();
-        assertEquals(1, types.size());
+		final Collection<CtType<?>> types = runLaunch.getModel().getAllTypes();
+		assertEquals(1, types.size());
 
-        final CtType type = types.iterator().next();
-        assertEquals("ImportAndExtendWithPackageName", type.getSimpleName());
+		final CtType type = types.iterator().next();
+		assertEquals("ImportAndExtendWithPackageName", type.getSimpleName());
 
-        final CtTypeReference superClass = type.getSuperclass();
-        assertEquals("LLkParser", superClass.getSimpleName());
-    }
+		final CtTypeReference superClass = type.getSuperclass();
+		assertEquals("LLkParser", superClass.getSimpleName());
+	}
 }

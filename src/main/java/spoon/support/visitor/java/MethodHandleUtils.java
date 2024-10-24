@@ -7,8 +7,6 @@
  */
 package spoon.support.visitor.java;
 
-import org.jspecify.annotations.Nullable;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -18,6 +16,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This defines multiple utility methods for working with method handles. These methods are all calls to future jdk methods and maybe not available on jdk8.

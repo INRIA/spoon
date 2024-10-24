@@ -23,7 +23,7 @@ import spoon.reflect.declaration.CtClass;
  */
 public class CtClassProcessor extends GenericCtTypeProcessor<CtClass> {
 
-    public CtClassProcessor() {
-        super(CtClass.class);
-    }
+	public CtClassProcessor() {
+		super(CtClass.class);
+	}
 }

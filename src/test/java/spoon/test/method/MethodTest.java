@@ -16,45 +16,43 @@
  */
 package spoon.test.method;
 
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.method.testclasses.Hierarchy;
-import spoon.test.method.testclasses.Tacos;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.filter.NamedElementFilter;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.test.delete.testclasses.Adobada;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.declaration.CtType;
-import spoon.Launcher;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtMethod;
-import spoon.test.method.testclasses.Methods;
-import org.junit.jupiter.api.Test;
-import spoon.testing.utils.ModelTest;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.ConcurrentModificationException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Arrays;
+import org.junit.jupiter.api.Test;
+import spoon.Launcher;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.NamedElementFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.delete.testclasses.Adobada;
+import spoon.test.method.testclasses.Hierarchy;
+import spoon.test.method.testclasses.Methods;
+import spoon.test.method.testclasses.Tacos;
+import spoon.testing.utils.ModelTest;
 
 import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static spoon.testing.utils.ModelUtils.buildClass;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.createFactory;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class MethodTest {
 

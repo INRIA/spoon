@@ -21,11 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -45,7 +43,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 import spoon.test.api.testclasses.Bar;
-
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -108,7 +105,7 @@ public class TestCompilationUnit {
 		CtPackage myFooPackage = launcher.getFactory().Package().getOrCreate("my.foo");
 		CompilationUnit cu = launcher.getFactory().createCompilationUnit();
 		assertEquals(CompilationUnit.UNIT_TYPE.UNKNOWN, cu.getUnitType());
-		
+
 		cu.setDeclaredPackage(myFooPackage);
 		assertEquals(CompilationUnit.UNIT_TYPE.PACKAGE_DECLARATION, cu.getUnitType());
 
@@ -239,20 +236,20 @@ public class TestCompilationUnit {
 		//contract: parent of CtImport is CompilationUnit
 		CtImport anImport = compilationUnit.getImports().iterator().next();
 		assertSame(compilationUnit, anImport.getParent());
-		
+
 		//contract: parent of type declared in Compilation unit is a package (never CompilationUnit)
 		assertTrue(compilationUnit.getMainType().getParent() instanceof CtPackage);
-		
+
 		//contract: compilation unit which contains types has null declared module
 		assertNull(compilationUnit.getDeclaredModule());
 		//contract: compilation unit knows declared package
 		assertSame(type.getPackage(), compilationUnit.getDeclaredPackage());
-		
+
 		//the package declaration exists and points to correct package
 		assertEquals(type.getPackage().getReference(), compilationUnit.getPackageDeclaration().getReference());
-		
+
 		assertSame(compilationUnit, compilationUnit.getPackageDeclaration().getParent());
-		
+
 		//contract: types and imports are scanned exactly once when scanning starts from compilation unit
 		//note: therefore compilationUnit.getDeclaredPackage() must return null
 		List<CtType<?>> types = new ArrayList<>();
@@ -273,11 +270,11 @@ public class TestCompilationUnit {
 				assertSame(compilationUnit, ctImport.getParent());
 			}
 		}.scan(compilationUnit);
-		
+
 		assertEquals(0, types.size());
 		assertEquals(compilationUnit.getDeclaredTypeReferences(), typeRefs);
 		assertEquals(compilationUnit.getImports(), imports);
-		
+
 		//contract: compilation unit is not visited by scanner when scanning started from model
 		new CtScanner() {
 			@Override

@@ -16,6 +16,8 @@
  */
 package spoon.reflect.visitor.processors;
 
+import java.util.Arrays;
+import java.util.List;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
@@ -25,9 +27,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class CheckScannerTestProcessor extends AbstractProcessor<CtClass<?>> {
 	private final List<String> excludingClasses = Arrays.asList("CompilationUnitVirtualImpl", "CtTypeMemberWildcardImportReferenceImpl", "InvisibleArrayConstructorImpl");

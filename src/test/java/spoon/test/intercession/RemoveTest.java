@@ -18,9 +18,7 @@ package spoon.test.intercession;
 
 
 import java.util.ArrayList;
-
 import org.junit.jupiter.api.Test;
-
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;

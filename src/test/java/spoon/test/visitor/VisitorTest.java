@@ -1,7 +1,5 @@
 package spoon.test.visitor;
 
-import org.junit.jupiter.api.Test;
-import spoon.Launcher;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;

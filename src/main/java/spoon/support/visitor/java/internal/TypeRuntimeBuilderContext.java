@@ -7,6 +7,11 @@
  */
 package spoon.support.visitor.java.internal;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 import org.jspecify.annotations.Nullable;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtField;
@@ -18,12 +23,6 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.GenericDeclaration;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
 
 public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	protected CtType type;

@@ -7,15 +7,12 @@
  */
 package spoon.metamodel;
 
-import static spoon.metamodel.Metamodel.addUniqueObject;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtInterface;
@@ -23,6 +20,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.support.adaption.TypeAdaptor;
+
+import static spoon.metamodel.Metamodel.addUniqueObject;
 
 /**
  * Represents a concept of the Spoon metamodel (eg {@link CtClass}).

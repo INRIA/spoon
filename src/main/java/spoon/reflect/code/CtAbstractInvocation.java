@@ -7,12 +7,11 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.reference.CtExecutableReference;
+import java.util.List;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
-
-import java.util.List;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.reference.CtExecutableReference;
 
 import static spoon.reflect.path.CtRole.ARGUMENT;
 import static spoon.reflect.path.CtRole.EXECUTABLE_REF;

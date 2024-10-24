@@ -7,6 +7,8 @@
  */
 package spoon.support.adaption;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
@@ -14,9 +16,6 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtAbstractVisitor;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A visitor that rewrites everything with a generic type according to a {@link Node} hierarchy. This class changes the

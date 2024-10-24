@@ -10,7 +10,6 @@ package spoon.reflect.declaration;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
-
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.cu.SourcePosition;

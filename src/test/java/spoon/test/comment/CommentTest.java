@@ -16,6 +16,20 @@
  */
 package spoon.test.comment;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -89,21 +103,6 @@ import spoon.test.comment.testclasses.WindowsEOL;
 import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelTest;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -311,7 +310,7 @@ public class CommentTest {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(InlineComment.class);
 		String strType = type.toString();
-		
+
 		List<CtComment> compilationUnitComments = type.getPosition().getCompilationUnit().getComments();
 		assertEquals(2, compilationUnitComments.size());
 		assertEquals(CtComment.CommentType.BLOCK, compilationUnitComments.get(0).getCommentType());
@@ -509,7 +508,7 @@ public class CommentTest {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(BlockComment.class);
 		String strType = type.toString();
-		
+
 		List<CtComment> compilationUnitComments = type.getPosition().getCompilationUnit().getComments();
 		assertEquals(2, compilationUnitComments.size());
 		assertEquals("Bottom File", compilationUnitComments.get(1).getContent());
@@ -877,14 +876,14 @@ public class CommentTest {
 	@ExtendWith(LineSeparatorExtension.class)
 	public void testDocumentationContract() throws Exception {
 		// contract: all metamodel classes must be commented with an example.
-		
+
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 
 		launcher.getEnvironment().setComplianceLevel(22);
 		// launcher.getEnvironment().setPreviewFeaturesEnabled(true);
-		
+
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/");
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/");
@@ -1159,19 +1158,19 @@ public class CommentTest {
 	public void testCommentGetRawContent(Launcher launcher) {
 		CtClass<?> type = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.comment.testclasses.JavaDocComment");
 		//contract: getContent always returns cleaned comment content with \n as EOL
-		assertEquals("JavaDoc test class.\n" + 
-				"\n" + 
+		assertEquals("JavaDoc test class.\n" +
+				"\n" +
 				"Long description", type.getComments().get(0).getContent());
 		// contract: return the full original comment with prefix and suffix, incl. the original EOL (\r as EOL here)
-		assertEquals("/**\r" + 
-				" * JavaDoc test class.\r" + 
-				" *\r" + 
-				" * Long description\r" + 
-				" *\r" + 
-				" * @deprecated\r" + 
-				" * @since 1.3\r" + 
-				" * @author Thomas Durieux\r" + 
-				" * @version 1.0\r" + 
+		assertEquals("/**\r" +
+				" * JavaDoc test class.\r" +
+				" *\r" +
+				" * Long description\r" +
+				" *\r" +
+				" * @deprecated\r" +
+				" * @since 1.3\r" +
+				" * @author Thomas Durieux\r" +
+				" * @version 1.0\r" +
 				" */", type.getComments().get(0).getRawContent());
 	}
 
@@ -1203,7 +1202,7 @@ public class CommentTest {
 		assertEquals("comment4", ((CtAnnotationMethod) annotationMethods[3]).getComments().get(0).getContent());
 	}
 
-  public void testLambdaComments() {
+public void testLambdaComments() {
 		//contract: comments in lambdas should be properly added to the AST
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/LambdaComments.java");

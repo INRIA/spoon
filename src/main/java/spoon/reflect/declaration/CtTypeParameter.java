@@ -7,13 +7,12 @@
  */
 package spoon.reflect.declaration;
 
+import java.util.List;
+import java.util.Set;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * This element defines a declaration of a type parameter (aka generics).

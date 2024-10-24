@@ -7,13 +7,6 @@
  */
 package spoon.pattern.internal.node;
 
-import spoon.SpoonException;
-import spoon.pattern.Quantifier;
-import spoon.pattern.internal.DefaultGenerator;
-import spoon.pattern.internal.ResultHolder;
-import spoon.pattern.internal.parameter.ParameterInfo;
-import spoon.support.util.ImmutableMap;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -23,6 +16,12 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import spoon.SpoonException;
+import spoon.pattern.Quantifier;
+import spoon.pattern.internal.DefaultGenerator;
+import spoon.pattern.internal.ResultHolder;
+import spoon.pattern.internal.parameter.ParameterInfo;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Delivers single String value, which is created by replacing string markers in constant String template

@@ -21,10 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -152,8 +150,8 @@ public class PositionTest {
 		assertEquals("FooClazz", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
 		assertEquals("@Deprecated\npublic", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
 	}
-	
-	
+
+
 	@Test
 	public void testPositionClassWithComments() {
 		//contract: check that comments before and after the 'class' keyword are handled well by PositionBuilder
@@ -169,15 +167,15 @@ public class PositionTest {
 
 		assertEquals(42, position.getSourceStart());
 		assertEquals(132, position.getSourceEnd());
-		assertEquals("/*c1*/\n" + 
-				"//lc1\n" + 
-				"public /*c2*/\n" + 
-				"//lc2 /*\n" + 
-				"class \n" + 
-				"// */\n" + 
-				"/*c3 class // */\n" + 
-				"FooClazzWithComments {\n" + 
-				"\n" + 
+		assertEquals("/*c1*/\n" +
+				"//lc1\n" +
+				"public /*c2*/\n" +
+				"//lc2 /*\n" +
+				"class \n" +
+				"// */\n" +
+				"/*c3 class // */\n" +
+				"FooClazzWithComments {\n" +
+				"\n" +
 				"}", contentAtPosition(classContent, position));
 
 		assertEquals("{\n\n}", contentAtPosition(classContent, position.getBodyStart(), position.getBodyEnd()));
@@ -189,8 +187,8 @@ public class PositionTest {
 		assertEquals(4, foo2.getPosition().getEndLine());
 
 		assertEquals("FooClazzWithComments", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
-		assertEquals("/*c1*/\n" + 
-				"//lc1\n" + 
+		assertEquals("/*c1*/\n" +
+				"//lc1\n" +
 				"public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
 	}
 
@@ -204,7 +202,7 @@ public class PositionTest {
 			assertEquals("T extends List<?>", contentAtPosition(classContent, foo.getFormalCtTypeParameters().get(0).getPosition()));
 			assertEquals("X", contentAtPosition(classContent, foo.getFormalCtTypeParameters().get(1).getPosition()));
 		}
-		{	
+		{
 			CtTypeReference<?> field1Type =  foo.getField("field1").getType();
 			//this probably points to an bug in JDT. But we have no workaround in Spoon
 			assertEquals("List<T>", contentAtPosition(classContent, field1Type.getPosition()));
@@ -240,7 +238,7 @@ public class PositionTest {
 			assertEquals("U extends List<?>", contentAtPosition(classContent, methodGType.getPosition()));
 		}
 	}
-	
+
 	@Test
 	public void testPositionInterface() {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
@@ -264,7 +262,7 @@ public class PositionTest {
 
 		assertEquals("FooInterface", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
 		assertEquals("@Deprecated\n@InnerAnnot(value=\"machin\")\npublic", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
-		
+
 		{
 			SourcePosition annPosition = foo.getAnnotations().get(0).getPosition();
 			assertEquals("@Deprecated", contentAtPosition(classContent, annPosition.getSourceStart(), annPosition.getSourceEnd()));
@@ -301,7 +299,7 @@ public class PositionTest {
 		assertEquals("FooAnnotation", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
 		assertEquals("@Target(value={})\n"
 				+ "@Retention(RetentionPolicy.RUNTIME)  \npublic abstract", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
-		
+
 		CtMethod<?> method1 = foo.getMethodsByName("value").get(0);
 		BodyHolderSourcePosition position1 = (BodyHolderSourcePosition) method1.getPosition();
 
@@ -503,12 +501,12 @@ public class PositionTest {
 		CtMethod mWithLine = foo.getMethod("mWithLine", build.Type().integerPrimitiveType());
 		SourcePosition position4 = mWithLine.getPosition();
 		contentAtPosition(classContent, position4);
-		
+
 		{
 			CtMethod<?> methodWithEmptyBody = foo.getMethodsByName("emptyMethod").get(0);
 			BodyHolderSourcePosition pos = (BodyHolderSourcePosition) methodWithEmptyBody.getPosition();
 			assertEquals("public void emptyMethod() {}", contentAtPosition(classContent, pos));
-			
+
 			assertEquals("{}", contentAtPosition(classContent, pos.getBodyStart(), pos.getBodyEnd()));
 		}
 	}
@@ -676,7 +674,7 @@ public class PositionTest {
 		assertEquals("(unknown file)", s.toString());
 		assertTrue(s.hashCode() > 0); // no NPE
 	}
-	
+
 	private static void assertFails(Runnable code) {
 		try {
 			code.run();
@@ -739,7 +737,7 @@ public class PositionTest {
 		assertEquals("T extends List<?>", contentAtPosition(classContent, typeParam.getPosition()));
 		assertFalse(typeParam.getPosition() instanceof DeclarationSourcePosition);
 	}
-	
+
 	@Test
 	public void testPositionOfAnnonymousType() throws Exception {
 		//contract: the annonymous type has consistent position
@@ -748,8 +746,8 @@ public class PositionTest {
 
 		CtNewClass<?> newClass = (CtNewClass<?>) foo.getEnumValue("X").getDefaultExpression();
 		CtClass<?> annonClass = newClass.getAnonymousClass();
-		assertEquals("{\n" + 
-				"		void m() {};\n" + 
+		assertEquals("{\n" +
+				"		void m() {};\n" +
 				"	}", contentAtPosition(classContent, annonClass.getPosition()));
 		BodyHolderSourcePosition bhsp = (BodyHolderSourcePosition) annonClass.getPosition();
 		int start = annonClass.getPosition().getSourceStart();
@@ -765,7 +763,7 @@ public class PositionTest {
 		assertEquals(start, bhsp.getNameStart());
 		assertEquals(start - 1, bhsp.getNameEnd());
 	}
-	
+
 	@Test
 	public void testPositionOfAnnonymousTypeByNewInterface() throws Exception {
 		//contract: the annonymous type has consistent position
@@ -778,16 +776,16 @@ public class PositionTest {
 		BodyHolderSourcePosition bhsp = (BodyHolderSourcePosition) annonClass.getPosition();
 		int start = annonClass.getPosition().getSourceStart();
 		int end = annonClass.getPosition().getSourceEnd();
-		assertEquals("{\r\n" + 
-				"			@Override\r\n" + 
-				"			public void accept(Set<?> t) {\r\n" + 
-				"			}\r\n" + 
+		assertEquals("{\r\n" +
+				"			@Override\r\n" +
+				"			public void accept(Set<?> t) {\r\n" +
+				"			}\r\n" +
 				"		}", contentAtPosition(classContent, start, end));
-		
-		assertEquals("{\r\n" + 
-				"			@Override\r\n" + 
-				"			public void accept(Set<?> t) {\r\n" + 
-				"			}\r\n" + 
+
+		assertEquals("{\r\n" +
+				"			@Override\r\n" +
+				"			public void accept(Set<?> t) {\r\n" +
+				"			}\r\n" +
 				"		}", contentAtPosition(classContent, bhsp.getBodyStart(), bhsp.getBodyEnd()));
 
 		//there is no name and no modifiers and they are located at source start
@@ -797,12 +795,12 @@ public class PositionTest {
 		assertEquals(start, bhsp.getNameStart());
 		assertEquals(start - 1, bhsp.getNameEnd());
 	}
-	
+
 	@Test
 	public void testPositionOfCtImport() throws Exception {
 		//contract: the CtImport has position
 		final CtType<?> foo = buildClass(
-			launcher ->	launcher.getEnvironment().setAutoImports(true), 
+			launcher ->	launcher.getEnvironment().setAutoImports(true),
 			AnnonymousClassNewIface.class);
 		String originSources = foo.getPosition().getCompilationUnit().getOriginalSourceCode();
 		List<CtImport> imports = foo.getPosition().getCompilationUnit().getImports();
@@ -817,7 +815,7 @@ public class PositionTest {
 			assertEquals("import java.util.function.Consumer;", contentAtPosition(originSources, ctImport.getPosition()));
 		}
 	}
-	
+
 
 	@Test
 	public void testEmptyModifiersOfMethod() throws Exception {
@@ -843,7 +841,7 @@ public class PositionTest {
 			cfg.getEnvironment().setCommentEnabled(true);
 		}, Kokos.class);
 		String classContent = getClassContent(type);
-		
+
 		CtExtendedModifier modifier = type.getExtendedModifiers().iterator().next();
 		// a type might have implicit modifiers, and those should not have a valid position
 		if (modifier.isImplicit()) {
@@ -853,7 +851,7 @@ public class PositionTest {
 		SourcePosition commentPos = type.getComments().get(0).getPosition();
 		//modifier is not positioned in comment, but after comment
 		assertTrue(commentPos.getSourceEnd() < modifier.getPosition().getSourceStart());
-		
+
 		assertEquals("public", contentAtPosition(classContent, modifier.getPosition()));
 	}
 
@@ -962,9 +960,9 @@ public class PositionTest {
 		}
 		{
 			CtParameter<?> param = foo.getMethodsByName("m6").get(0).getParameters().get(0);
-			assertEquals("String[]//[]\n" + 
+			assertEquals("String[]//[]\n" +
 					"			p[]", contentAtPosition(classContent, param.getPosition()));
-			assertEquals("String[]//[]\n" + 
+			assertEquals("String[]//[]\n" +
 					"			p[]", contentAtPosition(classContent, param.getType().getPosition()));
 		}
 		{
@@ -978,7 +976,7 @@ public class PositionTest {
 			assertEquals("String[]...", contentAtPosition(classContent, param.getType().getPosition()));
 		}
 	}
-	
+
 	@Test
 	public void testExpressions() throws Exception {
 		//contract: the expression including type casts has correct position which includes all brackets too
@@ -992,16 +990,16 @@ public class PositionTest {
 		assertEquals("(String)null", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
 		assertEquals("( String) ( (Serializable)(( (null ))))", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
 		assertEquals("(((String) null))", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
-		assertEquals("( /*c2*/\n" + 
-				"				(\n" + 
-				"						/*c3*/  String\n" + 
-				"						/*c4*/) //c5\n" + 
-				"				null /*c6*/\n" + 
-				"				//c7\n" + 
+		assertEquals("( /*c2*/\n" +
+				"				(\n" +
+				"						/*c3*/  String\n" +
+				"						/*c4*/) //c5\n" +
+				"				null /*c6*/\n" +
+				"				//c7\n" +
 				"				)", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
 		assertEquals("(List<?>) null", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
 		assertEquals("(List<List<Map<String,Integer>>>) null", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
-		
+
 		//contract: check the position of expression without type casts
 		{
 			CtExpression<?> expr = statements.get(1).getArguments().get(0);
@@ -1016,7 +1014,7 @@ public class PositionTest {
 			assertEquals("( String) ( (Serializable)(( (null ))))", contentAtPosition(classContent, expr.getPosition()));
 			//if there is type cast in expression, then it uses CompoundSourcePosition
 			assertTrue(expr.getPosition() instanceof CompoundSourcePosition);
-			
+
 			//contract: check the position of type casts
 			assertEquals("( String)", contentAtPosition(classContent, expr.getTypeCasts().get(0).getPosition()));
 			assertEquals("(Serializable)", contentAtPosition(classContent, expr.getTypeCasts().get(1).getPosition()));
@@ -1034,73 +1032,73 @@ public class PositionTest {
 		{
 			CtCatch catcher = tryStatement.getCatchers().get(0);
 			CtCatchVariable<?> catchVar = catcher.getParameter();
-			
+
 			BodyHolderSourcePosition catcherPos = (BodyHolderSourcePosition) catcher.getPosition();
 			DeclarationSourcePosition catchVarPos = (DeclarationSourcePosition) catchVar.getPosition();
 
-			assertEquals(" catch (final IOException e) {\n" + 
-					"			throw new RuntimeException(e);\n" + 
+			assertEquals(" catch (final IOException e) {\n" +
+					"			throw new RuntimeException(e);\n" +
 					"		}", contentAtPosition(classContent, catcherPos.getSourceStart(), catcherPos.getSourceEnd()));
 			assertEquals("final IOException e", contentAtPosition(classContent, catchVarPos.getSourceStart(), catchVarPos.getSourceEnd()));
 
 			assertEquals("", contentAtPosition(classContent, catcherPos.getModifierSourceStart(), catcherPos.getModifierSourceEnd()));
 			assertEquals("final", contentAtPosition(classContent, catchVarPos.getModifierSourceStart(), catchVarPos.getModifierSourceEnd()));
-			
+
 			assertEquals(" catch (", contentAtPosition(classContent, catcherPos.getModifierSourceEnd() + 1, catcherPos.getNameStart() - 1));
 			assertEquals(" IOException ", contentAtPosition(classContent, catchVarPos.getModifierSourceEnd() + 1, catchVarPos.getNameStart() - 1));
 
 			assertEquals("final IOException e", contentAtPosition(classContent, catcherPos.getNameStart(), catcherPos.getNameEnd()));
 			assertEquals("e", contentAtPosition(classContent, catchVarPos.getNameStart(), catchVarPos.getNameEnd()));
 
-			assertEquals("{\n" + 
-				"			throw new RuntimeException(e);\n" + 
+			assertEquals("{\n" +
+				"			throw new RuntimeException(e);\n" +
 				"		}", contentAtPosition(classContent, catcherPos.getBodyStart(), catcherPos.getBodyEnd()));
 		}
 		{
 			CtCatch catcher = tryStatement.getCatchers().get(1);
 			BodyHolderSourcePosition pos = (BodyHolderSourcePosition) catcher.getPosition();
-			assertEquals(" /*1*/ catch/*2*/ ( /*3*/ final @Deprecated /*4*/ ClassCastException /*5*/ e /*6*/) /*7*/ {\n" + 
-					"			throw new RuntimeException(e);\n" + 
+			assertEquals(" /*1*/ catch/*2*/ ( /*3*/ final @Deprecated /*4*/ ClassCastException /*5*/ e /*6*/) /*7*/ {\n" +
+					"			throw new RuntimeException(e);\n" +
 					"		}", contentAtPosition(classContent, pos.getSourceStart(), pos.getSourceEnd()));
 			assertEquals("", contentAtPosition(classContent, pos.getModifierSourceStart(), pos.getModifierSourceEnd()));
 			assertEquals(" /*3*/ final @Deprecated /*4*/ ClassCastException /*5*/ e", contentAtPosition(classContent, pos.getNameStart(), pos.getNameEnd()));
-			assertEquals("{\n" + 
-					"			throw new RuntimeException(e);\n" + 
+			assertEquals("{\n" +
+					"			throw new RuntimeException(e);\n" +
 					"		}", contentAtPosition(classContent, pos.getBodyStart(), pos.getBodyEnd()));
 		}
 		{
 			CtCatch catcher = tryStatement.getCatchers().get(2);
 			BodyHolderSourcePosition pos = (BodyHolderSourcePosition) catcher.getPosition();
-			assertEquals(" catch /* ignore this catch */\n" + 
-					"		//and this catch too!\n" + 
-					"		( /**catch it ( */\n" + 
-					"				//catch (\n" + 
-					"				OutOfMemoryError|RuntimeException e) {\n" + 
-					"			throw new RuntimeException(e);\n" + 
+			assertEquals(" catch /* ignore this catch */\n" +
+					"		//and this catch too!\n" +
+					"		( /**catch it ( */\n" +
+					"				//catch (\n" +
+					"				OutOfMemoryError|RuntimeException e) {\n" +
+					"			throw new RuntimeException(e);\n" +
 					"		}", contentAtPosition(classContent, pos.getSourceStart(), pos.getSourceEnd()));
 			assertEquals("", contentAtPosition(classContent, pos.getModifierSourceStart(), pos.getModifierSourceEnd()));
-			assertEquals(" /**catch it ( */\n" + 
-					"				//catch (\n" + 
+			assertEquals(" /**catch it ( */\n" +
+					"				//catch (\n" +
 					"				OutOfMemoryError|RuntimeException e", contentAtPosition(classContent, pos.getNameStart(), pos.getNameEnd()));
-			assertEquals("{\n" + 
-					"			throw new RuntimeException(e);\n" + 
+			assertEquals("{\n" +
+					"			throw new RuntimeException(e);\n" +
 					"		}", contentAtPosition(classContent, pos.getBodyStart(), pos.getBodyEnd()));
 		}
 	}
 	@Test
 	public void testEnumConstructorCallComment() throws Exception {
-		//contract: check position the enum constructor call 
+		//contract: check position the enum constructor call
 		final CtType<?> foo = buildClass(FooEnum.class);
-		
+
 		String classContent = getClassContent(foo);
 		CtField<?> field = foo.getField("GET");
 		{
-			assertEquals("/**\n" + 
-					"	 * Getter.\n" + 
-					"	 * T get()\n" + 
-					"	 */\n" + 
+			assertEquals("/**\n" +
+					"	 * Getter.\n" +
+					"	 * T get()\n" +
+					"	 */\n" +
 					"	GET(-1)", contentAtPosition(classContent, field.getPosition()));
-			
+
 			assertEquals("(-1)", contentAtPosition(classContent, field.getDefaultExpression().getPosition()));
 		}
 	}
@@ -1108,7 +1106,7 @@ public class PositionTest {
 	public void testSwitchCase() throws Exception {
 		//contract: check position of the statements of the case of switch
 		final CtType<?> foo = buildClass(FooSwitch.class);
-		
+
 		String classContent = getClassContent(foo);
 		CtSwitch<?> switchStatement = foo.getMethodsByName("m1").get(0).getBody().getStatement(0);
 		int caseIdx = 0;
@@ -1118,26 +1116,26 @@ public class PositionTest {
 		}
 		{
 			CtCase<?> caseStmt = switchStatement.getCases().get(caseIdx++);
-			assertEquals("case C1: \n" + 
-					"			System.out.println();\n" + 
+			assertEquals("case C1: \n" +
+					"			System.out.println();\n" +
 					"			break;", contentAtPosition(classContent, caseStmt.getPosition()));
 		}
 		{
 			CtCase<?> caseStmt = switchStatement.getCases().get(caseIdx++);
-			assertEquals("case C2: {\n" + 
-					"			return 2;\n" + 
+			assertEquals("case C2: {\n" +
+					"			return 2;\n" +
 					"		}", contentAtPosition(classContent, caseStmt.getPosition()));
 		}
 		{
 			CtCase<?> caseStmt = switchStatement.getCases().get(caseIdx++);
-			assertEquals("case C3: {\n" + 
-					"			return 2;\n" + 
+			assertEquals("case C3: {\n" +
+					"			return 2;\n" +
 					"		}", contentAtPosition(classContent, caseStmt.getPosition()));
 		}
 		{
 			CtCase<?> caseStmt = switchStatement.getCases().get(caseIdx++);
-			assertEquals("default:\n" + 
-					"			System.out.println();\n" + 
+			assertEquals("default:\n" +
+					"			System.out.println();\n" +
 					"			break;", contentAtPosition(classContent, caseStmt.getPosition()));
 		}
 	}
@@ -1145,7 +1143,7 @@ public class PositionTest {
 	public void testFooForEach() throws Exception {
 		//contract: check position of the for each position
 		final CtType<?> foo = buildClass(FooForEach.class);
-		
+
 		String classContent = getClassContent(foo);
 		List<CtForEach> stmts = (List) foo.getMethodsByName("m").get(0).getBody().getStatements();
 		int caseIdx = 0;
@@ -1157,14 +1155,14 @@ public class PositionTest {
 		}
 		{
 			CtForEach forEach = stmts.get(caseIdx++);
-			assertEquals("for (final String item : items) {\n" + 
+			assertEquals("for (final String item : items) {\n" +
 					"		}", contentAtPosition(classContent, forEach.getPosition()));
 			assertEquals("final String item", contentAtPosition(classContent, forEach.getVariable().getPosition()));
 			assertEquals("items", contentAtPosition(classContent, forEach.getExpression().getPosition()));
 		}
 		{
 			CtForEach forEach = stmts.get(caseIdx++);
-			assertEquals("for (/*1*/ final @Deprecated /*2*/ String /*3*/ i /*4*/ : items) \n" + 
+			assertEquals("for (/*1*/ final @Deprecated /*2*/ String /*3*/ i /*4*/ : items) \n" +
 					"			this.getClass();", contentAtPosition(classContent, forEach.getPosition()));
 			assertEquals("/*1*/ final @Deprecated /*2*/ String /*3*/ i", contentAtPosition(classContent, forEach.getVariable().getPosition()));
 			assertEquals("items", contentAtPosition(classContent, forEach.getExpression().getPosition()));
@@ -1290,11 +1288,11 @@ public class PositionTest {
 			cfg.getEnvironment().setAutoImports(true);
 		}, CompilationUnitComments.class);
 		String classContent = getClassContent(type);
-		
+
 		CtCompilationUnit cu = type.getPosition().getCompilationUnit();
 		CtImport imprt = cu.getImports().get(0);
-		
-		assertEquals("//import comment\n" + 
+
+		assertEquals("//import comment\n" +
 				"import java.util.ArrayList;", contentAtPosition(classContent, imprt.getPosition()));
 		assertEquals("java.util.ArrayList", contentAtPosition(classContent, imprt.getReference().getPosition()));
 	}
@@ -1307,11 +1305,11 @@ public class PositionTest {
 			cfg.getEnvironment().setAutoImports(true);
 		}, CompilationUnitComments.class);
 		String classContent = getClassContent(type);
-		
+
 		CtCompilationUnit cu = type.getPosition().getCompilationUnit();
 		CtPackageDeclaration packageDecl = cu.getPackageDeclaration();
-		
-		assertEquals("/* package declaration comments*/\n" + 
+
+		assertEquals("/* package declaration comments*/\n" +
 				"package spoon.test.position.testclasses;", contentAtPosition(classContent, packageDecl.getPosition()));
 		assertEquals("spoon.test.position.testclasses", contentAtPosition(classContent, packageDecl.getReference().getPosition()));
 	}
@@ -1332,7 +1330,7 @@ public class PositionTest {
 			cfg.getEnvironment().setAutoImports(true);
 		}, FooField.class);
 		String classContent = getClassContent(foo);
-		
+
 		CtAssignment<?, ?> assignment =  (CtAssignment<?, ?>) foo.getMethodsByName("m").get(0).getBody().getStatements().get(0);
 		CtFieldWrite<?> fieldWrite = (CtFieldWrite<?>) assignment.getAssigned();
 		assertEquals("FooField.f.field2", contentAtPosition(classContent, fieldWrite.getPosition()));

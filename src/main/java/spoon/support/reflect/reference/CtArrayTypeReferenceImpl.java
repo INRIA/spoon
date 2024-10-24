@@ -7,14 +7,13 @@
  */
 package spoon.support.reflect.reference;
 
+import java.lang.reflect.Array;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.SpoonClassNotFoundException;
-
-import java.lang.reflect.Array;
 
 import static spoon.reflect.path.CtRole.TYPE;
 

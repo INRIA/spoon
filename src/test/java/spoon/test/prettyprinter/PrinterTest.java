@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -355,7 +354,7 @@ public class PrinterTest {
 			pp.calculate(t.getPosition().getCompilationUnit(), Collections.singletonList(t));
 			//result of printing using standard DefaultTokenWriter
 			String standardPrintedResult = pp.getResult();
-			
+
 			StringBuilder allTokens = new StringBuilder();
 			//print type with custom listener
 			//1) register custom TokenWriter which checks the TokenWriter contract
@@ -366,24 +365,24 @@ public class PrinterTest {
 				@Override
 				public TokenWriter writeSeparator(String separator) {
 					checkRepeatingOfTokens("writeSeparator");
-					checkTokenWhitespace(separator, false);					
+					checkTokenWhitespace(separator, false);
 					//one of the separators
 					assertTrue(separators.contains(separator), "Unexpected separator: " + separator);
 					handleTabs();
 					allTokens.append(separator);
 					return this;
 				}
-				
+
 				@Override
 				public TokenWriter writeOperator(String operator) {
 					checkRepeatingOfTokens("writeOperator");
-					checkTokenWhitespace(operator, false);					
+					checkTokenWhitespace(operator, false);
 					assertTrue(operators.contains(operator), "Unexpected operator: " + operator);
 					handleTabs();
 					allTokens.append(operator);
 					return this;
 				}
-				
+
 				@Override
 				public TokenWriter writeLiteral(String literal) {
 					checkRepeatingOfTokens("writeLiteral");
@@ -392,17 +391,17 @@ public class PrinterTest {
 					allTokens.append(literal);
 					return this;
 				}
-				
+
 				@Override
 				public TokenWriter writeKeyword(String keyword) {
 					checkRepeatingOfTokens("writeKeyword");
-					checkTokenWhitespace(keyword, false);					
+					checkTokenWhitespace(keyword, false);
 					assertTrue(javaKeywords.contains(keyword), "Unexpected java keyword: " + keyword);
 					handleTabs();
 					allTokens.append(keyword);
 					return this;
 				}
-				
+
 				@Override
 				public TokenWriter writeIdentifier(String identifier) {
 					checkRepeatingOfTokens("writeIdentifier");
@@ -423,7 +422,7 @@ public class PrinterTest {
 					allTokens.append(identifier);
 					return this;
 				}
-				
+
 				@Override
 				public TokenWriter writeComment(CtComment comment) {
 					checkRepeatingOfTokens("writeComment");
@@ -436,7 +435,7 @@ public class PrinterTest {
 					allTokens.append(sptw.getPrinterHelper().toString());
 					return this;
 				}
-				
+
 				@Override
 				public TokenWriter writeln() {
 					checkRepeatingOfTokens("writeln");
@@ -444,10 +443,10 @@ public class PrinterTest {
 					lastTokenWasEOL = true;
 					return this;
 				}
-				
+
 				private boolean lastTokenWasEOL = true;
 				private int tabCount = 0;
-				
+
 				public TokenWriter handleTabs() {
 					if(lastTokenWasEOL) {
 						lastTokenWasEOL = false;
@@ -460,7 +459,7 @@ public class PrinterTest {
 								}
 							}
 						}
-						
+
 					}
 					return this;
 				}
@@ -517,14 +516,14 @@ public class PrinterTest {
 					this.lastToken = tokenType;
 				}
 			});
-			
+
 			//2) print type using PrettyPrinter with listener
 			pp.calculate(t.getPosition().getCompilationUnit(), Collections.singletonList(t));
 			String withEmptyListenerResult = pp.getResult();
 			//contract: each printed character is handled by listener. PrinterHelper is not called directly
 			//and because PrinterTokenListener above does not use PrinterHelper, the result must be empty
 			assertEquals(0, withEmptyListenerResult.length());
-			
+
 			//contract: result built manually from tokens is same like the one made by DefaultTokenWriter
 			assertEquals(standardPrintedResult, allTokens.toString());
 		}
@@ -606,7 +605,7 @@ public class PrinterTest {
 		assertTrue(FileUtils.readFileToString(new File("spooned/HelloWorld.java"), "UTF-8").contains("  class"));
 	}
 
-	
+
 	@Test
 	public void testTypeLostPrintingStringClassReference() {
 		// contract: when a class reference is printed, the type is not lost

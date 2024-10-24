@@ -24,10 +24,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -57,7 +54,6 @@ import spoon.test.pkg.processors.ElementProcessor;
 import spoon.test.pkg.testclasses.Foo;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
-
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -175,12 +171,12 @@ public class PackageTest {
 		compilationUnits.forEach(
 				cu -> org.hamcrest.MatcherAssert.assertThat(cu.getFile().getName(), equalTo("package-info.java")));
 	}
-	
+
 	@Test
 	public void testAnnotationInPackageInfoWhenTemplatesCompiled() throws Exception {
 		final Launcher launcher = new Launcher();
 		Environment environment = launcher.getEnvironment();
-		
+
 		environment.setAutoImports(true);
 		environment.setCommentEnabled(true);
 		launcher.addInputResource("./src/test/java/spoon/test/pkg/package-info.java");

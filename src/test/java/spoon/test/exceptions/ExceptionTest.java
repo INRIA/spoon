@@ -19,7 +19,6 @@ package spoon.test.exceptions;
 
 import java.io.FileNotFoundException;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
@@ -119,7 +118,7 @@ public class ExceptionTest {
 			// an exception should be thrown, even in noclasspath mode
 			spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/resources/spoon/test/duplicateclasses/Foo.java", "./src/test/resources/spoon/test/duplicateclasses/Bar.java")).build();
 		});
-	} 
+	}
 
 	@Test
 	public void testUnionCatchExceptionInsideLambdaInNoClasspath() {

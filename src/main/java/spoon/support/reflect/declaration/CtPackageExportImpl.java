@@ -7,16 +7,15 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class CtPackageExportImpl extends CtElementImpl implements CtPackageExport {
 	@MetamodelPropertyField(role = CtRole.PACKAGE_REF)

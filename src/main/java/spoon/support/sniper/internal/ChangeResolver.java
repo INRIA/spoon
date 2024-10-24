@@ -9,7 +9,6 @@ package spoon.support.sniper.internal;
 
 import java.util.Collections;
 import java.util.Set;
-
 import spoon.SpoonException;
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.CtElement;

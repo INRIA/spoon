@@ -9,7 +9,6 @@ package spoon.reflect.meta.impl;
 
 import java.util.AbstractList;
 import java.util.Collections;
-
 import spoon.SpoonException;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;

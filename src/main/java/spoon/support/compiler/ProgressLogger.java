@@ -7,9 +7,8 @@
  */
 package spoon.support.compiler;
 
-import spoon.compiler.Environment;
-
 import java.util.GregorianCalendar;
+import spoon.compiler.Environment;
 
 public class ProgressLogger implements SpoonProgress {
 	private long stepTimer;

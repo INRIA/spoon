@@ -21,9 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
@@ -107,11 +105,11 @@ public class TestSourceFragment {
 		//add child
 		assertSame(rootFragment, rootFragment.add(f = createFragment(10, 15)));
 		assertSame(rootFragment.getFirstChild(), f);
-		
+
 		//add child which is next sibling of first child
 		assertSame(rootFragment, rootFragment.add(f = createFragment(15, 20)));
 		assertSame(rootFragment.getFirstChild().getNextSibling(), f);
-		
+
 		//add another child of same start/end, which has to be child of last child
 		assertSame(rootFragment, rootFragment.add(f = createFragment(15, 20)));
 		assertSame(rootFragment.getFirstChild().getNextSibling().getFirstChild(), f);
@@ -123,7 +121,7 @@ public class TestSourceFragment {
 		//add next sibling of root element
 		assertSame(rootFragment, rootFragment.add(f = createFragment(20, 100)));
 		assertSame(rootFragment.getNextSibling(), f);
-		
+
 		//add prev sibling of root element. We should get new root
 		f = createFragment(5, 10);
 		assertSame(f, rootFragment.add(f));
@@ -145,11 +143,11 @@ public class TestSourceFragment {
 
 	@Test
 	public void testSourceFragmentWrapChild() {
-		//contract: the existing child fragment can be wrapped by a new parent 
+		//contract: the existing child fragment can be wrapped by a new parent
 		ElementSourceFragment rootFragment = createFragment(0, 100);
 		ElementSourceFragment child = createFragment(50, 60);
 		rootFragment.add(child);
-		
+
 		ElementSourceFragment childWrapper = createFragment(40, 60);
 		rootFragment.add(childWrapper);
 		assertSame(rootFragment.getFirstChild(), childWrapper);
@@ -158,11 +156,11 @@ public class TestSourceFragment {
 
 	@Test
 	public void testSourceFragmentWrapChildrenAndSiblings() {
-		//contract: the two SourceFragment trees merge correctly together 
+		//contract: the two SourceFragment trees merge correctly together
 		ElementSourceFragment rootFragment = createFragment(0, 100);
 		ElementSourceFragment child = createFragment(50, 60);
 		rootFragment.add(child);
-		
+
 		ElementSourceFragment childWrapper = createFragment(40, 70);
 		ElementSourceFragment childA = createFragment(40, 50);
 		ElementSourceFragment childB = createFragment(50, 55);
@@ -187,7 +185,7 @@ public class TestSourceFragment {
 		rootFragment.add(createFragment(50, 60));
 		rootFragment.add(createFragment(60, 70));
 		rootFragment.add(x = createFragment(50, 55));
-		
+
 		assertSame(x, rootFragment.getSourceFragmentOf(null, 50, 55));
 		assertSame(rootFragment, rootFragment.getSourceFragmentOf(null, 0, 100));
 		assertSame(rootFragment.getFirstChild(), rootFragment.getSourceFragmentOf(null, 50, 60));
@@ -195,7 +193,7 @@ public class TestSourceFragment {
 	}
 
 	private static final CompilationUnit DUMMY_COMPILATION_UNIT = new CompilationUnitImpl();
-	
+
 	private ElementSourceFragment createFragment(int start, int end) {
 		SourcePosition sp = new SourcePositionImpl(DUMMY_COMPILATION_UNIT, start, end - 1, null);
 		return new ElementSourceFragment(new SourcePositionHolder() {
@@ -221,34 +219,34 @@ public class TestSourceFragment {
 		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + FooSourceFragments.class.getName().replace('.', '/') + ".java"));
 		comp.build();
 		Factory f = comp.getFactory();
-		
+
 		final CtType<?> foo = f.Type().get(FooSourceFragments.class);
 
 		// contract: the fragment returned by getOriginalSourceFragment are correct
 		checkElementFragments(foo.getMethodsByName("m1").get(0).getBody().getStatement(0),
 				"if", "(", "x > 0", ")", "{this.getClass();}", "else", "{/*empty*/}");
 		checkElementFragments(foo.getMethodsByName("m2").get(0).getBody().getStatement(0),
-				"/*c0*/", " ", "if", "  ", "/*c1*/", "\t", "(", " ", "//c2", "\n\t\t\t\t", "x > 0", " ", "/*c3*/", " ", ")", " ", "/*c4*/", " ", "{ \n" + 
-						"			this.getClass();\n" + 
-						"		}", " ", "/*c5*/ else /*c6*/ {\n" + 
-						"			/*empty*/\n" + 
+				"/*c0*/", " ", "if", "  ", "/*c1*/", "\t", "(", " ", "//c2", "\n\t\t\t\t", "x > 0", " ", "/*c3*/", " ", ")", " ", "/*c4*/", " ", "{ \n" +
+						"			this.getClass();\n" +
+						"		}", " ", "/*c5*/ else /*c6*/ {\n" +
+						"			/*empty*/\n" +
 						"		}", " ", "/*c7*/");
 		checkElementFragments(foo.getMethodsByName("m3").get(0),
-				"/**\n" + 
-				"	 * c0\n" + 
+				"/**\n" +
+				"	 * c0\n" +
 				"	 */", "\n\t",
 				group("public", "\n\t", "@Deprecated", " ", "//c1 ends with tab and space\t ", "\n\t", "static"), " ", "/*c2*/", " ",
 				"<", group("T", ",", " ", "U"), ">",
-				" ", "T", " ", "m3", "(", group("U param", ",", " ", "@Deprecated int p2"), ")", " ", "{\n" + 
-						"		return null;\n" + 
+				" ", "T", " ", "m3", "(", group("U param", ",", " ", "@Deprecated int p2"), ")", " ", "{\n" +
+						"		return null;\n" +
 						"	}");
 		checkElementFragments(foo.getMethodsByName("m4").get(0).getBody().getStatement(0),"label",":"," ", "while", "(", "true", ")", ";");
 
 		checkElementFragments(foo.getMethodsByName("m5").get(0).getBody().getStatement(0),"f", " ", "=", " ", "7.2", ";");
 		checkElementFragments(((CtAssignment)foo.getMethodsByName("m5").get(0).getBody().getStatement(0)).getAssignment(),"7.2");
-				 
+
 	}
-	
+
 	@Test
 	public void testSourceFragmentsOfCompilationUnit() throws Exception {
 		//contract: SourceFragments of compilation unit children like, package declaration, imports, types
@@ -259,37 +257,37 @@ public class TestSourceFragment {
 		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + FooSourceFragments.class.getName().replace('.', '/') + ".java"));
 		comp.build();
 		Factory f = comp.getFactory();
-		
+
 		final CtType<?> foo = f.Type().get(FooSourceFragments.class);
 		CtCompilationUnit compilationUnit = foo.getPosition().getCompilationUnit();
-		
+
 		ElementSourceFragment fragment = compilationUnit.getOriginalSourceFragment();
 		List<SourceFragment> children = fragment.getChildrenFragments();
 		assertEquals(11, children.size());
-		assertEquals("/**\n" + 
-				" * Javadoc at top of file\n" + 
+		assertEquals("/**\n" +
+				" * Javadoc at top of file\n" +
 				" */", children.get(0).getSourceCode());
 		assertEquals("\n", children.get(1).getSourceCode());
-		assertEquals("/* comment before package declaration*/\n" + 
+		assertEquals("/* comment before package declaration*/\n" +
 				"package spoon.test.position.testclasses;", children.get(2).getSourceCode());
 		assertEquals("\n\n", children.get(3).getSourceCode());
-		assertEquals("/*\n" + 
-				" * Comment before import\n" + 
-				" */\n" + 
+		assertEquals("/*\n" +
+				" * Comment before import\n" +
+				" */\n" +
 				"import java.lang.Deprecated;", children.get(4).getSourceCode());
 		assertEquals("\n\n", children.get(5).getSourceCode());
 		assertEquals("import java.lang.Class;", children.get(6).getSourceCode());
 		assertEquals("\n\n", children.get(7).getSourceCode());
 		assertTrue(((ElementSourceFragment) children.get(8)).getElement() instanceof CtClass);
-		assertStartsWith("/*\n" + 
-				" * Comment before type\n" + 
-				" */\n" + 
+		assertStartsWith("/*\n" +
+				" * Comment before type\n" +
+				" */\n" +
 				"public class FooSourceFragments", children.get(8).getSourceCode());
 		assertEndsWith("//after last type member\n}", children.get(8).getSourceCode());
 		assertEquals("\n\n", children.get(9).getSourceCode());
 		assertEquals("//comment at the end of file", children.get(10).getSourceCode());
 	}
-	
+
 
 	private void assertStartsWith(String expectedPrefix, String real) {
 		assertEquals(expectedPrefix, real.substring(0, Math.min(expectedPrefix.length(), real.length())));
@@ -310,15 +308,15 @@ public class TestSourceFragment {
 		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + FooField.class.getName().replace('.', '/') + ".java"));
 		comp.build();
 		Factory f = comp.getFactory();
-		
+
 		final CtType<?> foo = f.Type().get(FooField.class);
-		
+
 		CtAssignment<?, ?> assignment =  (CtAssignment<?, ?>) foo.getMethodsByName("m").get(0).getBody().getStatements().get(0);
 		CtFieldWrite<?> fieldWrite = (CtFieldWrite<?>) assignment.getAssigned();
 		CtFieldReference<?> fieldRef = fieldWrite.getVariable();
 		CtFieldRead<?> fieldRead = (CtFieldRead<?>) fieldWrite.getTarget();
 		CtFieldReference<?> fieldRef2 = fieldRead.getVariable();
-		
+
 		ElementSourceFragment fieldWriteSF = fieldWrite.getOriginalSourceFragment();
 		List<SourceFragment> children = fieldWriteSF.getChildrenFragments();
 		assertEquals(3, children.size());
@@ -337,7 +335,7 @@ public class TestSourceFragment {
 	public void testSourceFragmentsOfNewArrayList() throws Exception {
 		//contract: SourceFragments of constructor call is as expected
 		final CtType<?> type = ModelUtils.buildClass(NewArrayList.class);
-		
+
 		CtConstructorCall<?> constCall =  (CtConstructorCall<?>) type.getMethodsByName("m").get(0).getBody().getStatements().get(0);
 		//new ArrayList<>();
 		ElementSourceFragment constCallSF = constCall.getOriginalSourceFragment();
@@ -349,7 +347,7 @@ public class TestSourceFragment {
 		assertEquals("(", children.get(3).getSourceCode());
 		assertEquals(")", children.get(4).getSourceCode());
 		assertEquals(";", children.get(5).getSourceCode());
-		
+
 		List<SourceFragment> children2 = ((ElementSourceFragment) children.get(2)).getChildrenFragments();
 		assertEquals(3, children2.size());
 		assertEquals("ArrayList", children2.get(0).getSourceCode());
@@ -373,10 +371,10 @@ public class TestSourceFragment {
 			assertEquals("(", children.get(3).getSourceCode());
 			assertEquals(")", children.get(4).getSourceCode());
 			assertEquals(" ", children.get(5).getSourceCode());
-			assertEquals("{" + 
-					"			@Override" + 
-					"			public void accept(Set<?> t) {" + 
-					"			}" + 
+			assertEquals("{" +
+					"			@Override" +
+					"			public void accept(Set<?> t) {" +
+					"			}" +
 					"		}", children.get(6).getSourceCode().replaceAll("\\r|\\n", ""));
 		}
 		{
@@ -389,13 +387,13 @@ public class TestSourceFragment {
 			assertEquals(5, children.size());
 			assertEquals("{", children.get(0).getSourceCode());
 			assertEquals("			", children.get(1).getSourceCode().replaceAll("\\r|\\n", ""));
-			assertEquals("@Override" + 
-					"			public void accept(Set<?> t) {" + 
+			assertEquals("@Override" +
+					"			public void accept(Set<?> t) {" +
 					"			}", children.get(2).getSourceCode().replaceAll("\\r|\\n", ""));
 			assertEquals("		", children.get(3).getSourceCode().replaceAll("\\r|\\n", ""));
 			assertEquals("}", children.get(4).getSourceCode());
-			
-			
+
+
 		}
 	}
 
@@ -439,7 +437,7 @@ public class TestSourceFragment {
 			return "\"" + item.getSourceCode() + "\"";
 		}).collect(Collectors.joining(";")));
 	}
-	
+
 	private static List<String> toCodeStrings(List<SourceFragment> csf) {
 		return csf.stream().map(SourceFragment::getSourceCode).collect(Collectors.toList());
 	}

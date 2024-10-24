@@ -1,5 +1,6 @@
 package spoon.testing.utils;
 
+import java.lang.reflect.Executable;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -7,8 +8,6 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.factory.Factory;
-
-import java.lang.reflect.Executable;
 
 public class ModelTestParameterResolver implements ParameterResolver {
 

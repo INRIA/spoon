@@ -19,12 +19,9 @@ package spoon.test.ctClass;
 
 import java.io.File;
 import java.util.Set;
-
 import java.util.concurrent.TimeUnit;
-
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -366,7 +363,7 @@ public class CtClassTest {
 	public void test_buildParameterizedClass_withTypeParameterUsedInQualifiedName() {
 		// contract: It should be possible to build a generic class when one of the type parameters
 		// is used in the qualified name of another type.
-        //
+		//
 		// See https://github.com/INRIA/spoon/issues/3903
 
 		CtClass<?> cls = Launcher.parseClass(

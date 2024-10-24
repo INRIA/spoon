@@ -16,6 +16,13 @@
  */
 package spoon.test.filters;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -92,14 +99,6 @@ import spoon.test.filters.testclasses.Tostada;
 import spoon.test.imports.testclasses.internal4.Constants;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.utils.ModelUtils.build;
@@ -570,7 +569,7 @@ public class FilterTest {
 		assertNotNull(declaration);
 		assertEquals("size", declaration.getSimpleName());
 	}
-	
+
 	@Test
 	public void testReflectionBasedTypeFilter() {
 		final Launcher launcher = new Launcher();
@@ -596,7 +595,7 @@ public class FilterTest {
 		//then do it using Filter implemented by lambda expression
 		List<CtClass<?>> allClasses3 = launcher.getFactory().Package().getRootPackage().getElements((CtClass<?> element)->true);
 		assertArrayEquals(allClasses.toArray(), allClasses3.toArray());
-		
+
 		//last try AbstractFilter constructor without class parameter
 		final CtClass<Tacos> aTacos = launcher.getFactory().Class().get(Tacos.class);
 		final CtInvocation<?> invSize = aTacos.getElements(new AbstractFilter<CtInvocation<?>>(/*no class is needed here*/) {
@@ -616,14 +615,14 @@ public class FilterTest {
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		class Context {
 			int counter = 0;
 		}
 		Context context = new Context();
-		
+
 		CtQuery l_qv = launcher.getFactory().getModel().filterChildren(new TypeFilter<>(CtClass.class));
-		
+
 		assertEquals(0, context.counter);
 		l_qv.forEach(cls->{
 			assertTrue(cls instanceof CtClass);
@@ -631,7 +630,7 @@ public class FilterTest {
 		});
 		assertTrue(context.counter>0);
 	}
-	
+
 	@Test
 	public void testQueryBuilderWithFilterChain() {
 		// contract: query methods can be lazy evaluated in a foreach
@@ -639,12 +638,12 @@ public class FilterTest {
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		class Context {
 			CtMethod<?> method;
 			int count = 0;
 		}
-		
+
 		Context context = new Context();
 
 		// chaining queries
@@ -663,14 +662,14 @@ public class FilterTest {
 		// sanity check
 		assertTrue(context.count>0);
 	}
-	
+
 	@Test
 	public void testFilterQueryStep() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		//Contract: the filter(Filter) can be used to detect if input of query step should pass to next query step.
 		List<CtElement> realList = launcher.getFactory().Package().getRootPackage().filterChildren(e->{return true;}).select(new TypeFilter<>(CtClass.class)).list();
 		List<CtElement> expectedList = launcher.getFactory().Package().getRootPackage().filterChildren(new TypeFilter<>(CtClass.class)).list();
@@ -684,7 +683,7 @@ public class FilterTest {
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		//Contract: the filterChildren(null) without Filter returns same results like filter which returns true for each input.
 		List<CtElement> list = launcher.getFactory().Package().getRootPackage().filterChildren(null).list();
 		Iterator<CtElement> iter = list.iterator();
@@ -705,11 +704,11 @@ public class FilterTest {
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		class Context {
 			int count = 0;
 		}
-		
+
 		Context context = new Context();
 
 		CtQuery query = launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;}).name("filter CtClass only")
@@ -734,7 +733,7 @@ public class FilterTest {
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		try {
 			launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;}).name("step1")
 				.map((CtMethod<?> m)->m).name("invalidStep2")
@@ -758,12 +757,12 @@ public class FilterTest {
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		class Context {
 			int count = 0;
 		}
 		Context context = new Context();
-		
+
 		launcher.getFactory().Package().getRootPackage().filterChildren((CtElement c)->{return true;}).name("step1")
 			.map((CtMethod<?> m)->m).name("invalidStep2")
 			.map((o)->o).name("step3")
@@ -781,7 +780,7 @@ public class FilterTest {
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
 		cls.map((CtClass<?> c)->c.getParent())
 			.forEach((CtElement e)->{
@@ -796,7 +795,7 @@ public class FilterTest {
 		CtQuery q = launcher.getFactory().Query().createQuery().map((String s)->new String[]{"a", null, s});
 		List<String> list = q.setInput(null).list();
 		assertEquals(0, list.size());
-		
+
 		list = q.setInput("c").list();
 		assertEquals(2, list.size());
 		assertEquals("a", list.get(0));
@@ -827,7 +826,7 @@ public class FilterTest {
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
 		CtClass<?> cls2 = launcher.getFactory().Class().get(Tostada.class);
 
@@ -855,7 +854,7 @@ public class FilterTest {
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
 		CtClass<?> cls2 = launcher.getFactory().Class().get(Tostada.class);
 
@@ -930,13 +929,13 @@ public class FilterTest {
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		class Context {
 			int count = 0;
 		}
-		
+
 		Context context = new Context();
-		
+
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
 
 		// first query
@@ -977,13 +976,13 @@ public class FilterTest {
 		});
 		assertEquals(8, context.count);
 	}
-	
+
 	@Test
 	public void testEmptyQuery() {
 		// contract: unbound or empty query
 
 		final Launcher launcher = new Launcher();
-		
+
 		//contract: empty query returns no element
 		assertEquals(0, launcher.getFactory().createQuery().list().size());
 		assertEquals(0, launcher.getFactory().createQuery((Object) null).list().size());
@@ -997,13 +996,13 @@ public class FilterTest {
 		assertEquals(0, launcher.getFactory().createQuery().filterChildren(x->{fail();return true;}).list().size());
 		assertEquals(0, launcher.getFactory().createQuery((Object) null).filterChildren(x->{fail();return true;}).list().size());
 	}
-	
+
 	@Test
 	public void testBoundQuery() {
 		// contract: bound query, without any mapping
 
 		final Launcher launcher = new Launcher();
-		
+
 		//contract: bound query returns bound element
 		List<String> list = launcher.getFactory().createQuery("x").list();
 		assertEquals(1, list.size());
@@ -1013,17 +1012,17 @@ public class FilterTest {
 	@Test
 	public void testClassCastExceptionOnForEach() {
 		// contract: bound query, without any mapping
-		// This test could fail with a version of JDK <= 8.0.40. 
+		// This test could fail with a version of JDK <= 8.0.40.
 
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		class Context {
 			int count = 0;
 		}
-		
+
 		{
 			Context context = new Context();
 			//contract: if the query produces elements which cannot be cast to forEach consumer, then they are ignored
@@ -1157,7 +1156,7 @@ public class FilterTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testEarlyTerminatingQuery() {
 		// contract: a method first evaluates query until first element is found and then terminates the query
@@ -1166,16 +1165,16 @@ public class FilterTest {
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		class Context {
 			boolean wasTerminated = false;
 			void failIfTerminated(String place) {
 				assertTrue(wasTerminated==false, "The "+place+" is called after query was terminated.");
 			}
 		}
-		
+
 		Context context = new Context();
-		
+
 		CtMethod firstMethod = launcher.getFactory().Package().getRootPackage().filterChildren(e->{
 			context.failIfTerminated("Filter#match of filterChildren");
 			return true;
@@ -1212,28 +1211,28 @@ public class FilterTest {
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
 		CtLocalVariable<?> varStrings = cls.filterChildren(new NamedElementFilter<>(CtLocalVariable.class,"strings")).first();
-		
+
 		class Context {
 			CtElement expectedParent;
 		}
-		
+
 		Context context = new Context();
-		
+
 		context.expectedParent = varStrings;
-		
+
 		varStrings.map(new ParentFunction()).forEach((parent)->{
 			context.expectedParent = context.expectedParent.getParent();
 			assertSame(context.expectedParent, parent);
 		});
-		
+
 		//context.expectedParent is last visited element
-		
+
 		//Check that last visited element was root package
 		assertSame(launcher.getFactory().getModel().getUnnamedModule(), context.expectedParent);
-		
+
 		//contract: if includingSelf(false), then parent of input element is first element
 		assertSame(varStrings.getParent(), varStrings.map(new ParentFunction().includingSelf(false)).first());
 		//contract: if includingSelf(true), then input element is first element
@@ -1249,14 +1248,14 @@ public class FilterTest {
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
-		
+
 		class Context {
 			long nrOfEnter = 0;
 			long nrOfEnterRetTrue = 0;
 			long nrOfExit = 0;
 			long nrOfResults = 0;
 		}
-		
+
 		Context context1 = new Context();
 
 		// scan only packages until top level classes. Do not scan class internals
@@ -1273,7 +1272,7 @@ public class FilterTest {
 			public void exit(CtElement element) {
 				context1.nrOfExit++;
 			}
-			
+
 		})).list();
 
 		//check that test is visiting some nodes
@@ -1283,9 +1282,9 @@ public class FilterTest {
 		assertEquals(context1.nrOfEnter, context1.nrOfExit);
 
 		Context context2 = new Context();
-		
+
 		Iterator iter = result1.iterator();
-		
+
 		//scan only from packages till top level classes. Do not scan class internals
 		launcher.getFactory().getModel().map(new CtScannerFunction().setListener(new CtScannerListener() {
 			int inClass = 0;
@@ -1310,7 +1309,7 @@ public class FilterTest {
 				}
 				assertTrue(inClass==0 || inClass==1);
 			}
-			
+
 		})).forEach(ele->{
 			context2.nrOfResults++;
 			assertTrue(ele instanceof CtPackage || ele instanceof CtType || ele instanceof CtModule, "ele instanceof "+ele.getClass());

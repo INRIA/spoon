@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
 import spoon.SpoonException;
 import spoon.pattern.internal.ValueConvertor;
 import spoon.pattern.internal.ValueConvertorImpl;

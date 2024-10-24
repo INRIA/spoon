@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.code;
 
+import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
@@ -27,8 +28,6 @@ import spoon.support.Internal;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
-
-import java.util.Set;
 
 public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVariable<T> {
 	private static final long serialVersionUID = 1L;

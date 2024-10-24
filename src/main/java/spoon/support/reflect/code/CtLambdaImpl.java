@@ -7,6 +7,9 @@
  */
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import spoon.LovecraftException;
 import spoon.SpoonException;
@@ -19,12 +22,12 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtExecutableReference;
@@ -35,10 +38,6 @@ import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.visitor.SignaturePrinter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.BODY;

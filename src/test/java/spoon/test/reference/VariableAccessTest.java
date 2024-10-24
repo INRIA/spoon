@@ -19,7 +19,6 @@ package spoon.test.reference;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
@@ -204,7 +203,7 @@ public class VariableAccessTest {
 
 		final CtType<Tortillas> aTortillas = buildClass(Tortillas.class);
 		final CtMethod<Object> make = aTortillas.getMethod("make", aTortillas.getFactory().Type().stringType());
-		
+
 		final CtLocalVariable localVarNumber = make.getBody().getStatement(1);
 		List<CtLocalVariableReference<?>> refs = localVarNumber.map(new LocalVariableReferenceFunction()).list();
 		assertEquals(1, refs.size());
@@ -270,10 +269,10 @@ public class VariableAccessTest {
 			}
 		}).get(0);
 	}
-	
+
 	@Test
 	public void testSuperAccess() throws Exception {
-		// contract: the type of "super" variable is set and correct		
+		// contract: the type of "super" variable is set and correct
 		CtClass<?> type = build("spoon.test.reference.testclasses", "SuperAccess");
 		CtMethod<?> method = type.getMethodsByName("method").get(0);
 		CtInvocation<?> invocation = method.getBody().getStatement(0);

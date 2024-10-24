@@ -7,6 +7,14 @@
  */
 package spoon.generating.replace;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.generating.ReplacementVisitorGenerator;
@@ -33,17 +41,8 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.util.internal.ElementNameMap;
 import spoon.support.util.ModelList;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import spoon.support.util.internal.ElementNameMap;
 
 public class ReplaceScanner extends CtScanner {
 	public static final String TARGET_REPLACE_PACKAGE = "spoon.support.visitor.replace";
@@ -100,7 +99,7 @@ public class ReplaceScanner extends CtScanner {
 	}
 
 	private static Set<String> modelCollectionTypes = new HashSet<>(Arrays.asList(ModelList.class.getName(), ElementNameMap.class.getName()));
-	
+
 	private <T> CtInvocation<?> createInvocation(Factory factory, CtMethod<T> candidate, List<CtExpression<?>> invArgs, CtInvocation<?> getter, Class<?> getterTypeClass) {
 		CtInvocation<?> invocation;
 		Type type;
@@ -179,10 +178,10 @@ public class ReplaceScanner extends CtScanner {
 		CtClass<?> listener;
 		// prototype class to use, we'll change its name and code later
 		listener = Launcher.parseClass("static class XXX implements ReplaceListener<CtElement> { \n"
-					       + "private final CtElement element XXX(CtElement element) { this.element = element; }\n"
-					       + "@java.lang.Override public void set(CtElement replace) {}\n"
-					       + "}");
-		
+						+ "private final CtElement element XXX(CtElement element) { this.element = element; }\n"
+						+ "@java.lang.Override public void set(CtElement replace) {}\n"
+						+ "}");
+
 		listener.setSimpleName(listenerName);
 		target.addNestedType(listener);
 		final List<CtTypeReference<?>> references = listener.getElements(new TypeFilter<CtTypeReference<?>>(CtTypeReference.class) {

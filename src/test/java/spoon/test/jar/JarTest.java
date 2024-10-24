@@ -16,27 +16,26 @@
  */
 package spoon.test.jar;
 
-import spoon.compiler.SpoonResource;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import spoon.Launcher;
 import spoon.SpoonModelBuilder;
-import spoon.reflect.factory.Factory;
-import spoon.compiler.SpoonResourceHelper;
 import spoon.compiler.SpoonFile;
+import spoon.compiler.SpoonResource;
+import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.factory.Factory;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.compiler.ZipFolder;
-import spoon.Launcher;
-import org.junit.jupiter.api.Test;
 
-import java.io.UnsupportedEncodingException;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.ByteArrayOutputStream;
-import java.util.List;
-import java.io.File;
-import java.util.Arrays;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JarTest {
 
@@ -48,12 +47,12 @@ public class JarTest {
 		List<SpoonFile> files = folder.getAllFiles();
 		assertEquals(5, files.size());
 		assertEquals("Manifest-Version: 1.0\r\n\r\n", readFileString(files.stream().filter(f -> "META-INF/MANIFEST.MF".equals(f.getName())).findFirst().get(), "ISO-8859-1"));
-		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-				"<classpath>\n" + 
-				"	<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8\"/>\n" + 
-				"	<classpathentry kind=\"src\" path=\"src\"/>\n" + 
-				"	<classpathentry kind=\"output\" path=\"bin\"/>\n" + 
-				"</classpath>\n" + 
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<classpath>\n" +
+				"	<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8\"/>\n" +
+				"	<classpathentry kind=\"src\" path=\"src\"/>\n" +
+				"	<classpathentry kind=\"output\" path=\"bin\"/>\n" +
+				"</classpath>\n" +
 				"", readFileString(files.stream().filter(f -> ".classpath".equals(f.getName())).findFirst().get(), "ISO-8859-1"));
 	}
 
@@ -63,7 +62,7 @@ public class JarTest {
 			while(true) {
 				int count = is.read(buff);
 				if (count < 0) {
-					break; 
+					break;
 				}
 				baos.write(buff, 0, count);
 			}

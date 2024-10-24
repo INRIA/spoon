@@ -7,7 +7,6 @@
  */
 package spoon.pattern.internal.matcher;
 
-import static java.util.stream.Collectors.toUnmodifiableList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,12 +15,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
-
 import org.jspecify.annotations.Nullable;
-
 import spoon.SpoonException;
 import spoon.reflect.meta.ContainerKind;
 import spoon.support.util.ImmutableMap;
+
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 /**
  * Describes what next has to be matched.

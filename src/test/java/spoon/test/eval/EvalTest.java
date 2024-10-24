@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -266,14 +265,14 @@ public class EvalTest {
 	@Test
 	public void testVisitorPartialEvaluator_unary() {
 
-    	{ // NEG urnary operator
-      		Launcher launcher = new Launcher();
-      		CtCodeElement el =
-          		launcher.getFactory().Code().createCodeSnippetExpression("-(100+1)").compile();
-      		VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
-      		CtElement element = eval.evaluate(el);
-      		assertEquals("-101", element.toString());
-    	}
+		{ // NEG urnary operator
+			Launcher launcher = new Launcher();
+			CtCodeElement el =
+				launcher.getFactory().Code().createCodeSnippetExpression("-(100+1)").compile();
+			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+			CtElement element = eval.evaluate(el);
+			assertEquals("-101", element.toString());
+		}
 	}
 
 	@Test

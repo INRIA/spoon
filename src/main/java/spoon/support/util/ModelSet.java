@@ -7,8 +7,6 @@
  */
 package spoon.support.util;
 
-import static spoon.support.util.internal.ModelCollectionUtils.linkToParent;
-
 import java.io.Serializable;
 import java.util.AbstractSet;
 import java.util.Collection;
@@ -18,11 +16,12 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
-
 import spoon.SpoonException;
-import spoon.support.modelobs.FineModelChangeListener;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
+import spoon.support.modelobs.FineModelChangeListener;
+
+import static spoon.support.util.internal.ModelCollectionUtils.linkToParent;
 
 /**
  * The implementation of the {@link Set}, which is used by Spoon model objects.

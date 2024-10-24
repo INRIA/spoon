@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.RoleHandler;

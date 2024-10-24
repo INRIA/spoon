@@ -1,5 +1,6 @@
 package spoon.test.pattern;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -17,9 +18,6 @@ import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnnamedPattern;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
-import spoon.testing.assertions.SpoonAssertions;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;

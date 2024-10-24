@@ -8,7 +8,6 @@
 package spoon.pattern.internal.node;
 
 import java.util.function.BiConsumer;
-
 import spoon.pattern.Generator;
 import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.ResultHolder;

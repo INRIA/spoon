@@ -9,7 +9,6 @@ package spoon.pattern.internal.parameter;
 
 import java.util.Map;
 import java.util.function.Function;
-
 import spoon.support.util.ImmutableMap;
 import spoon.support.util.ImmutableMapImpl;
 

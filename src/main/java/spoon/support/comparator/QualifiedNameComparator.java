@@ -9,7 +9,6 @@ package spoon.support.comparator;
 
 import java.io.Serializable;
 import java.util.Comparator;
-
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
@@ -51,4 +50,3 @@ public class QualifiedNameComparator implements Comparator<CtElement>, Serializa
 		}
 	}
 }
-

@@ -16,12 +16,7 @@
  */
 package spoon.test.template;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
@@ -35,6 +30,10 @@ import spoon.test.template.testclasses.InvocationSubstitutionByExpressionTemplat
 import spoon.test.template.testclasses.InvocationSubstitutionByStatementTemplate;
 import spoon.test.template.testclasses.SubstitutionByExpressionTemplate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+
 public class TemplateInvocationSubstitutionTest {
 
 	@Test
@@ -47,7 +46,7 @@ public class TemplateInvocationSubstitutionTest {
 		Factory factory = spoon.getFactory();
 
 		CtBlock<?> templateArg = factory.Templates().Class().get(InvocationSubstitutionByStatementTemplate.class).getMethod("sample").getBody();
-		
+
 		CtClass<?> resultKlass = factory.Class().create("Result");
 		CtStatement result = new InvocationSubstitutionByStatementTemplate(templateArg).apply(resultKlass);
 		assertEquals("throw new java.lang.RuntimeException(\"Failed\")", result.toString());
