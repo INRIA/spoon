@@ -46,7 +46,7 @@ public class ForwardFlowBuilderVisitorTest {
 			throws Exception {
 		final ControlFlowBuilder visitor = new ControlFlowBuilder();
 
-		Factory factory = new SpoonMetaFactory().buildNewFactory(folder, 5);
+		Factory factory = new SpoonMetaFactory().buildNewFactory(folder, 11);
 		ProcessingManager pm = new QueueProcessingManager(factory);
 		pm.addProcessor(new AbstractProcessor<CtMethod>() {
 			@Override
