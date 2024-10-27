@@ -42,6 +42,7 @@ import spoon.support.SpoonClassNotFoundException;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.test.api.testclasses.Bar;
 import spoon.testing.assertions.SpoonAssertions;
+import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelTest;
 
 import static java.util.function.Predicate.not;
@@ -209,6 +210,7 @@ public class NoClasspathTest {
 		assertTrue(field.getType().isSubtypeOf(myInterfaceReference));
 	}
 
+	@GitHubIssue(issueNumber = 5977, fixed = false)
 	@ModelTest("src/test/resources/noclasspath/issue5591/DiamondConstructorCallTypeInference.java")
 	void testJdtFactoryMethodsForDiamond(CtModel model) {
 		// contract: Leftover <factory> methods from JDT's diamond constructor type inference are handled in
