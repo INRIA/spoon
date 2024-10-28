@@ -435,7 +435,10 @@ public class CodeFactory extends SubFactory {
 			va = factory.Core().createFieldRead();
 			// creates a this target for non-static fields to avoid name conflicts...
 			if (!isStatic) {
-				((CtFieldAccess<T>) va).setTarget(createThisAccess(((CtFieldReference<T>) variable).getDeclaringType()));
+				// We do not want to change the parent of the declaring type, so clone here
+				((CtFieldAccess<T>) va).setTarget(
+					createThisAccess(((CtFieldReference<T>) variable).getDeclaringType().clone())
+				);
 			}
 		} else {
 			va = factory.Core().createVariableRead();
