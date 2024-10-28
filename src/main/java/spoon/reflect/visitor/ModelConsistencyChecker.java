@@ -34,7 +34,7 @@ public class ModelConsistencyChecker extends CtScanner {
 
 	Deque<CtElement> stack = new ArrayDeque<>();
 
-	List<InconsistentElements> inconsistentElements = new ArrayList<>();
+	private final List<InconsistentElements> inconsistentElements = new ArrayList<>();
 
 	/**
 	 * Creates a new model consistency checker.
