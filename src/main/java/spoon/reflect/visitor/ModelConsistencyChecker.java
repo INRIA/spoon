@@ -73,7 +73,7 @@ public class ModelConsistencyChecker extends CtScanner {
 	@Override
 	public void enter(CtElement element) {
 		if (!stack.isEmpty() && (!element.isParentInitialized() || element.getParent() != stack.peek())) {
-			InconsistentElements inconsistentElements = new InconsistentElements(element, stack);
+			InconsistentElements inconsistentElements = new InconsistentElements(element, List.copyOf(stack));
 			this.inconsistentElements.add(inconsistentElements);
 
 			if ((!element.isParentInitialized() && fixNullParents) || (element.getParent() != stack.peek() && fixInconsistencies)) {
@@ -102,8 +102,8 @@ public class ModelConsistencyChecker extends CtScanner {
 	 *
 	 * @return the invalid elements
 	 */
-	public List<InconsistentElements> inconsistentElements() {
-		return new ArrayList<>(inconsistentElements);
+	private List<InconsistentElements> inconsistentElements() {
+		return List.copyOf(inconsistentElements);
 	}
 
 	private void dumpStack() {
@@ -121,7 +121,7 @@ public class ModelConsistencyChecker extends CtScanner {
 	 * @param expectedParents the expected parents of the element
 	 */
 	@Internal
-	public record InconsistentElements(CtElement element, Deque<CtElement> expectedParents) {
+	public record InconsistentElements(CtElement element, List<CtElement> expectedParents) {
 		/**
 		 * Creates a new inconsistent element.
 		 *
@@ -129,14 +129,15 @@ public class ModelConsistencyChecker extends CtScanner {
 		 * @param expectedParents the expected parents of the element
 		 */
 		public InconsistentElements {
-			expectedParents = new ArrayDeque<>(expectedParents);
+			expectedParents = List.copyOf(expectedParents);
 		}
 
 		private String reason() {
+			CtElement expectedParent = this.expectedParents.isEmpty() ? null : this.expectedParents.get(0);
 			return "The element %s has the parent %s, but expected the parent %s".formatted(
 				formatElement(this.element),
 				this.element.isParentInitialized() ? formatElement(this.element.getParent()) : "null",
-				this.expectedParents.peek() != null ? formatElement(this.expectedParents.peek()) : "null"
+				expectedParent != null ? formatElement(expectedParent) : "null"
 			);
 		}
 
