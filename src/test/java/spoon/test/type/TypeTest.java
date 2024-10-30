@@ -52,6 +52,8 @@ import spoon.support.SpoonClassNotFoundException;
 import spoon.test.type.testclasses.Mole;
 import spoon.test.type.testclasses.Pozole;
 import spoon.test.type.testclasses.TypeMembersOrder;
+import spoon.testing.utils.ByClass;
+import spoon.testing.utils.BySimpleName;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
@@ -116,9 +118,8 @@ public class TypeTest {
 	}
 
 	@ModelTest("./src/test/java/spoon/test/type/testclasses")
-	public void testTypeAccessForTypeAccessInInstanceOf(Launcher launcher) {
+	public void testTypeAccessForTypeAccessInInstanceOf(@ByClass(Pozole.class) CtClass<Pozole> aPozole) {
 		// contract: the right hand operator must be a CtTypeAccess.
-		final CtClass<Pozole> aPozole = launcher.getFactory().Class().get(Pozole.class);
 		final CtMethod<?> eat = aPozole.getMethodsByName("eat").get(0);
 
 		final List<CtTypeAccess<?>> typeAccesses = eat.getElements(new TypeFilter<>(CtTypeAccess.class));
@@ -389,9 +390,8 @@ public class TypeTest {
 	}
 
 	@ModelTest("./src/test/java/spoon/test/type/testclasses/TypeMembersOrder.java")
-	public void testTypeMemberOrder(Factory f) {
+	public void testTypeMemberOrder(Factory f, @ByClass(TypeMembersOrder.class) CtClass<?> aTypeMembersOrder) {
 		// contract: The TypeMembers keeps order of members same like in source file
-		final CtClass<?> aTypeMembersOrder = f.Class().get(TypeMembersOrder.class);
 		{
 			List<String> typeMemberNames = new ArrayList<>();
 			for (CtTypeMember typeMember : aTypeMembersOrder.getTypeMembers()) {
@@ -424,9 +424,8 @@ public class TypeTest {
 					value = {"./src/test/resources/noclasspath/issue5208/"},
 					noClasspath = true
 	)
-	void testClassNotReplacedInNoClasspathMode(Factory factory) {
+	void testClassNotReplacedInNoClasspathMode(@BySimpleName("ClassT1") CtType<?> type) {
 		// contract: ClassT1 is not replaced once present when looking up the ClassT1#classT3 field from ClassT2
-		CtType<?> type = factory.Type().get("p20.ClassT1");
 		assertNotNull(type);
 		assertNotEquals(SourcePosition.NOPOSITION, type.getPosition());
 	}
