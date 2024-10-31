@@ -37,3 +37,7 @@ exclude:
       - src/main/java/spoon/support/visitor/clone/CloneBuilder.java
       - src/main/java/spoon/support/visitor/clone/CloneVisitor.java
       - src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java
+
+
+#Specify Qodana linter for analysis (Applied in CI/CD pipeline)
+linter: jetbrains/qodana-jvm-community:latest

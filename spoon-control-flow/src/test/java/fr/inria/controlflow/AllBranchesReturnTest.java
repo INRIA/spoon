@@ -121,7 +121,7 @@ public class AllBranchesReturnTest {
 		//        "nestedIfSomeNotReturning", false);
 
 		Factory factory = new SpoonMetaFactory().buildNewFactory(
-				this.getClass().getResource("/control-flow").toURI().getPath(), 7);
+				this.getClass().getResource("/control-flow").toURI().getPath(), 11);
 		ProcessingManager pm = new QueueProcessingManager(factory);
 		pm.addProcessor(processor);
 		pm.process(factory.getModel().getRootPackage());
