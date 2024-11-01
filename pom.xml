@@ -232,28 +232,22 @@
         <artifactId>spotless-maven-plugin</artifactId>
         <version>2.43.0</version>
         <configuration>
-          <formats>
-            <format>
-              <includes>
-                <include>src/test/java/spoon/testing/assertions/**/*.java</include>
-              </includes>
-              <trimTrailingWhitespace/>
-              <endWithNewline/>
-              <indent>
-                <tabs>true</tabs>
-                <spacesPerTab>4</spacesPerTab>
-              </indent>
-            </format>
-          </formats>
           <java>
-            <includes>
-              <include>src/test/java/spoon/testing/assertions/**/*.java</include>
-            </includes>
-            <palantirJavaFormat>
-              <version>2.40.0</version>
-              <style>PALANTIR</style>
-              <formatJavadoc>true</formatJavadoc>
-            </palantirJavaFormat>
+            <excludes>
+              <!-- Exclude the test classes to prevent any impact on the current tests. -->
+              <exclude>**/testclasses*/**</exclude>
+              <exclude>**/src/test/resources/**</exclude>
+            </excludes>
+            <importOrder>
+              <wildcardsLast>true</wildcardsLast>
+              <order>,\#javax|\#java,\#</order>
+            </importOrder>
+            <removeUnusedImports />
+            <trimTrailingWhitespace/>
+            <endWithNewline/>
+            <indent>
+              <tabs>true</tabs>
+            </indent>
           </java>
         </configuration>
       </plugin>
