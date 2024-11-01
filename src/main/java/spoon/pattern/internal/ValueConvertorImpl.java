@@ -8,7 +8,6 @@
 package spoon.pattern.internal;
 
 import java.util.List;
-
 import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;

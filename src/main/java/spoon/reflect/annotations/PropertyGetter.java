@@ -7,12 +7,11 @@
  */
 package spoon.reflect.annotations;
 
-import spoon.reflect.path.CtRole;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import spoon.reflect.path.CtRole;
 
 /**
  * Specifies that a method is an official metamodel getter in the Spoon metamodel.

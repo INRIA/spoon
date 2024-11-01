@@ -16,22 +16,7 @@
  */
 package spoon.support.visitor.java;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static spoon.testing.utils.ModelUtils.createFactory;
+import com.mysema.query.support.ProjectableQuery;
 import java.io.File;
 import java.io.ObjectInputStream;
 import java.io.Serial;
@@ -52,7 +37,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import com.mysema.query.support.ProjectableQuery;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -116,6 +100,23 @@ import spoon.test.pkg.cyclic.Outside;
 import spoon.test.pkg.cyclic.direct.Cyclic;
 import spoon.test.pkg.cyclic.indirect.Indirect;
 import spoon.testing.utils.GitHubIssue;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class JavaReflectionTreeBuilderTest {
 
@@ -433,7 +434,7 @@ public class JavaReflectionTreeBuilderTest {
 					CtTypeReference<?> at = a.getAnnotationType();
 					Class ac = at.getActualClass();
 					return ac != Override.class && ac != SuppressWarnings.class && ac != Root.class
-						   && ac != Serial.class && ac != Nullable.class;
+						&& ac != Serial.class && ac != Nullable.class;
 				}).collect(Collectors.toList());
 				super.biScan(role, fileteredElements, others);
 				return;
@@ -636,7 +637,7 @@ public class JavaReflectionTreeBuilderTest {
 		launcher.addInputResource(URLDecoder.decode(JavaReflectionTreeBuilderTest.class
 				.getClassLoader()
 				.getResource("annotated-parameter-on-nested-class-constructor/Caller.java")
-				.getPath(), 
+				.getPath(),
 				StandardCharsets.UTF_8));
 		launcher.getEnvironment().setSourceClasspath(
 				new String[]{

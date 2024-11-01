@@ -7,15 +7,14 @@
  */
 package spoon.support.reflect.cu.position;
 
+import java.io.File;
+import java.util.Arrays;
 import spoon.SpoonException;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.cu.position.NoSourcePosition;
-
-import java.io.File;
-import java.util.Arrays;
 
 /**
  * This immutable class represents the position of a Java program element in a source

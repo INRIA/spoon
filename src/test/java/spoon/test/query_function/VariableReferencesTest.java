@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -126,7 +125,7 @@ public class VariableReferencesTest {
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
 		//2) the model is searched for all variable references which has same identification number and counts them
-		//Then it checks that counted number of references and found number of references is same 
+		//Then it checks that counted number of references and found number of references is same
 		modelClass.filterChildren((CtCatchVariable<?> var)->{
 			if(isTestFieldName(var.getSimpleName())) {
 				int value = getLiteralValue(var);
@@ -142,7 +141,7 @@ public class VariableReferencesTest {
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
 		//2) the model is searched for all variable references which has same identification number and counts them
-		//Then it checks that counted number of references and found number of references is same 
+		//Then it checks that counted number of references and found number of references is same
 		modelClass.filterChildren((CtLocalVariable<?> var)->{
 			if(isTestFieldName(var.getSimpleName())) {
 				int value = getLiteralValue(var);
@@ -158,7 +157,7 @@ public class VariableReferencesTest {
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
 		//2) the model is searched for all variable references which has same identification number and counts them
-		//Then it checks that counted number of references and found number of references is same 
+		//Then it checks that counted number of references and found number of references is same
 		modelClass.filterChildren((CtParameter<?> var)->{
 			if(isTestFieldName(var.getSimpleName())) {
 				int value = getLiteralValue(var);
@@ -166,7 +165,7 @@ public class VariableReferencesTest {
 			}
 			return false;
 		}).list();
-	}	
+	}
 
 	@Test
 	public void testVariableReferenceFunction() {
@@ -174,7 +173,7 @@ public class VariableReferencesTest {
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
 		//2) the model is searched for all variable references which has same identification number and counts them
-		//Then it checks that counted number of references and found number of references is same 
+		//Then it checks that counted number of references and found number of references is same
 		modelClass.filterChildren((CtVariable<?> var)->{
 			if(isTestFieldName(var.getSimpleName())) {
 				int value = getLiteralValue(var);
@@ -266,7 +265,7 @@ public class VariableReferencesTest {
 			});
 			//check that both scans found same number of references
 			assertEquals(context.expectedCount, context.realCount, "Number of references to field=" + value + " does not match");
-			
+
 		} catch (Throwable e) {
 			e.printStackTrace();
 			throw new AssertionError("Test failed on " + getParentMethodName(var), e);
@@ -300,7 +299,7 @@ public class VariableReferencesTest {
 			try {
 				return getLiteralValue(exp);
 			} catch (ClassCastException e) {
-				
+
 			}
 		}
 		if (var instanceof CtParameter) {

@@ -7,13 +7,12 @@
  */
 package spoon.support.reflect.code;
 
+import java.io.Serial;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCasePattern;
 import spoon.reflect.code.CtPattern;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.io.Serial;
 
 public class CtCasePatternImpl extends CtExpressionImpl<Void> implements CtCasePattern {
 	@Serial

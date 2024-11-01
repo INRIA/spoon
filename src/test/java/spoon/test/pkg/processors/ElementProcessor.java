@@ -8,10 +8,9 @@ import spoon.reflect.declaration.CtPackage;
  * Created by urli on 11/09/2017.
  */
 public class ElementProcessor extends AbstractProcessor<CtElement> {
-    public void process(CtElement element) {
-        if(element instanceof CtPackage){
-            ((CtPackage) element).setSimpleName("newtest");
-        }
-    }
+	public void process(CtElement element) {
+		if(element instanceof CtPackage){
+			((CtPackage) element).setSimpleName("newtest");
+		}
+	}
 }
-

@@ -9,7 +9,6 @@ package spoon.pattern.internal.parameter;
 
 import java.util.List;
 import java.util.function.Function;
-
 import spoon.SpoonException;
 import spoon.pattern.internal.ResultHolder;
 import spoon.reflect.factory.Factory;

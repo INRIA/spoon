@@ -7,6 +7,8 @@
  */
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
+import java.util.List;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtRecordPattern;
@@ -14,9 +16,6 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static spoon.reflect.path.CtRole.PATTERN;
 

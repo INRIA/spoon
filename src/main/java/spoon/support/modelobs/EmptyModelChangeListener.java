@@ -7,14 +7,13 @@
  */
 package spoon.support.modelobs;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.path.CtRole;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 
 /**
  * is the listener that creates the action on the model. This default listener does nothing.

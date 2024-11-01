@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtExecutable;
@@ -25,8 +26,6 @@ import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 import spoon.support.reflect.code.CtLocalVariableImpl;
-
-import java.util.Set;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtParameter}.

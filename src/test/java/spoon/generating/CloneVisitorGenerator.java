@@ -16,6 +16,13 @@
  */
 package spoon.generating;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import spoon.SpoonException;
 import spoon.processing.AbstractManualProcessor;
@@ -53,17 +60,9 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtModifierHandler;
-import spoon.support.util.internal.ElementNameMap;
 import spoon.support.util.ModelList;
+import spoon.support.util.internal.ElementNameMap;
 import spoon.support.visitor.clone.CloneBuilder;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class CloneVisitorGenerator extends AbstractManualProcessor {
 	private static final String TARGET_CLONE_PACKAGE = "spoon.support.visitor.clone";

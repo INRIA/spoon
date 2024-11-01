@@ -7,17 +7,16 @@
  */
 package spoon.reflect.code;
 
+import java.util.Set;
 import org.jspecify.annotations.Nullable;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtReceiverParameter;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 import spoon.support.UnsettableProperty;
-
-import java.util.Set;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
 

@@ -7,9 +7,9 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.declaration.CtElement;
 
 import static spoon.reflect.path.CtRole.BODY;
 

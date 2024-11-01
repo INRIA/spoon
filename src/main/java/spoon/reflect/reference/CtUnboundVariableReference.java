@@ -7,12 +7,11 @@
  */
 package spoon.reflect.reference;
 
+import java.lang.annotation.Annotation;
+import java.util.List;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.support.UnsettableProperty;
-
-import java.lang.annotation.Annotation;
-import java.util.List;
 
 /**
  * This interface defines a reference to an unbound

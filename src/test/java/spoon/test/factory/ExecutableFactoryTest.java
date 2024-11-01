@@ -18,7 +18,6 @@ package spoon.test.factory;
 
 
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import spoon.reflect.factory.ExecutableFactory;
 import spoon.reflect.factory.Factory;

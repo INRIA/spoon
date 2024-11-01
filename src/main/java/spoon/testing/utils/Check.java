@@ -7,10 +7,9 @@
  */
 package spoon.testing.utils;
 
+import java.io.File;
 import spoon.reflect.declaration.CtElement;
 import spoon.support.visitor.equals.EqualsVisitor;
-
-import java.io.File;
 
 public final class Check {
 	private Check() {

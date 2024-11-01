@@ -8,6 +8,15 @@
 package spoon;
 
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.Set;
 import spoon.reflect.CtModelImpl;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssignment;
@@ -48,16 +57,6 @@ import spoon.support.Internal;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.visitor.equals.EqualsVisitor;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Set;
 
 import static spoon.testing.utils.Check.assertNotNull;
 

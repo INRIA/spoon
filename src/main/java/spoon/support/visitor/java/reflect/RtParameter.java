@@ -7,12 +7,11 @@
  */
 package spoon.support.visitor.java.reflect;
 
-import spoon.SpoonException;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import spoon.SpoonException;
 
 /**
  * To be compatible with Java 6, RtParameter has been created from

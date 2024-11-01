@@ -25,13 +25,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
-import spoon.reflect.declaration.CtModule;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.compiler.VirtualFile;
@@ -127,7 +124,7 @@ public class LauncherTest {
 
 		assertEquals(2, model.getAllTypes().size());
 	}
-	
+
 	@Test
 	public void testPrettyPrintWithVirtualFileInput() throws Exception {
 		// contract: prettyPrint() should not throw an exception when used with input from VirtualFile
@@ -142,7 +139,7 @@ public class LauncherTest {
 		File tmpDir = Files.createTempDirectory("spoonTestPrettyPrintWithVirtualFileInput").toFile();
 		tmpDir.deleteOnExit();
 		launcher.setSourceOutputDirectory(tmpDir);
-		
+
 		assertDoesNotThrow(() -> launcher.prettyprint());
 	}
 

@@ -7,6 +7,8 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.util.List;
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtExecutable;
@@ -22,9 +24,6 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
-
-import java.util.List;
-import java.util.Set;
 
 public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements CtAnonymousExecutable {
 	private static final long serialVersionUID = 1L;

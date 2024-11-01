@@ -1,17 +1,13 @@
 package spoon.test.prettyprinter;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
@@ -19,6 +15,8 @@ import spoon.reflect.code.CtComment.CommentType;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SniperAssertTest {
 	private static final Path INPUT_PATH = Paths.get("src/test/java/");

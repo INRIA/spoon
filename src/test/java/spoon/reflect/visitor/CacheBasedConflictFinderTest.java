@@ -30,46 +30,46 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CacheBasedConflictFinderTest {
 
-    private CacheBasedConflictFinder cacheBasedConflictFinder;
+	private CacheBasedConflictFinder cacheBasedConflictFinder;
 
-    @BeforeAll
-    public void setup() {
-        Factory factory = new Launcher().getFactory();
-        CtType<?> type = factory.Class().get(simpleNestedClassWithFields.class);
-        this.cacheBasedConflictFinder = new CacheBasedConflictFinder(type);
-    }
+	@BeforeAll
+	public void setup() {
+		Factory factory = new Launcher().getFactory();
+		CtType<?> type = factory.Class().get(simpleNestedClassWithFields.class);
+		this.cacheBasedConflictFinder = new CacheBasedConflictFinder(type);
+	}
 
-    @Test
-    void testHasFieldConflictsWithConflictingField() {
-        // contract: hasFieldConflict returns true when a conflicting field name is passed as argument
+	@Test
+	void testHasFieldConflictsWithConflictingField() {
+		// contract: hasFieldConflict returns true when a conflicting field name is passed as argument
 
-        Boolean shouldBeTrue = cacheBasedConflictFinder.hasFieldConflict("testField");
-        assertTrue(shouldBeTrue);
-    }
+		Boolean shouldBeTrue = cacheBasedConflictFinder.hasFieldConflict("testField");
+		assertTrue(shouldBeTrue);
+	}
 
-    @Test
-    void testHasFieldConflictsWithNonConflictingField() {
-        // contract: hasFieldConflict returns false when a non-conflicting field name is passed as argument
+	@Test
+	void testHasFieldConflictsWithNonConflictingField() {
+		// contract: hasFieldConflict returns false when a non-conflicting field name is passed as argument
 
-        Boolean shouldBeFalse = cacheBasedConflictFinder.hasFieldConflict("testField1");
-        assertFalse(shouldBeFalse);
-    }
+		Boolean shouldBeFalse = cacheBasedConflictFinder.hasFieldConflict("testField1");
+		assertFalse(shouldBeFalse);
+	}
 
-    @Test
-    void testHasNestedTypeConflictsWithConflictingArgument() {
-        // contract: hasNestedTypeConflict returns true when a argument is passed which is name of already existing
-        // nested types
+	@Test
+	void testHasNestedTypeConflictsWithConflictingArgument() {
+		// contract: hasNestedTypeConflict returns true when a argument is passed which is name of already existing
+		// nested types
 
-        Boolean shouldBeTrue = cacheBasedConflictFinder.hasNestedTypeConflict("subClass");
-        assertTrue(shouldBeTrue);
-    }
+		Boolean shouldBeTrue = cacheBasedConflictFinder.hasNestedTypeConflict("subClass");
+		assertTrue(shouldBeTrue);
+	}
 
-    @Test
-    void testHasNestedTypeConflictsWithNonConflictingArgument() {
-        // contract: hasNestedTypeConflict returns false when a argument is passed which isn't name of an already
-        // existing nested type
+	@Test
+	void testHasNestedTypeConflictsWithNonConflictingArgument() {
+		// contract: hasNestedTypeConflict returns false when a argument is passed which isn't name of an already
+		// existing nested type
 
-        Boolean shouldBeFalse = cacheBasedConflictFinder.hasNestedTypeConflict("subClass1");
-        assertFalse(shouldBeFalse);
-    }
+		Boolean shouldBeFalse = cacheBasedConflictFinder.hasNestedTypeConflict("subClass1");
+		assertFalse(shouldBeFalse);
+	}
 }

@@ -9,7 +9,6 @@ package spoon.support.comparator;
 
 import java.io.Serializable;
 import java.util.Comparator;
-
 import spoon.reflect.declaration.CtElement;
 
 /**

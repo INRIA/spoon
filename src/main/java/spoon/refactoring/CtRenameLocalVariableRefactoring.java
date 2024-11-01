@@ -9,7 +9,6 @@ package spoon.refactoring;
 
 import java.util.Collection;
 import java.util.regex.Pattern;
-
 import spoon.SpoonException;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtLocalVariable;

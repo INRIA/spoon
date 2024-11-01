@@ -16,15 +16,14 @@
  */
 package spoon.reflect.visitor.processors;
 
+import java.util.Arrays;
+import java.util.List;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Used to check if a visitor (or a sub class) have all scanner and visitor methods necessary.

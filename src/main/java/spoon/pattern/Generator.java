@@ -9,7 +9,6 @@ package spoon.pattern;
 
 import java.util.List;
 import java.util.Map;
-
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;

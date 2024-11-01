@@ -9,7 +9,6 @@ package spoon.support.compiler.jdt;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import spoon.SpoonException;
 import spoon.compiler.Environment;

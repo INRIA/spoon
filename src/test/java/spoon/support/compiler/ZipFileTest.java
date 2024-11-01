@@ -1,11 +1,5 @@
 package spoon.support.compiler;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import spoon.Launcher;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
-
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
@@ -13,6 +7,11 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import spoon.Launcher;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;

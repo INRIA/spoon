@@ -9,8 +9,8 @@ import spoon.reflect.declaration.CtClass;
  * Apr, 2020
  **/
 public class CtClassProcessor extends AbstractProcessor<CtClass> {
-    @Override
-    public void process(CtClass element) {
+	@Override
+	public void process(CtClass element) {
 
-    }
+	}
 }

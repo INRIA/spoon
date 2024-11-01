@@ -7,6 +7,9 @@
  */
 package spoon.pattern;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtReturn;
@@ -18,10 +21,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.visitor.Filter;
 import spoon.support.Experimental;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Utility class to select parts of AST to be used as a model of a {@link PatternBuilder}.

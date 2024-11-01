@@ -7,6 +7,8 @@
  */
 package spoon.support.reflect.eval;
 
+import java.lang.reflect.Array;
+import java.util.List;
 import spoon.SpoonException;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
@@ -16,9 +18,6 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.reference.CtFieldReference;
-
-import java.lang.reflect.Array;
-import java.util.List;
 
 public class EvalHelper {
 
@@ -102,5 +101,3 @@ public class EvalHelper {
 
 
 }
-
-

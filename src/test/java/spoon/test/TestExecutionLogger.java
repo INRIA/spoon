@@ -64,14 +64,14 @@ public class TestExecutionLogger implements TestExecutionListener {
 	 * @param testIdentifier  the testIdentifier to get the test name from.
 	 * @return  the testname or empty string if the testIdentifier is not a methodsource.
 	 */
-  private String getTestName(TestIdentifier testIdentifier) {
+private String getTestName(TestIdentifier testIdentifier) {
 		return testIdentifier.getSource().stream()
 				.filter(MethodSource.class::isInstance)
 				.map(MethodSource.class::cast)
 				.map(v -> v.getClassName() + "#" + v.getMethodName())
 				.findFirst()
 				.orElse("");
-  }
+}
 
 	@Override
 	public void executionSkipped(TestIdentifier testIdentifier, String reason) {

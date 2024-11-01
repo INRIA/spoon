@@ -7,12 +7,11 @@
  */
 package spoon.support;
 
-import spoon.reflect.declaration.CtType;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import spoon.reflect.declaration.CtType;
 
 /**
  * Tells that a metamodel property is derived, ie computed from the value of another property.

@@ -7,13 +7,12 @@
  */
 package spoon.reflect.declaration;
 
+import java.util.Collection;
+import java.util.Set;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.util.Collection;
-import java.util.Set;
 
 /**
  * This interface represents any type that can be sealed.

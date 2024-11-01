@@ -1,11 +1,5 @@
 package spoon.test.template.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,9 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-
 import org.junit.jupiter.api.Test;
-
 import spoon.pattern.internal.parameter.ListParameterInfo;
 import spoon.pattern.internal.parameter.MapParameterInfo;
 import spoon.pattern.internal.parameter.ParameterInfo;
@@ -24,6 +16,12 @@ import spoon.pattern.internal.parameter.SetParameterInfo;
 import spoon.reflect.meta.ContainerKind;
 import spoon.support.util.ImmutableMap;
 import spoon.support.util.ImmutableMapImpl;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ParameterInfoTest {
 
@@ -43,7 +41,7 @@ public class ParameterInfoTest {
 		assertEquals("year_7_", new ListParameterInfo(new ListParameterInfo(7, new MapParameterInfo("year"))).getName());
 		assertEquals("year_7__2_", new ListParameterInfo(2, new ListParameterInfo(7, new MapParameterInfo("year"))).getName());
 		assertEquals("year_7__2_.age", new MapParameterInfo("age", new ListParameterInfo(2, new ListParameterInfo(7, new MapParameterInfo("year")))).getName());
-		
+
 		assertEquals("year", ((ParameterInfo) new MapParameterInfo("year").setContainerKind(ContainerKind.SET)).getName());
 		assertEquals("year", new SetParameterInfo(new MapParameterInfo("year")).getName());
 		assertEquals("year", new SetParameterInfo(new MapParameterInfo("year").setContainerKind(ContainerKind.SET)).getName());
@@ -119,7 +117,7 @@ public class ParameterInfoTest {
 	@Test
 	public void testSingleValueParameterByNameConditionalMatcher() {
 		ParameterInfo namedParam = new MapParameterInfo("year").setMatchCondition(Integer.class, i -> i > 2000);
-		
+
 		//matching value is accepted
 		ImmutableMap val = namedParam.addValueAs(null, 2018);
 		assertNotNull(val);
@@ -130,7 +128,7 @@ public class ParameterInfoTest {
 		//even matching value is STILL not accepted when there is already a different value
 		assertNull(namedParam.addValueAs(new ImmutableMapImpl().putValue("year", 3000), 2018));
 	}
-	
+
 	@Test
 	public void testListParameterByNameIntoNull() {
 		ParameterInfo namedParam = new MapParameterInfo("year").setContainerKind(ContainerKind.LIST);
@@ -157,7 +155,7 @@ public class ParameterInfoTest {
 		Consumer<ParameterInfo> check = (namedParam) ->
 		{//adding value into container, which already contains a empty list, creates a new container with List which contains that value
 			ImmutableMap empty = new ImmutableMapImpl().putValue("year", Collections.emptyList());
-			
+
 			ImmutableMap val = namedParam.addValueAs(empty, 2018);
 			//adding same value - adds the second value again
 			ImmutableMap val2 = namedParam.addValueAs(val, 2018);
@@ -177,10 +175,10 @@ public class ParameterInfoTest {
 		check.accept(new MapParameterInfo("year"));
 		//contract: it behaves like this when ListAccessor + NamedAccessor is used
 		check.accept(new ListParameterInfo(new MapParameterInfo("year")));
-		//contract: it behaves like this when ListAccessor + NamedAccessor with defined container is used with 
+		//contract: it behaves like this when ListAccessor + NamedAccessor with defined container is used with
 		check.accept(new ListParameterInfo(new MapParameterInfo("year").setContainerKind(ContainerKind.LIST)));
 	}
-	
+
 	@Test
 	public void testMergeOnDifferentValueTypeContainers() {
 		BiConsumer<ParameterInfo, ImmutableMap> checker = (parameter, params) -> {
@@ -205,7 +203,7 @@ public class ParameterInfoTest {
 		ImmutableMap params = parameter.addValueAs(null, 1000);
 		assertNotNull(params);
 		assertEquals(map().put("years", Arrays.asList(1000)), params.asMap());
-		
+
 		params = parameter.addValueAs(params, 100);
 		assertNotNull(params);
 		assertEquals(map().put("years", Arrays.asList(1000, 100)), params.asMap());
@@ -218,14 +216,14 @@ public class ParameterInfoTest {
 		assertNotNull(params);
 		assertEquals(map().put("years", Arrays.asList(1000, 100, "a", "a")), params.asMap());
 	}
-	
+
 	@Test
 	public void testSetIntoList() {
 		ParameterInfo named = new MapParameterInfo("years");
 		ImmutableMap params = new ListParameterInfo(2, named).addValueAs(null, 1000);
 		assertNotNull(params);
 		assertEquals(map().put("years", Arrays.asList(null, null, 1000)), params.asMap());
-		
+
 		params = new ListParameterInfo(0, named).addValueAs(params, 10);
 		assertNotNull(params);
 		assertEquals(map().put("years", Arrays.asList(10, null, 1000)), params.asMap());
@@ -234,14 +232,14 @@ public class ParameterInfoTest {
 		assertNotNull(params);
 		assertEquals(map().put("years", Arrays.asList(10, null, 1000, 10000)), params.asMap());
 	}
-	
+
 	@Test
 	public void testAppendIntoSet() {
 		ParameterInfo parameter = new MapParameterInfo("years").setContainerKind(ContainerKind.SET);
 		ImmutableMap params = parameter.addValueAs(null, 1000);
 		assertNotNull(params);
 		assertEquals(map().put("years", asSet(1000)), params.asMap());
-		
+
 		params = parameter.addValueAs(params, 100);
 		assertNotNull(params);
 		assertEquals(map().put("years", asSet(1000, 100)), params.asMap());
@@ -271,13 +269,13 @@ public class ParameterInfoTest {
 			assertSame(val, namedParam.addValueAs(val, entry("year", 2018)));
 			//adding entry value with same key, but different value - no match
 			assertNull(namedParam.addValueAs(val, entry("year", 1111)));
-			
+
 			ImmutableMap val2 = namedParam.addValueAs(val, entry("age", "best"));
 			assertNotNull(val2);
 			assertEquals(map().put("map", new ImmutableMapImpl()
 					.putValue("year", 2018)
 					.putValue("age", "best")), val2.asMap());
-			
+
 			//after all the once returned val is still the same - unmodified
 			assertEquals(map().put("map", new ImmutableMapImpl().putValue("year", 2018)), val.asMap());
 		};
@@ -319,7 +317,7 @@ public class ParameterInfoTest {
 		//the map container is detected automatically from the type of new value
 		checker.accept(new MapParameterInfo("map"), null);
 	}
-	
+
 	@Test
 	public void testAddListIntoParameterByName() {
 		BiConsumer<ParameterInfo, ImmutableMap> checker = (namedParam, empty) ->
@@ -398,35 +396,34 @@ public class ParameterInfoTest {
 	private MapBuilder map() {
 		return new MapBuilder();
 	}
-	
+
 	private Map.Entry<String, Object> entry(String key, Object value) {
 		return new Map.Entry<String, Object>() {
 			@Override
 			public Object setValue(Object value) {
 				throw new RuntimeException();
 			}
-			
+
 			@Override
 			public Object getValue() {
 				return value;
 			}
-			
+
 			@Override
 			public String getKey() {
 				return key;
 			}
 		};
 	}
-	
+
 	class MapBuilder extends LinkedHashMap<String, Object> {
 		public MapBuilder put(String key, Object value) {
 			super.put(key, value);
 			return this;
 		}
 	}
-	
+
 	private static Set asSet(Object... objects) {
 		return new HashSet<>(Arrays.asList(objects));
 	}
 }
-

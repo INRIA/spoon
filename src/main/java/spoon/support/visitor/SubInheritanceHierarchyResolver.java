@@ -7,6 +7,10 @@
  */
 package spoon.support.visitor;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Set;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -24,11 +28,6 @@ import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.reflect.visitor.filter.CtScannerFunction;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Expects a {@link CtPackage} as input

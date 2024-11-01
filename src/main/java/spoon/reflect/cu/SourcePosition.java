@@ -7,11 +7,10 @@
  */
 package spoon.reflect.cu;
 
-import spoon.compiler.Environment;
-import spoon.reflect.cu.position.NoSourcePosition;
-
 import java.io.File;
 import java.io.Serializable;
+import spoon.compiler.Environment;
+import spoon.reflect.cu.position.NoSourcePosition;
 
 /**
  * This interface represents the position of a program element in a source file.

@@ -16,6 +16,10 @@
  */
 package spoon.processing;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
@@ -28,11 +32,6 @@ import spoon.support.compiler.FileSystemFile;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.processing.processors.MyProcessor;
 import spoon.test.template.testclasses.AssertToIfAssertedStatementTemplate;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -76,7 +75,7 @@ public class ProcessingTest {
 		launcher2.buildModel();
 
 		// we only the API of interface ProcessingManager
- 		ProcessingManager processing = new RuntimeProcessingManager(launcher2.getFactory());
+		ProcessingManager processing = new RuntimeProcessingManager(launcher2.getFactory());
 		for (CtType processor: launcher.getModel().getAllTypes()) {
 			if (processor.getSimpleName().equals("MyProcessor")) {
 				continue;
@@ -129,7 +128,7 @@ public class ProcessingTest {
 		l.setSourceOutputDirectory(path.toFile());
 		l.run();
 	}
-	
+
 	@Test
 	public void testTemplateNotInOutput() throws IOException {
 		// https://github.com/INRIA/spoon/issues/2987
@@ -141,16 +140,16 @@ public class ProcessingTest {
 				);
 			}
 		}
-		
+
 		String templatePath = "src/test/java/spoon/test/template/testclasses/AssertToIfAssertedStatementTemplate.java";
 		String resourcePath = "src/test/resources/spoon/test/template/";
-		
+
 		final Launcher l = new Launcher();
 		Path outputPath = Files.createTempDirectory("emptydir");
-		
+
 		l.addProcessor(new AssertProcessor());
 		l.addTemplateResource(new FileSystemFile(templatePath));
-		
+
 		l.addInputResource(resourcePath + "SimpleAssert.java");
 		l.setSourceOutputDirectory(outputPath.toFile());
 		l.run();

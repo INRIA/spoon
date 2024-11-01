@@ -7,6 +7,10 @@
  */
 package spoon.reflect.path.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.meta.RoleHandler;
@@ -14,11 +18,6 @@ import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtPathException;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * A CtPathElement that define some roles for matching.

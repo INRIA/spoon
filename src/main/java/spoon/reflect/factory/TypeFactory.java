@@ -7,39 +7,6 @@
  */
 package spoon.reflect.factory;
 
-import spoon.Launcher;
-import spoon.SpoonException;
-import spoon.reflect.code.CtNewClass;
-import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.cu.position.NoSourcePosition;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.experimental.CtUnresolvedImport;
-import spoon.reflect.reference.CtActualTypeContainer;
-import spoon.reflect.reference.CtArrayTypeReference;
-import spoon.reflect.declaration.CtImport;
-import spoon.reflect.reference.CtIntersectionTypeReference;
-import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtTypeParameterReference;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
-import spoon.reflect.visitor.CtAbstractVisitor;
-import spoon.reflect.visitor.CtScanner;
-import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.StandardEnvironment;
-import spoon.support.visitor.ClassTypingContext;
-import spoon.support.visitor.GenericTypeAdapter;
-import spoon.support.visitor.MethodTypingContext;
-import spoon.support.visitor.java.JavaReflectionTreeBuilder;
-
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,6 +18,38 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import spoon.Launcher;
+import spoon.SpoonException;
+import spoon.experimental.CtUnresolvedImport;
+import spoon.reflect.code.CtNewClass;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.NoSourcePosition;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtInterface;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.reference.CtActualTypeContainer;
+import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
+import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
+import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtAbstractVisitor;
+import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
+import spoon.support.visitor.ClassTypingContext;
+import spoon.support.visitor.GenericTypeAdapter;
+import spoon.support.visitor.MethodTypingContext;
+import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 
 /**
  * The {@link CtType} sub-factory.

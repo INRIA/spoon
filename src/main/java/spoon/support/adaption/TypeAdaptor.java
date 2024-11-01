@@ -7,6 +7,13 @@
  */
 package spoon.support.adaption;
 
+import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.Set;
+import java.util.stream.Collectors;
 import spoon.SpoonException;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtConstructor;
@@ -22,14 +29,6 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.MethodTypingContext;
-
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Queue;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Determines subtyping relationships and adapts generics from a super- to a subclass.

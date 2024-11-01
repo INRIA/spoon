@@ -7,12 +7,11 @@
  */
 package spoon.compiler;
 
-import spoon.SpoonException;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import spoon.SpoonException;
 
 /**
  * This interface represents files that can be used as resources for the Spoon

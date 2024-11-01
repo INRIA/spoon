@@ -18,23 +18,18 @@ package spoon.test.sourcePosition;
 
 
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
-import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.BodyHolderSourcePositionImpl;
 import spoon.support.reflect.cu.position.DeclarationSourcePositionImpl;
@@ -77,7 +72,7 @@ public class SourcePositionTest {
 	private Factory factoryFor(String packageName, String className) throws Exception {
 		return build(packageName, className).getFactory();
 	}
-	
+
 	@Test
 	public void testSourcePositionOfSecondPrimitiveType() throws Exception {
 		/*
@@ -107,16 +102,16 @@ public class SourcePositionTest {
 		};
 		SourcePositionImpl sp = new SourcePositionImpl(cu, 1, 9, null);
 		assertEquals("|1;9|123456789|", sp.getSourceDetails());
-		
+
 		DeclarationSourcePositionImpl dsp = new DeclarationSourcePositionImpl(cu, 4, 7, 2, 2, 1,9, null);
-		assertEquals("|1;9|123456789|\n" + 
-				"modifier = |2;2|2|\n" + 
+		assertEquals("|1;9|123456789|\n" +
+				"modifier = |2;2|2|\n" +
 				"name = |4;7|4567|", dsp.getSourceDetails());
-		
+
 		BodyHolderSourcePositionImpl bhsp = new BodyHolderSourcePositionImpl(cu, 4, 7, 2, 2, 1,9, 8, 9, null);
-		assertEquals("|1;9|123456789|\n" + 
-				"modifier = |2;2|2|\n" + 
-				"name = |4;7|4567|\n" + 
+		assertEquals("|1;9|123456789|\n" +
+				"modifier = |2;2|2|\n" +
+				"name = |4;7|4567|\n" +
 				"body = |8;9|89|", bhsp.getSourceDetails());
 	}
 

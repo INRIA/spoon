@@ -7,9 +7,8 @@
  */
 package spoon.reflect.path.impl;
 
-import spoon.reflect.declaration.CtElement;
-
 import java.util.Collection;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * A single path element from a CtPath.

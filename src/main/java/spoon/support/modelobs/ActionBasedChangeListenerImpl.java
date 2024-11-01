@@ -7,6 +7,13 @@
  */
 package spoon.support.modelobs;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.support.modelobs.action.Action;
 import spoon.support.modelobs.action.AddAction;
 import spoon.support.modelobs.action.DeleteAction;
@@ -16,14 +23,6 @@ import spoon.support.modelobs.context.ListContext;
 import spoon.support.modelobs.context.MapContext;
 import spoon.support.modelobs.context.ObjectContext;
 import spoon.support.modelobs.context.SetContext;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.path.CtRole;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * This listener will propagate the change to the listener

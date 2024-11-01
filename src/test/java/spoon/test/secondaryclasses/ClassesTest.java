@@ -21,9 +21,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
-
 import org.junit.jupiter.api.Test;
-
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtVariableRead;

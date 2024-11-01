@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLiteral;
@@ -51,19 +50,19 @@ public class NameScopeTest {
 			//needed to compute imports
 			launcher.getEnvironment().setAutoImports(true);
 		}, Renata.class);
-		
+
 		CtField<?> fieldMichal = typeRenata.getField("michal");
 		CtType<?> typeTereza = typeRenata.getNestedType("Tereza");
-		
+
 		CtMethod<?> methodDraw = typeTereza.getMethodsByName("draw").get(0);
-		
+
 		CtType<?> typeFile = typeRenata.getFactory().Type().createReference(File.class).getTypeDeclaration();
 		CtType<?> typeSystem = typeRenata.getFactory().Type().createReference(System.class).getTypeDeclaration();
 		CtMethod<?> methodCurrentTimeMillis = typeSystem.getMethodsByName("currentTimeMillis").get(0);
-		
+
 		CtType<?> typeFiles = typeRenata.getFactory().Type().createReference(Files.class).getTypeDeclaration();
 		CtMethod<?> methodsNewDirectoryStream = typeFiles.getMethodsByName("newDirectoryStream").get(0);
-		
+
 		LexicalScopeScanner scanner = new LexicalScopeScanner();
 		scanner.setVisitCompilationUnitContent(true);
 		final LexicalScope[] scopes = new LexicalScope[2];

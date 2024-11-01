@@ -7,6 +7,9 @@
  */
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
@@ -22,10 +25,6 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.support.util.ModelList;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	private static final long serialVersionUID = 1L;

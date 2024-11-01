@@ -17,7 +17,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
-
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 

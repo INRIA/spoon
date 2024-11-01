@@ -1,16 +1,12 @@
 package spoon.test.prettyprinter;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
@@ -19,46 +15,48 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 public class SniperDoubleForInitializerTest {
-  private static final Path INPUT_PATH = Paths.get("src/test/java/");
-  private static final Path OUTPUT_PATH = Paths.get("target/test-output");
+private static final Path INPUT_PATH = Paths.get("src/test/java/");
+private static final Path OUTPUT_PATH = Paths.get("target/test-output");
 
-  @BeforeAll
-  public static void setup() throws IOException {
-    FileUtils.deleteDirectory(OUTPUT_PATH.toFile());
-  }
+@BeforeAll
+public static void setup() throws IOException {
+	FileUtils.deleteDirectory(OUTPUT_PATH.toFile());
+}
 
-  @Test
-  public void DoubleForInitializerTest() throws IOException {
-    runSniperJavaPrettyPrinter("spoon/test/prettyprinter/testclasses/DoubleForInitializer.java");
-  }
+@Test
+public void DoubleForInitializerTest() throws IOException {
+	runSniperJavaPrettyPrinter("spoon/test/prettyprinter/testclasses/DoubleForInitializer.java");
+}
 
-  private void runSniperJavaPrettyPrinter(String path) throws IOException {
-    final Launcher launcher = new Launcher();
-    final Environment e = launcher.getEnvironment();
-    e.setLevel("INFO");
-    e.setPrettyPrinterCreator(() -> new SniperJavaPrettyPrinter(e));
+private void runSniperJavaPrettyPrinter(String path) throws IOException {
+	final Launcher launcher = new Launcher();
+	final Environment e = launcher.getEnvironment();
+	e.setLevel("INFO");
+	e.setPrettyPrinterCreator(() -> new SniperJavaPrettyPrinter(e));
 
-    launcher.addInputResource(INPUT_PATH.resolve(path).toString());
-    launcher.setSourceOutputDirectory(OUTPUT_PATH.toString());
+	launcher.addInputResource(INPUT_PATH.resolve(path).toString());
+	launcher.setSourceOutputDirectory(OUTPUT_PATH.toString());
 
-    CtModel model = launcher.buildModel();
+	CtModel model = launcher.buildModel();
 
-    CtMethod method = model.getElements(new TypeFilter<>(CtMethod.class)).get(0);
+	CtMethod method = model.getElements(new TypeFilter<>(CtMethod.class)).get(0);
 
-    method.getBody().addComment(launcher.getFactory().Code().createComment("test", CommentType.BLOCK));
+	method.getBody().addComment(launcher.getFactory().Code().createComment("test", CommentType.BLOCK));
 
-    launcher.process();
-    launcher.prettyprint();
-    // Verify result file exists and is not empty
-    assertThat("Output file for " + path + " should exist", OUTPUT_PATH.resolve(path).toFile().exists(),
-        CoreMatchers.equalTo(true));
+	launcher.process();
+	launcher.prettyprint();
+	// Verify result file exists and is not empty
+	assertThat("Output file for " + path + " should exist", OUTPUT_PATH.resolve(path).toFile().exists(),
+		CoreMatchers.equalTo(true));
 
-    String content = Files.readString(OUTPUT_PATH.resolve(path));
+	String content = Files.readString(OUTPUT_PATH.resolve(path));
 
-    assertThat(content, CoreMatchers.notNullValue());
-    assertThat("Result class should not be empty", content.trim(), CoreMatchers.not(CoreMatchers.equalTo("")));
-    assertThat("For loop should have one initializer for y", content.trim(),
-        CoreMatchers.containsString("int i = 0, y = 0;"));
-  }
+	assertThat(content, CoreMatchers.notNullValue());
+	assertThat("Result class should not be empty", content.trim(), CoreMatchers.not(CoreMatchers.equalTo("")));
+	assertThat("For loop should have one initializer for y", content.trim(),
+		CoreMatchers.containsString("int i = 0, y = 0;"));
+}
 }

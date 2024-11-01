@@ -16,6 +16,7 @@
  */
 package spoon.generating;
 
+import java.util.List;
 import spoon.processing.AbstractManualProcessor;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtExpression;
@@ -31,8 +32,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
-
-import java.util.List;
 
 public class CtBiScannerGenerator extends AbstractManualProcessor {
 	private static final String TARGET_BISCANNER_PACKAGE = "spoon.reflect.visitor";

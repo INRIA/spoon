@@ -7,6 +7,10 @@
  */
 package spoon.pattern;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 import spoon.SpoonException;
 import spoon.metamodel.Metamodel;
 import spoon.pattern.internal.ValueConvertor;
@@ -59,11 +63,6 @@ import spoon.support.Experimental;
 import spoon.template.Parameter;
 import spoon.template.Template;
 import spoon.template.TemplateParameter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
 
 import static spoon.pattern.PatternBuilder.getLocalTypeRefBySimpleName;
 

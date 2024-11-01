@@ -8,7 +8,6 @@
 package spoon;
 
 import java.util.Locale;
-
 import org.jspecify.annotations.Nullable;
 
 /**

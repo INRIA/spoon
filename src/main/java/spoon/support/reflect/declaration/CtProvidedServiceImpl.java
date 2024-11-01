@@ -7,15 +7,14 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class CtProvidedServiceImpl extends CtElementImpl implements CtProvidedService {
 	@MetamodelPropertyField(role = CtRole.SERVICE_TYPE)

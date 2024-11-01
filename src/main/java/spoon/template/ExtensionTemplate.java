@@ -8,7 +8,6 @@
 package spoon.template;
 
 import java.util.ArrayList;
-
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;

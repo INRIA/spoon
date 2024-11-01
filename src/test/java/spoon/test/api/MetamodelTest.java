@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
@@ -71,7 +70,6 @@ import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.adaption.TypeAdaptor;
 import spoon.template.Parameter;
-
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -132,7 +130,7 @@ public class MetamodelTest {
 		}
 		assertTrue(problems.isEmpty(), "You might need to update api/Metamodel.java: " + String.join("\n", problems));
 	}
-	
+
 	@Test
 	public void testGetterSetterForRole() {
 		// contract: all roles in spoon metamodel must at least have a setter and a getter
@@ -166,7 +164,7 @@ public class MetamodelTest {
 		assertEquals(Collections.EMPTY_SET, isNotGetter);
 		assertEquals(Collections.EMPTY_SET, isNotSetter);
 	}
-	
+
 	private static final Set<String> IGNORED_FIELD_NAMES = new HashSet<>(Arrays.asList(
 			"parent",
 			"metadata",

@@ -7,10 +7,7 @@
  */
 package spoon.template;
 
-import static spoon.pattern.internal.matcher.TobeMatched.getMatchedParameters;
-
 import java.util.List;
-
 import spoon.pattern.Match;
 import spoon.pattern.Pattern;
 import spoon.pattern.internal.matcher.TobeMatched;
@@ -22,6 +19,8 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.support.util.ImmutableMap;
 import spoon.support.util.ImmutableMapImpl;
+
+import static spoon.pattern.internal.matcher.TobeMatched.getMatchedParameters;
 
 /**
  * This class defines an engine for matching a template to pieces of code.

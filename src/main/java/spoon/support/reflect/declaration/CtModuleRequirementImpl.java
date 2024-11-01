@@ -7,14 +7,13 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.util.HashSet;
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class CtModuleRequirementImpl extends CtElementImpl implements CtModuleRequirement {
 	@MetamodelPropertyField(role = CtRole.MODIFIER)

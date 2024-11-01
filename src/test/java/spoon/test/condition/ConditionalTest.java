@@ -18,9 +18,7 @@ package spoon.test.condition;
 
 
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
@@ -69,8 +67,8 @@ public class ConditionalTest {
 			}
 		}
 
-		assertEquals("if (true) {" + newLine + 
-				"    java.lang.System.out.println();" + newLine + 
+		assertEquals("if (true) {" + newLine +
+				"    java.lang.System.out.println();" + newLine +
 				"} else if (true) {" + newLine +
 				"    java.lang.System.out.println();" + newLine +
 				"} else {" + newLine +

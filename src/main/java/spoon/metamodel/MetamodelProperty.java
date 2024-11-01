@@ -7,8 +7,6 @@
  */
 package spoon.metamodel;
 
-import static spoon.metamodel.Metamodel.addUniqueObject;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -20,9 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.jspecify.annotations.Nullable;
-
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -37,6 +33,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.util.RtHelper;
+
+import static spoon.metamodel.Metamodel.addUniqueObject;
 
 /**
  * Represents a property of the Spoon metamodel.

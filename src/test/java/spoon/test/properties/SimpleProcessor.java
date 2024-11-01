@@ -12,8 +12,8 @@ import spoon.reflect.declaration.CtMethod;
 
 public class SimpleProcessor extends AbstractProcessor<CtMethod<?>> {
 
-    @Override
-    public void process(CtMethod<?> element) {
+	@Override
+	public void process(CtMethod<?> element) {
 
-    }
+	}
 }

@@ -12,7 +12,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -1126,4 +1125,3 @@ public abstract class CtScanner implements CtVisitor {
 		exit(unnamedPattern);
 	}
 }
-

@@ -16,13 +16,10 @@
  */
 package spoon.support.compiler.jdt;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
@@ -31,6 +28,8 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.support.Level;
 import spoon.support.compiler.jdt.testclasses.ExtendedStringLiteralTestClass;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExtendedStringLiteralTest {
 

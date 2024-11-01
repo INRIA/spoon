@@ -1,8 +1,5 @@
 package spoon.test.textBlocks;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
@@ -17,6 +14,9 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.testing.utils.LineSeparatorExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Test for the new Java 15 text block feature with */
 public class TextBlockTest{
@@ -39,7 +39,7 @@ public class TextBlockTest{
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("textBlock.TextBlockTestClass");
 		CtMethod<?> m1 =  allstmt.getMethod("m1");
-		
+
 		CtStatement stmt1 = m1.getBody().getStatement(0);
 		assertTrue(stmt1.getValueByRole(CtRole.ASSIGNMENT) instanceof CtTextBlock);
 		CtTextBlock l1 = (CtTextBlock) stmt1.getValueByRole(CtRole.ASSIGNMENT);
@@ -52,7 +52,7 @@ public class TextBlockTest{
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("textBlock.TextBlockTestClass");
 		CtMethod<?> m2 =  allstmt.getMethod("m2");
-		
+
 		CtStatement stmt2 = m2.getBody().getStatement(0);
 		assertTrue(stmt2.getValueByRole(CtRole.ASSIGNMENT) instanceof CtTextBlock);
 		CtTextBlock l2 = (CtTextBlock) stmt2.getValueByRole(CtRole.ASSIGNMENT);
@@ -68,7 +68,7 @@ public class TextBlockTest{
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("textBlock.TextBlockTestClass");
 		CtMethod<?> m3 =  allstmt.getMethod("m3");
-		
+
 		CtTry stmt4 = (CtTry) m3.getBody().getStatement(1);
 		CtStatement stmt5 = stmt4.getBody().getStatement(0);
 		CtInvocation inv = (CtInvocation) stmt5.getDirectChildren().get(1);
@@ -89,7 +89,7 @@ public class TextBlockTest{
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("textBlock.TextBlockTestClass");
 		CtMethod<?> m4 =  allstmt.getMethod("m4");
-		
+
 		CtStatement stmt1 = m4.getBody().getStatement(0);
 		assertTrue(stmt1.getValueByRole(CtRole.ASSIGNMENT) instanceof CtTextBlock);
 		CtTextBlock l1 = (CtTextBlock) stmt1.getValueByRole(CtRole.ASSIGNMENT);
@@ -126,7 +126,7 @@ public class TextBlockTest{
 		//contract: text-blocks should retain escape sequences in code
 		Launcher launcher = setUpTest();
 		launcher.getEnvironment().setAutoImports(true);
-		
+
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("textBlock.TextBlockTestClass");
 		CtMethod<?> m5 =  allstmt.getMethod("m5");
 

@@ -17,4 +17,3 @@
  * See https://github.com/INRIA/spoon/issues/1284
  */
 package spoon.support.sniper;
-

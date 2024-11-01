@@ -7,6 +7,9 @@
  */
 package spoon.pattern.internal;
 
+import java.util.List;
+import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.pattern.Generator;
 import spoon.pattern.PatternBuilder;
@@ -30,11 +33,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.util.ImmutableMap;
 import spoon.support.util.ImmutableMapImpl;
-
-import java.util.List;
-import java.util.Map;
-
-import org.jspecify.annotations.Nullable;
 
 /**
  * Drives generation process

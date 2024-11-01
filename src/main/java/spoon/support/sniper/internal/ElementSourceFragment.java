@@ -8,6 +8,17 @@
 package spoon.support.sniper.internal;
 
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.reflect.code.CtComment;
@@ -31,18 +42,6 @@ import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.support.Experimental;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * Represents a part of source code of an {@link CtElement}

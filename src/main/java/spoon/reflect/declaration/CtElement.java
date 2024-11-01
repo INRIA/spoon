@@ -7,8 +7,17 @@
  */
 package spoon.reflect.declaration;
 
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import spoon.compiler.Environment;
 import spoon.processing.FactoryAccessor;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.SourcePositionHolder;
@@ -20,18 +29,8 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Root;
 import spoon.reflect.visitor.chain.CtQueryable;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 import spoon.support.Experimental;
 import spoon.support.sniper.internal.ElementSourceFragment;
-
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static spoon.reflect.path.CtRole.ANNOTATION;
 import static spoon.reflect.path.CtRole.COMMENT;

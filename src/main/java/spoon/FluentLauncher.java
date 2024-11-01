@@ -9,7 +9,6 @@ package spoon;
 
 import java.io.File;
 import java.nio.charset.Charset;
-
 import spoon.processing.Processor;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;

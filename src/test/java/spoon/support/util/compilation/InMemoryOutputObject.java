@@ -1,9 +1,9 @@
 package spoon.support.util.compilation;
 
-import javax.tools.SimpleJavaFileObject;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Paths;
+import javax.tools.SimpleJavaFileObject;
 
 class InMemoryOutputObject extends SimpleJavaFileObject {
 

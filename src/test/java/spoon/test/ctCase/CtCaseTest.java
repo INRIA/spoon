@@ -16,16 +16,8 @@
  */
 package spoon.test.ctCase;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static spoon.testing.utils.ModelUtils.build;
-
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtStatement;
@@ -34,6 +26,12 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static spoon.testing.utils.ModelUtils.build;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class CtCaseTest {

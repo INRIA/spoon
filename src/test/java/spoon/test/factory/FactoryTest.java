@@ -18,8 +18,6 @@ package spoon.test.factory;
 
 
 import java.lang.reflect.Method;
-import java.nio.file.Paths;
-
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
@@ -43,7 +41,6 @@ import spoon.support.StandardEnvironment;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.test.SpoonTestHelpers;
 import spoon.test.factory.testclasses.Foo;
-
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;

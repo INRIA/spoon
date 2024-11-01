@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtRHSReceiver;
@@ -25,8 +26,6 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
-
-import java.util.Set;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtField}.

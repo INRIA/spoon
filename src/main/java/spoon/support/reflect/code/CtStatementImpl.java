@@ -7,6 +7,8 @@
  */
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
+import java.util.List;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
@@ -23,9 +25,6 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static spoon.reflect.path.CtRole.LABEL;
 

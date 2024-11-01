@@ -7,6 +7,10 @@
  */
 package spoon.reflect;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
@@ -22,11 +26,6 @@ import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.QueueProcessingManager;
 import spoon.support.reflect.declaration.CtPackageImpl;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public class CtModelImpl implements CtModel {
 

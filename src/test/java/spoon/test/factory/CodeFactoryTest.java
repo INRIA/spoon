@@ -16,6 +16,8 @@
  */
 package spoon.test.factory;
 
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -30,8 +32,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.util.compilation.JavacFacade;
 import spoon.testing.utils.GitHubIssue;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,7 +64,7 @@ public class CodeFactoryTest {
 		assertTrue(va.getAssigned() instanceof CtVariableWrite);
 		assertEquals(f.getReference(), ((CtVariableWrite) va.getAssigned()).getVariable());
 	}
-	
+
 	@Test
 	@GitHubIssue(issueNumber= 4956, fixed = true)
 	void createCtCatchVariableWithoutModifiers() {

@@ -7,11 +7,10 @@
  */
 package spoon.template;
 
+import java.util.List;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
-
-import java.util.List;
 
 /**
  * This class represents a template parameter that defines a statement list

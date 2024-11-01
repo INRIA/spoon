@@ -7,6 +7,7 @@
  */
 package spoon.reflect.visitor;
 
+import java.util.Map;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
@@ -25,8 +26,6 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.Experimental;
-
-import java.util.Map;
 
 /**
  * Detects conflicts needed to be required be a fully-qualified name.

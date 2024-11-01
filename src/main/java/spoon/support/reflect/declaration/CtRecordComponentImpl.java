@@ -10,7 +10,6 @@ package spoon.support.reflect.declaration;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.jspecify.annotations.Nullable;
 import spoon.JLSViolation;
 import spoon.reflect.annotations.MetamodelPropertyField;

@@ -7,12 +7,11 @@
  */
 package spoon.reflect.declaration;
 
+import java.util.List;
+import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.UnsettableProperty;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * This element defines an anonymous executable block declaration in a class.

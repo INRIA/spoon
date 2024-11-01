@@ -7,6 +7,9 @@
  */
 package spoon.support.reflect.reference;
 
+import java.lang.reflect.AnnotatedElement;
+import java.util.List;
+import java.util.Objects;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
@@ -20,10 +23,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
-
-import java.lang.reflect.AnnotatedElement;
-import java.util.List;
-import java.util.Objects;
 
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;

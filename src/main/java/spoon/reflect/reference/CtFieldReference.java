@@ -7,13 +7,12 @@
  */
 package spoon.reflect.reference;
 
+import java.lang.reflect.Member;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
-
-import java.lang.reflect.Member;
 
 
 /**

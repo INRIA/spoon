@@ -19,7 +19,6 @@ package spoon.test.visibility;
 
 import java.io.File;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;

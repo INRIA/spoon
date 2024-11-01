@@ -7,6 +7,8 @@
  */
 package spoon.pattern.internal.node;
 
+import java.util.Map;
+import java.util.function.BiConsumer;
 import spoon.pattern.Quantifier;
 import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.ResultHolder;
@@ -18,9 +20,6 @@ import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.factory.Factory;
 import spoon.support.util.ImmutableMap;
-
-import java.util.Map;
-import java.util.function.BiConsumer;
 
 /**
  * Pattern node of multiple occurrences of the same model, just with different parameters.

@@ -7,13 +7,12 @@
  */
 package spoon.reflect.annotations;
 
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.path.CtRole;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.path.CtRole;
 
 /**
  * Tells that a field is a property of the metamodel

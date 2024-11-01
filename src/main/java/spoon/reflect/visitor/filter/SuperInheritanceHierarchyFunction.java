@@ -7,6 +7,7 @@
  */
 package spoon.reflect.visitor.filter;
 
+import java.util.Set;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
@@ -21,8 +22,6 @@ import spoon.reflect.visitor.chain.CtQueryAware;
 import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.support.SpoonClassNotFoundException;
-
-import java.util.Set;
 
 /**
  * Expects a {@link CtTypeInformation} as input

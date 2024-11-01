@@ -8,7 +8,6 @@
 package spoon.reflect.visitor;
 
 import java.util.Comparator;
-
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtImportKind;
 

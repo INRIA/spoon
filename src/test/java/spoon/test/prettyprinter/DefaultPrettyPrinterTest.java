@@ -16,6 +16,21 @@
  */
 package spoon.test.prettyprinter;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
@@ -63,22 +78,6 @@ import spoon.test.prettyprinter.testclasses.ClassUsingStaticMethod;
 import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -102,7 +101,7 @@ public class DefaultPrettyPrinterTest {
 				"public class ClassUsingStaticMethod {" + nl +
 				"    public void callFindFirst() {" + nl +
 				"        findFirst();" + nl +
-                "        new ClassWithStaticMethod().notStaticFindFirst();" + nl +
+				"        new ClassWithStaticMethod().notStaticFindFirst();" + nl +
 				"    }" + nl +
 				"}" + nl;
 

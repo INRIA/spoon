@@ -1,124 +1,122 @@
 package spoon.testing.utils;
 
+import java.io.File;
+import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-
 import spoon.Launcher;
 import spoon.reflect.declaration.CtField;
 import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
 
-import java.io.File;
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class CheckTest {
 
-    @Test
-    public void testAssertNotNull() {
-        // contract: assertNotNull throws AssertionError as we pass a null reference, with a default
-        // error message
+	@Test
+	public void testAssertNotNull() {
+		// contract: assertNotNull throws AssertionError as we pass a null reference, with a default
+		// error message
 
-        String expectedMessage = "Your parameter can't be null.";
-        
-        AssertionError error = assertThrows(AssertionError.class, () -> {
-            Check.assertNotNull(null);
-        });
-        
-        assertEquals(expectedMessage, error.getMessage());
-    }
+		String expectedMessage = "Your parameter can't be null.";
 
-    @Test
-    public void testAssertNotNullWithMessageParameter() {
-        // contract: assertNotNull throws AssertionError as we pass a null reference, with an
-        // error message that was passed as an argument
+		AssertionError error = assertThrows(AssertionError.class, () -> {
+			Check.assertNotNull(null);
+		});
 
-        String messageParameter = "testMessage";
+		assertEquals(expectedMessage, error.getMessage());
+	}
 
-        AssertionError error = assertThrows(AssertionError.class, () -> {
-            Check.assertNotNull(messageParameter,null);
-        });
+	@Test
+	public void testAssertNotNullWithMessageParameter() {
+		// contract: assertNotNull throws AssertionError as we pass a null reference, with an
+		// error message that was passed as an argument
 
-        assertEquals(messageParameter, error.getMessage());
-    }
+		String messageParameter = "testMessage";
 
-    @Test
-    public void testAssertNotNullWithNotNullReference() {
-        // contract: assertNotNull returns the reference passed without any changes as the reference
-        // passed was not null
+		AssertionError error = assertThrows(AssertionError.class, () -> {
+			Check.assertNotNull(messageParameter,null);
+		});
 
-        int i = 0;
+		assertEquals(messageParameter, error.getMessage());
+	}
 
-        int j = Check.assertNotNull(i);
+	@Test
+	public void testAssertNotNullWithNotNullReference() {
+		// contract: assertNotNull returns the reference passed without any changes as the reference
+		// passed was not null
 
-        assertEquals(i, j);
-    }
+		int i = 0;
 
-    @Test
-    public void testAssertExistWithoutAnExistingFile(@TempDir File tempDir) {
-        // contract: assertExists throws AssertionError as a non existing file is passed
+		int j = Check.assertNotNull(i);
 
-        File file =  getFileWithTestFilePathName(tempDir);
-        String expectedMessage = "You should specify an existing file.";
+		assertEquals(i, j);
+	}
 
-        AssertionError error = assertThrows(AssertionError.class, () -> {
-            Check.assertExists(file);
-        });
+	@Test
+	public void testAssertExistWithoutAnExistingFile(@TempDir File tempDir) {
+		// contract: assertExists throws AssertionError as a non existing file is passed
 
-        assertEquals(expectedMessage, error.getMessage());
-    }
+		File file =  getFileWithTestFilePathName(tempDir);
+		String expectedMessage = "You should specify an existing file.";
 
-    @Test
-    public void testAssertExistWithExistingFile(@TempDir File tempDir) throws IOException {
-        // contract: assertExists the passed file exists, and as it exists it returns the passed file back
+		AssertionError error = assertThrows(AssertionError.class, () -> {
+			Check.assertExists(file);
+		});
 
-        File file = getFileWithTestFilePathName(tempDir);
-        file.createNewFile();
+		assertEquals(expectedMessage, error.getMessage());
+	}
 
-        File returnedFile = Check.assertExists(file);
+	@Test
+	public void testAssertExistWithExistingFile(@TempDir File tempDir) throws IOException {
+		// contract: assertExists the passed file exists, and as it exists it returns the passed file back
 
-        assertEquals(file, returnedFile);
-    }
+		File file = getFileWithTestFilePathName(tempDir);
+		file.createNewFile();
 
-    @Test
-    public void testAssertIsSameWithSameElementsIsTrue() {
-        // contract: assertIsSame returns the assumedActualElement without any changes as the assumedExpectedElement
-        // and the assumedActualElement were objects of the same class
+		File returnedFile = Check.assertExists(file);
 
-        CtEnumValueImpl<String> assumedExpectedElement =  new CtEnumValueImpl();
-        CtField<Integer> assumedActualElement = new CtEnumValueImpl();
+		assertEquals(file, returnedFile);
+	}
 
-        CtField<?> returnedActualElement = Check.assertIsSame(assumedActualElement, assumedExpectedElement);
+	@Test
+	public void testAssertIsSameWithSameElementsIsTrue() {
+		// contract: assertIsSame returns the assumedActualElement without any changes as the assumedExpectedElement
+		// and the assumedActualElement were objects of the same class
 
-        assertEquals(assumedActualElement, returnedActualElement);
-    }
+		CtEnumValueImpl<String> assumedExpectedElement =  new CtEnumValueImpl();
+		CtField<Integer> assumedActualElement = new CtEnumValueImpl();
 
-    @Test
-    public void testAssertIsSameWithDissimilarElements() {
-        // contract: assertIsSame throws AssertionError as the assumedExpectedElement and the assumeActualElement
-        // were not objects of the same class
+		CtField<?> returnedActualElement = Check.assertIsSame(assumedActualElement, assumedExpectedElement);
 
-        // arrange
-        CtEnumValueImpl<String> assumedExpectedElement =  new CtEnumValueImpl();
-        CtField<String> assumedActualElement = new CtFieldImpl();
-        String expectedMessage = String.format(
-                "Actual value is typed by %1$s and expected is typed by %2$s, these objects should be the same type.",
-                assumedActualElement.getClass().getName(), assumedExpectedElement.getClass().getName()
-        );
+		assertEquals(assumedActualElement, returnedActualElement);
+	}
 
-        // act
-        AssertionError error = assertThrows(AssertionError.class, () -> {
-            Check.assertIsSame(assumedActualElement, assumedExpectedElement);
-        });
+	@Test
+	public void testAssertIsSameWithDissimilarElements() {
+		// contract: assertIsSame throws AssertionError as the assumedExpectedElement and the assumeActualElement
+		// were not objects of the same class
 
-        // assert
-        assertEquals(expectedMessage, error.getMessage());
-    }
+		// arrange
+		CtEnumValueImpl<String> assumedExpectedElement =  new CtEnumValueImpl();
+		CtField<String> assumedActualElement = new CtFieldImpl();
+		String expectedMessage = String.format(
+				"Actual value is typed by %1$s and expected is typed by %2$s, these objects should be the same type.",
+				assumedActualElement.getClass().getName(), assumedExpectedElement.getClass().getName()
+		);
 
-    private static File getFileWithTestFilePathName(File tempDir) {
-        Launcher launcher = new Launcher();
-        launcher.setSourceOutputDirectory(tempDir.getAbsolutePath());
-        return new File (launcher.getModelBuilder().getSourceOutputDirectory() + "testFile.txt");
-    }
+		// act
+		AssertionError error = assertThrows(AssertionError.class, () -> {
+			Check.assertIsSame(assumedActualElement, assumedExpectedElement);
+		});
+
+		// assert
+		assertEquals(expectedMessage, error.getMessage());
+	}
+
+	private static File getFileWithTestFilePathName(File tempDir) {
+		Launcher launcher = new Launcher();
+		launcher.setSourceOutputDirectory(tempDir.getAbsolutePath());
+		return new File (launcher.getModelBuilder().getSourceOutputDirectory() + "testFile.txt");
+	}
 }

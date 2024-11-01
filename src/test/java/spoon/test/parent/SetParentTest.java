@@ -16,6 +16,10 @@
  */
 package spoon.test.parent;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import spoon.reflect.CtModelImpl;
@@ -31,11 +35,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.reference.CtReference;
 import spoon.test.SpoonTestHelpers;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -53,13 +52,13 @@ public class SetParentTest{
 		List<DynamicTest> values = new ArrayList<>();
 		for (CtType<?> t : SpoonTestHelpers.getAllInstantiableMetamodelInterfaces()) {
 			if (!(CtReference.class.isAssignableFrom(t.getActualClass()))) {
-				values.add(DynamicTest.dynamicTest(t.getSimpleName(), () -> 
+				values.add(DynamicTest.dynamicTest(t.getSimpleName(), () ->
 					testSetParentDoesNotAlterState(t)));
 			}
 		}
 		return values;
 	}
-	
+
 	private void testSetParentDoesNotAlterState(CtType<?> toTest) throws Throwable {
 		// contract: setParent does not modifiy the state of the parent
 

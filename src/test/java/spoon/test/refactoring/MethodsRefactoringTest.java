@@ -16,6 +16,14 @@
  */
 package spoon.test.refactoring;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -46,15 +54,6 @@ import spoon.test.refactoring.parameter.testclasses.TypeC;
 import spoon.test.refactoring.parameter.testclasses.TypeR;
 import spoon.testing.utils.ModelUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -69,23 +68,23 @@ public class MethodsRefactoringTest {
 	@Test
 	public void testSubInheritanceHierarchyFunction() {
 		Factory factory = ModelUtils.build(new File("./src/test/java/spoon/test/refactoring/parameter/testclasses"));
-		
+
 		List<String> allSubtypes = factory.Class().get(TypeA.class).map(new SubInheritanceHierarchyFunction()).map((CtType type)->type.getQualifiedName()).list();
-		checkContainsOnly(allSubtypes, 
+		checkContainsOnly(allSubtypes,
 				"spoon.test.refactoring.parameter.testclasses.TypeB",
 				"spoon.test.refactoring.parameter.testclasses.TypeB$1",
 				"spoon.test.refactoring.parameter.testclasses.TypeC");
 
 		allSubtypes = factory.Class().get(TypeB.class).map(new SubInheritanceHierarchyFunction()).map((CtType type)->type.getQualifiedName()).list();
-		checkContainsOnly(allSubtypes, 
+		checkContainsOnly(allSubtypes,
 				"spoon.test.refactoring.parameter.testclasses.TypeB$1",
 				"spoon.test.refactoring.parameter.testclasses.TypeC");
-		
+
 		allSubtypes = factory.Class().get(TypeC.class).map(new SubInheritanceHierarchyFunction()).map((CtType type)->type.getQualifiedName()).list();
 		assertEquals(0, allSubtypes.size());
 
 		allSubtypes = factory.Interface().get(IFaceB.class).map(new SubInheritanceHierarchyFunction()).map((CtType type)->type.getQualifiedName()).list();
-		checkContainsOnly(allSubtypes, 
+		checkContainsOnly(allSubtypes,
 				"spoon.test.refactoring.parameter.testclasses.TypeB",
 				"spoon.test.refactoring.parameter.testclasses.TypeB$1",
 				"spoon.test.refactoring.parameter.testclasses.TypeB$1Local",
@@ -95,16 +94,16 @@ public class MethodsRefactoringTest {
 				"spoon.test.refactoring.parameter.testclasses.TypeL",
 				"spoon.test.refactoring.parameter.testclasses.TypeM"
 				);
-		
+
 		allSubtypes = factory.Interface().get(IFaceL.class).map(new SubInheritanceHierarchyFunction()).map((CtType type)->type.getQualifiedName()).list();
-		checkContainsOnly(allSubtypes, 
+		checkContainsOnly(allSubtypes,
 				"spoon.test.refactoring.parameter.testclasses.TypeB$1Local",
 				"spoon.test.refactoring.parameter.testclasses.TypeL",
 				"spoon.test.refactoring.parameter.testclasses.TypeM"
 				);
-		
+
 		allSubtypes = factory.Interface().get(IFaceK.class).map(new SubInheritanceHierarchyFunction()).map((CtType type)->type.getQualifiedName()).list();
-		checkContainsOnly(allSubtypes, 
+		checkContainsOnly(allSubtypes,
 				"spoon.test.refactoring.parameter.testclasses.TypeB$1Local",
 				"spoon.test.refactoring.parameter.testclasses.TypeL",
 				"spoon.test.refactoring.parameter.testclasses.TypeM",
@@ -124,9 +123,9 @@ public class MethodsRefactoringTest {
 	@Test
 	public void testAllMethodsSameSignatureFunction() {
 		Factory factory = ModelUtils.build(new File("./src/test/java/spoon/test/refactoring/parameter/testclasses"));
-		
+
 		//each executable in test classes is marked with a annotation TestHierarchy,
-		//which defines the name of the hierarchy where this executable belongs to. 
+		//which defines the name of the hierarchy where this executable belongs to.
 
 		//collect all executables which are marked that they belong to hierarchy A_method1
 		List<CtExecutable<?>> executablesOfHierarchyA = getExecutablesOfHierarchy(factory, "A_method1");
@@ -137,7 +136,7 @@ public class MethodsRefactoringTest {
 		List<CtExecutable<?>> executablesOfHierarchyR = getExecutablesOfHierarchy(factory, "R_method1");
 		//check executables of this hierarchy
 		checkMethodHierarchies(executablesOfHierarchyR);
-		
+
 		//contract: CtConstructor has no other same signature
 		CtConstructor<?> constructorTypeA = factory.Class().get(TypeA.class).getConstructors().iterator().next();
 		CtExecutable<?> exec = constructorTypeA.map(new AllMethodsSameSignatureFunction()).first();
@@ -150,7 +149,7 @@ public class MethodsRefactoringTest {
 	}
 
 	private void checkMethodHierarchies(List<CtExecutable<?>> expectedExecutables) {
-		//contract: check that found methods does not depend on the starting point. 
+		//contract: check that found methods does not depend on the starting point.
 		//The same set of executables has to be found if we start on any of them
 		int countOfTestedLambdas = 0;
 		int countOfTestedMethods = 0;
@@ -167,7 +166,7 @@ public class MethodsRefactoringTest {
 		assertTrue(countOfTestedLambdas>0);
 		assertTrue(countOfTestedMethods>0);
 	}
-	
+
 	private void checkMethodHierarchy(List<CtExecutable<?>> expectedExecutables, CtExecutable startExecutable) {
 		//contract: check that by default it does not includes self
 		//contract: check that by default it returns lambdas
@@ -176,7 +175,7 @@ public class MethodsRefactoringTest {
 			assertFalse(containsSame(executables, startExecutable), "Unexpected start executable "+startExecutable);
 			//check that some method was found
 			assertFalse(executables.isEmpty());
-			//check that expected methods were found and remove them 
+			//check that expected methods were found and remove them
 			expectedExecutables.forEach(m->{
 				boolean found = removeSame(executables, m);
 				if(startExecutable==m) {
@@ -189,7 +188,7 @@ public class MethodsRefactoringTest {
 			//check that there is no unexpected executable
 			assertTrue(executables.isEmpty(), "Unexpected executables: "+executables);
 		}
-		
+
 		//contract: check that includingSelf(true) returns startMethod too
 		//contract: check that by default it still returns lambdas
 		{
@@ -197,27 +196,27 @@ public class MethodsRefactoringTest {
 			assertTrue(containsSame(executables, startExecutable), "Missing start executable "+startExecutable);
 			//check that some method was found
 			assertFalse(executables.isEmpty());
-			//check that expected methods were found and remove them 
+			//check that expected methods were found and remove them
 			expectedExecutables.forEach(m->{
 				assertTrue(removeSame(executables, m), "The signature "+getQSignature(m)+" not found");
 			});
 			//check that there is no unexpected executable
 			assertTrue(executables.isEmpty(), "Unexpected executables: "+executables);
 		}
-		
+
 		//contract: check that includingLambdas(false) returns no lambda expressions
 		{
 			final List<CtExecutable<?>> executables = startExecutable.map(new AllMethodsSameSignatureFunction().includingSelf(true).includingLambdas(false)).list();
 			if (startExecutable instanceof CtLambda) {
-				//lambda must not be returned even if it is first 
+				//lambda must not be returned even if it is first
 				assertFalse(containsSame(executables, startExecutable), "Unexpected start executable "+startExecutable);
 			} else {
 				assertTrue(containsSame(executables, startExecutable), "Missing start executable "+startExecutable);
 			}
-			
+
 			//check that some method was found
 			assertFalse(executables.isEmpty());
-			//check that expected methods were found and remove them 
+			//check that expected methods were found and remove them
 			expectedExecutables.forEach(m->{
 				if(m instanceof CtLambda) {
 					//the lambdas are not expected. Do not ask for them
@@ -237,7 +236,7 @@ public class MethodsRefactoringTest {
 		assertNotSame(startExecutable, exec);
 		assertTrue(containsSame(expectedExecutables, exec));
 	}
-	
+
 	private String getQSignature(CtExecutable e) {
 		if (e instanceof CtMethod<?>) {
 			CtMethod<?> m = (CtMethod<?>) e;
@@ -268,16 +267,16 @@ public class MethodsRefactoringTest {
 	@Test
 	public void testExecutableReferenceFilter() {
 		Factory factory = ModelUtils.build(new File("./src/test/java/spoon/test/refactoring/parameter/testclasses"));
-		
+
 		List<CtExecutable<?>> executables = factory.getModel().filterChildren((CtExecutable<?> e)->true).list();
 		int nrExecRefsTotal = 0;
-		//contract check that ExecutableReferenceFilter found CtExecutableReferences of each executable individually 
+		//contract check that ExecutableReferenceFilter found CtExecutableReferences of each executable individually
 		for (CtExecutable<?> executable : executables) {
 			nrExecRefsTotal += checkExecutableReferenceFilter(factory, Collections.singletonList(executable));
 		}
-		//contract check that ExecutableReferenceFilter found CtExecutableReferences of all executables together 
+		//contract check that ExecutableReferenceFilter found CtExecutableReferences of all executables together
 		int nrExecRefsTotal2 = checkExecutableReferenceFilter(factory, executables);
-		
+
 		assertSame(nrExecRefsTotal, nrExecRefsTotal2);
 
 		//contract check that it found lambdas too
@@ -307,7 +306,7 @@ public class MethodsRefactoringTest {
 		assertSame(0, refs.size());
 		return nrExecRefs;
 	}
-	
+
 	private boolean containsSame(Collection list, Object item) {
 		for (Object object : list) {
 			if(object==item) {
@@ -326,7 +325,7 @@ public class MethodsRefactoringTest {
 		}
 		return false;
 	}
-	
+
 	@Test
 	public void testCtParameterRemoveRefactoring() throws FileNotFoundException {
 		String testPackagePath = "spoon/test/refactoring/parameter/testclasses";
@@ -336,9 +335,9 @@ public class MethodsRefactoringTest {
 		comp.addInputSource(SpoonResourceHelper.createResource(new File("./src/test/java/"+testPackagePath)));
 		comp.build();
 		Factory factory = comp.getFactory();
-		
+
 		CtType<?> typeA = factory.Class().get(TypeA.class);
-		
+
 		CtMethod<?> methodTypeA_method1 = typeA.getMethodsByName("method1").get(0);
 		CtParameterRemoveRefactoring refactor = new CtParameterRemoveRefactoring();
 		refactor.setTarget(methodTypeA_method1.getParameters().get(0));
@@ -366,9 +365,9 @@ public class MethodsRefactoringTest {
 		comp.addInputSource(SpoonResourceHelper.createResource(new File("./src/test/java/"+testPackagePath)));
 		comp.build();
 		Factory factory = comp.getFactory();
-		
+
 		CtType<?> typeR = factory.Class().get(TypeR.class);
-		
+
 		CtMethod<?> methodTypeR_method1 = typeR.getMethodsByName("method1").get(0);
 		CtParameterRemoveRefactoring refactor = new CtParameterRemoveRefactoring().setTarget(methodTypeR_method1.getParameters().get(0));
 		refactor.setTarget(methodTypeR_method1.getParameters().get(0));

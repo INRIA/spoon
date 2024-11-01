@@ -16,6 +16,10 @@
  */
 package spoon.test.ctType;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -40,18 +44,13 @@ import spoon.support.compiler.VirtualFile;
 import spoon.test.ctType.testclasses.X;
 import spoon.testing.utils.ModelTest;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -264,7 +263,7 @@ public class CtTypeTest {
 
 		assertSame(reFetchedTypeDecl, typeDecl);
 	}
-  
+
 	@Test
 	public void testSneakyThrowsInSubClasses() {
 		// contract: Sneaky throws doesn't crash spoons method return type resolution.
@@ -273,9 +272,9 @@ public class CtTypeTest {
 		launcher.addInputResource("src/test/resources/npe");
 		CtModel model = launcher.buildModel();
 		assertDoesNotThrow(() -> model.getAllTypes().stream().forEach(CtType::getAllExecutables));
-  }
-  
-  @Test
+}
+
+@Test
 	public void testGetAllExecutablesOnTypeImplementingNestedInterface() {
 		// contract: implicit static nested interfaces are correct handled in getAllExecutables.
 		Launcher launcher = new Launcher();
@@ -288,7 +287,7 @@ public class CtTypeTest {
 		assertThat(numExecutables, anyOf(
 				equalTo(expectedNumExecutablesInJDK8),
 				equalTo(expectedNumExecutablesPostJDK8))
-		);	
+		);
 	}
 
 	/**

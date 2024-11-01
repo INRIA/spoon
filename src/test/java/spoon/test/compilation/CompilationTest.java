@@ -27,13 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
@@ -43,8 +40,8 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
@@ -528,7 +525,7 @@ public class CompilationTest {
 
 		assertThat(tempDirPath.toFile().listFiles().length, not(0));
 	}
-	
+
 	@Test
 	public void testCompileUnresolvedFullyQualifiedName() {
 		//contract: the unresolved fully qualified type reference must not cause model building problem
@@ -554,7 +551,7 @@ public class CompilationTest {
 
 	@Test
 	public void testBuildAstWithSyntheticMethodsSwapOrder() {
-    	// contract: we can handle non annotation methods, no exception
+		// contract: we can handle non annotation methods, no exception
 		File testFile = new File(
 				"src/test/resources/syntheticMethods/ClassWithSyntheticEnumNotParsable.java");
 		String absoluteTestPath = testFile.getAbsolutePath();

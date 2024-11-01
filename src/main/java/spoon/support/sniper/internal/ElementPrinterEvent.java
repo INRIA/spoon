@@ -42,4 +42,3 @@ public abstract class ElementPrinterEvent implements PrinterEvent {
 		return "illformed ElementPrinterEvent";
 	}
 }
-

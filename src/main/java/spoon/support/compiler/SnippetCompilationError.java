@@ -9,7 +9,6 @@ package spoon.support.compiler;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import spoon.SpoonException;
 
 public class SnippetCompilationError extends SpoonException {

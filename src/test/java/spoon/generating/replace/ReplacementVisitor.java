@@ -7,14 +7,6 @@
  */
 package spoon.generating.replace;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.CtScanner;
-import spoon.support.visitor.replace.InvalidReplaceException;
-import spoon.support.visitor.replace.ReplaceListListener;
-import spoon.support.visitor.replace.ReplaceListener;
-import spoon.support.visitor.replace.ReplaceMapListener;
-import spoon.support.visitor.replace.ReplaceSetListener;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,6 +14,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.CtScanner;
+import spoon.support.visitor.replace.InvalidReplaceException;
+import spoon.support.visitor.replace.ReplaceListListener;
+import spoon.support.visitor.replace.ReplaceListener;
+import spoon.support.visitor.replace.ReplaceMapListener;
+import spoon.support.visitor.replace.ReplaceSetListener;
 
 /**
  * Used to replace an element by another one.

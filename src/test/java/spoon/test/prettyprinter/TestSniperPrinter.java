@@ -7,20 +7,34 @@
  */
 package spoon.test.prettyprinter;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.processing.AbstractProcessor;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.CtModel;
-import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtCodeSnippetExpression;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtInvocation;
@@ -49,32 +63,15 @@ import spoon.support.adaption.TypeAdaptor;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
+import spoon.test.prettyprinter.testclasses.InvocationReplacement;
 import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
 import spoon.test.prettyprinter.testclasses.Throw;
-import spoon.test.prettyprinter.testclasses.InvocationReplacement;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
 import spoon.testing.utils.GitHubIssue;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -382,7 +379,7 @@ public class TestSniperPrinter {
 			launcher.getEnvironment().createPrettyPrinter().printTypes(types);
 			fail("Expected an IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
-		    // pass
+			// pass
 		}
 	}
 
@@ -491,7 +488,7 @@ public class TestSniperPrinter {
 			type.getNestedType("NonStaticInnerClass").addModifier(ModifierKind.STATIC);
 		};
 		BiConsumer<CtType<?>, String> assertCommentsCorrectlyPrinted = (type, result) -> {
-		    assertThat(result, containsString("// field comment\n"));
+			assertThat(result, containsString("// field comment\n"));
 			assertThat(result, containsString("// method comment\n"));
 			assertThat(result, containsString("// nested type comment\n"));
 		};
@@ -606,9 +603,9 @@ public class TestSniperPrinter {
 		// indentation as in the rest of the file
 
 		Consumer<CtType<?>> addElements = type -> {
-		    Factory fact = type.getFactory();
-		    fact.createField(type, new HashSet<>(), fact.Type().integerPrimitiveType(), "z", fact.createLiteral(3));
-		    type.getMethod("sum").getBody()
+			Factory fact = type.getFactory();
+			fact.createField(type, new HashSet<>(), fact.Type().integerPrimitiveType(), "z", fact.createLiteral(3));
+			type.getMethod("sum").getBody()
 					.addStatement(0, fact.createCodeSnippetStatement("System.out.println(z);"));
 		};
 		BiConsumer<CtType<?>, String> assertTabs = (type, result) -> {
@@ -616,8 +613,8 @@ public class TestSniperPrinter {
 			assertThat(result, containsString("\n\t\tSystem"));
 		};
 		BiConsumer<CtType<?>, String> assertTwoSpaces = (type, result) -> {
-		    assertThat(result, containsString("\n  int z = 3;"));
-		    assertThat(result, containsString("\n    System"));
+			assertThat(result, containsString("\n  int z = 3;"));
+			assertThat(result, containsString("\n    System"));
 		};
 		BiConsumer<CtType<?>, String> assertFourSpaces = (type, result) -> {
 			assertThat(result, containsString("\n    int z = 3;"));
@@ -759,12 +756,12 @@ public class TestSniperPrinter {
 		// contract: The sniper printer should detect deletions in for loop init as modifications
 		// and print the model accordingly.
 
-        Consumer<CtType<?>> deleteForUpdate = type -> {
-        	CtFor ctFor = type.filterChildren(CtFor.class::isInstance).first();
+		Consumer<CtType<?>> deleteForUpdate = type -> {
+			CtFor ctFor = type.filterChildren(CtFor.class::isInstance).first();
 			ctFor.getForInit().forEach(CtElement::delete);
 		};
 		BiConsumer<CtType<?>, String> assertNotStaticFindFirstIsEmpty = (type, result) ->
-            assertThat(result, containsString("for (; i < 10; i++)"));
+			assertThat(result, containsString("for (; i < 10; i++)"));
 
 		testSniper("ForLoop", deleteForUpdate, assertNotStaticFindFirstIsEmpty);
 	}

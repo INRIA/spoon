@@ -16,6 +16,7 @@
  */
 package spoon.test.javadoc;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -39,8 +40,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.imports.ImportTest;
 import spoon.test.javadoc.testclasses.Bar;
 import spoon.testing.utils.ModelTest;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;

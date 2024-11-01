@@ -18,9 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.jspecify.annotations.Nullable;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.annotations.PropertyGetter;

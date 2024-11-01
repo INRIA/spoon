@@ -7,9 +7,8 @@
  */
 package spoon.support.sniper.internal;
 
-import spoon.support.Experimental;
-
 import java.util.List;
+import spoon.support.Experimental;
 
 /**
  * {@link SourceFragment} of List or Set of {@link ElementSourceFragment}s which belong to collection role.

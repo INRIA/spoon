@@ -39,7 +39,6 @@ import spoon.support.comparator.DeepRepresentationComparator;
 import spoon.test.constructorcallnewclass.testclasses.Foo;
 import spoon.test.constructorcallnewclass.testclasses.Panini;
 
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -191,7 +190,7 @@ public class ConstructorCallTest {
 		Factory factory = new Launcher().getFactory();
 		factory.getEnvironment().setAutoImports(true);
 		CtConstructorCall<?> newLinkedHashMap = (CtConstructorCall<?>) factory
-                // make it raw on purpose to simplify assertion
+				// make it raw on purpose to simplify assertion
 				.createCodeSnippetExpression("new java.util.LinkedHashMap()")
 				.compile();
 
@@ -221,7 +220,7 @@ public class ConstructorCallTest {
 		assert calls.size() == 1;
 		return calls.get(0).getExecutable().getType();
 	}
-	
+
 	@Test
 	public void testConstructorCorrectTyped() {
 		// no constructorcall from the input has the simple object type in noclasspathmode

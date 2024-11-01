@@ -7,15 +7,14 @@
  */
 package spoon.reflect.visitor;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * Extends {@link CtScanner}, to support early termination of scanning process and scan listeners.
