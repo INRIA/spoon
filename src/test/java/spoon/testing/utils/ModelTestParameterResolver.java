@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.ModelConsistencyCheckerTestHelper;
 
 import java.lang.reflect.Executable;
 
@@ -61,6 +62,9 @@ public class ModelTestParameterResolver implements ParameterResolver {
 			launcher.addInputResource(path);
 		}
 		launcher.buildModel();
+
+		ModelConsistencyCheckerTestHelper.assertModelIsConsistent(launcher.getFactory());
+
 		return launcher;
 	}
 }
