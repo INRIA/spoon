@@ -65,6 +65,14 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 *
+	 * Only features available in the compliance level are correctly parsed by spoon.
+	 * So if you use 11, spoon cant parse records. By default, we use the language level of the executing jvm.
+	 * If you want to parse java 21 code with a java 17 jvm you need set the compliance level with {@link  #setComplianceLevel}
+	 * to least 21.
+	 *
+	 */
 	public static final int DEFAULT_CODE_COMPLIANCE_LEVEL = getCurrentJvmVersion();
 
 	private transient  FileGenerator<? extends CtElement> defaultFileGenerator;
