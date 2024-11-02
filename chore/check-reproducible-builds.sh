@@ -4,7 +4,7 @@
 set -e
 
 build() {
-  mvn -f spoon-pom clean package -DskipDepClean -DskipTests -Dmaven.javadoc.skip > /dev/null
+  mvn -f spoon-pom clean package -DskipTests -Dmaven.javadoc.skip > /dev/null
 }
 
 compare_files() {
