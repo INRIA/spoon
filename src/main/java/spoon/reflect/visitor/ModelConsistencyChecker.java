@@ -7,17 +7,16 @@
  */
 package spoon.reflect.visitor;
 
-import spoon.compiler.Environment;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.support.Internal;
-import spoon.support.Level;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
+import spoon.compiler.Environment;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtNamedElement;
+import spoon.support.Internal;
+import spoon.support.Level;
 
 /**
  * This scanner checks that a program model is consistent with regards to the

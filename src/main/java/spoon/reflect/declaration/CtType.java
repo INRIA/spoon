@@ -7,17 +7,16 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtTypeReference;
-import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
-
 import java.util.List;
 import java.util.Set;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
 
-import static spoon.reflect.path.CtRole.METHOD;
 import static spoon.reflect.path.CtRole.FIELD;
 import static spoon.reflect.path.CtRole.INTERFACE;
+import static spoon.reflect.path.CtRole.METHOD;
 import static spoon.reflect.path.CtRole.NAME;
 import static spoon.reflect.path.CtRole.NESTED_TYPE;
 import static spoon.reflect.path.CtRole.SUPER_TYPE;

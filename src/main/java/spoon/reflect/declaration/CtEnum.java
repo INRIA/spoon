@@ -7,15 +7,14 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
-import spoon.support.DerivedProperty;
-import spoon.support.UnsettableProperty;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 import static spoon.reflect.path.CtRole.VALUE;
 

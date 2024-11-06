@@ -22,113 +22,112 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.factory.Factory;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
-
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CtStatementListTest {
-    private static CtStatementList getStatementListInitializedWithOneStatement() {
-        Factory factory = new Launcher().getFactory();
-        CtStatementList statementList = factory.Core().createStatementList();
-        statementList.addStatement(factory.createCodeSnippetStatement("int preExisting = 0;").compile());
-        return statementList;
-    }
+	private static CtStatementList getStatementListInitializedWithOneStatement() {
+		Factory factory = new Launcher().getFactory();
+		CtStatementList statementList = factory.Core().createStatementList();
+		statementList.addStatement(factory.createCodeSnippetStatement("int preExisting = 0;").compile());
+		return statementList;
+	}
 
-    @Test
-    void testInsertBeginWithListOfStatements() {
-        // contract: insertBegin adds a list of statements at the beginning of the statementList
+	@Test
+	void testInsertBeginWithListOfStatements() {
+		// contract: insertBegin adds a list of statements at the beginning of the statementList
 
-        // arrange
-        CtStatementList mainStatementList = getStatementListInitializedWithOneStatement();
-        Factory factory = mainStatementList.getFactory();
-        CtStatement firstStatementToBeInserted = factory.Code().createCodeSnippetStatement("int first = 1;").compile();
-        CtStatement secondStatementToBeInserted = factory.Code().createCodeSnippetStatement("int second = 2;").compile();
+		// arrange
+		CtStatementList mainStatementList = getStatementListInitializedWithOneStatement();
+		Factory factory = mainStatementList.getFactory();
+		CtStatement firstStatementToBeInserted = factory.Code().createCodeSnippetStatement("int first = 1;").compile();
+		CtStatement secondStatementToBeInserted = factory.Code().createCodeSnippetStatement("int second = 2;").compile();
 
-        CtStatementList statementListToBeAddedToTheMainList = factory.Core().createStatementList();
-        statementListToBeAddedToTheMainList.addStatement(firstStatementToBeInserted);
-        statementListToBeAddedToTheMainList.addStatement(secondStatementToBeInserted);
+		CtStatementList statementListToBeAddedToTheMainList = factory.Core().createStatementList();
+		statementListToBeAddedToTheMainList.addStatement(firstStatementToBeInserted);
+		statementListToBeAddedToTheMainList.addStatement(secondStatementToBeInserted);
 
-        // act
-        mainStatementList.insertBegin(statementListToBeAddedToTheMainList);
+		// act
+		mainStatementList.insertBegin(statementListToBeAddedToTheMainList);
 
-        // assert
-        CtStatement statementAtTheBeginningAfterInsertion = mainStatementList.getStatements().get(0);
-        CtStatement secondStatementAtTheBeginningOfTheListAfterInsertion = mainStatementList.getStatements().get(1);
+		// assert
+		CtStatement statementAtTheBeginningAfterInsertion = mainStatementList.getStatements().get(0);
+		CtStatement secondStatementAtTheBeginningOfTheListAfterInsertion = mainStatementList.getStatements().get(1);
 
-        assertEquals(firstStatementToBeInserted, statementAtTheBeginningAfterInsertion);
-        assertEquals(secondStatementToBeInserted, secondStatementAtTheBeginningOfTheListAfterInsertion);
+		assertEquals(firstStatementToBeInserted, statementAtTheBeginningAfterInsertion);
+		assertEquals(secondStatementToBeInserted, secondStatementAtTheBeginningOfTheListAfterInsertion);
 
-        assertThat(firstStatementToBeInserted.getParent(), is(mainStatementList));
-        assertThat(secondStatementToBeInserted.getParent(), is(mainStatementList));
-    }
+		assertThat(firstStatementToBeInserted.getParent(), is(mainStatementList));
+		assertThat(secondStatementToBeInserted.getParent(), is(mainStatementList));
+	}
 
-    @Test
-    void testInsertBeginWithSingleStatement() {
-        // contract: insertBegin adds a statement at the beginning of the statementList
+	@Test
+	void testInsertBeginWithSingleStatement() {
+		// contract: insertBegin adds a statement at the beginning of the statementList
 
-        CtStatementList statementList = getStatementListInitializedWithOneStatement();
-        Factory factory = statementList.getFactory();
-        CtStatement statementToBeInserted = factory.Code().createCodeSnippetStatement("int first = 1").compile();
+		CtStatementList statementList = getStatementListInitializedWithOneStatement();
+		Factory factory = statementList.getFactory();
+		CtStatement statementToBeInserted = factory.Code().createCodeSnippetStatement("int first = 1").compile();
 
-        statementList.insertBegin(statementToBeInserted);
+		statementList.insertBegin(statementToBeInserted);
 
-        CtStatement statementAtTheBeginningAfterInsertion = statementList.getStatements().get(0);
-        assertThat(statementAtTheBeginningAfterInsertion, is(statementToBeInserted));
-        assertThat(statementAtTheBeginningAfterInsertion.getParent(), is(statementList));
-    }
+		CtStatement statementAtTheBeginningAfterInsertion = statementList.getStatements().get(0);
+		assertThat(statementAtTheBeginningAfterInsertion, is(statementToBeInserted));
+		assertThat(statementAtTheBeginningAfterInsertion.getParent(), is(statementList));
+	}
 
-    @Test
-    void testRemoveStatement() {
-        // contract: removeStatement removes a statement form a StatementList having a single statement
+	@Test
+	void testRemoveStatement() {
+		// contract: removeStatement removes a statement form a StatementList having a single statement
 
-        CtStatementList statementList = getStatementListInitializedWithOneStatement();
-        assertThat(statementList.getStatements().size(), is(1));
+		CtStatementList statementList = getStatementListInitializedWithOneStatement();
+		assertThat(statementList.getStatements().size(), is(1));
 
-        statementList.removeStatement(statementList.getStatements().get(0));
+		statementList.removeStatement(statementList.getStatements().get(0));
 
-        assertThat(statementList.getStatements().size(), is(0));
-    }
+		assertThat(statementList.getStatements().size(), is(0));
+	}
 
-    @Test
-    void testInsertEndWithSingleStatement() {
-        // contract: insertEnd adds a statement at the end of a StatementList, i.e below an already existing statement
+	@Test
+	void testInsertEndWithSingleStatement() {
+		// contract: insertEnd adds a statement at the end of a StatementList, i.e below an already existing statement
 
-        CtStatementList statementList = getStatementListInitializedWithOneStatement();
-        Factory factory = statementList.getFactory();
-        CtStatement statementToBeInserted = factory.Code().createCodeSnippetStatement("int first = 1;").compile();
+		CtStatementList statementList = getStatementListInitializedWithOneStatement();
+		Factory factory = statementList.getFactory();
+		CtStatement statementToBeInserted = factory.Code().createCodeSnippetStatement("int first = 1;").compile();
 
-        statementList.insertEnd(statementToBeInserted);
+		statementList.insertEnd(statementToBeInserted);
 
-        int lastStatementIndex = statementList.getStatements().size() - 1;
-        assertThat(statementList.getStatement(lastStatementIndex), is(statementToBeInserted));
-        assertThat(statementToBeInserted.getParent(), is(statementList));
-    }
+		int lastStatementIndex = statementList.getStatements().size() - 1;
+		assertThat(statementList.getStatement(lastStatementIndex), is(statementToBeInserted));
+		assertThat(statementToBeInserted.getParent(), is(statementList));
+	}
 
-    @Test
-    void testInsertEndWithListOfStatements() {
-        // contract: insertEnd adds a list of statements at the end of a statementList, i.e the list is added below an
-        // existing statement, and the order of statements in the list remains the same
+	@Test
+	void testInsertEndWithListOfStatements() {
+		// contract: insertEnd adds a list of statements at the end of a statementList, i.e the list is added below an
+		// existing statement, and the order of statements in the list remains the same
 
-        // arrange
-        CtStatementList mainStatementList = getStatementListInitializedWithOneStatement();
-        Factory factory = mainStatementList.getFactory();
-        CtStatement firstStatementToBeInserted = factory.createCodeSnippetStatement("int first = 1;").compile();
-        CtStatement secondStatementToBeInserted = factory.createCodeSnippetStatement("int second = 2;").compile();
+		// arrange
+		CtStatementList mainStatementList = getStatementListInitializedWithOneStatement();
+		Factory factory = mainStatementList.getFactory();
+		CtStatement firstStatementToBeInserted = factory.createCodeSnippetStatement("int first = 1;").compile();
+		CtStatement secondStatementToBeInserted = factory.createCodeSnippetStatement("int second = 2;").compile();
 
-        CtStatementList statementList = factory.Core().createStatementList();
-        statementList.addStatement(firstStatementToBeInserted);
-        statementList.addStatement(secondStatementToBeInserted);
+		CtStatementList statementList = factory.Core().createStatementList();
+		statementList.addStatement(firstStatementToBeInserted);
+		statementList.addStatement(secondStatementToBeInserted);
 
-        // act
-        mainStatementList.insertEnd(statementList);
+		// act
+		mainStatementList.insertEnd(statementList);
 
-        // assert
-        int lastStatementIndex = mainStatementList.getStatements().size() - 1;
-        int secondLastStatementIndex = lastStatementIndex - 1;
-        assertThat(mainStatementList.getStatement(secondLastStatementIndex), is(firstStatementToBeInserted));
-        assertThat(mainStatementList.getStatement(lastStatementIndex), is(secondStatementToBeInserted));
-        assertThat(firstStatementToBeInserted.getParent(), is(mainStatementList));
-        assertThat(secondStatementToBeInserted.getParent(), is(mainStatementList));
-    }
+		// assert
+		int lastStatementIndex = mainStatementList.getStatements().size() - 1;
+		int secondLastStatementIndex = lastStatementIndex - 1;
+		assertThat(mainStatementList.getStatement(secondLastStatementIndex), is(firstStatementToBeInserted));
+		assertThat(mainStatementList.getStatement(lastStatementIndex), is(secondStatementToBeInserted));
+		assertThat(firstStatementToBeInserted.getParent(), is(mainStatementList));
+		assertThat(secondStatementToBeInserted.getParent(), is(mainStatementList));
+	}
 }

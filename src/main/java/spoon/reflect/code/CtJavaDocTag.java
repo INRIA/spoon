@@ -7,14 +7,13 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.declaration.CtElement;
+import java.util.Arrays;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.declaration.CtElement;
 
-import java.util.Arrays;
-
-import static spoon.reflect.path.CtRole.DOCUMENTATION_TYPE;
 import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
+import static spoon.reflect.path.CtRole.DOCUMENTATION_TYPE;
 import static spoon.reflect.path.CtRole.DOCUMENTATION_TYPE_REALNAME;
 import static spoon.reflect.path.CtRole.JAVADOC_TAG_VALUE;
 

@@ -7,8 +7,6 @@
  */
 package spoon.support.util.internal;
 
-import static spoon.support.util.internal.ModelCollectionUtils.linkToParent;
-
 import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.Comparator;
@@ -22,11 +20,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.jspecify.annotations.Nullable;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.support.modelobs.FineModelChangeListener;
+
+import static spoon.support.util.internal.ModelCollectionUtils.linkToParent;
 
 /**
  * This class is for <strong>internal use only</strong>.

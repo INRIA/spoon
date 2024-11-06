@@ -16,6 +16,12 @@
  */
 package spoon.test.lambda;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -52,13 +58,6 @@ import spoon.test.lambda.testclasses.LambdaRxJava;
 import spoon.test.lambda.testclasses.Panini;
 import spoon.test.lambda.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -317,7 +316,7 @@ public class LambdaTest {
 		assertEquals("SingleSubscriber", ctParameterFirstLambda.getType().getSimpleName());
 	}
 	@Test
-    	public void testTypeParameterOfLambdaWithoutType2() {
+		public void testTypeParameterOfLambdaWithoutType2() {
 		final CtLambda<?> lambda2 = bar.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(1);
 		assertEquals(2, lambda2.getParameters().size());
 		final CtParameter<?> ctParameterSecondLambda = lambda2.getParameters().get(0);
@@ -380,7 +379,7 @@ public class LambdaTest {
 		assertNotNull(collect);
 		assertEquals(1, collect.size());
 	}
-	
+
 	@Test
 	public void testEqualsLambdaParameterRef() {
 		CtLambda<?> lambda = getLambdaInFooByNumber(8);
@@ -397,7 +396,7 @@ public class LambdaTest {
 		CtTypeReference<?> iface = lambda.getType();
 		assertEquals(Consumer.class.getName(), iface.getQualifiedName());
 		assertEquals(iface.getTypeDeclaration().getMethodsByName("accept").get(0), method);
-/* This assertion fails now		
+/* This assertion fails now
 		CtExecutableReference<?> lambdaRef = lambda.getReference();
 		CtExecutableReference<?> methodRef = lambdaRef.getOverridingExecutable();
 		// because methodRef is null
@@ -463,7 +462,7 @@ public class LambdaTest {
 
 	@Test
 	public void testCastLambdaWithIntersection() {
-		// contract: intersection types on lambda parameters are supported 
+		// contract: intersection types on lambda parameters are supported
 		final CtLambda<?> lambda1 = intersection.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(1);
 		lambda1.getReference();
 		final CtLambda<?> lambda2 = intersection.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(2);
@@ -515,7 +514,7 @@ public class LambdaTest {
 	private void assertIsWellPrinted(String expected, CtLambda<?> lambda) {
 		assertEquals(expected, printByPrinter(lambda), "Lambda must be well printed");
 	}
-	
+
 	private static String printByPrinter(CtElement element) {
 		return ImportTest.printByPrinter(element);
 	}

@@ -16,15 +16,27 @@
  */
 package spoon.test.template;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.pattern.ConflictResolutionMode;
 import spoon.pattern.Match;
-import spoon.pattern.PatternParameterConfigurator;
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
 import spoon.pattern.PatternBuilderHelper;
+import spoon.pattern.PatternParameterConfigurator;
 import spoon.pattern.Quantifier;
 import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.code.CtBlock;
@@ -69,19 +81,6 @@ import spoon.test.template.testclasses.replace.OldPattern;
 import spoon.test.template.testclasses.types.AClassWithMethodsAndRefs;
 import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -238,7 +237,7 @@ public class PatternTest {
 
 	@Test
 	public void testGenerateIfElse() throws Exception {
-		//contract: it is possible to generate code using optional targets 
+		//contract: it is possible to generate code using optional targets
 		CtType<?> type = ModelUtils.buildClass(GenerateIfElse.class);
 		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("generator").getPatternElements())
 				.configurePatternParameters(pb -> {
@@ -1257,7 +1256,7 @@ public class PatternTest {
 				"    for (java.lang.Object item : getIterable()) {" + nl +
 				"        lp.printSeparatorIfAppropriate();" + nl +
 				"        statements();" + nl +
-				"    }" + nl + 
+				"    }" + nl +
 				"}" + nl, p.print(false));
 	}
 
@@ -1600,7 +1599,7 @@ public class PatternTest {
 					pb.parameter("members").byRole(CtRole.TYPE_MEMBER, e -> e == aTemplateType);
 					pb.parameter("modifiers").byRole(CtRole.MODIFIER, e -> e == aTemplateType);
 				}).build();
-		
+
 		final CtClass<?> aTargetType = launcher.getFactory().Class().get(Logger.class);
 		List<Match> matches = pattern.getMatches(aTargetType);
 		assertEquals(1, matches.size());
@@ -1633,7 +1632,7 @@ public class PatternTest {
 				//substitute Body of method
 				pb.parameter("methodBody").byElement(tobeSubstititedMethod.getBody());
 			}).build();
-		
+
 		List<Match> matches = pattern.getMatches(aTargetType);
 		assertEquals(1, matches.size());
 		Match match = matches.get(0);

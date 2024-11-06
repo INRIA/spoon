@@ -38,7 +38,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.compiler.VirtualFile;
 
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -140,13 +139,13 @@ public class SnippetTest {
 	@Test
 	public void testCompileAndReplaceSnippetsIn() {
 
-        /*
-            contract:
-                We have a method, and we have a CodeSnippetStatement.
-                In the code snippet, there is a reference to a declared variable, e.g. an object.
-                After the call to CtType().compileAndReplaceSnippetsIn,
-                The snippet must be replaced by the reference of the good object.
-         */
+		/*
+			contract:
+				We have a method, and we have a CodeSnippetStatement.
+				In the code snippet, there is a reference to a declared variable, e.g. an object.
+				After the call to CtType().compileAndReplaceSnippetsIn,
+				The snippet must be replaced by the reference of the good object.
+		 */
 
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/resources/snippet/SnippetResources.java");
@@ -240,7 +239,7 @@ public class SnippetTest {
 		body.addStatement(0,factory.createCodeSnippetStatement("int x"));
 		snippetClass.compileAndReplaceSnippets();
 		assertTrue(body.getStatements().get(0) instanceof CtLocalVariable);
-		assertEquals(1,body.getStatements().size()); 
+		assertEquals(1,body.getStatements().size());
 	}
 
 	@Test

@@ -7,15 +7,14 @@
  */
 package spoon.reflect.visitor;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import spoon.compiler.Environment;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Supports configurable printing of text with indentations and line and column counting

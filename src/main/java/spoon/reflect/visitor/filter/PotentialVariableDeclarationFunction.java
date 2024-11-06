@@ -7,6 +7,7 @@
  */
 package spoon.reflect.visitor.filter;
 
+import java.util.List;
 import spoon.reflect.code.CaseKind;
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCase;
@@ -30,8 +31,6 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.chain.CtQueryAware;
-
-import java.util.List;
 
 /**
  * This mapping function searches for all {@link CtVariable} instances,

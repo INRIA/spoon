@@ -7,15 +7,14 @@
  */
 package spoon.support;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * Default behavior for the destination of the spoon.

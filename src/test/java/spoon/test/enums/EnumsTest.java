@@ -16,6 +16,14 @@
  */
 package spoon.test.enums;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -51,15 +59,6 @@ import spoon.test.enums.testclasses.NestedEnums;
 import spoon.test.enums.testclasses.Regular;
 import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -294,7 +293,7 @@ public class EnumsTest {
 		CtConstructor<?> constructor = myEnum.getConstructors().iterator().next();
 
 		assertThat(constructor.isImplicit(), is(true));
-		
+
 		for (CtStatement statement : constructor.getBody().getStatements()) {
 			if (!(statement instanceof CtInvocation)) {
 				continue;

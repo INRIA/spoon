@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.pattern.Quantifier;

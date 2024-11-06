@@ -16,6 +16,22 @@
  */
 package spoon.test.imports;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,23 +95,6 @@ import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -127,9 +126,9 @@ public class ImportTest {
 		assertEquals(expected, innerClass.getReference().toString());
 
 		//test that acces path depends on the context
-		//this checks the access path in context of innerClass. The context is defined by CtTypeReference.getParent(CtType.class). 
+		//this checks the access path in context of innerClass. The context is defined by CtTypeReference.getParent(CtType.class).
 		assertEquals("spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected", innerClass.getSuperclass().toString());
-		//this checks the access path in context of SuperClass. The context is defined by CtTypeReference.getParent(CtType.class) 
+		//this checks the access path in context of SuperClass. The context is defined by CtTypeReference.getParent(CtType.class)
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected", innerClass.getSuperclass().getTypeDeclaration().getReference().toString());
 		assertEquals("InnerClassProtected", innerClass.getSuperclass().getSimpleName());
 
@@ -152,9 +151,9 @@ public class ImportTest {
 		final List<CtClass> classes = Query.getElements(spoon.getFactory(), new NamedElementFilter<>(CtClass.class,"ClientClass"));
 
 		final CtType<?> innerClass = classes.get(0).getNestedType("InnerClass");
-		
+
 		assertEquals("spoon.test.imports.testclasses.ClientClass$InnerClass", innerClass.getQualifiedName());
-		
+
 		String expected = "spoon.test.imports.testclasses.ClientClass.InnerClass";
 		assertEquals(expected, innerClass.getReference().toString());
 
@@ -395,12 +394,12 @@ public class ImportTest {
 		});
 		launcher.buildModel();
 		final CtClass<ImportTest> aClass = launcher.getFactory().Class().get(ClientClass.class.getName()+"$InnerClass");
-		assertEquals(ClientClass.class.getName()+"$InnerClass", aClass.getQualifiedName()); 
+		assertEquals(ClientClass.class.getName()+"$InnerClass", aClass.getQualifiedName());
 		final CtTypeReference<?> parentClass = aClass.getSuperclass();
 		//comment next line and parentClass.getActualClass(); will fail anyway
-		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", parentClass.getQualifiedName()); 
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", parentClass.getQualifiedName());
 		Class<?> actualClass = parentClass.getActualClass();
-		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", actualClass.getName()); 
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", actualClass.getName());
 	}
 
 	@Test
@@ -413,15 +412,15 @@ public class ImportTest {
 		final CtClass<ImportTest> aInnerClass = launcher.getFactory().Class().get(ClientClass.class.getName()+"$InnerClass");
 		final CtClass<ImportTest> aSuperClass = launcher.getFactory().Class().get("spoon.test.imports.testclasses.internal.SuperClass");
 		assertEquals(ClientClass.class.getName()+"$InnerClass", aInnerClass.getQualifiedName());
-		
+
 		//Check that access type of ClientClass$InnerClass in package protected class is still ClientClass
 		assertEquals(ClientClass.class.getName(), aInnerClass.getReference().getAccessType().getQualifiedName());
-		
+
 		final CtTypeReference<?> innerClassProtectedByGetSuperClass = aInnerClass.getSuperclass();
 		final CtTypeReference<?> innerClassProtectedByQualifiedName = launcher.getFactory().Class().get("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected").getReference();
 
-		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClassProtectedByGetSuperClass.getQualifiedName()); 
-		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClassProtectedByQualifiedName.getQualifiedName()); 
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClassProtectedByGetSuperClass.getQualifiedName());
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClassProtectedByQualifiedName.getQualifiedName());
 		assertEquals("spoon.test.imports.testclasses.internal.ChildClass", innerClassProtectedByGetSuperClass.getAccessType().getQualifiedName());
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass", innerClassProtectedByQualifiedName.getAccessType().getQualifiedName());
 		assertEquals("ChildClass.InnerClassProtected", innerClassProtectedByGetSuperClass.toString());
@@ -430,7 +429,7 @@ public class ImportTest {
 
 	@Test
 	public void testCanAccess() {
-		
+
 		class Checker {
 			final Launcher launcher;
 			final CtTypeReference<?> aClientClass;
@@ -507,7 +506,7 @@ public class ImportTest {
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PublicInterface$NestedOfPublicInterface", true, true, true/*canAccess, has access to first accessType, but not to full accesspath*/, "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface", "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface");
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PublicInterface$NestedPublicInterface", true, true, true/*canAccess, has access to first accessType, but not to full accesspath*/, "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface", "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface");
 	}
-	
+
 	@Test
 	public void testCanAccessTypeMember() {
 		Launcher launcher = new Launcher();
@@ -518,14 +517,14 @@ public class ImportTest {
 		Factory factory = launcher.getFactory();
 		CtType<?> typeA = factory.Class().get(spoon.test.imports.testclasses.memberaccess.A.class);
 		CtType<?> iface = factory.Interface().get(spoon.test.imports.testclasses.memberaccess.Iface.class);
-		
+
 		//contract: A can access own fields
 		assertTrue(typeA.getReference().canAccess(typeA.getField("privateField")));
 		assertTrue(typeA.getReference().canAccess(typeA.getField("protectedField")));
 		assertTrue(typeA.getReference().canAccess(typeA.getField("field")));
 		assertTrue(typeA.getReference().canAccess(typeA.getField("publicField")));
 		assertTrue(typeA.getReference().canAccess(iface.getField("field")));
-		
+
 		//contract: ExtendsA of same package can access fields of A, excluding private
 		{
 			CtType<?> typeExtendsA = factory.Class().get(spoon.test.imports.testclasses.memberaccess.ExtendsA.class);
@@ -535,7 +534,7 @@ public class ImportTest {
 			assertTrue(typeExtendsA.getReference().canAccess(typeA.getField("publicField")));
 			assertTrue(typeExtendsA.getReference().canAccess(iface.getField("field")));
 		}
-		
+
 		//contract: DoesnotExtendA of same package can access fields of A, excluding private
 		{
 			CtType<?> typeDoesnotExtendA = factory.Class().get(spoon.test.imports.testclasses.memberaccess.DoesnotExtendA.class);
@@ -555,7 +554,7 @@ public class ImportTest {
 			assertTrue(typeExtendsA.getReference().canAccess(typeA.getField("publicField")));
 			assertTrue(typeExtendsA.getReference().canAccess(iface.getField("field")));
 		}
-		
+
 		//contract: DoesnotExtendA in different package can access fields of A, excluding private, protected and package protected
 		{
 			CtType<?> typeDoesnotExtendA = factory.Class().get(spoon.test.imports.testclasses.memberaccess2.DoesnotExtendA.class);
@@ -587,7 +586,7 @@ public class ImportTest {
 
 		CtClass<?> mmwliother = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$OtherWrappedList$WrappedListIterator");
 		assertEquals("private class WrappedListIterator extends spoon.test.imports.testclasses2.AbstractMapBasedMultimap<K, V>.OtherWrappedList.WrappedIterator {}",mmwliother.toString());
-		 								  
+
 	}
 
 	@Test
@@ -849,7 +848,7 @@ public class ImportTest {
 		CtType<?> clientClass = (CtClass<?>) ModelUtils.buildClass(ClientClass.class);
 		CtTypeReference<?> childClass = clientClass.getSuperclass();
 		CtTypeReference<?> superClass = childClass.getSuperclass();
-		
+
 		List<String> result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true)).map(e->{
 			assertTrue(e instanceof CtType);
 			return ((CtType)e).getQualifiedName();
@@ -905,7 +904,7 @@ public class ImportTest {
 		CtType<?> clientClass = (CtClass<?>) ModelUtils.buildClass(ClientClass.class);
 		CtTypeReference<?> childClass = clientClass.getSuperclass();
 		CtTypeReference<?> superClass = childClass.getSuperclass();
-		
+
 		//contract: the enter and exit are always called with CtTypeReference instance
 		List<String> result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true).setListener(new CtScannerListener() {
 			@Override
@@ -996,12 +995,12 @@ public class ImportTest {
 		assertEquals("NotInClasspath", typeRefs.get(1).getQualifiedName());
 		assertEquals("java.lang.Object", typeRefs.get(2).getQualifiedName());
 
-		//contract: super inheritance scanner in reference mode, which starts on class which is not available in model returns no Object, because it does not know if type is class or interface 
+		//contract: super inheritance scanner in reference mode, which starts on class which is not available in model returns no Object, because it does not know if type is class or interface
 		typeRefs = classUSC.getSuperclass().map(new SuperInheritanceHierarchyFunction().includingSelf(true).returnTypeReferences(true)).list();
 		assertEquals(1, typeRefs.size());
 		assertEquals("NotInClasspath", typeRefs.get(0).getQualifiedName());
 
-		//contract: super inheritance scanner in type mode, which starts on class which is not available in model returns nothing 
+		//contract: super inheritance scanner in type mode, which starts on class which is not available in model returns nothing
 		types = classUSC.getSuperclass().map(new SuperInheritanceHierarchyFunction().includingSelf(true)).list();
 		assertEquals(0, types.size());
 	}
@@ -1355,7 +1354,7 @@ public class ImportTest {
 		ctImport = spoon.getFactory().createImport(aType.getPackage().getReference());
 		assertEquals(CtImportKind.ALL_TYPES, ctImport.getImportKind());
 	}
-	
+
 	@Test
 	public void testVisitImportByKind() {
 		// contract: the CtImportVisitor is called based on the reference class type and the boolean isImportAllStaticTypeMembers
@@ -1364,7 +1363,7 @@ public class ImportTest {
 		CtType aType = spoon.getFactory().Type().get(Reflection.class);
 
 		CtTypeReference<?> typeRef;
-		
+
 		CtImport ctImport = spoon.getFactory().createImport(aType.getReference());
 		assertImportVisitor(ctImport);
 
@@ -1393,37 +1392,37 @@ public class ImportTest {
 		}
 		ImportInfo info = new ImportInfo();
 		imprt.accept(new CtImportVisitor() {
-			
+
 			@Override
 			public <T> void visitTypeImport(CtTypeReference<T> typeReference) {
 				info.setKind(CtImportKind.TYPE);
 				assertSame(imprt.getReference(), typeReference);
 			}
-			
+
 			@Override
 			public <T> void visitMethodImport(CtExecutableReference<T> executableReference) {
 				info.setKind(CtImportKind.METHOD);
 				assertSame(imprt.getReference(), executableReference);
 			}
-			
+
 			@Override
 			public <T> void visitFieldImport(CtFieldReference<T> fieldReference) {
 				info.setKind(CtImportKind.FIELD);
 				assertSame(imprt.getReference(), fieldReference);
 			}
-			
+
 			@Override
 			public void visitAllTypesImport(CtPackageReference packageReference) {
 				info.setKind(CtImportKind.ALL_TYPES);
 				assertSame(imprt.getReference(), packageReference);
 			}
-			
+
 			@Override
 			public <T> void visitAllStaticMembersImport(CtTypeMemberWildcardImportReference typeReference) {
 				info.setKind(CtImportKind.ALL_STATIC_MEMBERS);
 				assertSame(imprt.getReference(), typeReference);
 			}
-			
+
 			@Override
 			public <T> void visitUnresolvedImport(CtUnresolvedImport ctUnresolvedImport) {
 				info.setKind(CtImportKind.UNRESOLVED);
@@ -1477,7 +1476,7 @@ public class ImportTest {
 				"    }" + nl +
 				"}", printByPrinter(launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse")));
 	}
-	
+
 	public static String printByPrinter(CtElement element) {
 		DefaultJavaPrettyPrinter pp = (DefaultJavaPrettyPrinter) element.getFactory().getEnvironment().createPrettyPrinterAutoImport();
 		//this call applies print validators, which modifies model before printing

@@ -28,39 +28,39 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class CtConstructorCallTest {
 
-    @Test
-    void testRemoveArgument() {
-        // contract: removeArgument removes the passed argument among two arguments in the call
+	@Test
+	void testRemoveArgument() {
+		// contract: removeArgument removes the passed argument among two arguments in the call
 
-        Factory factory = new Launcher().getFactory();
-        CtExpression<?> argumentToBeRemoved = factory.createLiteral(true);
-        CtExpression<?> additionalArgument = factory.createLiteral(false);
-        CtConstructorCall<?> call = factory.createConstructorCall(
-                factory.createCtTypeReference(Object.class), argumentToBeRemoved, additionalArgument
-        );
-        assertThat(call.getArguments().size(), is(2));
+		Factory factory = new Launcher().getFactory();
+		CtExpression<?> argumentToBeRemoved = factory.createLiteral(true);
+		CtExpression<?> additionalArgument = factory.createLiteral(false);
+		CtConstructorCall<?> call = factory.createConstructorCall(
+				factory.createCtTypeReference(Object.class), argumentToBeRemoved, additionalArgument
+		);
+		assertThat(call.getArguments().size(), is(2));
 
-        call.removeArgument(argumentToBeRemoved);
+		call.removeArgument(argumentToBeRemoved);
 
-        assertThat(call.getArguments().size(), is(1));
-        assertThat(call.getArguments().get(0), is(additionalArgument));
-    }
+		assertThat(call.getArguments().size(), is(1));
+		assertThat(call.getArguments().get(0), is(additionalArgument));
+	}
 
-    @Test
-    void testRemoveActualTypeArgument() {
-        // contract: removeActualTypeArgument removes the passed type among two types
+	@Test
+	void testRemoveActualTypeArgument() {
+		// contract: removeActualTypeArgument removes the passed type among two types
 
-        Factory factory = new Launcher().getFactory();
-        CtTypeReference<Boolean> typeToBeRemoved = factory.createCtTypeReference(Boolean.class);
-        CtTypeReference<Integer> additionalType = factory.createCtTypeReference(Integer.class);
-        CtConstructorCall<?> call = factory.createConstructorCall(factory.createCtTypeReference(Object.class));
-        call.addActualTypeArgument(typeToBeRemoved);
-        call.addActualTypeArgument(additionalType);
-        assertThat(call.getActualTypeArguments().size(), is(2));
+		Factory factory = new Launcher().getFactory();
+		CtTypeReference<Boolean> typeToBeRemoved = factory.createCtTypeReference(Boolean.class);
+		CtTypeReference<Integer> additionalType = factory.createCtTypeReference(Integer.class);
+		CtConstructorCall<?> call = factory.createConstructorCall(factory.createCtTypeReference(Object.class));
+		call.addActualTypeArgument(typeToBeRemoved);
+		call.addActualTypeArgument(additionalType);
+		assertThat(call.getActualTypeArguments().size(), is(2));
 
-        call.removeActualTypeArgument(typeToBeRemoved);
+		call.removeActualTypeArgument(typeToBeRemoved);
 
-        assertThat(call.getActualTypeArguments().size(), is(1));
-        assertThat(call.getActualTypeArguments().get(0), is(additionalType));
-    }
+		assertThat(call.getActualTypeArguments().size(), is(1));
+		assertThat(call.getActualTypeArguments().get(0), is(additionalType));
+	}
 }

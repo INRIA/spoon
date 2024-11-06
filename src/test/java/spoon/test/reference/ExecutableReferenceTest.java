@@ -11,7 +11,6 @@ package spoon.test.reference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -188,7 +187,7 @@ public class ExecutableReferenceTest {
 		CtInvocation invocation = launcher.getModel().getElements(new TypeFilter<CtInvocation>(CtInvocation.class) {
 			@Override
 			public boolean matches(CtInvocation element) {
-				return super.matches(element) 
+				return super.matches(element)
 					&& "valueOf".equals(element.getExecutable().getSimpleName());
 			}
 		}).get(0);

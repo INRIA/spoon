@@ -7,10 +7,6 @@
  */
 package spoon.support.visitor.java;
 
-import spoon.reflect.path.CtRole;
-import spoon.support.visitor.java.reflect.RtMethod;
-import spoon.support.visitor.java.reflect.RtParameter;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -20,6 +16,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import spoon.reflect.path.CtRole;
+import spoon.support.visitor.java.reflect.RtMethod;
+import spoon.support.visitor.java.reflect.RtParameter;
 
 /**
  * Internal, package-visible interface for building shadow classes.

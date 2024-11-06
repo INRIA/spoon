@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -262,7 +261,7 @@ public class PathTest {
 		CtStatement ifStmt = ((CtIf) method.getBody()
 				.getStatement(2)).getElseStatement();
 
-		//check that path with index 
+		//check that path with index
 		CtPath absPath = new CtElementPathBuilder().setUseNamesInPath(false).fromElement(ifStmt);
 		assertEquals("#subPackage[name=spoon]#subPackage[name=test]#subPackage[name=path]#subPackage[name=testclasses]#containedType[name=Foo]#typeMember[index=3]#body#statement[index=2]#else", absPath.toString());
 	}
@@ -282,7 +281,7 @@ public class PathTest {
 		// now we get the absolute path
 		CtPath absPath = path.evaluateOn(factory.getModel().getRootPackage()).get(0).getPath();
 		assertEquals("#subPackage[name=spoon]#subPackage[name=test]#subPackage[name=path]#subPackage[name=testclasses]#containedType[name=Foo]#method[signature=foo()]#body#statement[index=2]#else", absPath.toString());
-		
+
 
 		// contract: subpath enables to have relative path
 		CtPath subPath = absPath.relativePath(fooClass);
@@ -297,11 +296,11 @@ public class PathTest {
 				expected
 		);
 	}
-	
+
 	@Test
 	public void testAmbiguousTypeMembers() {
 		CtType<?> type = factory.Type().get("spoon.test.path.testclasses.Foo");
-		
+
 		for (CtTypeMember typeMember : type.getTypeMembers()) {
 			CtPath path = typeMember.getPath();
 			List<CtElement> elements = path.evaluateOn(factory.getModel().getRootPackage());

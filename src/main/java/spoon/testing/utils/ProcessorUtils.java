@@ -8,6 +8,8 @@
 package spoon.testing.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.lang.reflect.Field;
+import java.util.Collection;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.processing.Processor;
@@ -16,9 +18,6 @@ import spoon.processing.Property;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.util.RtHelper;
-
-import java.lang.reflect.Field;
-import java.util.Collection;
 
 public final class ProcessorUtils {
 	private static final ObjectMapper converter = new ObjectMapper();

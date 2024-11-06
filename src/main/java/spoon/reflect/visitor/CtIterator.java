@@ -7,13 +7,12 @@
  */
 package spoon.reflect.visitor;
 
-import spoon.reflect.declaration.CtElement;
-
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * A class to be able to iterate over the children elements in the tree of a given node, in depth-first order.

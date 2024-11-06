@@ -8,7 +8,6 @@
 package spoon.support.sniper.internal;
 
 import java.util.List;
-
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.path.CtRole;

@@ -7,14 +7,13 @@
  */
 package spoon.reflect.path.impl;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.path.CtPath;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtPath;
 
 /**
  * Default implementation for a CtPath

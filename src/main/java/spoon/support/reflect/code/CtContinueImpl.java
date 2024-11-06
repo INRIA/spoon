@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.code;
 
+import java.util.List;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtLabelledFlowBreak;
@@ -14,8 +15,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.ParentFunction;
-
-import java.util.List;
 
 import static spoon.reflect.path.CtRole.TARGET_LABEL;
 

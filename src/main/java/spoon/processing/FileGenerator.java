@@ -9,7 +9,6 @@ package spoon.processing;
 
 import java.io.File;
 import java.util.List;
-
 import spoon.reflect.declaration.CtElement;
 
 /**

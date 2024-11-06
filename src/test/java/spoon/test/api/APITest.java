@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
@@ -70,7 +69,6 @@ import spoon.template.TemplateParameter;
 import spoon.test.api.processors.AwesomeProcessor;
 import spoon.test.api.testclasses.Bar;
 import spoon.testing.utils.GitHubIssue;
-
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -184,7 +182,7 @@ public class APITest {
 			String invalidEntry = "does/not/exists//Foo.java";
 			Launcher.main(new String[]{ "-i", invalidEntry, "-o", "target/spooned/apitest" });
 		});
-	} 
+	}
 
 	@Test
 	public void testAddProcessorMethodInSpoonAPI() {
@@ -650,8 +648,8 @@ public class APITest {
 		CtClass<?> theClass = Launcher.parseClass("""
 			package io.example.pack1.pack2;
 			public class Example {
-			    void add(io.example.other.Class1<io.example.other.Class2> value){
-			    }
+				void add(io.example.other.Class1<io.example.other.Class2> value){
+				}
 			}
 			""");
 		List<CtParameter<?>> addParameters = theClass.getMethodsByName("add").get(0).getParameters();
@@ -675,8 +673,8 @@ public class APITest {
 		CtClass<?> theClass = Launcher.parseClass("""
 			package io.example.pack1.pack2;
 			public class Example {
-			    void add(io.example.other.Class1<io.example.other.Class2> value1, Class1<Class2> value2) {
-			    }
+				void add(io.example.other.Class1<io.example.other.Class2> value1, Class1<Class2> value2) {
+				}
 			}
 			""");
 		List<CtParameter<?>> addParameters = theClass.getMethodsByName("add").get(0).getParameters();

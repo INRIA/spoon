@@ -7,12 +7,11 @@
  */
 package spoon.reflect.declaration;
 
+import java.util.Set;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
-
-import java.util.Set;
 
 /**
  * Represents a require module in a Java module definition

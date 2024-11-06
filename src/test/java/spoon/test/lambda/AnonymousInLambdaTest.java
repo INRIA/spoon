@@ -1,12 +1,11 @@
 package spoon.test.lambda;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 

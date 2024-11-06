@@ -8,7 +8,6 @@
 package spoon.reflect.visitor.filter;
 
 import java.lang.reflect.Method;
-
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;

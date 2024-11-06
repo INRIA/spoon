@@ -7,6 +7,10 @@
  */
 package spoon.template;
 
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import spoon.SpoonException;
 import spoon.pattern.PatternBuilder;
 import spoon.processing.FactoryAccessor;
@@ -29,11 +33,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.template.Parameters;
-
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * This class defines the substitution API for templates (see {@link Template}).

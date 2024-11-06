@@ -1,14 +1,13 @@
 package spoon.support;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
-
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -65,49 +64,49 @@ class JavaOutputProcessorTest {
 		assertEquals(code, new String(bytes, StandardCharsets.ISO_8859_1));
 	}
 
-    @Test
-    void testCreateModuleFileAssertAnnotationFileCreated(@TempDir File tempDir) {
-        // contract : createModuleFile creates an annotation file for module and prints it
+	@Test
+	void testCreateModuleFileAssertAnnotationFileCreated(@TempDir File tempDir) {
+		// contract : createModuleFile creates an annotation file for module and prints it
 
-        // arrange
-        Launcher launcher = new Launcher();
-        launcher.setSourceOutputDirectory(tempDir.getAbsolutePath());
-        launcher.getEnvironment().setComplianceLevel(9);
-        Factory factory = launcher.getFactory();
+		// arrange
+		Launcher launcher = new Launcher();
+		launcher.setSourceOutputDirectory(tempDir.getAbsolutePath());
+		launcher.getEnvironment().setComplianceLevel(9);
+		Factory factory = launcher.getFactory();
 
-        String moduleName = "emptyModule";
-        CtModule module = factory.Module().getOrCreate(moduleName);
-        JavaOutputProcessor javaOutputProcessor = new JavaOutputProcessor();
-        javaOutputProcessor.setFactory(factory);
+		String moduleName = "emptyModule";
+		CtModule module = factory.Module().getOrCreate(moduleName);
+		JavaOutputProcessor javaOutputProcessor = new JavaOutputProcessor();
+		javaOutputProcessor.setFactory(factory);
 
-        // act
-        javaOutputProcessor.process(module);
+		// act
+		javaOutputProcessor.process(module);
 
-        // assert
-        File expectedFile = tempDir.toPath().resolve("emptyModule/module-info.java").toFile();
-        assertTrue(expectedFile.exists());
-        assertEquals(1, javaOutputProcessor.printedFiles.size());
-    }
+		// assert
+		File expectedFile = tempDir.toPath().resolve("emptyModule/module-info.java").toFile();
+		assertTrue(expectedFile.exists());
+		assertEquals(1, javaOutputProcessor.printedFiles.size());
+	}
 
-    @Test
-    void testCreatePackageFileAssertAnnotationFileCreated(@TempDir File tempDir) {
-        // contract : createPackageFile creates a package annotation file for rootPackage
+	@Test
+	void testCreatePackageFileAssertAnnotationFileCreated(@TempDir File tempDir) {
+		// contract : createPackageFile creates a package annotation file for rootPackage
 
-        // arrange
-        Launcher launcher = new Launcher();
-        launcher.setSourceOutputDirectory(tempDir.getAbsolutePath());
-        Factory factory = launcher.getFactory();
+		// arrange
+		Launcher launcher = new Launcher();
+		launcher.setSourceOutputDirectory(tempDir.getAbsolutePath());
+		Factory factory = launcher.getFactory();
 
-        CtPackage rootPackage = factory.Package().getOrCreate("spoon.support.JavaOutputProcessor");
-        JavaOutputProcessor javaOutputProcessor = new JavaOutputProcessor();
-        javaOutputProcessor.setFactory(factory);
+		CtPackage rootPackage = factory.Package().getOrCreate("spoon.support.JavaOutputProcessor");
+		JavaOutputProcessor javaOutputProcessor = new JavaOutputProcessor();
+		javaOutputProcessor.setFactory(factory);
 
-        // act
-        javaOutputProcessor.process(rootPackage);
+		// act
+		javaOutputProcessor.process(rootPackage);
 
-        // assert
-        File expectedFile =  tempDir.toPath().resolve("spoon/support/JavaOutputProcessor/package-info.java").toFile();
-        assertTrue(expectedFile.exists());
-        assertEquals(1, javaOutputProcessor.printedFiles.size());
-    }
+		// assert
+		File expectedFile =  tempDir.toPath().resolve("spoon/support/JavaOutputProcessor/package-info.java").toFile();
+		assertTrue(expectedFile.exists());
+		assertEquals(1, javaOutputProcessor.printedFiles.size());
+	}
 }

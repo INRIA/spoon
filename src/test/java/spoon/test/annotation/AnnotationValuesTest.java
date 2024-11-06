@@ -18,8 +18,6 @@ package spoon.test.annotation;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;

@@ -20,7 +20,6 @@ import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -41,7 +40,7 @@ public class SpoonifierTest {
 	 * This test is too long for CI, but it checks that SpoonifierVisitor does produce equivalent Type for all
 	 * files used for testing purposes.
 	 */
-	
+
 	@Test
 	@Disabled
 	public void testOnAllTestClasses() throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -98,7 +97,7 @@ public class SpoonifierTest {
 	 * This test is too long for CI, but it checks that SpoonifierVisitor does produce equivalent CtElement for all
 	 * CtElement in Rule
 	 */
-	
+
 	@Test
 	@Disabled
 	public void testSpoonifierElement() throws ClassNotFoundException, MalformedURLException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {

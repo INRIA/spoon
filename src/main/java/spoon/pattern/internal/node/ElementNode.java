@@ -7,6 +7,17 @@
  */
 package spoon.pattern.internal.node;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.metamodel.Metamodel;
 import spoon.metamodel.MetamodelConcept;
@@ -21,19 +32,6 @@ import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.support.util.ImmutableMap;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
-
-import org.jspecify.annotations.Nullable;
 
 import static spoon.pattern.internal.matcher.TobeMatched.getMatchedParameters;
 

@@ -7,11 +7,10 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtTypeReference;
+import java.util.List;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
-
-import java.util.List;
+import spoon.reflect.reference.CtTypeReference;
 
 import static spoon.reflect.path.CtRole.MULTI_TYPE;
 

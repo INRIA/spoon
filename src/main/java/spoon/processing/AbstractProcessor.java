@@ -7,16 +7,15 @@
  */
 package spoon.processing;
 
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.support.Level;
 import spoon.testing.utils.ProcessorUtils;
-
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This class defines an abstract processor to be subclassed by the user for

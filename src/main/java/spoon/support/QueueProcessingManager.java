@@ -7,6 +7,11 @@
  */
 package spoon.support;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import spoon.SpoonException;
 import spoon.processing.ProcessInterruption;
 import spoon.processing.ProcessingManager;
@@ -15,12 +20,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.SpoonProgress;
 import spoon.support.visitor.ProcessingVisitor;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 
 /**
  * This processing manager applies the processors one by one from the given root element.

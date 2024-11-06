@@ -7,11 +7,10 @@
  */
 package spoon.reflect.visitor;
 
-import spoon.reflect.reference.CtExecutableReference;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
+import spoon.reflect.reference.CtExecutableReference;
 
 /**
  * This enum defines the Java keywords and some helper method to determine if

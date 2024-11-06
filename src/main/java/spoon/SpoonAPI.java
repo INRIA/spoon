@@ -8,7 +8,6 @@
 package spoon;
 
 import java.io.File;
-
 import spoon.compiler.Environment;
 import spoon.processing.Processor;
 import spoon.reflect.CtModel;

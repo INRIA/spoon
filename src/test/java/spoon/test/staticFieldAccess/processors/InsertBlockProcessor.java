@@ -34,7 +34,7 @@ public class InsertBlockProcessor extends AbstractProcessor<CtMethod<?>> {
 	@Override
 	public void process(CtMethod<?> element) {
 		CtBlock block = new CtBlockImpl();
-		// we clone the body so that there is no two elements with the same parent 
+		// we clone the body so that there is no two elements with the same parent
 		block.addStatement(element.getBody().clone());
 		element.setBody(block);
 	}

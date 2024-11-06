@@ -16,13 +16,8 @@
  */
 package spoon.test.template;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static spoon.testing.utils.ModelUtils.getOptimizedString;
-
 import java.io.File;
-
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.reflect.code.CtBlock;
@@ -32,6 +27,9 @@ import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFile;
 import spoon.test.template.testclasses.ReturnReplaceTemplate;
 import spoon.testing.utils.ModelUtils;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static spoon.testing.utils.ModelUtils.getOptimizedString;
 
 public class TemplateReplaceReturnTest {
 
@@ -45,7 +43,7 @@ public class TemplateReplaceReturnTest {
 		Factory factory = launcher.getFactory();
 
 		CtBlock<String> model = (CtBlock) factory.Templates().Class().get(ReturnReplaceTemplate.class).getMethod("sample").getBody();
-		
+
 		CtClass<?> resultKlass = factory.Class().create(factory.Package().getOrCreate("spoon.test.template"), "ReturnReplaceResult");
 		new ReturnReplaceTemplate(model).apply(resultKlass);
 		assertEquals("{ if ((java.lang.System.currentTimeMillis() % 2L) == 0) { return \"Panna\"; } else { return \"Orel\"; }}", getOptimizedString(resultKlass.getMethod("method").getBody()));
@@ -64,7 +62,7 @@ public class TemplateReplaceReturnTest {
 		Factory factory = launcher.getFactory();
 
 		CtExpression<String> model = factory.createLiteral("AStringLiteral");
-		
+
 		CtClass<?> resultKlass = factory.Class().create(factory.Package().getOrCreate("spoon.test.template"), "ReturnReplaceResult");
 		new ReturnReplaceTemplate(model).apply(resultKlass);
 		assertEquals("{ return \"AStringLiteral\";}", getOptimizedString(resultKlass.getMethod("method").getBody()));

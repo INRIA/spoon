@@ -8,7 +8,6 @@
 package spoon.pattern.internal.parameter;
 
 import org.jspecify.annotations.Nullable;
-
 import spoon.pattern.Pattern;
 import spoon.pattern.Quantifier;
 import spoon.pattern.internal.ResultHolder;

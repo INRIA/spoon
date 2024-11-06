@@ -7,6 +7,8 @@
  */
 package spoon.reflect.visitor;
 
+import java.util.EnumSet;
+import java.util.Set;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtConstructorCall;
@@ -22,9 +24,6 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.support.Experimental;
-
-import java.util.EnumSet;
-import java.util.Set;
 
 /**
  *{@link Processor} of {@link CtCompilationUnit}, which scans CtCompilationUnit modules, packages and types

@@ -7,13 +7,12 @@
  */
 package spoon.testing;
 
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.Check.assertNotNull;

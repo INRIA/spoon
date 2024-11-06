@@ -18,8 +18,6 @@ package spoon.test.parameters;
 
 
 import java.util.List;
-
-import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;

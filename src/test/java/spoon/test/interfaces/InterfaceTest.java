@@ -16,44 +16,43 @@
  */
 package spoon.test.interfaces;
 
-import spoon.test.SpoonTestHelpers;
-import spoon.test.interfaces.testclasses.RedefinesStaticMethodInterface;
-import spoon.SpoonModelBuilder;
-import spoon.reflect.factory.Factory;
-import spoon.test.interfaces.testclasses.RedefinesDefaultMethodInterface;
-import spoon.reflect.code.CtStatement;
-import spoon.test.interfaces.testclasses.InterfaceWithDefaultMethods;
-import spoon.reflect.declaration.CtInterface;
-import spoon.test.interfaces.testclasses.ExtendsStaticMethodInterface;
-import org.hamcrest.MatcherAssert;
-import org.junit.jupiter.api.Assertions;
-import spoon.support.reflect.CtExtendedModifier;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.code.CtBlock;
-import spoon.test.interfaces.testclasses.ExtendsDefaultMethodInterface;
-import spoon.Launcher;
-import spoon.reflect.CtModel;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtMethod;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import spoon.testing.utils.ModelTest;
-
+import java.io.File;
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.Collection;
-import java.io.File;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import spoon.Launcher;
+import spoon.SpoonModelBuilder;
+import spoon.reflect.CtModel;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtInterface;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.Factory;
+import spoon.support.reflect.CtExtendedModifier;
+import spoon.test.SpoonTestHelpers;
+import spoon.test.interfaces.testclasses.ExtendsDefaultMethodInterface;
+import spoon.test.interfaces.testclasses.ExtendsStaticMethodInterface;
+import spoon.test.interfaces.testclasses.InterfaceWithDefaultMethods;
+import spoon.test.interfaces.testclasses.RedefinesDefaultMethodInterface;
+import spoon.test.interfaces.testclasses.RedefinesStaticMethodInterface;
+import spoon.testing.utils.ModelTest;
 
-import static spoon.test.SpoonTestHelpers.contentEquals;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.test.SpoonTestHelpers.contentEquals;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class InterfaceTest {
 

@@ -7,9 +7,8 @@
  */
 package spoon.support.comparator;
 
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-
 import java.util.Comparator;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 
 public class FixedOrderBasedOnFileNameCompilationUnitComparator implements Comparator<CompilationUnitDeclaration> {
 	@Override

@@ -1,14 +1,13 @@
 package spoon.support.compiler;
 
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.regex.Pattern;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.junit.jupiter.api.Test;
 import spoon.MavenLauncher;
 import spoon.support.StandardEnvironment;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,7 +51,7 @@ public class SpoonPomTest {
 			assertEquals(expected[i], modules.get(i).getName());
 		}
 	}
-	
+
 	public void getSourceDirectory() throws IOException, XmlPullParserException {
 		checkSourceDirectory(
 			"src/test/resources/maven-launcher/hierarchy",

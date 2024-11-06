@@ -8,7 +8,6 @@
 package spoon.pattern.internal.matcher;
 
 import java.util.List;
-
 import spoon.SpoonException;
 import spoon.pattern.internal.node.RootNode;
 

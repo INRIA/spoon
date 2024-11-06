@@ -24,11 +24,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
@@ -46,13 +44,13 @@ public class ModelStreamerTest {
 	private static Factory factory;
 
 	@BeforeAll
-    public static void setUp() {
+	public static void setUp() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(SOURCE_DIRECTORY);
 		launcher.buildModel();
 		factory = launcher.getFactory();
 		outputFile = new File(OUTPUT_FILENAME);
-    }
+	}
 
 	@AfterEach
 	public void tearDown() {

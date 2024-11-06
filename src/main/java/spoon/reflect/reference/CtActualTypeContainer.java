@@ -7,11 +7,10 @@
  */
 package spoon.reflect.reference;
 
+import java.util.List;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
-
-import java.util.List;
 
 
 /**

@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -67,7 +66,6 @@ import spoon.test.reference.testclasses.Panini;
 import spoon.test.reference.testclasses.ParamRefs;
 import spoon.test.reference.testclasses.SuperAccess;
 import spoon.testing.utils.ModelUtils;
-
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -671,7 +669,7 @@ public class TypeReferenceTest {
 		assertEquals("spoon.test.imports.testclasses.withgenerics.Target", fieldTypeRef.getQualifiedName());
 		assertEquals(2, fieldTypeRef.getActualTypeArguments().size());
 	}
-	
+
 	@Test
 	public void testTypeReferenceImplicitParent() throws Exception {
 		// contract: CtTypeReference#isSimplyQualified can be used read / write implicit value of the parent
@@ -679,7 +677,7 @@ public class TypeReferenceTest {
 		CtTypeReference<?> typeRef = type.getSuperclass();
 		assertTrue(typeRef.isSimplyQualified());
 		assertTrue(typeRef.getPackage().isImplicit());
-		
+
 		// a type reference can be printed fully qualified
 		typeRef.setSimplyQualified(false);
 		assertFalse(typeRef.isSimplyQualified());
@@ -726,8 +724,8 @@ public class TypeReferenceTest {
 
 		int loopIterations = 0; // for meta assert
 		for (CtArrayTypeReference<?> arrayTypeRef : refs) {
-		    CtTypeReference<?> compType = getDeepestComponentType(arrayTypeRef);
-		    assertFalse(compType.getPackage().isImplicit());
+			CtTypeReference<?> compType = getDeepestComponentType(arrayTypeRef);
+			assertFalse(compType.getPackage().isImplicit());
 			loopIterations++;
 		}
 

@@ -7,13 +7,12 @@
  */
 package spoon.reflect.visitor;
 
+import java.util.List;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
-
-import java.util.List;
 
 /**
  * This class provides some useful methods to retrieve program elements and

@@ -7,17 +7,16 @@
  */
 package spoon.support.reflect;
 
-import spoon.SpoonException;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.factory.Factory;
-import spoon.support.reflect.declaration.CtElementImpl;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import spoon.SpoonException;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.Factory;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 import static spoon.reflect.path.CtRole.MODIFIER;
 

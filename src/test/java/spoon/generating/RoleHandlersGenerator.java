@@ -26,12 +26,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import spoon.SpoonException;
 import spoon.metamodel.MMMethod;
 import spoon.metamodel.MMMethodKind;
-import spoon.metamodel.MetamodelProperty;
 import spoon.metamodel.Metamodel;
+import spoon.metamodel.MetamodelProperty;
 import spoon.processing.AbstractManualProcessor;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtClass;

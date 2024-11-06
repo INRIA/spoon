@@ -18,6 +18,7 @@ import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
@@ -25,7 +26,6 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 

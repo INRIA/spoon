@@ -7,10 +7,9 @@
  */
 package spoon.processing;
 
-import org.apache.commons.lang3.ClassUtils;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang3.ClassUtils;
 
 public class ProcessorPropertiesImpl implements ProcessorProperties {
 	private final Map<String, Object> _properties = new HashMap<>();

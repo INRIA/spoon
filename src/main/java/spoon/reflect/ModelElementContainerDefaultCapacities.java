@@ -17,16 +17,16 @@ import java.util.ArrayList;
 public final class ModelElementContainerDefaultCapacities {
 	/*
 	 * Author Roman Leventov
-     *
-     * Some element types were analyzed through JDK 7 sources,
-     * others chosen for my feelings only.
-     *
-     * For those I have precise averages, I choose to take a ceiling of that
-     * average as the default capacity. This choice is biased towards performing
-     * less container resizes, rather deadly memory efficiency. Not sure this is
-     * the right choice, for most Spoon use-cases, but anyway this is better
-     * than ArrayList's default of 10.
-     */
+	 *
+	 * Some element types were analyzed through JDK 7 sources,
+	 * others chosen for my feelings only.
+	 *
+	 * For those I have precise averages, I choose to take a ceiling of that
+	 * average as the default capacity. This choice is biased towards performing
+	 * less container resizes, rather deadly memory efficiency. Not sure this is
+	 * the right choice, for most Spoon use-cases, but anyway this is better
+	 * than ArrayList's default of 10.
+	 */
 
 	// JDK 7 average is 1.063 (methods), 1.207 (constructors)
 	public static final int PARAMETERS_CONTAINER_DEFAULT_CAPACITY = 2;

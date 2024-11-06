@@ -1,13 +1,5 @@
 package spoon.test.record;
 
-import static java.lang.System.lineSeparator;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static spoon.testing.assertions.SpoonAssertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -15,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
-
 import org.assertj.core.api.InstanceOfAssertFactory;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -36,6 +27,15 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.testing.assertions.SpoonAssertions;
 import spoon.testing.utils.ModelTest;
+
+import static java.lang.System.lineSeparator;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 public class CtRecordTest {
 
@@ -108,11 +108,11 @@ public class CtRecordTest {
 		assertEquals(
 				Arrays.asList(
 						"int first() {\n" +
-					    "    return this.first;\n" +
-					    "}",
+						"    return this.first;\n" +
+						"}",
 						"float second() {\n" +
-					    "    return this.second;\n" +
-					    "}"
+						"    return this.second;\n" +
+						"}"
 				),
 				head(records).getMethods().stream()
 						.map(String::valueOf)

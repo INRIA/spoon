@@ -7,10 +7,10 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtReference;
-import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.reference.CtReference;
+import spoon.support.DerivedProperty;
 
 import static spoon.reflect.path.CtRole.NAME;
 

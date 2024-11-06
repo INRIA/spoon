@@ -19,6 +19,9 @@ package spoon.test.logging;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
@@ -26,8 +29,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.LoggerFactory;
 import spoon.FluentLauncher;
 import spoon.Launcher;
@@ -40,10 +43,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.Level;
 import spoon.testing.utils.GitHubIssue;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -139,10 +138,10 @@ public class LogTest {
 				// do nothing
 			}
 			public boolean isToBeProcessed(CtConstructor<?> candidate) {
-        			List<CtInvocation<?>> invocations = Query.getElements(candidate, new TypeFilter<>(CtInvocation.class));
-        			invocations.forEach(i -> getEnvironment().report(this, Level.INFO, i, "Message"));
-       				return false;
-	  		}};
+					List<CtInvocation<?>> invocations = Query.getElements(candidate, new TypeFilter<>(CtInvocation.class));
+					invocations.forEach(i -> getEnvironment().report(this, Level.INFO, i, "Message"));
+					return false;
+			}};
 		assertDoesNotThrow(() -> new FluentLauncher().inputResource(codePath).processor(processor).buildModel());
 	}
 

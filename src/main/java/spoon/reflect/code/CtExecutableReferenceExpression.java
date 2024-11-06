@@ -7,9 +7,9 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.reference.CtExecutableReference;
 
 import static spoon.reflect.path.CtRole.EXECUTABLE_REF;
 

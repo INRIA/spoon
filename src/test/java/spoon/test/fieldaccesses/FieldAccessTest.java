@@ -20,7 +20,6 @@ package spoon.test.fieldaccesses;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
@@ -447,16 +446,16 @@ public class FieldAccessTest {
 	public void testFieldAccessAutoExplicit() throws Exception {
 		CtClass mouse = (CtClass) buildClass(Mouse.class);
 		CtMethod method = mouse.filterChildren((CtMethod m)->"meth1".equals(m.getSimpleName())).first();
-		
+
 		CtFieldReference ageFR = method.filterChildren((CtFieldReference fr)->"age".equals(fr.getSimpleName())).first();
 		//first is the field printed with implicit "this."
- 		assertEquals("age", ageFR.getParent().toString());
- 		//add local variable declaration which hides the field declaration 
- 		method.getBody().insertBegin((CtStatement) mouse.getFactory().createCodeSnippetStatement("int age = 1").compile());
- 		//run model validator to fix the problem
- 		new ImportConflictDetector().process(mouse.getPosition().getCompilationUnit());
+		assertEquals("age", ageFR.getParent().toString());
+		//add local variable declaration which hides the field declaration
+		method.getBody().insertBegin((CtStatement) mouse.getFactory().createCodeSnippetStatement("int age = 1").compile());
+		//run model validator to fix the problem
+		new ImportConflictDetector().process(mouse.getPosition().getCompilationUnit());
 		//now the field access must use explicit "this."
- 		assertEquals("this.age", ageFR.getParent().toString());
+		assertEquals("this.age", ageFR.getParent().toString());
 	}
 
 	@Test
