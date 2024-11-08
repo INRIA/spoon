@@ -121,7 +121,7 @@ public class MavenLauncherTest {
 			targetPath.resolve("pom.xml").toString(),
 			MavenLauncher.SOURCE_TYPE.APP_SOURCE
 		);
-		assertEquals(8, launcher.getEnvironment().getComplianceLevel());
+		assertEquals(Runtime.version().feature(), launcher.getEnvironment().getComplianceLevel());
 
 		// specify the pom.xml
 		launcher = new MavenLauncher(

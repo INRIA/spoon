@@ -1096,6 +1096,7 @@ public class TemplateTest {
 	public void substituteTypeAccessReference() {
 		//contract: the substitution of CtTypeAccess expression ignores actual type arguments if it have to
 		Launcher spoon = new Launcher();
+		spoon.getEnvironment().setComplianceLevel(8);
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/TypeReferenceClassAccessTemplate.java"));
 		String outputDir = "./target/spooned/test/template/testclasses";
 		spoon.setSourceOutputDirectory(outputDir);
