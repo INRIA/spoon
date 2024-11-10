@@ -13,7 +13,7 @@
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-pom</artifactId>
     <packaging>pom</packaging>
-    <version>11.1.1-SNAPSHOT</version>
+    <version>11.1.1-beta-13</version>
     <name>Spoon POM</name>
     <description>Common Maven config for Spoon modules</description>
     <url>http://spoon.gforge.inria.fr/</url>
@@ -28,7 +28,7 @@
         <maven.compiler.release>17</maven.compiler.release>
         <runtime.log>target/velocity.log</runtime.log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.outputTimestamp>1723395513</project.build.outputTimestamp>
+        <project.build.outputTimestamp>1731203410</project.build.outputTimestamp>
     </properties>
 
     <dependencies>
