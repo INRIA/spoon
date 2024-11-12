@@ -42,9 +42,9 @@ public class SortedList<E> extends LinkedList<E> {
 
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
-		boolean ret = true;
+		boolean ret = false;
 		for (E e : c) {
-			ret &= add(e);
+			ret |= add(e);
 		}
 		return ret;
 	}
