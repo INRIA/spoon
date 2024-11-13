@@ -1,6 +1,6 @@
 # Supply chain
 ## Attest build artifacts
-The Spoon CI/CD pipeline attests all released artifacts by publishing attestations to the [sigstore/rekor](https://www.sigstore.dev/) public-good instance as well as storing them in the [Spoon repository](https://github.com/INRIA/spoon/attestations). Attestations are published using Github's [attest-build-provenance](https://github.com/actions/attest-build-provenance) action as a step in the [jreleaser job](https://github.com/ludvigch/spoon/blob/master/.github/workflows/jreleaser.yml). A list of the attestations created in a release can be found in the summary of the job and links sigstore/rekor for each attestation can be found in the log of the jreleaser job.
+The Spoon CI/CD pipeline attests all released artifacts by publishing attestations to the [sigstore/rekor](https://www.sigstore.dev/) public-good instance as well as storing them in the [Github's attestation registry](https://github.com/INRIA/spoon/attestations). Attestations are published using Github's [attest-build-provenance](https://github.com/actions/attest-build-provenance) action as a step in the [jreleaser job](https://github.com/ludvigch/spoon/blob/master/.github/workflows/jreleaser.yml). A list of the attestations created for a release can be found in the summary of a job and the sigstore/rekor links for each attestation can be found in the log of the jreleaser job.
 
 ## Verifying attestations
 
@@ -12,7 +12,12 @@ For example, let's verify the [spoon-core-11.1.1-beta-11-jar-with-dependencies.j
 
 ### Alternative 1: Using GitHub API
 
-`gh attestation verify spoon-core-11.1.1-beta-11-jar-with-dependencies.jar -R INRIA/spoon`
+Install `gh`, see doc at <https://cli.github.com/>
+
+```
+curl -O https://repo1.maven.org/maven2/fr/inria/gforge/spoon/spoon-core/11.1.1-beta-11/spoon-core-11.1.1-beta-11-jar-with-dependencies.jar
+gh attestation verify spoon-core-11.1.1-beta-11-jar-with-dependencies.jar -R INRIA/spoon
+```
 
 Output:
 ```
@@ -30,7 +35,10 @@ INRIA/spoon  https://slsa.dev/provenance/v1  .github/workflows/jreleaser.yml@ref
 
 [Dowload the attestation.](https://github.com/INRIA/spoon/attestations/2750640/download)
 
-`gh attestation verify spoon-core-11.1.1-beta-11-jar-with-dependencies.jar -R INRIA/spoon --bundle ./INRIA-spoon-attestation-2750640.sigstore.json`
+```
+curl -o ./INRIA-spoon-attestation-2750640.sigstore.json https://github.com/INRIA/spoon/attestations/2750640/download
+gh attestation verify spoon-core-11.1.1-beta-11-jar-with-dependencies.jar -R INRIA/spoon --bundle ./INRIA-spoon-attestation-2750640.sigstore.json
+```
 
 Output:
 ```
