@@ -1169,7 +1169,10 @@ public class ParentExiter extends CtInheritanceScanner {
 	public void visitCtRecordPattern(CtRecordPattern pattern) {
 		CtElement child = adjustIfLocalVariableToTypePattern(this.child);
 		if (child instanceof CtTypeReference<?> typeReference) {
-			pattern.setRecordType(typeReference);
+			// JDTTreeBuilder#visit(SingleTypeReference wraps the child in a CtTypeAccess later on,
+			// replacing its parent. Therefore, we need to use a clone for this otherwise the typeReference
+			// has two different parents (one wins and the model is inconsistent).
+			pattern.setRecordType(typeReference.clone());
 		} else if (child instanceof CtPattern innerPattern) {
 			pattern.addPattern(innerPattern);
 		}

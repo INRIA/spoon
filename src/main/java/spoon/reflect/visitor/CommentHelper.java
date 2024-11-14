@@ -98,7 +98,7 @@ public class CommentHelper {
 			if (commentType == CtComment.CommentType.BLOCK) {
 				printer.write(transfo.apply(line));
 				if (hasMoreThanOneElement(content.lines())) {
-					printer.write(CtComment.LINE_SEPARATOR);
+					printer.writeln();
 				}
 			} else {
 				printer.write(transfo.apply(line)).writeln(); // removing spaces at the end of the space

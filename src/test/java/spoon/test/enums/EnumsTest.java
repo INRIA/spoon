@@ -50,6 +50,7 @@ import spoon.test.enums.testclasses.EnumWithMembers;
 import spoon.test.enums.testclasses.NestedEnums;
 import spoon.test.enums.testclasses.Regular;
 import spoon.testing.utils.GitHubIssue;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -57,6 +58,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -218,11 +220,12 @@ public class EnumsTest {
 		));
 	}
 
-	@Test
-	void testEnumClassModifiersPublicEnum() throws Exception {
+	@ModelTest(value = "src/test/java/spoon/test/enums/testclasses", complianceLevel = 11)
+	void testEnumClassModifiersPublicEnum(CtModel model) {
 		// contract: enum modifiers are applied correctly (JLS 8.9)
 		// pre Java 17, enums aren't implicitly final if an enum value declares an anonymous type
-		CtType<?> publicEnum = build("spoon.test.enums.testclasses", "AnonEnum");
+		CtType<?> publicEnum = model.getAllTypes().stream().filter(v -> v.getSimpleName().equals("AnonEnum")).findFirst().get();
+
 		assertThat(publicEnum.getExtendedModifiers(), contentEquals(
 				CtExtendedModifier.explicit(ModifierKind.PUBLIC)
 		));

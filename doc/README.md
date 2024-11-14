@@ -1,4 +1,9 @@
-This directory contains the source code of the Spoon website <http://spoon.gforge.inria.fr/>
+## Documentation for Spoon
+
+* CI/CD, see <https://github.com/INRIA/spoon/blob/master/doc/ci-cd.md>
+* Supply-chain, see <https://github.com/INRIA/spoon/blob/master/doc/SUPPLY-CHAIN.md>
+ 
+### Deploy the Website
 
 To deploy an instance of this website, we use a personal script because the structure of this project isn't standard. We can't have markdown files outside the working directory of Jekyll. So:
 
