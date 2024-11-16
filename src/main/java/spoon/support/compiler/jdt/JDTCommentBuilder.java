@@ -456,7 +456,9 @@ public class JDTCommentBuilder {
 
 			@Override
 			public <T> void visitCtLambda(CtLambda<T> e) {
-				if (e.getExpression() != null) {
+				if (e.getExpression() != null && e.getParameters().isEmpty()) {
+					e.getExpression().addComment(comment);
+				} else if (e.getExpression() != null && !e.getParameters().isEmpty()) {
 					CtParameter<?> lastParameter = e.getParameters().get(e.getParameters().size() - 1);
 					if (comment.getPosition().getSourceStart() > lastParameter.getPosition().getSourceEnd()) {
 						e.getExpression().addComment(comment);
