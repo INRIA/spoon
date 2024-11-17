@@ -454,7 +454,10 @@ public class ElementPrinterHelper {
 			final int line = element.getPosition().getLine();
 			final int sourceEnd = element.getPosition().getSourceEnd();
 			final int sourceStart = element.getPosition().getSourceStart();
-			if (offset == CommentOffset.BEFORE && (comment.getPosition().getLine() < line || (sourceStart <= comment.getPosition().getSourceStart() && sourceEnd > comment.getPosition().getSourceEnd()))) {
+			boolean commentStartsInLineBefore = comment.getPosition().getLine() < line;
+			boolean commentStartsInsideUs = sourceStart <= comment.getPosition().getSourceStart() && sourceEnd > comment.getPosition().getSourceEnd();
+			boolean commentStartsBeforeUs = sourceStart >= comment.getPosition().getSourceStart() && sourceEnd > comment.getPosition().getSourceEnd();
+			if (offset == CommentOffset.BEFORE && (commentStartsInLineBefore || commentStartsInsideUs || commentStartsBeforeUs)) {
 				commentsToPrint.add(comment);
 			} else if (offset == CommentOffset.AFTER && (comment.getPosition().getSourceStart() > sourceEnd || comment.getPosition().getSourceEnd() == sourceEnd)) {
 				commentsToPrint.add(comment);

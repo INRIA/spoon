@@ -22,9 +22,11 @@ import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -350,7 +352,21 @@ public class JDTCommentBuilder {
 
 			@Override
 			public <T> void scanCtVariable(CtVariable<T> e) {
-				e.addComment(comment);
+				if (e instanceof CtLocalVariable<T> lv && lv.getDefaultExpression() != null) {
+					CtExpression<T> defaultExpression = lv.getDefaultExpression();
+					int variableStart = e.getPosition().getSourceStart();
+					int commentStart = comment.getPosition().getSourceStart();
+					int defaultExprStart = defaultExpression.getPosition().getSourceStart();
+					// Handle `int a = /* foobar */ foo();` by attaching the comment to `foo()`
+					// In those cases the comment and `foo()` start at the same position
+					if (commentStart > variableStart && commentStart >= defaultExprStart) {
+						defaultExpression.addComment(comment);
+					} else {
+						e.addComment(comment);
+					}
+				} else {
+					e.addComment(comment);
+				}
 			}
 
 			private <S> void visitSwitch(CtAbstractSwitch<S> e) {
@@ -456,7 +472,9 @@ public class JDTCommentBuilder {
 
 			@Override
 			public <T> void visitCtLambda(CtLambda<T> e) {
-				if (e.getExpression() != null) {
+				if (e.getExpression() != null && e.getParameters().isEmpty()) {
+					e.getExpression().addComment(comment);
+				} else if (e.getExpression() != null && !e.getParameters().isEmpty()) {
 					CtParameter<?> lastParameter = e.getParameters().get(e.getParameters().size() - 1);
 					if (comment.getPosition().getSourceStart() > lastParameter.getPosition().getSourceEnd()) {
 						e.getExpression().addComment(comment);
