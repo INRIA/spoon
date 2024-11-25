@@ -89,6 +89,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1877,6 +1878,7 @@ public class ImportTest {
 
 		// assert
 		List<CtImport> imports = mainType.getPosition().getCompilationUnit().getImports();
+		imports.sort(Comparator.comparing(importElement -> importElement.getReference().getSimpleName()));
 		assertThat(imports, hasSize(2));
 
 		CtImport import0 = imports.get(0);
@@ -1894,6 +1896,7 @@ public class ImportTest {
 		// assert
 		List<CtImport> imports = mainType.getPosition().getCompilationUnit().getImports();
 		assertThat(imports, hasSize(2));
+		imports.sort(Comparator.comparing(importElement -> importElement.getImportKind().toString()));
 
 		CtImport import0 = imports.get(0);
 		assertThat(import0.getImportKind(), is(CtImportKind.METHOD));
