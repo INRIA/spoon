@@ -24,6 +24,7 @@ import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnonymousExecutable;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -313,6 +314,21 @@ public class CtRecordTest {
 				.getSimpleName()
 				.isEqualTo(record.getSimpleName());
 		}
+	}
+
+	@Test
+	void testRecordWithStaticField() {
+		// contract: Static fields in records do not cause crashes
+		CtClass<?> parsed = Launcher.parseClass("""
+			public record User(int id, String name) {
+			  private static String ADMIN_NAME = "admin";
+			}
+			""");
+		assertThat(parsed).isInstanceOf(CtRecord.class);
+		assertThat(parsed).getFields().hasSize(3);
+		assertThat(parsed.getFields()).anySatisfy(it -> assertThat(it.getSimpleName()).isEqualTo("id"));
+		assertThat(parsed.getFields()).anySatisfy(it -> assertThat(it.getSimpleName()).isEqualTo("name"));
+		assertThat(parsed.getFields()).anySatisfy(it -> assertThat(it.getSimpleName()).isEqualTo("ADMIN_NAME"));
 	}
 
 	private <T> T head(Collection<T> collection) {
