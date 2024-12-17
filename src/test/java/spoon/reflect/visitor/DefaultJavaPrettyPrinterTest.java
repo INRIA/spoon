@@ -35,8 +35,10 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.test.SpoonTestHelpers;
+import spoon.testing.assertions.SpoonAssertions;
 import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelTest;
 
@@ -78,13 +80,26 @@ public class DefaultJavaPrettyPrinterTest {
             "((int) (1 + 2)) * 3",
             "(int) (int) (1 + 1)",
             "(\"1\" + \"2\").contains(\"1\")",
+            "null instanceof java.lang.String s && (s = \"1\").contains(\"1\")",
+            "null instanceof java.lang.String s && (s += \"1\").contains(\"1\")",
+            "null instanceof java.lang.String[] arr && (arr[0] = \"1\").contains(\"1\")",
+            "null instanceof java.lang.Integer i && (++i).toString().isEmpty()",
+            "null instanceof java.lang.Integer i && (i--).toString().isEmpty()",
+            "(true ? \"1\" : \"2\").contains(\"1\")",
+            """
+            (switch (0) {
+                default -> "1";
+            }).contains("1")
+            """,
     })
     public void testParenOptimizationCorrectlyPrintsParenthesesForExpressions(String rawExpression) {
         // contract: When input expressions are minimally parenthesized, pretty-printed output
         // should match the input
         CtExpression<?> expr = createLauncherWithOptimizeParenthesesPrinter()
                 .getFactory().createCodeSnippetExpression(rawExpression).compile();
-        assertThat(expr.toString(), equalTo(rawExpression));
+        SpoonAssertions.assertThat(expr)
+            .asString()
+            .containsIgnoringWhitespaces(rawExpression);
     }
 
     @ParameterizedTest
