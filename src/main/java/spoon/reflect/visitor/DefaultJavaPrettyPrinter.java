@@ -427,7 +427,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		boolean hasCasts = !e.getTypeCasts().isEmpty();
 		if (isMinimizeRoundBrackets()) {
 			RoundBracketAnalyzer.EncloseInRoundBrackets requiresBrackets =
-					RoundBracketAnalyzer.requiresRoundBrackets(e);
+				RoundBracketAnalyzer.requiresRoundBrackets(e);
 			if (requiresBrackets != RoundBracketAnalyzer.EncloseInRoundBrackets.UNKNOWN) {
 				return requiresBrackets == RoundBracketAnalyzer.EncloseInRoundBrackets.YES || hasCasts;
 			}
@@ -456,8 +456,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (expression.isParentInitialized() && expression.getParent() instanceof CtTargetedExpression<?, ?> targeted && targeted.getTarget() == expression) {
 			return !expression.getTypeCasts().isEmpty()
 				|| expression instanceof CtBinaryOperator<?>
-				|| expression instanceof CtSwitchExpression<?,?>
-				|| expression instanceof CtAssignment<?,?>
+				|| expression instanceof CtSwitchExpression<?, ?>
+				|| expression instanceof CtAssignment<?, ?>
 				|| expression instanceof CtConditional<?>
 				|| expression instanceof CtUnaryOperator<?>;
 		}
