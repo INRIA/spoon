@@ -1780,6 +1780,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(SwitchStatement switchStatement, BlockScope scope) {
+		// JDT 3.40.0 removes SwitchExpression#traverse method, so let's emulate it
+		if (switchStatement instanceof SwitchExpression switchExpression) {
+			return visit(switchExpression, scope);
+		}
 		context.enter(factory.Core().createSwitch(), switchStatement);
 		return true;
 	}
