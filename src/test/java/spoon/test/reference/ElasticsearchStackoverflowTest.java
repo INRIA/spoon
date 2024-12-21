@@ -46,7 +46,6 @@ public class ElasticsearchStackoverflowTest {
 		}
 	}
 
-	@GitHubIssue(issueNumber = 5977, fixed = false)
 	@Test
 	public void testStackOverflow() {
 		Launcher launcher = new Launcher();
