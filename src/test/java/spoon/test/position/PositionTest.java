@@ -19,6 +19,7 @@ package spoon.test.position;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -806,6 +807,8 @@ public class PositionTest {
 			AnnonymousClassNewIface.class);
 		String originSources = foo.getPosition().getCompilationUnit().getOriginalSourceCode();
 		List<CtImport> imports = foo.getPosition().getCompilationUnit().getImports();
+		// Sorting using position of import element so that they are sorted in the order they are imported
+		imports.sort(Comparator.comparing(importElement -> importElement.getPosition().getSourceStart()));
 		assertEquals(2, imports.size());
 		Iterator<CtImport> iter = imports.iterator();
 		{
