@@ -46,6 +46,19 @@
           };
         in
         pkgs.mkShell rec {
+          shellHook = ''
+            if [ "$LANG" = "C.UTF-8" ]; then
+                echo "You are using the C locale. Tests will fail. Changing it to en_US if possible"
+
+                if locale -a | grep -iP "en_us.utf(-?)8"; then
+                    echo "Changing your locale to en_US.UTF-8"
+                    export LANG=en_US.UTF-8
+                else
+                    echo "You do not have en_US.UTF-8 installed ('localectl list-locales'/'locale -a')"
+                    echo "Please change it something else yourself"
+                fi
+            fi
+          '';
           test = pkgs.writeScriptBin "test" ''
             set -eu
 
