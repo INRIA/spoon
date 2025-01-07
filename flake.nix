@@ -44,26 +44,6 @@
               sha256 = "sha256-wl5UEu2U11Q0lZfm9reMhGMCI7y6sabk18j7SPWgy1k=";
             };
           };
-          jreleaser = pkgs.stdenv.mkDerivation rec {
-            pname = "jreleaser-cli";
-            version = "1.11.0";
-
-            src = pkgs.fetchurl {
-              url = "https://github.com/jreleaser/jreleaser/releases/download/v${version}/jreleaser-tool-provider-${version}.jar";
-              sha256 = "sha256-VkINXKVBBBK6/PIRPMVKZGY9afE7mAsqrcFPh2Algqk=";
-            };
-
-            nativeBuildInputs = with pkgs; [ makeWrapper ];
-
-            dontUnpack = true;
-
-            installPhase = ''
-              mkdir -p $out/share/java/ $out/bin/
-              cp $src $out/share/java/${pname}.jar
-              makeWrapper ${pkgs.jdk}/bin/java $out/bin/${pname} \
-                --add-flags "-jar $out/share/java/${pname}.jar"
-            '';
-          };
         in
         pkgs.mkShell rec {
           test = pkgs.writeScriptBin "test" ''
@@ -179,7 +159,7 @@
           packages = with pkgs;
             [ jdk maven test codegen coverage mavenPomQuality javadocQuality reproducibleBuilds ]
             ++ (if extraChecks then [ gradle pythonEnv extra extraRemote jbang ] else [ ])
-            ++ (if release then [ semver jreleaser ] else [ ]);
+            ++ (if release then [ semver pkgs.jreleaser-cli ] else [ ]);
         };
     in
     {
