@@ -44,28 +44,21 @@
               sha256 = "sha256-wl5UEu2U11Q0lZfm9reMhGMCI7y6sabk18j7SPWgy1k=";
             };
           };
-          jreleaser = pkgs.stdenv.mkDerivation rec {
-            pname = "jreleaser-cli";
-            version = "1.11.0";
-
-            src = pkgs.fetchurl {
-              url = "https://github.com/jreleaser/jreleaser/releases/download/v${version}/jreleaser-tool-provider-${version}.jar";
-              sha256 = "sha256-VkINXKVBBBK6/PIRPMVKZGY9afE7mAsqrcFPh2Algqk=";
-            };
-
-            nativeBuildInputs = with pkgs; [ makeWrapper ];
-
-            dontUnpack = true;
-
-            installPhase = ''
-              mkdir -p $out/share/java/ $out/bin/
-              cp $src $out/share/java/${pname}.jar
-              makeWrapper ${pkgs.jdk}/bin/java $out/bin/${pname} \
-                --add-flags "-jar $out/share/java/${pname}.jar"
-            '';
-          };
         in
         pkgs.mkShell rec {
+          shellHook = ''
+            if [ "$LANG" = "C.UTF-8" ]; then
+                echo "You are using the C locale. Tests will fail. Changing it to en_US if possible"
+
+                if locale -a | grep -iP "en_us.utf(-?)8"; then
+                    echo "Changing your locale to en_US.UTF-8"
+                    export LANG=en_US.UTF-8
+                else
+                    echo "You do not have en_US.UTF-8 installed ('localectl list-locales'/'locale -a')"
+                    echo "Please change it something else yourself"
+                fi
+            fi
+          '';
           test = pkgs.writeScriptBin "test" ''
             set -eu
 
@@ -179,7 +172,7 @@
           packages = with pkgs;
             [ jdk maven test codegen coverage mavenPomQuality javadocQuality reproducibleBuilds ]
             ++ (if extraChecks then [ gradle pythonEnv extra extraRemote jbang ] else [ ])
-            ++ (if release then [ semver jreleaser ] else [ ]);
+            ++ (if release then [ semver pkgs.jreleaser-cli ] else [ ]);
         };
     in
     {
