@@ -118,7 +118,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>11.1.0</version>
+            <version>11.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -143,7 +143,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>26.0.1</version>
+            <version>26.0.2</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
