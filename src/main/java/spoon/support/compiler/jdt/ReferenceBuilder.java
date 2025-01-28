@@ -8,6 +8,7 @@
 package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
+import org.eclipse.jdt.internal.compiler.Compiler;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
@@ -285,7 +286,7 @@ public class ReferenceBuilder {
 		if (enclosingType != null && Collections.disjoint(PUBLIC_PROTECTED, JDTTreeBuilderQuery.getModifiers(enclosingType.modifiers, false, ModifierTarget.NONE))) {
 			String access = "";
 			int i = 0;
-			final CompilationUnitDeclaration[] units = ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor).unitsToProcess;
+			final CompilationUnitDeclaration[] units = ((Compiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor).unitsToProcess;
 			for (; i < tokens.length; i++) {
 				final char[][] qualified = Arrays.copyOfRange(tokens, 0, i + 1);
 				if (searchPackage(qualified, units) == null) {
