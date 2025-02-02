@@ -38,7 +38,7 @@ jobs:
       - name: Check if first dirty-waters run
         id: check-first-run
         run: |
-          WORKFLOW_FILE=$(gh api repos/${{ github.repository }}/actions/workflows --jq '.workflows[] | select(.name == "${{ github.workflow }}") | .path')
+          WORKFLOW_FILE=$(gh api repos/${{ github.repository }}/actions/workflows --jq '.workflows[] | select(.name == "${{ github.workflow }}") | .path' | xargs basename)
           RUNS=$(gh api repos/${{ github.repository }}/actions/workflows/$WORKFLOW_FILE/runs --jq '[.workflow_runs[] | select(.conclusion=="success")] | length')
           echo "is_first_run=$([[ $RUNS -le 1 ]] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         env:
