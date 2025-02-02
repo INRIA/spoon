@@ -38,13 +38,11 @@ jobs:
       - name: Check if first dirty-waters run
         id: check-first-run
         run: |
-          # Check if this workflow has run before
           WORKFLOW_FILE=$(gh api repos/${{ github.repository }}/actions/workflows --jq '.workflows[] | select(.name == "${{ github.workflow }}") | .path')
-          RUNS=$(gh api repos/${{ github.repository }}/actions/workflows/$WORKFLOW_FILE/runs --jq '.total_count')
+          RUNS=$(gh api repos/chains-project/dirty-waters/actions/workflows/run-formatter.yml/runs --jq '[.workflow_runs[] | select(.conclusion=="success")] | length')
           echo "is_first_run=$([[ $RUNS -le 1 ]] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_OUTPUT: ${{ github.workspace }}/output
         shell: bash
 
       - name: Run Static Dirty Waters analysis
