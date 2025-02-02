@@ -45,7 +45,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Static Dirty Waters analysis
-        if: steps.check-first-run.outputs.is_first_run == 'true
+        if: steps.check-first-run.outputs.is_first_run == 'true'
         uses: chains-project/dirty-waters-action@41bbaa9ecbaefa6448ef95795d27b4ce4ae8086c
         with:
           # example args, change as needed
