@@ -53,7 +53,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           project_repo: ${{ github.repository }}
           differential_analysis: false
-          package_manager: npm # Change this according to your project
+          package_manager: maven # Change this according to your project
           comment_on_commit: true # Optional: comments on commits (outside PRs) if high severity issues are found
 
       - name: Run Differential Dirty Waters Analysis
@@ -63,5 +63,5 @@ jobs:
           # example args, change as needed
           github_token: ${{ secrets.GITHUB_TOKEN }}
           project_repo: ${{ github.repository }}
-          package_manager: npm # Change this according to your project
+          package_manager: maven # Change this according to your project
           comment_on_commit: true # Optional: comments on commits (outside PRs) if high severity issues are found
