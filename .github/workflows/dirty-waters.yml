@@ -47,7 +47,7 @@ jobs:
 
       - name: Run Static Dirty Waters analysis
         if: steps.check-first-run.outputs.is_first_run == 'true'
-        uses: chains-project/dirty-waters-action@52da89ae103ddc5c0cfcc998e413395dc24423cc
+        uses: chains-project/dirty-waters-action@70d5044612d1c4360f9588ae902a1962ad2aa7dd
         with:
           # example args, change as needed
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -58,7 +58,7 @@ jobs:
 
       - name: Run Differential Dirty Waters Analysis
         if: ${{ !(steps.check-first-run.outputs.is_first_run == 'true') }}
-        uses: chains-project/dirty-waters-action@52da89ae103ddc5c0cfcc998e413395dc24423cc
+        uses: chains-project/dirty-waters-action@70d5044612d1c4360f9588ae902a1962ad2aa7dd
         with:
           # example args, change as needed
           github_token: ${{ secrets.GITHUB_TOKEN }}
