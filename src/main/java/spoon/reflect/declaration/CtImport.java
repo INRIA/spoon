@@ -34,13 +34,13 @@ import static spoon.reflect.path.CtRole.IMPORT_REFERENCE;
  */
 public interface CtImport extends CtElement {
 	/**
-	 * @return The kind of import (see {@link CtImportKind})
+	 * {@return The kind of import (see {@link CtImportKind})}
 	 */
 	@DerivedProperty
 	CtImportKind getImportKind();
 
 	/**
-	 * @return The reference of the import.
+	 * {@return The reference of the import}
 	 */
 	@PropertyGetter(role = IMPORT_REFERENCE)
 	CtReference getReference();
@@ -49,9 +49,9 @@ public interface CtImport extends CtElement {
 	 * Sets the reference of the import.
 	 * The import kind will be computed based on this reference.
 	 *
-	 * @param reference The {@link CtReference} to be set for the import.
-	 * @param <T> The import kind determined based on the provided {@link CtReference}.
-	 * @return The determined import kind.
+	 * @param reference The {@link CtReference} to be set for the import
+	 * @param <T> The import kind determined based on the provided {@link CtReference}
+	 * @return The determined import kind
 	 */
 	@PropertySetter(role = IMPORT_REFERENCE)
 	<T extends CtImport> T setReference(CtReference reference);
