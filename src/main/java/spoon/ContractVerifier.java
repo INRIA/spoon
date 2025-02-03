@@ -548,6 +548,7 @@ public class ContractVerifier {
 	}
 
 	/** contract: element is contained in attribute of element's parent */
+	@SuppressWarnings("unchecked")
 	public void checkElementIsContainedInAttributeOfItsParent() {
 		_rootPackage.accept(new CtScanner() {
 			@Override
