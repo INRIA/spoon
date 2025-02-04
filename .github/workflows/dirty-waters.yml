@@ -27,14 +27,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Ensure Cache Directory Exists
-        run: mkdir -p /cache
-
       - name: Restore Dirty Waters database cache
         id: restore-cache
         uses: actions/cache/restore@v4
         with:
-          path: /cache
+          path: /app/dirty-waters/tool/cache
           key: dirty-waters-db-${{ runner.os }}-${{ github.repository }}
           restore-keys: |
             dirty-waters-db-${{ runner.os }}-
@@ -52,7 +49,7 @@ jobs:
 
       - name: Run Static Dirty Waters analysis
         if: steps.check-first-run.outputs.is_first_run == 'true'
-        uses: chains-project/dirty-waters-action@6de7619b1fdee3dfb88e8b3d4cd958f17b3d636f
+        uses: chains-project/dirty-waters-action@4152c86dc294d6660193548ce653aa2c9a9b268f
         with:
           # example args, change as needed
           dirty_waters_version: 3b83ec05b4072e43e65a2ad95b33d9523e0dbda3
@@ -64,7 +61,7 @@ jobs:
 
       - name: Run Differential Dirty Waters Analysis
         if: ${{ !(steps.check-first-run.outputs.is_first_run == 'true') }}
-        uses: chains-project/dirty-waters-action@6de7619b1fdee3dfb88e8b3d4cd958f17b3d636f
+        uses: chains-project/dirty-waters-action@4152c86dc294d6660193548ce653aa2c9a9b268f
         with:
           # example args, change as needed
           dirty_waters_version: 3b83ec05b4072e43e65a2ad95b33d9523e0dbda3
