@@ -27,13 +27,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Cache Dirty Waters database
-        uses: actions/cache@v4
+      - name: Restore Dirty Waters database cache
+        id: restore-cache
+        uses: actions/cache/restore@v4
         with:
           path: tool/cache
-          key: ${{ runner.os }}-dirty-waters-cache-${{ github.repository }}
+          key: dirty-waters-db-${{ runner.os }}-${{ github.repository }}
           restore-keys: |
-            ${{ runner.os }}-dirty-waters-cache-
+            dirty-waters-db-${{ runner.os }}-
+            dirty-waters-db-
 
       - name: Check if first dirty-waters run
         id: check-first-run
@@ -67,3 +69,10 @@ jobs:
           project_repo: ${{ github.repository }}
           package_manager: maven # Change this according to your project
           comment_on_commit: true # Optional: comments on commits (outside PRs) if high severity issues are found
+
+      - name: Save Dirty Waters database cache
+        id: save-cache
+        uses: actions/cache/save@v4
+        with:
+          path: tool/cache
+          key: dirty-waters-db-${{ runner.os }}-${{ github.repository }}
