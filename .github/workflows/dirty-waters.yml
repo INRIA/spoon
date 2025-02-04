@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 0
 
       - name: Ensure Cache Directory Exists
-        run: mkdir -p tool/cache
+        run: mkdir -p /cache
 
       - name: Restore Dirty Waters database cache
         id: restore-cache
