@@ -34,7 +34,7 @@ jobs:
         id: restore-cache
         uses: actions/cache/restore@v4
         with:
-          path: cache
+          path: /cache
           key: dirty-waters-db-${{ runner.os }}-${{ github.repository }}
           restore-keys: |
             dirty-waters-db-${{ runner.os }}-
