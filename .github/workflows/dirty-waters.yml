@@ -31,11 +31,15 @@ jobs:
         id: restore-cache
         uses: actions/cache/restore@v4
         with:
-          path: /app/dirty-waters/tool/cache
+          path: cache/
           key: dirty-waters-db-${{ runner.os }}-${{ github.repository }}
           restore-keys: |
             dirty-waters-db-${{ runner.os }}-
             dirty-waters-db-
+
+      - name: Generate the cache if not existing yet
+        if: steps.restore-cache.outputs.cache-hit != 'true'
+        run: mkdir cache/
 
       - name: Check if first dirty-waters run
         id: check-first-run
@@ -49,24 +53,25 @@ jobs:
 
       - name: Run Static Dirty Waters analysis
         if: steps.check-first-run.outputs.is_first_run == 'true'
-        uses: chains-project/dirty-waters-action@4152c86dc294d6660193548ce653aa2c9a9b268f
+        uses: chains-project/dirty-waters-action@58668a83c5efd813a3992ee219454dca36acce9f
         with:
           # example args, change as needed
           dirty_waters_version: 3b83ec05b4072e43e65a2ad95b33d9523e0dbda3
           github_token: ${{ secrets.GITHUB_TOKEN }}
           project_repo: ${{ github.repository }}
-          differential_analysis: false
           package_manager: maven # Change this according to your project
           comment_on_commit: true # Optional: comments on commits (outside PRs) if high severity issues are found
 
       - name: Run Differential Dirty Waters Analysis
         if: ${{ !(steps.check-first-run.outputs.is_first_run == 'true') }}
-        uses: chains-project/dirty-waters-action@4152c86dc294d6660193548ce653aa2c9a9b268f
+        uses: chains-project/dirty-waters-action@58668a83c5efd813a3992ee219454dca36acce9f
         with:
           # example args, change as needed
           dirty_waters_version: 3b83ec05b4072e43e65a2ad95b33d9523e0dbda3
           github_token: ${{ secrets.GITHUB_TOKEN }}
           project_repo: ${{ github.repository }}
+          # TODO: remove this hardcoded line, for debug only, should be true
+          differential_analysis: false
           package_manager: maven # Change this according to your project
           comment_on_commit: true # Optional: comments on commits (outside PRs) if high severity issues are found
 
