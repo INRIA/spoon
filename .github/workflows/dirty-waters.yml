@@ -32,10 +32,10 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: tool/cache
-          key: dirty-waters-${{ runner.os }}-${{ github.repository }}
+          key: dw-${{ runner.os }}-${{ github.repository }}
           restore-keys: |
-            dirty-waters-${{ runner.os }}-
-            dirty-waters-
+            dw-${{ runner.os }}-
+            dw-
 
       - name: Create the cache directory if it doesn't exist
         id: mkdir-cache
