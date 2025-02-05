@@ -47,9 +47,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
 
-      - name: Run tree command on pwd -- pwd is spoon
-        run: tree .
-
       - name: Run Static Dirty Waters analysis
         if: steps.check-first-run.outputs.is_first_run == 'true'
         uses: chains-project/dirty-waters-action@ced1ff17b13c9804c576e472eaee1fa8e9d323e3
@@ -78,5 +75,5 @@ jobs:
         id: save-cache
         uses: actions/cache/save@v4
         with:
-          path: /app/dirty-waters/tool/cache
+          path: tool/cache
           key: dirty-waters-db-${{ runner.os }}-${{ github.repository }}
