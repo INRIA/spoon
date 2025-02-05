@@ -32,13 +32,14 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: tool/cache
-          key: dirty-waters-db-${{ runner.os }}-${{ github.repository }}
+          key: dirty-waters-${{ runner.os }}-${{ github.repository }}
           restore-keys: |
-            dirty-waters-db-${{ runner.os }}-
-            dirty-waters-db-
+            dirty-waters-${{ runner.os }}-
+            dirty-waters-
 
       - name: Create the cache directory if it doesn't exist
         id: mkdir-cache
+        if: steps.restore-cache.outputs.cache-hit != 'true'
         run: mkdir -p tool/cache
 
       - name: Check if first dirty-waters run
@@ -80,4 +81,4 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: tool/cache
-          key: dirty-waters-db-${{ runner.os }}-${{ github.repository }}
+          key: dirty-waters-${{ runner.os }}-${{ github.repository }}
