@@ -81,4 +81,4 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: tool/cache
-          key: dirty-waters-${{ runner.os }}-${{ github.repository }}
+          key: ${{ steps.restore-cache.outputs.cache-primary-key }}
