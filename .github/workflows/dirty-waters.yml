@@ -71,7 +71,7 @@ jobs:
           dirty_waters_version: 3b83ec05b4072e43e65a2ad95b33d9523e0dbda3
           github_token: ${{ secrets.GITHUB_TOKEN }}
           project_repo: ${{ github.repository }}
-          # TODO: remove this hardcoded line, for debug only, should be true
+          # TODO: remove this hardcoded line, for debug only, should be true!
           differential_analysis: false
           package_manager: maven # Change this according to your project
           comment_on_commit: true # Optional: comments on commits (outside PRs) if high severity issues are found
