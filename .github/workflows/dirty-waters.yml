@@ -52,7 +52,7 @@ jobs:
         shell: bash
 
       - name: Run tree command on root
-        run: tree .
+        run: tree /
 
       - name: Run Static Dirty Waters analysis
         if: steps.check-first-run.outputs.is_first_run == 'true'
