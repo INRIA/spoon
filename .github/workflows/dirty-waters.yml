@@ -42,8 +42,8 @@ jobs:
         if: steps.restore-cache.outputs.cache-hit != 'true'
         run: mkdir -p tool/cache
 
-      - name: List the cache directory
-        run: ls -la tool/cache
+      - name: Tree the cache directory
+        run: tree tool/cache
 
       - name: Check if first dirty-waters run
         id: check-first-run
