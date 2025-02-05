@@ -37,6 +37,10 @@ jobs:
             dirty-waters-db-${{ runner.os }}-
             dirty-waters-db-
 
+      - name: Create the cache directory if it doesn't exist
+        id: mkdir-cache
+        run: mkdir -p tool/cache
+
       - name: Check if first dirty-waters run
         id: check-first-run
         run: |
