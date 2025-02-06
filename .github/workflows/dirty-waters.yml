@@ -27,15 +27,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Get previous commit SHA
+        id: get-previous-commit
+        run: echo "previous_commit=$(git rev-parse HEAD^1)" >> $GITHUB_ENV
+        shell: bash
+
       - name: Restore Dirty Waters database cache
         id: restore-cache
         uses: actions/cache/restore@v4
         with:
           path: tool/cache
-          key: dw-${{ runner.os }}-${{ github.repository }}
-          restore-keys: |
-            dw-${{ runner.os }}-
-            dw-
+          key: dirty-waters-cache-${{ runner.os }}-${{ github.repository }}-${{ steps.get-previous-commit.outputs.previous_commit }}
 
       - name: Create the cache directory if it doesn't exist
         id: mkdir-cache
@@ -81,4 +83,4 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: tool/cache
-          key: ${{ steps.restore-cache.outputs.cache-primary-key }}
+          key: dirty-waters-cache-${{ runner.os }}-${{ github.repository }}-${{ github.sha }}
