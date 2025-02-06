@@ -548,7 +548,6 @@ public class ContractVerifier {
 	}
 
 	/** contract: element is contained in attribute of element's parent */
-	@SuppressWarnings("unchecked")
 	public void checkElementIsContainedInAttributeOfItsParent() {
 		_rootPackage.accept(new CtScanner() {
 			@Override
@@ -565,12 +564,12 @@ public class ContractVerifier {
 						assertTrue("Element of type " + element.getClass().getName()
 										+ " not found in Collection value of attribute of role " + role.name()
 										+ " of parent type " + parent.getClass().getName(),
-								((Collection<CtElement>) attributeOfParent).stream().anyMatch(e -> e == element));
+								((Collection<?>) attributeOfParent).stream().anyMatch(e -> e == element));
 					} else if (attributeOfParent instanceof Map) {
 						assertTrue("Element of type " + element.getClass().getName()
 										+ " not found in Map#values of attribute of role " + role.name()
 										+ " of parent type " + parent.getClass().getName(),
-								((Map<String, ?>) attributeOfParent).values().stream().anyMatch(e -> e == element));
+								((Map<?, ?>) attributeOfParent).values().stream().anyMatch(e -> e == element));
 					} else {
 						fail("Attribute of Role " + role + " not checked");
 					}
