@@ -96,7 +96,7 @@ public class Pattern {
 		if (input instanceof Collection<?>) {
 			scanner.scan(null, (Collection<CtElement>) input);
 		} else if (input instanceof Map) {
-			scanner.scan(null, (Map<String, ?>) input);
+			scanner.scan(null, input);
 		} else {
 			scanner.scan(null, (CtElement) input);
 		}
@@ -110,9 +110,7 @@ public class Pattern {
 	 */
 	public List<Match> getMatches(CtElement root) {
 		List<Match> matches = new ArrayList<>();
-		forEachMatch(root, match -> {
-			matches.add(match);
-		});
+		forEachMatch(root, matches::add);
 		return matches;
 	}
 
