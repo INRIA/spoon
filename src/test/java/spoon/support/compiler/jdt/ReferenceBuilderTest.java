@@ -8,7 +8,7 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ReferenceBuilderTest {
     private static ReferenceBuilder referenceBuilder;

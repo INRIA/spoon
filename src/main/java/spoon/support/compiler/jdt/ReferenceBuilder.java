@@ -822,7 +822,7 @@ public class ReferenceBuilder {
 	 * See comments in code for why "WELL-FORMATTED" is important.
 	 * */
 	private List<String> getStringTypeParameters(String typeParamString) {
-		if(!typeParamString.contains("<")) {
+		if (!typeParamString.contains("<")) {
 			// There are no nested generic types present in the parameter string
 			return List.of(typeParamString.split(","));
 		}
@@ -835,7 +835,7 @@ public class ReferenceBuilder {
 
 		int bracketsEncountered = 0;
 		StringBuilder paramAccumulator = new StringBuilder();
-		for(int idx = 0; idx < typeParamString.length(); idx++) {
+		for (int idx = 0; idx < typeParamString.length(); idx++) {
 			char currChar = typeParamString.charAt(idx);
 
 			if (currChar == ',' && bracketsEncountered == 0) {
