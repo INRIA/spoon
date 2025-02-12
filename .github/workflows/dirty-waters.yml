@@ -54,7 +54,7 @@ jobs:
         uses: chains-project/dirty-waters-action@450baaac3fca01dd4617c4281b87454c00d95968
         with:
           # example args, change as needed
-          dirty_waters_version: 3b83ec05b4072e43e65a2ad95b33d9523e0dbda3
+          # dirty_waters_version: 3b83ec05b4072e43e65a2ad95b33d9523e0dbda3
           github_token: ${{ secrets.GITHUB_TOKEN }}
           project_repo: ${{ github.repository }}
           package_manager: maven # Change this according to your project
@@ -65,7 +65,7 @@ jobs:
         uses: chains-project/dirty-waters-action@450baaac3fca01dd4617c4281b87454c00d95968
         with:
           # example args, change as needed
-          dirty_waters_version: 3b83ec05b4072e43e65a2ad95b33d9523e0dbda3
+          # dirty_waters_version: 3b83ec05b4072e43e65a2ad95b33d9523e0dbda3
           github_token: ${{ secrets.GITHUB_TOKEN }}
           project_repo: ${{ github.repository }}
           # TODO: remove this hardcoded line, for debug only, should be true!
