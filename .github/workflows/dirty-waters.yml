@@ -50,6 +50,7 @@ jobs:
         shell: bash
 
       - name: Run Static Dirty Waters analysis
+        id: static-analysis
         continue-on-error: true
         if: steps.check-first-run.outputs.is_first_run == 'true'
         uses: chains-project/dirty-waters-action@0e793582c3e8be0fea520d2713990bc27bd2c9f6
@@ -63,6 +64,7 @@ jobs:
           latest_commit_sha: ${{ github.sha }}
 
       - name: Run Differential Dirty Waters Analysis
+        id: differential-analysis
         continue-on-error: true
         if: ${{ !(steps.check-first-run.outputs.is_first_run == 'true') }}
         uses: chains-project/dirty-waters-action@0e793582c3e8be0fea520d2713990bc27bd2c9f6
@@ -83,3 +85,7 @@ jobs:
         with:
           path: tool/cache
           key: dirty-waters-cache-${{ runner.os }}-${{ github.repository }}-${{ github.sha }}
+
+      - name: Break CI if analyses fail
+        run: exit $(( ${{ steps.static-analysis.outcome }} + ${{ steps.differential-analysis.outcome }} ))
+        shell: bash
