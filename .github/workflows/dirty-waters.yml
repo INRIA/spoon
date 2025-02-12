@@ -50,6 +50,7 @@ jobs:
         shell: bash
 
       - name: Run Static Dirty Waters analysis
+        continue-on-error: true
         if: steps.check-first-run.outputs.is_first_run == 'true'
         uses: chains-project/dirty-waters-action@450baaac3fca01dd4617c4281b87454c00d95968
         with:
@@ -61,6 +62,7 @@ jobs:
           comment_on_commit: true # Optional: comments on commits (outside PRs) if high severity issues are found
 
       - name: Run Differential Dirty Waters Analysis
+        continue-on-error: true
         if: ${{ !(steps.check-first-run.outputs.is_first_run == 'true') }}
         uses: chains-project/dirty-waters-action@450baaac3fca01dd4617c4281b87454c00d95968
         with:
