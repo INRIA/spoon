@@ -87,5 +87,6 @@ jobs:
           key: dirty-waters-cache-${{ runner.os }}-${{ github.repository }}-${{ github.sha }}
 
       - name: Break CI if analyses fail
-        run: exit $(( ${{ steps.static-analysis.outcome }} + ${{ steps.differential-analysis.outcome }} ))
+        # if any of static or differential analyses have outcome failure, break the CI
+        run: exit $((steps.static-analysis.outcome == 'failure' || steps.differential-analysis.outcome == 'failure'))
         shell: bash
