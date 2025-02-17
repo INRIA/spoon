@@ -55,18 +55,13 @@ import spoon.test.annotation.testclasses.GlobalAnnotation;
 import spoon.test.pkg.name.PackageTestClass;
 import spoon.test.pkg.processors.ElementProcessor;
 import spoon.test.pkg.testclasses.Foo;
+import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -189,6 +184,19 @@ public class PackageTest {
 		launcher.buildModel();
 		launcher.prettyprint();
 		canBeBuilt("./target/spooned/packageAndTemplate/spoon/test/pkg/package-info.java", 8);
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 5357, fixed = true)
+	public void testSeparateImportForPackageInfoAnnotation() {
+		assertDoesNotThrow(() -> {
+			Launcher launcher = new Launcher();
+			launcher.addInputResource("src/test/java/spoon/test/pkg/annotate/package-info.java");
+			launcher.getEnvironment().setNoClasspath(true);
+			launcher.getEnvironment().setCopyResources(false);
+			launcher.run();
+			CtModel model = launcher.getModel();
+		});
 	}
 
 	@ModelTest("./src/test/java/spoon/test/pkg/testclasses/Foo.java")

@@ -111,14 +111,4 @@ public class ReferenceBuilderTest {
         assertEquals("Integer", typeReference.getSimpleName());
         assertEquals(0, typeReference.getActualTypeArguments().size());
     }
-
-    @Test
-    public void testSomething() {
-        Launcher launcher = new Launcher();
-        launcher.addInputResource("src/test/java/spoon/support/compiler/jdt/temptest/package-info.java");
-        launcher.getEnvironment().setNoClasspath(true);
-        launcher.getEnvironment().setCopyResources(false);
-        launcher.run();
-        CtModel model = launcher.getModel();
-    }
 }
