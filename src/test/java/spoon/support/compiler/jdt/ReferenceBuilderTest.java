@@ -3,7 +3,6 @@ package spoon.support.compiler.jdt;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
-import spoon.reflect.CtModel;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 
