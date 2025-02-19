@@ -31,4 +31,5 @@ jobs:
           package_manager: maven
           project_repo: ${{ github.repository }}
           latest_commit_sha: ${{ github.sha }}
-          github_event_before: ${{github.event.before}}
+          github_event_before: ${{ github.event.before }}
+          no_gradual_report: true
