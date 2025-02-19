@@ -26,6 +26,7 @@
 
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.testRelease>17</maven.compiler.testRelease>
         <runtime.log>target/velocity.log</runtime.log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.outputTimestamp>1737612198</project.build.outputTimestamp>
@@ -135,10 +136,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>${java.src.version}</source>
-                    <target>${java.src.version}</target>
-                    <testSource>${java.test.version}</testSource>
-                    <testTarget>${java.test.version}</testTarget>
                     <showWarnings>true</showWarnings>
                     <compilerArgs>
                         <arg>-Xlint:deprecation,unchecked</arg>
