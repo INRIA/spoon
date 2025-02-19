@@ -25,10 +25,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - name: Dirty Waters Analysis
-        uses: chains-project/dirty-waters-action@v1.7
+        uses: chains-project/dirty-waters-action@v1.8
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           package_manager: maven
           project_repo: ${{ github.repository }}
           latest_commit_sha: ${{ github.sha }}
-          github_event_before: ${{github.event.before}}
+          github_event_before: ${{ github.event.before }}
