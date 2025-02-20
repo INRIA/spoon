@@ -187,8 +187,7 @@
                 default = jdk17;
                 jdk17 = mkShell system { javaVersion = 17; };
                 jdk21 = mkShell system { javaVersion = 21; };
-                jdk22 = mkShell system { javaVersion = 22; };
-                extraChecks = mkShell system { extraChecks = true; javaVersion = 21; };
+                extraChecks = mkShell system { extraChecks = true; javaVersion = 23; };
                 jReleaser = mkShell system { release = true; javaVersion = 21; };
               });
         in
