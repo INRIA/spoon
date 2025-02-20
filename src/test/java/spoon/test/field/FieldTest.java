@@ -216,7 +216,7 @@ public class FieldTest {
 				"import java.io.File;\n" +
 				"class A {\n" +
 				"    public static final String separator = File.separator;\n" +
-				"}", klass.toStringWithImports());
+				"}\n", klass.toStringWithImports());
 
 	}
 

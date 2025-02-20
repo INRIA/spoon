@@ -308,6 +308,8 @@ public class AssertJCodegen {
 		Metamodel instance = Metamodel.getInstance();
 		MetamodelConcept concept = instance.getConcept((Class<? extends CtElement>) type.getActualClass());
 		TreeSet<CtMethod<?>> methods = new TreeSet<>(Comparator.comparing(CtMethod::getSimpleName));
+		methods.addAll(assertInterface.getMethods());
+
 		for (var entry : concept.getRoleToProperty().entrySet()) {
 			List<CtMethod<?>> declaredMethods = entry.getValue().getMethod(MMMethodKind.GET).getDeclaredMethods();
 			CtMethod<?> method = declaredMethods.stream().reduce((l, r) -> l.getType().isSubtypeOf(r.getType()) ? l : r).orElseThrow();

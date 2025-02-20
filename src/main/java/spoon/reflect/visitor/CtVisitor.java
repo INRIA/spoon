@@ -59,6 +59,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtUnnamedPattern;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -577,4 +578,10 @@ public interface CtVisitor {
 	 * @param receiverParameter the receiver parameter to visit.
 	 */
 	void visitCtReceiverParameter(CtReceiverParameter receiverParameter);
+
+	/**
+	 * Visits an unnamed pattern.
+	 * @param unnamedPattern the unnamed pattern to visit.
+	 */
+	void visitCtUnnamedPattern(CtUnnamedPattern unnamedPattern);
 }

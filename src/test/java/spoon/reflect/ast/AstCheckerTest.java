@@ -21,6 +21,7 @@ import spoon.Launcher;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.visitor.ModelConsistencyCheckerTestHelper;
 import spoon.support.modelobs.FineModelChangeListener;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
@@ -125,6 +126,8 @@ public class AstCheckerTest {
 				factory.Type().createReference(List.class),
 				factory.Type().createReference(Set.class),
 				factory.Type().createReference(Map.class));
+
+		ModelConsistencyCheckerTestHelper.assertModelIsConsistent(factory);
 
 		final List<CtInvocation<?>> invocations = Query.getElements(factory, new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
 			@Override

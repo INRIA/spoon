@@ -21,7 +21,7 @@ import spoon.reflect.declaration.CtElement;
  * the abstract default implementation of this interface.
  */
 public interface AnnotationProcessor<A extends Annotation, E extends CtElement>
-		extends Processor<E> {
+	extends Processor<E> {
 
 	/**
 	 * Do the annotation processing job for a given annotation.
@@ -62,7 +62,21 @@ public interface AnnotationProcessor<A extends Annotation, E extends CtElement>
 
 	/**
 	 * Returns true if this annotation should be removed from the processed code.
+	 *
+	 * @param annotation the annotation to be checked
+	 * @return true, if the given annotation should be removed from the processed code.
+	 *
+	 * @deprecated use {@link #shouldBeConsumed(CtAnnotation)} instead
 	 */
+	@Deprecated
 	boolean shoudBeConsumed(CtAnnotation<? extends Annotation> annotation);
+
+	/**
+	 * Returns true if this annotation should be removed from the processed code.
+	 *
+	 * @param annotation the annotation to be checked
+	 * @return true, if the given annotation should be removed from the processed code.
+	 */
+	boolean shouldBeConsumed(CtAnnotation<? extends Annotation> annotation);
 
 }

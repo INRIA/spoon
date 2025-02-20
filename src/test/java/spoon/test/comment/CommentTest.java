@@ -22,6 +22,7 @@ import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
+import spoon.LauncherTest;
 import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtArrayAccess;
@@ -110,6 +111,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 
 public class CommentTest {
@@ -882,7 +884,7 @@ public class CommentTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 
-		launcher.getEnvironment().setComplianceLevel(21);
+		launcher.getEnvironment().setComplianceLevel(22);
 		// launcher.getEnvironment().setPreviewFeaturesEnabled(true);
 		
 		// interfaces.
@@ -1324,5 +1326,31 @@ public class CommentTest {
 		assertEquals("comment 2", typeParameters.get(1).getComments().get(0).getContent());
 		assertEquals("comment 3", typeParameters.get(1).getComments().get(1).getContent());
 		assertEquals("comment 4", typeParameters.get(1).getComments().get(2).getContent());
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 6069, fixed = true)
+	@ExtendWith(LineSeparatorExtension.class)
+	public void testCommentInLambda() {
+		// contract: Comments inside lambdas should not crash or disappear.
+		CtClass<?> ctClass = Launcher.parseClass("""
+			class Foo {
+			  public void bar() {
+			    Runnable r = () -> {
+			        /* hello */ System.exit(1);
+			    };
+				Runnable b = () -> /* hello2 */ System.exit(1);
+				Runnable c = /* hello3 */ () -> System.exit(1);
+				java.util.function.IntFunction<Void> d = ( /* hello4 */ int a ) -> null;
+				int e = /* hello5 */ 5;
+			  }
+			}
+			""");
+		assertThat(ctClass).asString().contains("/* hello */");
+		// Wrong output, there should not be a newline here. Codify it for now in the test case
+		assertThat(ctClass).asString().containsPattern("/\\* hello2 \\*/\n\\s+System");
+		assertThat(ctClass).asString().contains("/* hello3 */");
+		assertThat(ctClass).asString().contains("/* hello4 */");
+		assertThat(ctClass).asString().contains("/* hello5 */");
 	}
 }

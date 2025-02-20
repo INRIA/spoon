@@ -16,15 +16,23 @@
  */
 package spoon.test.logging;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.slf4j.LoggerFactory;
 import spoon.FluentLauncher;
 import spoon.Launcher;
 import spoon.MavenLauncher;
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.CtModel;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.visitor.Query;
@@ -32,24 +40,23 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.Level;
 import spoon.testing.utils.GitHubIssue;
-import uk.org.lidalia.slf4jtest.TestLogger;
-import uk.org.lidalia.slf4jtest.TestLoggerFactory;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
+@ExtendWith(LogTest.LogCaptureExtension.class)
 public class LogTest {
 
 	@ParameterizedTest
 	@MethodSource("getLogLevelsAndExpectedCounts")
-	public void testAllLevelsForLogs(Pair<Level, Integer> levelAndExpectedCount) {
+	public void testAllLevelsForLogs(Pair<Level, Integer> levelAndExpectedCount, LogCapture logCapture) {
 		final Level level = levelAndExpectedCount.getLeft();
 		final int expectedCount = levelAndExpectedCount.getRight();
-		final TestLogger logger = TestLoggerFactory.getTestLogger(Launcher.class);
 		final Launcher launcher = new Launcher();
-		logger.clear();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/java/spoon/test/logging",
 				"--level", level.toString()
@@ -60,15 +67,17 @@ public class LogTest {
 		launcher.getEnvironment().reportProgressMessage("reportProgressMessage");
 
 		// contract: the --level arguments sets the level
-		assertEquals(level, launcher.getFactory().getEnvironment().getLevel());
+		assertThat(launcher.getFactory().getEnvironment().getLevel()).isEqualTo(level);
 
 		// contract: the number of messages increases with the log level
-		assertTrue(logger.getLoggingEvents().size() >= expectedCount);
-
+		assertThat(logCapture.loggingEvents()).hasSizeGreaterThanOrEqualTo(expectedCount);
+		if (expectedCount == 0) {
+			assertThat(logCapture.loggingEvents()).isEmpty();
+		}
 	}
 
 	/**
-	 * @return log level and expected amount of logs for that level for the
+	 * @return log level and expected number of logs for that level for the
 	 * {@link LogTest::testAllLevelsForLogs} test.
 	 */
 	private static Stream<Pair<Level, Integer>> getLogLevelsAndExpectedCounts() {
@@ -83,22 +92,26 @@ public class LogTest {
 
 
 	@Test
-	public void testMavenLauncherLogs() {
+	public void testMavenLauncherLogs(LogCapture logCapture) {
 		// contract: MavenLauncher should output different logs depending on whether the classpath is inferred or manually set
-		final TestLogger logger = TestLoggerFactory.getTestLogger(MavenLauncher.class);
-		MavenLauncher mavenLauncher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
-		assertEquals("Running in FULLCLASSPATH mode. Source folders and dependencies are inferred from the pom.xml file (doc: http://spoon.gforge.inria.fr/launcher.html).",logger.getLoggingEvents().get(0).getMessage());
-		logger.clear();
-		mavenLauncher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE, new String[]{"./"});
-		assertEquals("Running in FULLCLASSPATH mode. Classpath is manually set (doc: http://spoon.gforge.inria.fr/launcher.html).",logger.getLoggingEvents().get(0).getMessage());
+		new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
+		assertThat(logCapture.loggingEvents(Level.INFO).get(0).getMessage()).isEqualTo(
+			"Running in FULLCLASSPATH mode. Source folders and dependencies are inferred from the pom.xml file (doc: http://spoon.gforge.inria.fr/launcher.html)."
+		);
+
+		logCapture.clear();
+
+		new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE, new String[]{"./"});
+		assertThat(logCapture.loggingEvents(Level.INFO).get(0).getMessage()).isEqualTo(
+			"Running in FULLCLASSPATH mode. Classpath is manually set (doc: http://spoon.gforge.inria.fr/launcher.html)."
+		);
 	}
 
 	@Test
-	public void testLoggingOff() {
-		// contract: When logging is off, no message should me logged independent of logging level.
-		final TestLogger logger = TestLoggerFactory.getTestLogger(Launcher.class);
-		final Launcher launcher = new Launcher();
-		logger.clear();
+	public void testLoggingOff(LogCapture logCapture) {
+		// contract: When logging is off, no message should be logged independent of logging level.
+		Launcher launcher = new Launcher();
+		logCapture.clear();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/java/spoon/test/logging",
 				"--level", Level.OFF.toString()
@@ -106,10 +119,13 @@ public class LogTest {
 
 		// test messages with all logging levels
 		for (Level level : Level.values()) {
-			launcher.getEnvironment().report(new JavaOutputProcessor(), level,
-					"This is a message with level " + level.toString());
+			launcher.getEnvironment().report(
+				new JavaOutputProcessor(),
+				level,
+				"This is a message with level " + level.toString()
+			);
 		}
-		assertEquals(0, logger.getLoggingEvents().size());
+		assertThat(logCapture.loggingEvents()).isEmpty();
 	}
 
 	@Test
@@ -128,5 +144,69 @@ public class LogTest {
        				return false;
 	  		}};
 		assertDoesNotThrow(() -> new FluentLauncher().inputResource(codePath).processor(processor).buildModel());
+	}
+
+	public record LogCapture(ListAppender<ILoggingEvent> listAppender) {
+		public List<ILoggingEvent> loggingEvents() {
+			return Collections.unmodifiableList(listAppender.list);
+		}
+
+		public List<ILoggingEvent> loggingEvents(Level minLevel) {
+			return listAppender.list.stream()
+				.filter(event -> minLevel.compareTo(Level.valueOf(event.getLevel().toString())) >= 0)
+				.toList();
+		}
+
+		public void start() {
+			listAppender.start();
+		}
+
+		public void stop() {
+			listAppender.stop();
+		}
+
+		public void clear() {
+			listAppender.list.clear();
+		}
+	}
+
+	public static class LogCaptureExtension implements ParameterResolver, AfterTestExecutionCallback {
+
+		private final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+
+		private LogCapture logCapture;
+
+		@Override
+		public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
+			return parameterContext.getParameter().getType() == LogCapture.class;
+		}
+
+		@Override
+		public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
+			logCapture = new LogCapture(new ListAppender<>());
+
+			setup();
+
+			return logCapture;
+		}
+
+		@Override
+		public void afterTestExecution(ExtensionContext context) {
+			teardown();
+		}
+
+		private void setup() {
+			logger.addAppender(logCapture.listAppender());
+			logCapture.start();
+		}
+
+		private void teardown() {
+			if (logCapture == null || logger == null) {
+				return;
+			}
+
+			logger.detachAndStopAllAppenders();
+			logCapture.stop();
+		}
 	}
 }

@@ -66,6 +66,10 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 		component.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, CtRole.RECORD_COMPONENT, components, component);
 		components.add(component);
+
+		if (getField(component.getSimpleName()) == null) {
+			addField(component.toField());
+		}
 		if (!hasMethodWithSameNameAndNoParameter(component)) {
 			addMethod(component.toMethod());
 		}
@@ -100,12 +104,14 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 	public <C extends CtType<Object>> C addTypeMemberAt(int position, CtTypeMember member) {
 		// a record can have only implicit instance fields and this is the best point to preserve the invariant
 		// because there are multiple ways to add a field to a record
+		String memberName = member.getSimpleName();
+
 		if (member instanceof CtField && !member.isStatic()) {
 			member.setImplicit(true);
-			getAnnotationsWithName(member.getSimpleName(), ElementType.FIELD).forEach(member::addAnnotation);
+			getAnnotationsWithName(memberName, ElementType.FIELD).forEach(member::addAnnotation);
 		}
 		if (member instanceof CtMethod && member.isImplicit()) {
-			getAnnotationsWithName(member.getSimpleName(), ElementType.METHOD).forEach(member::addAnnotation);
+			getAnnotationsWithName(memberName, ElementType.METHOD).forEach(member::addAnnotation);
 		}
 		if (member instanceof CtConstructor && member.isImplicit()) {
 			for (CtParameter<?> parameter : ((CtConstructor<?>) member).getParameters()) {
@@ -115,7 +121,7 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 		}
 		if (member instanceof CtMethod && (member.isAbstract() || member.isNative())) {
 			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, String.format("%s method is native or abstract, both is not allowed",
-					member.getSimpleName()));
+				memberName));
 		}
 		if (member instanceof CtAnonymousExecutable && !member.isStatic()) {
 			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, "Instance initializer is not allowed in a record (JLS 17 $8.10.2)");

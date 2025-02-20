@@ -9,11 +9,9 @@ It is an alternative to the Swing-based GUI of Spoon ASTs (`$ java -cp spoon...-
 
 ## How to run
 
-The app requires a JDK 11.
-We currently do not provide any packaging of the app (`jlink` cannot package apps having non-modular libraries, such as Spoon).
-
-So, to run the app, run: `mvn clean package`. 
-Then go into the `target/modules` folder and launch: `java --module-path . --add-modules=ALL-MODULE-PATH -jar visualisation-1.1.jar`
+1. Install Java **22** or newer.
+2. Run: `mvn javafx:run`. Alternativatively, build a fat jar using `mvn
+   package` and then run `java -jar target/spoon-visualisation-all.jar`.
 
 ## Features Summary
 

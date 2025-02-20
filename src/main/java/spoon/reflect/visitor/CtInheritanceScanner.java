@@ -71,6 +71,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtUnnamedPattern;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -948,6 +949,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVariableAccess(e);
 		scanCtExpression(e);
 		scanCtCodeElement(e);
+		scanCtResource(e);
 		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
@@ -1132,4 +1134,13 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtShadowable(e);
 	}
 
+	@Override
+	public void visitCtUnnamedPattern(CtUnnamedPattern pattern) {
+		scanCtPattern(pattern);
+		scanCtExpression(pattern);
+		scanCtTypedElement(pattern);
+		scanCtCodeElement(pattern);
+		scanCtElement(pattern);
+		scanCtVisitable(pattern);
+	}
 }

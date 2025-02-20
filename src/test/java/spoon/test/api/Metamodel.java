@@ -1377,6 +1377,16 @@ public class Metamodel {
 
 			));
 
+			types.add(new Type("CtUnnamedPattern", spoon.reflect.code.CtUnnamedPattern.class, spoon.support.reflect.code.CtUnnamedPatternImpl.class, fm -> fm
+				.field(CtRole.IS_IMPLICIT, false, false)
+				.field(CtRole.POSITION, false, false)
+				.field(CtRole.CAST, true, true)
+				.field(CtRole.ANNOTATION, false, false)
+				.field(CtRole.TYPE, false, false)
+				.field(CtRole.COMMENT, false, false)
+
+			));
+
 			types.add(new Type("CtNewClass", spoon.reflect.code.CtNewClass.class, spoon.support.reflect.code.CtNewClassImpl.class, fm -> fm
 				.field(CtRole.TYPE, true, false)
 				.field(CtRole.IS_IMPLICIT, false, false)

@@ -17,9 +17,6 @@ How to become integrator? The integrators are the developers who have made signi
 
 Current integrators:
 
-- Simon Larsén [@slarse](https://github.com/slarse/)
-    - Email: slarse@slar.se
-    - GPG fingerprint: [70345F27028C791C8D82D3DE1CEF06827CEA5C29](https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x70345F27028C791C8D82D3DE1CEF06827CEA5C29)
 - Nicolas Harrand [@nharrand](https://github.com/nharrand/)
     - Email: nicolas.harrand@gmail.com
 - Martin Monperrus [@monperrus](https://github.com/monperrus/)

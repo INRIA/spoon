@@ -70,6 +70,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtUnnamedPattern;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -423,25 +424,42 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean shouldSetBracketAroundExpressionAndCast(CtExpression<?> e) {
+		boolean hasCasts = !e.getTypeCasts().isEmpty();
 		if (isMinimizeRoundBrackets()) {
 			RoundBracketAnalyzer.EncloseInRoundBrackets requiresBrackets =
-					RoundBracketAnalyzer.requiresRoundBrackets(e);
+				RoundBracketAnalyzer.requiresRoundBrackets(e);
 			if (requiresBrackets != RoundBracketAnalyzer.EncloseInRoundBrackets.UNKNOWN) {
-				return requiresBrackets == RoundBracketAnalyzer.EncloseInRoundBrackets.YES || !e.getTypeCasts().isEmpty();
+				return requiresBrackets == RoundBracketAnalyzer.EncloseInRoundBrackets.YES || hasCasts;
 			}
-			if (e.isParentInitialized() && e.getParent() instanceof CtTargetedExpression && ((CtTargetedExpression) e.getParent()).getTarget() == e) {
-				return e instanceof CtVariableRead<?> && !e.getTypeCasts().isEmpty();
-			}
-		} else if (!e.getTypeCasts().isEmpty()) {
+		} else if (hasCasts) {
 			return true;
 		}
 		if (e.isParentInitialized()) {
 			if ((e.getParent() instanceof CtBinaryOperator) || (e.getParent() instanceof CtUnaryOperator)) {
 				return (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator) || e instanceof CtBinaryOperator;
 			}
-			if (e.getParent() instanceof CtTargetedExpression && ((CtTargetedExpression) e.getParent()).getTarget() == e) {
-				return (e instanceof CtBinaryOperator) || (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator);
-			}
+			return requiresParenthesesInTargetContext(e);
+		}
+		return false;
+	}
+
+	/**
+	 * {@return whether the expression requires parentheses if it is the child of a targeted expression}
+	 * The targets of method calls typically don't require additional parentheses, e.g.,
+	 * {@code var.method()}, {@code method().method()}. However, some expressions do, e.g.,
+	 * {@code (x = y).method()}, {@code ("a" + "b").method()}.
+	 * If the expression is not the target of a method call, {@code false} is returned.
+	 * <br/>
+	 * Note: This method does not consider casts.
+	 */
+	private static boolean requiresParenthesesInTargetContext(CtExpression<?> expression) {
+		if (expression.isParentInitialized() && expression.getParent() instanceof CtTargetedExpression<?, ?> targeted && targeted.getTarget() == expression) {
+			return !expression.getTypeCasts().isEmpty()
+				|| expression instanceof CtBinaryOperator<?>
+				|| expression instanceof CtSwitchExpression<?, ?>
+				|| expression instanceof CtAssignment<?, ?>
+				|| expression instanceof CtConditional<?>
+				|| expression instanceof CtUnaryOperator<?>;
 		}
 		return false;
 	}
@@ -630,7 +648,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if (caseExpression instanceof CtFieldAccess<E> fieldAccess) {
 					final CtFieldReference variable = ((CtFieldAccess) caseExpression).getVariable();
 					// In noclasspath mode, we don't have always the type of the declaring type.
-					if ((fieldAccess.getTarget().isImplicit() || env.getComplianceLevel() < 21)
+					if (((fieldAccess.getTarget() != null && fieldAccess.getTarget().isImplicit()) || env.getComplianceLevel() < 21)
 							&& variable.getType() != null
 							&& variable.getDeclaringType() != null
 							&& variable.getType().getQualifiedName().equals(variable.getDeclaringType().getQualifiedName())) {
@@ -1211,6 +1229,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeComment(compilationUnit, CommentOffset.AFTER);
 		} finally {
 			this.sourceCompilationUnit = outerCompilationUnit;
+		}
+		// by convention, we add a newline at the end of the file
+		// we guard this with a check to avoid adding a newline if there is already one
+		if (!getResult().endsWith(System.lineSeparator())) {
+			printer.writeln();
 		}
 	}
 
@@ -2182,9 +2205,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void calculate(CtCompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		reset();
-		if (types.isEmpty()) {
-			// is package-info.java, we cannot call types.get(0) in the then branch
-		} else {
+		// if empty => is package-info.java, we cannot call types.get(0) in the then branch
+		if (!types.isEmpty()) {
 			CtType<?> type = types.get(0);
 			if (sourceCompilationUnit == null) {
 				sourceCompilationUnit = type.getFactory().CompilationUnit().getOrCreate(type);
@@ -2302,7 +2324,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * When set to true, this activates round bracket minimization for expressions. This means that
 	 * the printer will attempt to only write round brackets strictly necessary for preserving
 	 * syntactical structure (and by extension, semantics).
-     *
+	 *
 	 * As an example, the expression <code>1 + 2 + 3 + 4</code> is written as
 	 * <code>((1 + 2) + 3) + 4</code> without round bracket minimization, but entirely without
 	 * parentheses when minimization is enabled. However, an expression <code>1 + 2 + (3 + 4)</code>
@@ -2378,5 +2400,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			printer.writeSeparator("this");
 		}
+	}
+
+	@Override
+	public void visitCtUnnamedPattern(CtUnnamedPattern unnamedPattern) {
+		printer.writeKeyword(CtLocalVariable.UNNAMED_VARIABLE_NAME);
 	}
 }

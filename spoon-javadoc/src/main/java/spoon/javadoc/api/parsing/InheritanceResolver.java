@@ -146,6 +146,10 @@ public class InheritanceResolver {
 			.stream()
 			.map(CtNamedElement::getSimpleName)
 			.collect(Collectors.toCollection(LinkedHashSet::new)); // keep decl order
+		method.getFormalCtTypeParameters()
+			.stream()
+			.map(it -> "<" + it.getSimpleName() + ">")
+			.forEach(paramsToFind::add);
 		view.getBlockTagArguments(StandardJavadocTagType.PARAM, JavadocText.class)
 			.forEach(it -> paramsToFind.remove(it.getText()));
 
@@ -161,7 +165,7 @@ public class InheritanceResolver {
 		boolean needsReturn = needsReturn(view);
 		boolean needsBody = view.getBody().isEmpty();
 
-		InheritedJavadoc inheritedJavadoc = lookupInheritedDocForMethod(method);
+		InheritedJavadoc inheritedJavadoc = lookupInheritedDocForMethod(method, paramsToFind, throwsToFind);
 
 		// Order by body -> param -> return -> throws
 		List<JavadocElement> newElements = new ArrayList<>();
@@ -204,12 +208,18 @@ public class InheritanceResolver {
 		return start.getTagType() != StandardJavadocTagType.RETURN;
 	}
 
-	private static InheritedJavadoc lookupInheritedDocForMethod(CtMethod<?> method) {
+	private static InheritedJavadoc lookupInheritedDocForMethod(
+		CtMethod<?> method,
+		Set<String> paramsToFind,
+		Set<String> throwsToFind
+	) {
 		List<CtMethod<?>> targets = new InheritanceResolver()
 			.findSuperMethodsInCommentInheritanceOrder(method.getDeclaringType(), method);
 
 		List<JavadocElement> body = new ArrayList<>();
-		JavadocInheritanceCollectionVisitor visitor = new JavadocInheritanceCollectionVisitor(method);
+		JavadocInheritanceCollectionVisitor visitor = new JavadocInheritanceCollectionVisitor(
+			paramsToFind, throwsToFind
+		);
 
 		for (CtMethod<?> target : targets) {
 			if (visitor.isFinished() && !body.isEmpty()) {
@@ -277,14 +287,9 @@ public class InheritanceResolver {
 		private final Map<String, JavadocBlockTag> throwsClauses;
 		private JavadocBlockTag returnTag;
 
-		public JavadocInheritanceCollectionVisitor(CtMethod<?> method) {
-			this.missingParameters = method.getParameters().stream()
-				.map(CtNamedElement::getSimpleName)
-				.collect(Collectors.toCollection(HashSet::new));
-			this.missingThrowsClauses = method.getThrownTypes().stream()
-				.map(CtTypeInformation::getQualifiedName)
-				.collect(Collectors.toCollection(HashSet::new));
-
+		public JavadocInheritanceCollectionVisitor(Set<String> missingParameters, Set<String> missingThrowsClauses) {
+			this.missingParameters = new HashSet<>(missingParameters);
+			this.missingThrowsClauses = new HashSet<>(missingThrowsClauses);
 			this.returnTag = null;
 			this.params = new HashMap<>();
 			this.throwsClauses = new HashMap<>();

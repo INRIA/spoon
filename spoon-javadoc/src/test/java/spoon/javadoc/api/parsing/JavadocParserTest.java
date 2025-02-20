@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import spoon.javadoc.api.JavadocTagType;
 import spoon.javadoc.api.TestHelper;
@@ -262,8 +263,7 @@ class JavadocParserTest {
 			block(SEE, text("<a href=\"url\">label me</a>")),
 			block(SEE, refPackage(factory, "spoon.javadoc")),
 			block(SEE, refModule(factory, "java.base")),
-			// This is wrong, but we currently live with it.
-			block(SEE, refPackage(factory, "java.base")),
+			block(SEE, refModule(factory, "java.base")),
 			block(SEE, ref(factory, String.class))
 		);
 	}
@@ -396,6 +396,37 @@ class JavadocParserTest {
 			text("\n"),
 			inline(LINK, ref(factory, JavadocParserTest.class, "text", String.class))
 		);
+	}
+
+	@Test
+	void testClassWithMemberRefs() {
+		CtType<?> element = TestHelper.parseType(getClass())
+			.getNestedType(ClassWithMemberRef.class.getSimpleName());
+		Factory factory = element.getFactory();
+
+		List<JavadocElement> javadoc = JavadocParser.forElement(element);
+		assertThat(javadoc).containsExactly(
+			inline(LINK, ref(factory, String.class)),
+			text(" "),
+			inline(LINK, ref(factory, ClassWithMemberRef.class, "String")),
+			text(" "),
+			inline(LINK, ref(factory, ClassWithMemberRef.class, "foo")),
+			text(" "),
+			inline(LINK, ref(factory, ClassWithMemberRef.class, "foo")),
+			text(" "),
+			inline(LINK, new JavadocReference(element.getField("hey").getReference())),
+			text(" "),
+			inline(LINK, new JavadocReference(element.getField("hey").getReference()))
+		);
+	}
+
+	/**
+	 * {@link String} {@link #String} {@link foo} {@link #foo} {@link hey} {@link #hey}
+	 */
+	private static class ClassWithMemberRef {
+		public void String() {}
+		public void foo() {}
+		public int hey;
 	}
 
 	private static JavadocText text(String text) {

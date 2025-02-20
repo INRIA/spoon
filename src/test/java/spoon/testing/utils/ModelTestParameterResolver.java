@@ -6,7 +6,10 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.ModelConsistencyCheckerTestHelper;
 
 import java.lang.reflect.Executable;
 
@@ -23,7 +26,8 @@ public class ModelTestParameterResolver implements ParameterResolver {
 			return false;
 		}
 		Class<?> type = parameterContext.getParameter().getType();
-		return type == Launcher.class || type == CtModel.class || type == Factory.class;
+		return type == Launcher.class || type == CtModel.class || type == Factory.class
+			|| CtType.class.isAssignableFrom(type);
 	}
 
 	@Override
@@ -42,9 +46,28 @@ public class ModelTestParameterResolver implements ParameterResolver {
 			return launcher.getModel();
 		} else if (parameterContext.getParameter().getType() == Factory.class) {
 			return launcher.getFactory();
+		} else if (parameterContext.isAnnotated(BySimpleName.class)
+			&& CtType.class.isAssignableFrom(parameterContext.getParameter().getType())) {
+			String name = parameterContext.findAnnotation(BySimpleName.class)
+				.map(BySimpleName::value)
+				.orElseThrow();
+			return launcher.getModel().getAllTypes().stream()
+				.filter(type -> type.getSimpleName().equals(name))
+				.findFirst()
+				.orElseThrow(() -> new ParameterResolutionException("no type with simple name " + name + " found"));
+		} else if (parameterContext.isAnnotated(ByClass.class)
+			&& CtType.class.isAssignableFrom(parameterContext.getParameter().getType())) {
+			Class<?> clazz = parameterContext.findAnnotation(ByClass.class)
+				.map(ByClass::value)
+				.orElseThrow();
+			CtClass<?> ctClass = launcher.getFactory().Class().get(clazz.getName());
+			if (ctClass == null) {
+				throw new ParameterResolutionException("no type with name " + clazz.getName() + " found");
+			}
+			return ctClass;
 		}
 
-		throw new AssertionError("supportsParameter is not exhaustive");
+		throw new ParameterResolutionException("supportsParameter is not exhaustive (" + parameterContext + ")");
 	}
 
 	private Launcher createLauncher(Executable method) {
@@ -61,6 +84,9 @@ public class ModelTestParameterResolver implements ParameterResolver {
 			launcher.addInputResource(path);
 		}
 		launcher.buildModel();
+
+		ModelConsistencyCheckerTestHelper.assertModelIsConsistent(launcher.getFactory());
+
 		return launcher;
 	}
 }

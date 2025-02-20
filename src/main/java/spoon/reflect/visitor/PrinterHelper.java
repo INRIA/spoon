@@ -64,6 +64,8 @@ public class PrinterHelper {
 	 */
 	private boolean lastCharWasCR = false;
 
+	boolean prefixBlockComments;
+
 	public PrinterHelper() {
 	}
 
@@ -297,5 +299,13 @@ public class PrinterHelper {
 
 	public void setShouldWriteTabs(boolean b) {
 		this.shouldWriteTabs = b;
+	}
+
+	/**
+	 * Sets whether lines in block comments should be prefixed by a {@code *}.
+	 * @param prefixBlockComments whether block comments should be prefixed.
+	 */
+	public void setPrefixBlockComments(boolean prefixBlockComments) {
+		this.prefixBlockComments = prefixBlockComments;
 	}
 }

@@ -82,7 +82,7 @@ abstract class SpoonTreeCmdBase extends CommandImpl {
 		env.setAutoImports(true);
 		env.disableConsistencyChecks();
 		env.setLevel("OFF");
-		env.setComplianceLevel(11);
+		env.setComplianceLevel(22);
 
 		launcher.buildModel().getRootPackage().accept(new SpoonTreeScanner(createSpoonVisitor(levelsToIgnore), hideImplicit));
 

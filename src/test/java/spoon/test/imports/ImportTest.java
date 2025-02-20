@@ -16,6 +16,7 @@
  */
 package spoon.test.imports;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -776,7 +777,7 @@ public class ImportTest {
 				output,
 				not(containsString("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.Lip;"))
 		);
-		canBeBuilt(outputDir, 7);
+		canBeBuilt(outputDir, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test
@@ -799,7 +800,7 @@ public class ImportTest {
 
 		assertThat("The file should not contain the import of enum", output, not(containsString("import spoon.reflect.path.CtRole;")));
 		assertThat("The file should contain the static import of enum field", output, not(containsString("import spoon.reflect.path.CtRole.NAME;")));
-		canBeBuilt(outputDir, 7);
+		canBeBuilt(outputDir, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test
@@ -820,7 +821,7 @@ public class ImportTest {
 		String output = prettyPrinter.getResult();
 
 		assertThat("The file should not contain a static import for NOFOLLOW_LINKS", output, not(containsString("import static java.nio.file.LinkOption.NOFOLLOW_LINKS;")));
-		canBeBuilt(outputDir, 7);
+		canBeBuilt(outputDir, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test
@@ -840,7 +841,7 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		canBeBuilt(outputDir, 7);
+		canBeBuilt(outputDir, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test
@@ -1014,7 +1015,7 @@ public class ImportTest {
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.run();
 
-		canBeBuilt(outputDir, 7);
+		canBeBuilt(outputDir, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test
@@ -1026,7 +1027,7 @@ public class ImportTest {
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.run();
 
-		canBeBuilt(outputDir, 7);
+		canBeBuilt(outputDir, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test
@@ -1064,7 +1065,7 @@ public class ImportTest {
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.run();
 
-		canBeBuilt(outputDir, 7);
+		canBeBuilt(outputDir, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 
 		Path outputDirPath = Path.of(outputDir);
 		Path pathA = outputDirPath.resolve("spoon/test/imports/testclasses/multiplecu/A.java");
@@ -1080,7 +1081,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testStaticMethodWithDifferentClassSameNameJava7NoCollision() {
+	public void testStaticMethodWithDifferentClassSameNameJava7PlusNoCollision() {
 		// contract: when there is a collision between class names when using static method, we should create a static import for the method
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
@@ -1090,7 +1091,7 @@ public class ImportTest {
 		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/apachetestsuite/enum2/");
 		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/apachetestsuite/LangTestSuite.java");
 		launcher.setSourceOutputDirectory(outputDir);
-		launcher.getEnvironment().setComplianceLevel(7);
+		launcher.getEnvironment().setComplianceLevel(StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 		launcher.run();
 		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
 
@@ -1104,10 +1105,11 @@ public class ImportTest {
 		assertThat("The file should contain a static import ", output, containsString("import static spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite;"));
 		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.add(suite());"));
 
-		canBeBuilt(outputDir, 7);
+		canBeBuilt(outputDir, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 	}
 
 	@Test
+	@Disabled("Compliance level 3 is not supported anymore")
 	public void testStaticMethodWithDifferentClassSameNameJava3NoCollision() {
 		// contract: when there is a collision between class names when using static method, we could not create a static import
 		// as it is not compliant with java < 1.5, so we should use fully qualified name of the class
@@ -1137,6 +1139,7 @@ public class ImportTest {
 	}
 
 	@Test
+	@Disabled("Compliance level 3 is not supported anymore")
 	public void testStaticMethodWithDifferentClassSameNameCollision() {
 		// contract: when using static method, if there is a collision between class name AND between method names,
 		// we can only use the fully qualified name of the class to call the static method
@@ -1858,7 +1861,7 @@ public class ImportTest {
 				"        System.out.println(Locale.HELLO);\n" +
 				"        System.out.println(java.util.Locale.GERMANY);\n" +
 				"    }\n" +
-				"}",
+				"}\n",
 			user.toStringWithImports()
 		);
 	}

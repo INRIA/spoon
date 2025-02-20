@@ -1,10 +1,10 @@
 package spoon.support.compiler.jdt;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
-import uk.org.lidalia.slf4jtest.TestLogger;
-import uk.org.lidalia.slf4jtest.TestLoggerFactory;
+import spoon.test.logging.LogTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,13 +21,13 @@ public class TreeBuilderCompilerTest {
         assertEquals(1,model.getAllTypes().size());
     }
 
+    @ExtendWith(LogTest.LogCaptureExtension.class)
     @Test
-    public void testIgnoreSyntaxErrorsLogging() {
+    public void testIgnoreSyntaxErrorsLogging(LogTest.LogCapture logCapture) {
         // contract: if a file has any syntax errors, the name of the incorrect file is logged
-        TestLogger logger = TestLoggerFactory.getTestLogger(TreeBuilderCompiler.class);
         Launcher launcher = setupLauncher();
         launcher.buildModel();
-        assertTrue(logger.getLoggingEvents().get(0).getMessage().endsWith("InvalidClass.java"));
+        assertTrue(logCapture.loggingEvents().get(0).getMessage().endsWith("InvalidClass.java"));
     }
 
     @Test

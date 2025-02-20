@@ -23,11 +23,14 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import spoon.Launcher;
+import spoon.reflect.CtModel;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -38,7 +41,12 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.test.api.testclasses.Bar;
+import spoon.testing.assertions.SpoonAssertions;
+import spoon.testing.utils.GitHubIssue;
+import spoon.testing.utils.ModelTest;
 
+import static java.util.function.Predicate.not;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -200,5 +208,21 @@ public class NoClasspathTest {
 		CtTypeReference myInterfaceReference = spoon.getFactory().Type().createReference("org.myorganization.MyInterface");
 		assertTrue(myClassReference.isSubtypeOf(myInterfaceReference));
 		assertTrue(field.getType().isSubtypeOf(myInterfaceReference));
+	}
+
+	@GitHubIssue(issueNumber = 5977, fixed = false)
+	@ModelTest("src/test/resources/noclasspath/issue5591/DiamondConstructorCallTypeInference.java")
+	void testJdtFactoryMethodsForDiamond(CtModel model) {
+		// contract: Leftover <factory> methods from JDT's diamond constructor type inference are handled in
+		// no classpath mode
+		var constructorCalls = model.getElements(new TypeFilter<>(CtConstructorCall.class));
+		assertThat(constructorCalls).hasSize(1);
+
+		var executableReference = constructorCalls.get(0).getExecutable();
+		SpoonAssertions.assertThat(executableReference)
+			.isNotNull()
+			.nested(it -> it.getSimpleName().isEqualTo("<init>"))
+			.nested(it -> it.satisfies(CtExecutableReference::isConstructor))
+			.nested(it -> it.getParameters().hasSize(1));
 	}
 }

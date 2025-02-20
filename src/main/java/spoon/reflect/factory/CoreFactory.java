@@ -59,6 +59,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtUnnamedPattern;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -660,4 +661,9 @@ public interface CoreFactory {
 	 * @return the created receiver parameter.
 	 */
 	CtReceiverParameter createReceiverParameter();
+
+	/**
+	 * {@return an unnamed pattern}
+	 */
+	CtUnnamedPattern createUnnamedPattern();
 }

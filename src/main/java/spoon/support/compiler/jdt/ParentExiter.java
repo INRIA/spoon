@@ -16,6 +16,7 @@ import org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
 import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.CastExpression;
+import org.eclipse.jdt.internal.compiler.ast.EitherOrMultiPattern;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ForStatement;
@@ -61,7 +62,6 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtRecordPattern;
-import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSuperAccess;
@@ -107,11 +107,9 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
-import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -253,8 +251,16 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		} else if (child instanceof CtEnumValue && type instanceof CtEnum) {
 			((CtEnum) type).addEnumValue((CtEnumValue) child);
-		} else if (child instanceof CtField) {
-			type.addField((CtField<?>) child);
+		} else if (child instanceof CtField<?> field) {
+			// We add the field in addRecordComponent. Afterward, however, JDT visits the Field itself -> Duplication.
+			// To combat this, we delete the existing field and trust JDTs version.
+			if (type instanceof CtRecord record && !field.isStatic()) {
+				CtField<?> existing = record.getField(field.getSimpleName());
+				if (existing != null) {
+					record.removeField(existing);
+				}
+			}
+			type.addField(field);
 			return;
 		} else if (child instanceof CtConstructor) {
 			return;
@@ -497,11 +503,10 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public <E> void visitCtCase(CtCase<E> caseStatement) {
 		final ASTNode node = jdtTreeBuilder.getContextBuilder().getCurrentNode();
-		if (node instanceof CaseStatement) {
-			caseStatement.setCaseKind(((CaseStatement) node).isExpr ? CaseKind.ARROW : CaseKind.COLON);
+		if (node instanceof CaseStatement cs) {
+			caseStatement.setCaseKind(cs.isSwitchRule ? CaseKind.ARROW : CaseKind.COLON);
 		}
-		if (node instanceof CaseStatement && ((CaseStatement) node).constantExpressions != null && child instanceof CtExpression
-				&& caseStatement.getCaseExpressions().size() < ((CaseStatement) node).constantExpressions.length) {
+		if (shouldAddAsCaseExpression(caseStatement, node)) {
 			if (child instanceof CtPattern pattern) {
 				caseStatement.addCaseExpression((CtExpression<E>) jdtTreeBuilder.getFactory().Core().createCasePattern().setPattern(pattern));
 			} else {
@@ -515,6 +520,26 @@ public class ParentExiter extends CtInheritanceScanner {
 			caseStatement.setGuard(guard);
 		}
 		super.visitCtCase(caseStatement);
+	}
+
+	private <E> boolean shouldAddAsCaseExpression(CtCase<E> caseStatement, ASTNode node) {
+		if (!(node instanceof CaseStatement cs)) {
+			return false;
+		}
+		if (cs.constantExpressions == null) {
+			return false;
+		}
+		if (child instanceof CtExpression
+			&& caseStatement.getCaseExpressions().size() < cs.constantExpressions.length) {
+			return true;
+		}
+		// case A _, B _ -> {} is only one constantExpression in JDT, but an EitherOrMultiPattern
+		// so we need to unpack it and see how many case expressions it actually is
+		if (cs.constantExpressions.length == 1 && cs.constantExpressions[0] instanceof EitherOrMultiPattern eomp) {
+			// returns true if we still expect more case expressions to be added
+			return caseStatement.getCaseExpressions().size() < eomp.getAlternatives().length;
+		}
+		return false;
 	}
 
 	@Override
@@ -1083,31 +1108,11 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
-		if (child instanceof CtLocalVariable) {
+		if (child instanceof CtLocalVariable<?> var) {
 			// normal, happy path of declaring a new variable
-			tryWithResource.addResource((CtLocalVariable) child);
-		} else if (child instanceof CtVariableRead) {
-			// special case of the resource being declared before
-			final CtVariableReference<?> variableRef = ((CtVariableRead<?>) child).getVariable();
-			if (variableRef.getDeclaration() != null) {
-				// getDeclaration works
-				tryWithResource.addResource((CtResource<?>) variableRef.getDeclaration().clone().setImplicit(true));
-			} else {
-				// we have to find it manually
-				for (ASTPair pair: this.jdtTreeBuilder.getContextBuilder().getAllContexts()) {
-					final List<CtLocalVariable> variables = pair.element().getElements(new TypeFilter<>(CtLocalVariable.class));
-					for (CtLocalVariable v: variables) {
-						if (v.getSimpleName().equals(variableRef.getSimpleName())) {
-							// we found the resource
-							// we clone it in order to comply with the contract of being a tree
-							final CtLocalVariable clone = v.clone();
-							clone.setImplicit(true);
-							tryWithResource.addResource(clone);
-							break;
-						}
-					}
-				}
-			}
+			tryWithResource.addResource(var);
+		} else if (child instanceof CtVariableRead<?> read) {
+			tryWithResource.addResource(read);
 		}
 		super.visitCtTryWithResource(tryWithResource);
 	}
@@ -1167,7 +1172,10 @@ public class ParentExiter extends CtInheritanceScanner {
 	public void visitCtRecordPattern(CtRecordPattern pattern) {
 		CtElement child = adjustIfLocalVariableToTypePattern(this.child);
 		if (child instanceof CtTypeReference<?> typeReference) {
-			pattern.setRecordType(typeReference);
+			// JDTTreeBuilder#visit(SingleTypeReference wraps the child in a CtTypeAccess later on,
+			// replacing its parent. Therefore, we need to use a clone for this otherwise the typeReference
+			// has two different parents (one wins and the model is inconsistent).
+			pattern.setRecordType(typeReference.clone());
 		} else if (child instanceof CtPattern innerPattern) {
 			pattern.addPattern(innerPattern);
 		}

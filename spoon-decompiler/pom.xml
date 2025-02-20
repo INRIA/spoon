@@ -28,7 +28,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>10.4.2</version>
+            <version>11.2.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jboss.windup.decompiler.fernflower/fernflower -->
         <dependency>
@@ -82,7 +82,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-		        <version>3.3.1</version>
+		        <version>3.6.0</version>
                 <configuration>
                     <failsOnError>true</failsOnError>
                     <configLocation>../checkstyle.xml</configLocation>

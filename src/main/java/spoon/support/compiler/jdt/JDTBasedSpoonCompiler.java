@@ -41,6 +41,7 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.support.Level;
 import spoon.support.QueueProcessingManager;
+import spoon.support.StandardEnvironment;
 import spoon.support.comparator.FixedOrderBasedOnFileNameCompilationUnitComparator;
 import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.SpoonProgress;
@@ -73,7 +74,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	protected final List<CategorizedProblem> probs = new ArrayList<>();
 	protected final TreeBuilderRequestor requestor = new TreeBuilderRequestor(this);
 	protected Factory factory;
-	protected int javaCompliance = 7;
+	protected int javaCompliance = StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL;
 	//list of java files or folders with java files which represents source of the CtModel
 	protected SpoonFolder sources = new VirtualFolder();
 	//list of java files or folders with java files which represents templates. Templates are added to CtModel too.

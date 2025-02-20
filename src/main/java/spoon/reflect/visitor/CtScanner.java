@@ -64,6 +64,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtUnnamedPattern;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -1114,6 +1115,15 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.TYPE, recordPattern.getType());
 		scan(CtRole.COMMENT, recordPattern.getComments());
 		exit(recordPattern);
+	}
+
+	@Override
+	public void visitCtUnnamedPattern(CtUnnamedPattern unnamedPattern) {
+		enter(unnamedPattern);
+		scan(CtRole.ANNOTATION, unnamedPattern.getAnnotations());
+		scan(CtRole.TYPE, unnamedPattern.getType());
+		scan(CtRole.COMMENT, unnamedPattern.getComments());
+		exit(unnamedPattern);
 	}
 }
 

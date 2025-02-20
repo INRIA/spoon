@@ -296,12 +296,16 @@ public class TargetedExpressionTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/targeted/StaticFieldReadOnly.java");
+
 		CtModel model = launcher.buildModel();
 
 		List<CtInvocation<?>> invocations = model.getElements(e -> e.getExecutable().getSimpleName().equals("error"));
 		CtInvocation<?> inv = invocations.get(0);
 		CtFieldRead<?> fieldRead = (CtFieldRead<?>) inv.getTarget();
-		CtExpression<?> target = fieldRead.getTarget();
+		// we do have the right type access in noclasspath mode
+		// the slight behavior change is that PR 5812 adds one level of indirection in the model, hence the filterChildren call
+		// however correct behavior is full classpath mode is higher priority, see https://github.com/INRIA/spoon/pull/5912
+		CtTypeAccess<?> target = (CtTypeAccess<?>) fieldRead.filterChildren(new TypeFilter<>(CtTypeAccess.class)).list().get(0);
 
 		assertTrue(target instanceof CtTypeAccess);
 		assertEquals("Launcher", ((CtTypeAccess<?>) target).getAccessedType().getSimpleName());

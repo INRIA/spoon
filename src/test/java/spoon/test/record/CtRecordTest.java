@@ -1,12 +1,13 @@
 package spoon.test.record;
 
 import static java.lang.System.lineSeparator;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -15,17 +16,26 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
+import org.assertj.core.api.InstanceOfAssertFactory;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnonymousExecutable;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.testing.assertions.SpoonAssertions;
 import spoon.testing.utils.ModelTest;
 
 public class CtRecordTest {
@@ -76,24 +86,33 @@ public class CtRecordTest {
 
 		assertEquals(1, records.size());
 		assertEquals("public record MultiParameter(int first, float second) {}", head(records).toString());
-		
+
 		// test fields
 		assertEquals(
 				Arrays.asList(
-						"private final int first;", 
+						"private final int first;",
 						"private final float second;"
-				), 
+				),
 				head(records).getFields().stream().map(String::valueOf).collect(Collectors.toList())
 		);
-		
+
+		// Make them explicit so we can print them (but assert they were implicit initially)
+		assertThat(head(records)).getMethods().allSatisfy(CtElement::isImplicit);
+		head(records).getMethods().forEach(it -> it.accept(new CtScanner() {
+			@Override
+			protected void enter(CtElement e) {
+				e.setImplicit(false);
+			}
+		}));
+
 		// test methods
 		assertEquals(
 				Arrays.asList(
 						"int first() {\n" +
-					    "    return first;\n" +
-					    "}", 
+					    "    return this.first;\n" +
+					    "}",
 						"float second() {\n" +
-					    "    return second;\n" +
+					    "    return this.second;\n" +
 					    "}"
 				),
 				head(records).getMethods().stream()
@@ -211,7 +230,7 @@ public class CtRecordTest {
 
 	@Test
 	void testGenericTypeParametersArePrintedBeforeTheFunctionParameters() {
-		// contract: a record with generic type arguments should be printed correctly 
+		// contract: a record with generic type arguments should be printed correctly
 		String code = "src/test/resources/records/GenericRecord.java";
 		CtModel model = createModelFromPath(code);
 		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
@@ -225,7 +244,7 @@ public class CtRecordTest {
 		String code = "src/test/resources/records/WithStaticInitializer.java";
 		CtModel model = assertDoesNotThrow(() -> createModelFromPath(code));
 		List<CtAnonymousExecutable> execs = model.getElements(new TypeFilter<>(CtAnonymousExecutable.class));
-		assertThat(execs.size(), equalTo(2));
+		assertThat(execs).hasSize(2);
 	}
 
 	@ModelTest(value = "./src/test/resources/records/MultipleConstructors.java", complianceLevel = 16)
@@ -275,8 +294,44 @@ public class CtRecordTest {
 		assertEquals(constructor.getParameters().get(0).getSimpleName(), "x");
 	}
 
+	@ModelTest(value = "./src/test/resources/records/GenericRecord.java", complianceLevel = 16)
+	void testProperReturnInRecordAccessor(Factory factory) {
+		// contract: the return statement in the accessor method should return a field read expression to the correct
+		// field
+		CtRecord record = head(factory.getModel().getElements(new TypeFilter<>(CtRecord.class)));
+
+		assertThat(record.getRecordComponents()).isNotEmpty();
+		for (CtRecordComponent component : record.getRecordComponents()) {
+			CtMethod<?> method = component.toMethod();
+
+			assertThat(method.getBody().<CtStatement>getLastStatement())
+				.asInstanceOf(new InstanceOfAssertFactory<>(CtReturn.class, SpoonAssertions::assertThat))
+				.getReturnedExpression()
+				.self()
+				.asInstanceOf(new InstanceOfAssertFactory<>(CtFieldRead.class, SpoonAssertions::assertThat))
+				.getVariable()
+				.getDeclaringType()
+				.getSimpleName()
+				.isEqualTo(record.getSimpleName());
+		}
+	}
+
+	@Test
+	void testRecordWithStaticField() {
+		// contract: Static fields in records do not cause crashes
+		CtClass<?> parsed = Launcher.parseClass("""
+			public record User(int id, String name) {
+			  private static String ADMIN_NAME = "admin";
+			}
+			""");
+		assertThat(parsed).isInstanceOf(CtRecord.class);
+		assertThat(parsed).getFields().hasSize(3);
+		assertThat(parsed.getFields()).anySatisfy(it -> assertThat(it.getSimpleName()).isEqualTo("id"));
+		assertThat(parsed.getFields()).anySatisfy(it -> assertThat(it.getSimpleName()).isEqualTo("name"));
+		assertThat(parsed.getFields()).anySatisfy(it -> assertThat(it.getSimpleName()).isEqualTo("ADMIN_NAME"));
+	}
+
 	private <T> T head(Collection<T> collection) {
 		return collection.iterator().next();
 	}
-
 }

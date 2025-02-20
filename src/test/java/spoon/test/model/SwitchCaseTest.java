@@ -209,6 +209,24 @@ public class SwitchCaseTest {
 				List<CtLiteral<?>> caseStatement = launcher.getModel().getElements(new TypeFilter<>(CtLiteral.class));
 				assertTrue(caseStatement.stream().allMatch(CtLiteral::isParentInitialized));
 		}
+
+		@GitHubIssue(issueNumber = 2743, fixed = true)
+		@Test
+		void testNoSyntheticBreak() {
+			// contract: no synthetic break is introduced in the model
+			CtModel model = createModelFromString("""
+					class Main {
+						void main() {
+							switch(0) {
+								case 1 -> {
+								}
+							}
+						}
+					}
+					"""
+			);
+			Assertions.assertThat(model.getElements(new TypeFilter<>(CtBreak.class))).isEmpty();
+		}
 	}
 
 

@@ -55,6 +55,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.SpoonClassNotFoundException;
+import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.compiler.ProgressLogger;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
@@ -116,7 +117,7 @@ public class CompilationTest {
 				"-i", sourceFile,
 				"-o", "target/spooned",
 				"--compile",
-				"--compliance", "7",
+				"--compliance", String.valueOf(StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL),
 				"--level", "OFF"
 		});
 

@@ -69,7 +69,10 @@ import spoon.template.TemplateMatcher;
 import spoon.template.TemplateParameter;
 import spoon.test.api.processors.AwesomeProcessor;
 import spoon.test.api.testclasses.Bar;
+import spoon.testing.utils.GitHubIssue;
 
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -77,6 +80,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 public class APITest {
 
@@ -573,7 +577,7 @@ public class APITest {
 
 	@Test
 	public void testOutputWithNoOutputProduceNoFolder() {
-		// contract: when using "NO_OUTPUT" output type, no output folder shoud be created
+		// contract: when using "NO_OUTPUT" output type, no output folder should be created
 		String destPath = "./target/nooutput_" + UUID.randomUUID().toString();
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
@@ -637,6 +641,64 @@ public class APITest {
 		} catch (SpoonException e) {
 			assertEquals("You cannot process twice the same launcher instance.", e.getMessage());
 		}
+	}
+
+	@Test
+	public void testRespectPackageOfQualifiedUnknownClass() {
+		// contract: Classes appearing with qualified names in the source should be put in an appropriate package,
+		//           even if we do not have them in our classpath
+		CtClass<?> theClass = Launcher.parseClass("""
+			package io.example.pack1.pack2;
+			public class Example {
+			    void add(io.example.other.Class1<io.example.other.Class2> value){
+			    }
+			}
+			""");
+		List<CtParameter<?>> addParameters = theClass.getMethodsByName("add").get(0).getParameters();
+		assertThat(addParameters).hasSize(1);
+
+		CtParameter<?> parameter = addParameters.get(0);
+		assertThat(parameter).getSimpleName().isEqualTo("value");
+
+		CtTypeReference<?> parameterType = parameter.getType();
+		assertThat(parameterType).getQualifiedName().isEqualTo("io.example.other.Class1");
+		assertThat(parameterType).getActualTypeArguments().hasSize(1);
+		assertThat(parameterType.getActualTypeArguments().get(0)).getQualifiedName()
+			.isEqualTo("io.example.other.Class2");
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 4783, fixed = true)
+	public void testRespectPackageOfQualifiedUnknownClassPreserveUnqualified() {
+		// contract: Classes appearing with qualified names in the source should be put in an appropriate package,
+		//           even if we do not have them in our classpath. Unqualified classes should be re-homed, however.
+		CtClass<?> theClass = Launcher.parseClass("""
+			package io.example.pack1.pack2;
+			public class Example {
+			    void add(io.example.other.Class1<io.example.other.Class2> value1, Class1<Class2> value2) {
+			    }
+			}
+			""");
+		List<CtParameter<?>> addParameters = theClass.getMethodsByName("add").get(0).getParameters();
+		assertThat(addParameters).hasSize(2);
+
+		CtParameter<?> firstParameter = addParameters.get(0);
+		assertThat(firstParameter).getSimpleName().isEqualTo("value1");
+
+		CtParameter<?> secondParameter = addParameters.get(1);
+		assertThat(secondParameter).getSimpleName().isEqualTo("value2");
+
+		CtTypeReference<?> firstParameterType = firstParameter.getType();
+		assertThat(firstParameterType).getQualifiedName().isEqualTo("io.example.other.Class1");
+		assertThat(firstParameterType).getActualTypeArguments().hasSize(1);
+		assertThat(firstParameterType.getActualTypeArguments().get(0)).getQualifiedName()
+			.isEqualTo("io.example.other.Class2");
+
+		CtTypeReference<?> secondParameterType = secondParameter.getType();
+		assertThat(secondParameterType).getQualifiedName().isEqualTo("io.example.pack1.pack2.Class1");
+		assertThat(secondParameterType).getActualTypeArguments().hasSize(1);
+		assertThat(secondParameterType.getActualTypeArguments().get(0)).getQualifiedName()
+			.isEqualTo("io.example.pack1.pack2.Class2");
 	}
 
 }

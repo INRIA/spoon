@@ -65,7 +65,15 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final int DEFAULT_CODE_COMPLIANCE_LEVEL = 8;
+	/**
+	 *
+	 * Only features available in the compliance level are correctly parsed by spoon.
+	 * By default, spoon uses the language level of the executing JVM. So if you use Java 11, spoon can't parse records.
+	 * If you want to parse Java 21 code with a Java 17 JVM you need set the compliance level with {@link  #setComplianceLevel}
+	 * to at least 21.
+	 *
+	 */
+	public static final int DEFAULT_CODE_COMPLIANCE_LEVEL = getCurrentJvmVersion();
 
 	private transient  FileGenerator<? extends CtElement> defaultFileGenerator;
 
@@ -142,6 +150,14 @@ public class StandardEnvironment implements Serializable, Environment {
 	public StandardEnvironment() {
 	}
 
+	private static int getCurrentJvmVersion() {
+		try {
+			return Runtime.version().feature();
+		} catch (Exception e) {
+			System.err.println("Error getting the jvm  version: " + e.getMessage());
+			return 8;
+		}
+	}
 	@Override
 	public void debugMessage(String message) {
 		print(message, Level.DEBUG);

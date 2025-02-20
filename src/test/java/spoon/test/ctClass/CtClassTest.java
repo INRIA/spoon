@@ -50,6 +50,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.StandardEnvironment;
 import spoon.test.SpoonTestHelpers;
 import spoon.test.ctClass.testclasses.AnonymousClass;
 import spoon.test.ctClass.testclasses.Foo;
@@ -261,7 +262,7 @@ public class CtClassTest {
 				"            return 0;" + newLine +
 				"        }" + newLine +
 				"    }.compare(1, 2);" + newLine +
-				"}", aClass2.toStringWithImports());
+				"}" + newLine, aClass2.toStringWithImports());
 
 		// contract: a class can be printed with full context in autoimports
 		aClass2.getFactory().getEnvironment().setAutoImports(true);
@@ -277,12 +278,12 @@ public class CtClassTest {
 				"            return 0;" + newLine +
 				"        }" + newLine +
 				"    }.compare(1, 2);" + newLine +
-				"}", aClass2.toStringWithImports());
+				"}" + newLine, aClass2.toStringWithImports());
 
 		// contract: toStringWithImports works with a new class with no position
 		assertEquals("package foo;" + newLine +
 				"import java.io.File;" + newLine +
-				"class Bar extends File {}", launcher2.getFactory().createClass("foo.Bar").setSuperclass(launcher2.getFactory().Type().get(File.class).getReference()).toStringWithImports());
+				"class Bar extends File {}" + newLine, launcher2.getFactory().createClass("foo.Bar").setSuperclass(launcher2.getFactory().Type().get(File.class).getReference()).toStringWithImports());
 	}
 
 	@Test
@@ -398,7 +399,7 @@ public class CtClassTest {
 		assertFalse(secondRemovalSuccessful);
 	}
 
-	@org.junit.jupiter.api.Test
+	@Test
 	void testLocalClassExists() {
 		// contract: local classes and their members are part of the model
 		String code = SpoonTestHelpers.wrapLocal(
@@ -407,7 +408,7 @@ public class CtClassTest {
 						"			public void doNothing() { }\n" +
 						"		}\n"
 		);
-		CtModel model = SpoonTestHelpers.createModelFromString(code, 5);
+		CtModel model = SpoonTestHelpers.createModelFromString(code, StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL);
 		CtBlock<?> block = SpoonTestHelpers.getBlock(model);
 
 		MatcherAssert.assertThat("The local class does not exist in the model", block.getStatements().size(), CoreMatchers.is(1));

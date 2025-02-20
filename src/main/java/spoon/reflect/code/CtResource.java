@@ -7,12 +7,12 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * This code element defines a resource used in the try-with-resource statement.
  * @param <T>
  *     The type of the resource.
  */
-public interface CtResource<T> extends CtVariable<T> {
+public interface CtResource<T> extends CtElement {
 }

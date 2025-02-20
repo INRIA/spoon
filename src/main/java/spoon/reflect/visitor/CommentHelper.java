@@ -9,6 +9,7 @@ package spoon.reflect.visitor;
 
 import java.util.Collection;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
@@ -49,17 +50,31 @@ public class CommentHelper {
 			printer.write(DefaultJavaPrettyPrinter.INLINE_COMMENT_START);
 			break;
 		case BLOCK:
-			printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_START);
+			String commentStart = DefaultJavaPrettyPrinter.BLOCK_COMMENT_START;
+			if (printer.prefixBlockComments) {
+				commentStart = commentStart.stripTrailing();
+			}
+			printer.write(commentStart);
+			if (printer.prefixBlockComments) {
+				printer.writeln();
+			}
 			break;
 		}
 		// content
 		switch (commentType) {
-			case INLINE:
-				printer.write(content);
-				break;
-			default:
+			case INLINE -> printer.write(content);
+			case FILE, BLOCK -> {
+				UnaryOperator<String> op;
+				if (printer.prefixBlockComments) {
+					op = s -> s.isEmpty() ? " *" : " * " + s;
+				} else {
+					op = s -> s;
+				}
+				printCommentContent(printer, comment, op);
+			}
+			case JAVADOC ->
 				// per line suffix
-				printCommentContent(printer, comment, s -> { return (" * " + s).replaceAll(" *$", ""); });
+					printCommentContent(printer, comment, s -> (" * " + s).replaceAll(" *$", ""));
 		}
 		// suffix
 		switch (commentType) {
@@ -81,9 +96,9 @@ public class CommentHelper {
 
 		content.lines().forEach(line -> {
 			if (commentType == CtComment.CommentType.BLOCK) {
-				printer.write(line);
+				printer.write(transfo.apply(line));
 				if (hasMoreThanOneElement(content.lines())) {
-					printer.write(CtComment.LINE_SEPARATOR);
+					printer.writeln();
 				}
 			} else {
 				printer.write(transfo.apply(line)).writeln(); // removing spaces at the end of the space

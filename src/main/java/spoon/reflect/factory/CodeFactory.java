@@ -27,6 +27,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtTextBlock;
@@ -368,7 +369,13 @@ public class CodeFactory extends SubFactory {
 	 * variable (strong referencing).
 	 */
 	public <T> CtCatchVariableReference<T> createCatchVariableReference(CtCatchVariable<T> catchVariable) {
-		return factory.Core().<T>createCatchVariableReference().setType(catchVariable.getType()).<CtCatchVariableReference<T>>setSimpleName(catchVariable.getSimpleName());
+		CtCatchVariableReference<T> ref = factory.Core().createCatchVariableReference();
+
+		ref.setType(catchVariable.getType() == null ? null : catchVariable.getType().clone());
+		ref.setSimpleName(catchVariable.getSimpleName());
+		ref.setParent(catchVariable);
+
+		return ref;
 	}
 
 	/**
@@ -428,7 +435,10 @@ public class CodeFactory extends SubFactory {
 			va = factory.Core().createFieldRead();
 			// creates a this target for non-static fields to avoid name conflicts...
 			if (!isStatic) {
-				((CtFieldAccess<T>) va).setTarget(createThisAccess(((CtFieldReference<T>) variable).getDeclaringType()));
+				// We do not want to change the parent of the declaring type, so clone here
+				((CtFieldAccess<T>) va).setTarget(
+					createThisAccess(((CtFieldReference<T>) variable).getDeclaringType().clone())
+				);
 			}
 		} else {
 			va = factory.Core().createVariableRead();
@@ -645,6 +655,19 @@ public class CodeFactory extends SubFactory {
 		final CtAnnotation<A> a = factory.Core().createAnnotation();
 		a.setAnnotationType(annotationType);
 		return a;
+	}
+
+	/**
+	 * Creates a return statement.
+	 *
+	 * @param expression the expression to be returned.
+	 * @param <T> the type of the expression
+	 * @return a return.
+	 */
+	public <T> CtReturn<T> createCtReturn(CtExpression<T> expression) {
+		final CtReturn<T> result = factory.Core().createReturn();
+		result.setReturnedExpression(expression);
+		return result;
 	}
 
 	/**

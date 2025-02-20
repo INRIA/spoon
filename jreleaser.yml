@@ -5,7 +5,6 @@ project:
                    It parses source files to build a well-designed AST with powerful analysis and transformation API. 
                    It supports modern Java versions up to Java 20.
   authors:
-    - slarse
     - monperrus
     - nharrand
     - martinwitt
@@ -22,6 +21,8 @@ project:
 release:
   github:
     owner: INRIA
+    prerelease:
+      pattern: .*beta.*
     changelog:
       formatted: ALWAYS
       preset: conventional-commits
