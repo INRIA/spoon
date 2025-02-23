@@ -202,7 +202,6 @@ public class PackageTest {
 			launcher.getEnvironment().setNoClasspath(true);
 			launcher.getEnvironment().setCopyResources(false);
 			launcher.run();
-			CtModel model = launcher.getModel();
 		});
 	}
 
