@@ -31,10 +31,12 @@ import spoon.reflect.factory.Factory;
 import spoon.support.QueueProcessingManager;
 
 import java.io.PrintWriter;
+import java.util.List;
 import java.net.URISyntaxException;
 
 import static fr.inria.controlflow.BranchKind.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
@@ -170,6 +172,27 @@ public class ForwardFlowBuilderVisitorTest {
 	@Test
 	public void testSwitchFallThrough() throws Exception {
 		testMethod("lastCaseFallThrough", false, 1, 4, 12);
+	}
+
+	@Test
+	public void testSwitchImplicitDefault() throws Exception {
+		ControlFlowGraph graph = testMethod("lastCaseFallThrough", false, 1, 4, 12);
+		graph.simplify();
+		ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+		ControlFlowNode entryNode = pathHelper.findNodeByString(graph, "int b = 0");
+		ControlFlowNode caseNode = pathHelper.findNodeByString(graph, "b = 1");
+		boolean canAvoid = pathHelper.canAvoidNode(entryNode, caseNode);
+		assertTrue(canAvoid, "Path for implicit default case missing");
+	}
+
+	@Test
+	public void testMultipleCaseExpressions() throws Exception {
+		ControlFlowGraph graph = testMethod("multipleCaseExpressions", true, 1, 8, 17);
+		graph.simplify();
+		ControlFlowPathHelper pathHelper = new ControlFlowPathHelper();
+		ControlFlowNode startNode = pathHelper.findNodeByString(graph, "int b = 0");
+		List<List<ControlFlowNode>> paths = pathHelper.paths(startNode);
+		assertTrue(paths.size() > 2, "Not enough paths. Possibly missing different paths from multiple expressions for a case");
 	}
 
 	//Test some mixed conditions

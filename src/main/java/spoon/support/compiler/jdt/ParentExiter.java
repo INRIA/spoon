@@ -503,8 +503,8 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public <E> void visitCtCase(CtCase<E> caseStatement) {
 		final ASTNode node = jdtTreeBuilder.getContextBuilder().getCurrentNode();
-		if (node instanceof CaseStatement) {
-			caseStatement.setCaseKind(((CaseStatement) node).isExpr ? CaseKind.ARROW : CaseKind.COLON);
+		if (node instanceof CaseStatement cs) {
+			caseStatement.setCaseKind(cs.isSwitchRule ? CaseKind.ARROW : CaseKind.COLON);
 		}
 		if (shouldAddAsCaseExpression(caseStatement, node)) {
 			if (child instanceof CtPattern pattern) {

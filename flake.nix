@@ -136,7 +136,7 @@
             mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
             mvn -q versions:update-parent -DallowSnapshots=true
             git diff
-            mvn -q -Djava.src.version=17 test
+            mvn -q test
             mvn -q checkstyle:checkstyle license:check
             popd || exit 1
           '');
@@ -187,8 +187,7 @@
                 default = jdk17;
                 jdk17 = mkShell system { javaVersion = 17; };
                 jdk21 = mkShell system { javaVersion = 21; };
-                jdk22 = mkShell system { javaVersion = 22; };
-                extraChecks = mkShell system { extraChecks = true; javaVersion = 21; };
+                extraChecks = mkShell system { extraChecks = true; javaVersion = 23; };
                 jReleaser = mkShell system { release = true; javaVersion = 21; };
               });
         in
