@@ -30,3 +30,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           package_manager: maven
           #no_gradual_report: true
+          comment_on_commit: true
