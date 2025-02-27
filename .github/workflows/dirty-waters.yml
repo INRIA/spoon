@@ -31,4 +31,5 @@ jobs:
           package_manager: maven
           #no_gradual_report: true
           gradual_report: false
+          debug: true
           comment_on_commit: true
