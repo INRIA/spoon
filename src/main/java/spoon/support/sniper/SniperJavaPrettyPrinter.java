@@ -231,7 +231,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 						//push the context of this collection
 						pushContext(listContext);
 					}
-					mutableTokenWriter.directPrint(fragment.getSourceCode());
+					mutableTokenWriter.directPrint(getSourceCodeForSniperPrinting(fragment));
 				}
 			}
 		});
@@ -324,7 +324,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 					//and scan first element of that collection again in new context of that collection
 					if (ModificationStatus.NOT_MODIFIED.equals(isModified)) {
 						// we print the original source code
-						mutableTokenWriter.directPrint(fragment.getSourceCode());
+						mutableTokenWriter.directPrint(getSourceCodeForSniperPrinting(fragment));
 					} else {
 						// we print with the new list context
 						listContext.print(this);
@@ -333,7 +333,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 					ElementSourceFragment sourceFragment = (ElementSourceFragment) fragment;
 					if (isModified == ModificationStatus.NOT_MODIFIED) {
 						//nothing is changed, we can print origin sources of this element
-						mutableTokenWriter.directPrint(fragment.getSourceCode());
+						mutableTokenWriter.directPrint(getSourceCodeForSniperPrinting(fragment));
 						return;
 					}
 
@@ -344,6 +344,23 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 				}
 			}
 		};
+	}
+
+	private String getSourceCodeForSniperPrinting(SourceFragment fragment) {
+		if (fragment instanceof ElementSourceFragment elementFragment) {
+			if (elementFragment.getRoleInParent() == CtRole.CAST) {
+				return elementFragment.getSourceCode(elementFragment.getStart()+1, elementFragment.getEnd()-1);
+			}
+			return elementFragment.getSourceCode();
+		} else if (fragment instanceof CollectionSourceFragment collectionSourceFragment) {
+			StringBuilder sb = new StringBuilder();
+			for (SourceFragment childSourceFragment : collectionSourceFragment.getItems()) {
+				sb.append(getSourceCodeForSniperPrinting(childSourceFragment));
+			}
+			return sb.toString();
+		} else {
+			return fragment.getSourceCode();
+		}
 	}
 
 	private CtRole getRoleInCompilationUnit(CtElement element) {
