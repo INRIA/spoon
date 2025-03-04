@@ -359,7 +359,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	private String getSourceCodeForSniperPrinting(SourceFragment fragment) {
 		if (fragment instanceof ElementSourceFragment elementFragment) {
 			if (elementFragment.getRoleInParent() == CtRole.CAST) {
-				return elementFragment.getSourceCode(elementFragment.getStart()+1, elementFragment.getEnd()-1);
+				return elementFragment.getSourceCode(elementFragment.getStart() + 1, elementFragment.getEnd() - 1);
 			}
 			return elementFragment.getSourceCode();
 		} else if (fragment instanceof CollectionSourceFragment collectionSourceFragment) {
