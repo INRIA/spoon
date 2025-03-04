@@ -346,6 +346,15 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		};
 	}
 
+	/**
+	 * Gets modified source code for pretty-printing when using the SniperJavaPrettyPrinter.
+	 *
+	 * This function handles some custom logic which might be needed for special types of code-fragments.
+	 * For instance, we by default add parenthesis around the type while type-casting. The source code for the cast
+	 * has parenthesis around it as well (which would be required for the original code to be valid Java code).
+	 * Printing that source-code without any modification would then lead to non-compilable java code. This function
+	 * can handle such special cases.
+	 * */
 	private String getSourceCodeForSniperPrinting(SourceFragment fragment) {
 		if (fragment instanceof ElementSourceFragment elementFragment) {
 			if (elementFragment.getRoleInParent() == CtRole.CAST) {
