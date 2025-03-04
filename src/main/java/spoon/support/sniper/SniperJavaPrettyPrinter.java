@@ -369,6 +369,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 			}
 			return sb.toString();
 		} else {
+			// We have a TokenSourceFragment.
 			return fragment.getSourceCode();
 		}
 	}
