@@ -9,6 +9,7 @@ package spoon.refactoring;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -37,13 +38,6 @@ public final class Refactoring {
 	 * 		New name of the element.
 	 */
 	public static void changeTypeName(final CtType<?> type, String name) {
-
-		// first we remove the type from the list of types
-		// to be pretty-printed
-		if (type.isTopLevel()) {
-			type.getFactory().CompilationUnit().removeType(type);
-		}
-
 		final String typeQFN = type.getQualifiedName();
 		final List<CtTypeReference<?>> references = Query.getElements(type.getFactory(), new TypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
 			@Override
@@ -60,7 +54,19 @@ public final class Refactoring {
 
 		// adding the new type
 		if (type.isTopLevel()) {
-			type.getFactory().CompilationUnit().addType(type);
+			CtCompilationUnit compilationUnit = type.getFactory().CompilationUnit().getOrCreate(type);
+
+			new CtScanner() {
+
+				@Override
+				public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
+					if (typeQFN.equals(reference.getQualifiedName())) {
+						reference.setSimpleName(name);
+					}
+
+					super.visitCtTypeReference(reference);
+				}
+			}.scan(compilationUnit);
 		}
 
 	}

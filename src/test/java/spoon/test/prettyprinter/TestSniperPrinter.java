@@ -11,8 +11,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
@@ -70,7 +68,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -99,7 +96,7 @@ public class TestSniperPrinter {
 		// with the necessary tweaks
 		testClassRename(tempDir, type -> {
 			type.setSimpleName("Bar");
-			type.getFactory().CompilationUnit().addType(type);
+			type.getPosition().getCompilationUnit().getDeclaredTypeReferences().get(0).setSimpleName("Bar");
 		});
 
 	}
@@ -117,15 +114,17 @@ public class TestSniperPrinter {
 		Factory f = launcher.getFactory();
 
 		final CtClass<?> type = f.Class().get(testClass);
+		String original = type.getPosition().getCompilationUnit().getOriginalSourceCode();
 
 		// performing the type rename
 		renameTransfo.accept(type);
 		//print the changed model
 		launcher.prettyprint();
 
+		String expected = original.replaceAll("\\bToBeChanged\\b", "Bar");
 
 		String contentOfPrettyPrintedClassFromDisk = getContentOfPrettyPrintedClassFromDisk(type);
-		assertTrue(contentOfPrettyPrintedClassFromDisk.contains("EOLs*/ Bar<T, K>"), contentOfPrettyPrintedClassFromDisk);
+		assertEquals(expected, contentOfPrettyPrintedClassFromDisk);
 
 	}
 
