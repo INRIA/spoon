@@ -17,6 +17,7 @@ import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.processing.AbstractProcessor;
+import spoon.refactoring.CtRenameLocalVariableRefactoring;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
@@ -50,6 +51,7 @@ import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
+import spoon.test.prettyprinter.testclasses.RefactorCast;
 import spoon.test.prettyprinter.testclasses.Throw;
 import spoon.test.prettyprinter.testclasses.InvocationReplacement;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
@@ -1143,6 +1145,20 @@ public class TestSniperPrinter {
 	void noChangeDiffMethodComment() throws IOException {
 			testNoChangeDiffFailing(
 					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/MethodComment").toFile());
+	}
+
+
+	@Test
+	@GitHubIssue(issueNumber = 4335, fixed = true)
+	public void testCorrectTypeCastParenthesisAfterRefactor() {
+		testSniper(RefactorCast.class.getName(), type -> {
+			List<CtStatement> blocks = type.getMethodsByName("example").get(0).getBody().getStatements();
+			CtLocalVariable<?> localVar = (CtLocalVariable<?>) blocks.get(0);
+			CtRenameLocalVariableRefactoring refactor = new CtRenameLocalVariableRefactoring();
+			refactor.setTarget(localVar);
+			refactor.setNewName("b");
+			refactor.refactor();
+		}, (type, result) -> assertThat(result, containsString("((Double) b).toString();")));
 	}
 	/**
 	 * Test various syntax by doing an change to every element that should not

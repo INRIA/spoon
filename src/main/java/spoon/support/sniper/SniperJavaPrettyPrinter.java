@@ -231,7 +231,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 						//push the context of this collection
 						pushContext(listContext);
 					}
-					mutableTokenWriter.directPrint(fragment.getSourceCode());
+					mutableTokenWriter.directPrint(getSourceCodeForSniperPrinting(fragment));
 				}
 			}
 		});
@@ -324,7 +324,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 					//and scan first element of that collection again in new context of that collection
 					if (ModificationStatus.NOT_MODIFIED.equals(isModified)) {
 						// we print the original source code
-						mutableTokenWriter.directPrint(fragment.getSourceCode());
+						mutableTokenWriter.directPrint(getSourceCodeForSniperPrinting(fragment));
 					} else {
 						// we print with the new list context
 						listContext.print(this);
@@ -333,7 +333,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 					ElementSourceFragment sourceFragment = (ElementSourceFragment) fragment;
 					if (isModified == ModificationStatus.NOT_MODIFIED) {
 						//nothing is changed, we can print origin sources of this element
-						mutableTokenWriter.directPrint(fragment.getSourceCode());
+						mutableTokenWriter.directPrint(getSourceCodeForSniperPrinting(fragment));
 						return;
 					}
 
@@ -344,6 +344,34 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 				}
 			}
 		};
+	}
+
+	/**
+	 * Gets modified source code for pretty-printing when using the SniperJavaPrettyPrinter.
+	 *
+	 * This function handles some custom logic which might be needed for special types of code-fragments.
+	 * For instance, we by default add parenthesis around the type while type-casting. The source code for the cast
+	 * has parenthesis around it as well (which would be required for the original code to be valid Java code -- the
+	 * assumption here is that the fragment supplied comes from valid/compilable Java code).
+	 * Printing that source-code without any modification would then lead to non-compilable java code. This function
+	 * can handle such special cases.
+	 * */
+	private String getSourceCodeForSniperPrinting(SourceFragment fragment) {
+		if (fragment instanceof ElementSourceFragment elementFragment) {
+			if (elementFragment.getRoleInParent() == CtRole.CAST) {
+				return elementFragment.getSourceCode(elementFragment.getStart() + 1, elementFragment.getEnd() - 1);
+			}
+			return elementFragment.getSourceCode();
+		} else if (fragment instanceof CollectionSourceFragment collectionSourceFragment) {
+			StringBuilder sb = new StringBuilder();
+			for (SourceFragment childSourceFragment : collectionSourceFragment.getItems()) {
+				sb.append(getSourceCodeForSniperPrinting(childSourceFragment));
+			}
+			return sb.toString();
+		} else {
+			// We have a TokenSourceFragment.
+			return fragment.getSourceCode();
+		}
 	}
 
 	private CtRole getRoleInCompilationUnit(CtElement element) {
