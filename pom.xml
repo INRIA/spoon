@@ -34,7 +34,7 @@
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.39.0</version>
+      <version>3.40.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.platform</groupId>
@@ -63,7 +63,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>2.0.16</version>
+      <version>2.0.17</version>
     </dependency>
       <dependency>
       <groupId>commons-io</groupId>
@@ -91,7 +91,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.18.2</version>
+      <version>2.18.3</version>
     </dependency>
     <dependency>
       <!-- support for compressed serialized ASTs -->
@@ -120,7 +120,7 @@
     <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.5.16</version>
+        <version>1.5.17</version>
         <scope>test</scope>
     </dependency>
     <dependency>
@@ -161,6 +161,12 @@
       <artifactId>metainf-services</artifactId>
       <version>1.11</version>
       <optional>true</optional>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.3.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -230,7 +236,7 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.44.2</version>
+        <version>2.44.3</version>
         <configuration>
           <formats>
             <format>

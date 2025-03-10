@@ -377,6 +377,18 @@ public class ControlFlowArithmetic {
 		return b;
 	}
 
+	public int multipleCaseExpressions(int a) {
+		int b = 0;
+		switch (a) {
+			case 1, 2:
+				b = 1;
+				break;
+			default:
+				break;
+		}
+		return b;
+	}
+
 	public void constructorCall() {
 		new Object();
 	}

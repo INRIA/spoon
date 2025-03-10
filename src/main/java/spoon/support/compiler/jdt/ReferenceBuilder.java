@@ -8,6 +8,7 @@
 package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
+import org.eclipse.jdt.internal.compiler.Compiler;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
@@ -285,7 +286,7 @@ public class ReferenceBuilder {
 		if (enclosingType != null && Collections.disjoint(PUBLIC_PROTECTED, JDTTreeBuilderQuery.getModifiers(enclosingType.modifiers, false, ModifierTarget.NONE))) {
 			String access = "";
 			int i = 0;
-			final CompilationUnitDeclaration[] units = ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor).unitsToProcess;
+			final CompilationUnitDeclaration[] units = ((Compiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor).unitsToProcess;
 			for (; i < tokens.length; i++) {
 				final char[][] qualified = Arrays.copyOfRange(tokens, 0, i + 1);
 				if (searchPackage(qualified, units) == null) {
@@ -789,7 +790,7 @@ public class ReferenceBuilder {
 			}
 			if (m.find()) {
 				main.setSimpleName(m.group(1));
-				final String[] split = m.group(2).split(",");
+				final String[] split = getStringTypeParameters(m.group(2)).toArray(new String[0]);
 				for (String parameter : split) {
 					main.addActualTypeArgument(getTypeParameterReference(parameter.trim()));
 				}
@@ -809,6 +810,59 @@ public class ReferenceBuilder {
 			return (CtTypeReference) this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
 		}
 		return main;
+	}
+
+
+	/**
+	 * Helper method which accepts a WELL-FORMATTED type-parameter string (ie, the type parameters of a generic type
+	 * separated by commas) and returns the individual parameters in an ordered list. DOES NOT do recursion on
+	 * nested generics.
+	 * Eg: "Integer, Double" would give List.of("Integer", "Double")
+	 * Eg: "Integer, Nested<Double, String>" would give List.of("Integer", "Nested<Double, String>")
+	 * See comments in code for why "WELL-FORMATTED" is important.
+	 * */
+	private List<String> getStringTypeParameters(String typeParamString) {
+		if (!typeParamString.contains("<")) {
+			// There are no nested generic types present in the parameter string
+			return List.of(typeParamString.split(","));
+		}
+
+		List<String> typeParams = new ArrayList<>();
+		// Since there are nested generic types present, we cannot split my "," -- since
+		// nested generics can also have multiple parameters (which would also be separated
+		// by ","). So, iterate character by character, splitting on either the ",", or when the
+		// right set of "<" and ">" have been accumulated.
+
+		int bracketsEncountered = 0;
+		StringBuilder paramAccumulator = new StringBuilder();
+		for (int idx = 0; idx < typeParamString.length(); idx++) {
+			char currChar = typeParamString.charAt(idx);
+
+			if (currChar == ',' && bracketsEncountered == 0) {
+				// We have reached the end of a type-parameter, and there are no longer
+				// any lingering "<" to close. Thia assumes that the "typeParamString" is
+				// correctly formed (ie, it does not start as ",Integer,Foo<...>..." etc)
+				typeParams.add(paramAccumulator.toString());
+				paramAccumulator.setLength(0);
+			} else if (currChar == '<') {
+				bracketsEncountered += 1;
+				paramAccumulator.append('<');
+			} else if (currChar == '>') {
+				bracketsEncountered -= 1;
+				paramAccumulator.append('>');
+			} else {
+				paramAccumulator.append(currChar);
+			}
+		}
+
+		// The last type-parameter would not have been appended
+		// since it isn't suffixed by a ",". So append that as well.
+		// We again assume that the provided typeParamString is correctly
+		// formed (eg: it does not end in a form like "...String,")
+		typeParams.add(paramAccumulator.toString());
+
+
+		return typeParams;
 	}
 
 	/**

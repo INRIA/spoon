@@ -11,12 +11,11 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.processing.AbstractProcessor;
+import spoon.refactoring.CtRenameLocalVariableRefactoring;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
@@ -50,6 +49,7 @@ import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
+import spoon.test.prettyprinter.testclasses.RefactorCast;
 import spoon.test.prettyprinter.testclasses.Throw;
 import spoon.test.prettyprinter.testclasses.InvocationReplacement;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
@@ -70,7 +70,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -99,7 +98,7 @@ public class TestSniperPrinter {
 		// with the necessary tweaks
 		testClassRename(tempDir, type -> {
 			type.setSimpleName("Bar");
-			type.getFactory().CompilationUnit().addType(type);
+			type.getPosition().getCompilationUnit().getDeclaredTypeReferences().get(0).setSimpleName("Bar");
 		});
 
 	}
@@ -117,15 +116,17 @@ public class TestSniperPrinter {
 		Factory f = launcher.getFactory();
 
 		final CtClass<?> type = f.Class().get(testClass);
+		String original = type.getPosition().getCompilationUnit().getOriginalSourceCode();
 
 		// performing the type rename
 		renameTransfo.accept(type);
 		//print the changed model
 		launcher.prettyprint();
 
+		String expected = original.replaceAll("\\bToBeChanged\\b", "Bar");
 
 		String contentOfPrettyPrintedClassFromDisk = getContentOfPrettyPrintedClassFromDisk(type);
-		assertTrue(contentOfPrettyPrintedClassFromDisk.contains("EOLs*/ Bar<T, K>"), contentOfPrettyPrintedClassFromDisk);
+		assertEquals(expected, contentOfPrettyPrintedClassFromDisk);
 
 	}
 
@@ -1143,6 +1144,20 @@ public class TestSniperPrinter {
 	void noChangeDiffMethodComment() throws IOException {
 			testNoChangeDiffFailing(
 					Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest/MethodComment").toFile());
+	}
+
+
+	@Test
+	@GitHubIssue(issueNumber = 4335, fixed = true)
+	public void testCorrectTypeCastParenthesisAfterRefactor() {
+		testSniper(RefactorCast.class.getName(), type -> {
+			List<CtStatement> blocks = type.getMethodsByName("example").get(0).getBody().getStatements();
+			CtLocalVariable<?> localVar = (CtLocalVariable<?>) blocks.get(0);
+			CtRenameLocalVariableRefactoring refactor = new CtRenameLocalVariableRefactoring();
+			refactor.setTarget(localVar);
+			refactor.setNewName("b");
+			refactor.refactor();
+		}, (type, result) -> assertThat(result, containsString("((Double) b).toString();")));
 	}
 	/**
 	 * Test various syntax by doing an change to every element that should not
