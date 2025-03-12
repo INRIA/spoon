@@ -9,7 +9,7 @@ export CLASSPATH="$(cd "$SCRIPT_DIR/../spoon-javadoc" && mvn dependency:build-cl
 
 # Ourselves
 LOCAL_REPO="$(mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout)"
-SPOON_VERSION="$(cd "$SCRIPT_DIR/../spoon-javadoc" && mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout)"
+SPOON_VERSION="$(cd "$SCRIPT_DIR/../spoon-javadoc" && mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
 export CLASSPATH="$CLASSPATH:$LOCAL_REPO/fr/inria/gforge/spoon/spoon-javadoc/$SPOON_VERSION/spoon-javadoc-$SPOON_VERSION.jar"
 
 # A simple logger to disable the warning
