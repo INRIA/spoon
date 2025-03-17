@@ -80,11 +80,11 @@ public class DefaultJavaPrettyPrinterTest {
             "((int) (1 + 2)) * 3",
             "(int) (int) (1 + 1)",
             "(\"1\" + \"2\").contains(\"1\")",
-            "null instanceof java.lang.String s && (s = \"1\").contains(\"1\")",
-            "null instanceof java.lang.String s && (s += \"1\").contains(\"1\")",
-            "null instanceof java.lang.String[] arr && (arr[0] = \"1\").contains(\"1\")",
-            "null instanceof java.lang.Integer i && (++i).toString().isEmpty()",
-            "null instanceof java.lang.Integer i && (i--).toString().isEmpty()",
+            "new java.lang.Object() instanceof java.lang.String s && (s = \"1\").contains(\"1\")",
+            "new java.lang.Object() instanceof java.lang.String s && (s += \"1\").contains(\"1\")",
+            "new java.lang.Object() instanceof java.lang.String[] arr && (arr[0] = \"1\").contains(\"1\")",
+            "new java.lang.Object() instanceof java.lang.Integer i && (++i).toString().isEmpty()",
+            "new java.lang.Object() instanceof java.lang.Integer i && (i--).toString().isEmpty()",
             "(true ? \"1\" : \"2\").contains(\"1\")",
             """
             (switch (0) {
