@@ -68,9 +68,7 @@ echo "::endgroup::"
 NEXT_RELEASE_VERSION="$(semver next patch "$NEXT_VERSION")-SNAPSHOT"
 
 echo "::group::Updating poms to next target version"
-mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_RELEASE_VERSION" -DprocessAllModules
-mvn --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_RELEASE_VERSION" -DprocessAllModules
-mvn -f spoon-javadoc --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_RELEASE_VERSION" -DprocessAllModules
+mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_RELEASE_VERSION" -DprocessAllModules -DprocessParent=false
 echo "::endgroup::"
 
 echo "::group::Committing changes"
