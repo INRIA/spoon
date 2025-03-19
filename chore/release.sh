@@ -37,9 +37,7 @@ fi
 BRANCH_NAME="release/$NEXT_VERSION"
 
 echo "::group::Setting release version"
-mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_VERSION" -DprocessAllModules
-mvn --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_VERSION" -DprocessAllModules
-mvn -f spoon-javadoc --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_VERSION" -DprocessAllModules
+mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_RELEASE_VERSION" -DprocessAllModules -DprocessParent=false
 echo "::endgroup::"
 
 echo "::group::Commit & Push changes"
