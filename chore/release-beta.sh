@@ -24,9 +24,7 @@ echo "::endgroup::"
 BRANCH_NAME="beta-release/$NEXT_BETA_VERSION"
 
 echo "::group::Setting beta-release version"
-mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_BETA_VERSION" -DprocessAllModules
-mvn --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_BETA_VERSION" -DprocessAllModules
-mvn -f spoon-javadoc --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_BETA_VERSION" -DprocessAllModules
+mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_BETA_VERSION" -DprocessAllModules -DprocessParent=false
 echo "::endgroup::"
 
 echo "::group::Commit & Push changes"
