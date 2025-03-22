@@ -800,7 +800,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
-	@GitHubIssue(issueNumber = 3911, fixed = false)
+	@GitHubIssue(issueNumber = 3911, fixed = true)
 	void testRoundBracketPrintingInComplexArithmeticExpression() {
 		Consumer<CtType<?>> noOpModifyFieldAssignment = type ->
 				type.getField("value")
@@ -812,6 +812,22 @@ public class TestSniperPrinter {
 				assertThat(result, containsString("((double) (3 / 2)) / 2"));
 
 		testSniper("ArithmeticExpression", noOpModifyFieldAssignment, assertPrintsRoundBracketsCorrectly);
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 3911, fixed = true)
+	void testRoundBracketPrintingInComplexArithmeticExpressionWithSpaces() {
+		Consumer<CtType<?>> noOpModifyFieldAssignment = type ->
+				type.getField("value")
+						.getAssignment()
+						.descendantIterator()
+						.forEachRemaining(TestSniperPrinter::markElementForSniperPrinting);
+
+		// This checks that we retain the ORIGINAL spaces if present in the expression.
+		BiConsumer<CtType<?>, String> assertPrintsRoundBracketsCorrectly = (type, result) ->
+				assertThat(result, containsString("( (double) (3 / 2)) / 2"));
+
+		testSniper("ArithmeticExpressionWithSpaces", noOpModifyFieldAssignment, assertPrintsRoundBracketsCorrectly);
 	}
 
 	@Test
