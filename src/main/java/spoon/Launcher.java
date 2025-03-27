@@ -450,7 +450,7 @@ public class Launcher implements SpoonAPI {
 
 		Environment environment = factory.getEnvironment();
 		// environment initialization
-		environment.setComplianceLevel(jsapActualArgs.getInt("compliance", 17));
+		environment.setComplianceLevel(jsapActualArgs.getInt("compliance"));
 		environment.setLevel(jsapActualArgs.getString("level"));
 		if (jsapActualArgs.getBoolean("imports")) {
 			environment.setPrettyPrintingMode(Environment.PRETTY_PRINTING_MODE.AUTOIMPORT);
