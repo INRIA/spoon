@@ -531,7 +531,10 @@ public class ReferenceBuilder {
 	private boolean isIncorrectlyBoundExecutableInNoClasspath(CtExecutableReference<?> ref,
 			AllocationExpression allocationExpression) {
 		boolean noClasspath = ref.getFactory().getEnvironment().getNoClasspath();
-		return noClasspath && ref.getType().equals(ref.getFactory().Type().objectType())
+		// In no-classpath mode, ref.getType() can sometimes be null, especially with complex
+		// initializers like enums using lambdas (observed NPE). Add a null check to prevent crash.
+		// See https://github.com/INRIA/spoon/issues/5579
+		return noClasspath && ref.getType() != null && ref.getType().equals(ref.getFactory().Type().objectType())
 				&& allocationExpression.resolvedType != null;
 	}
 
