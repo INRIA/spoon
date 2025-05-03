@@ -48,10 +48,7 @@ import spoon.support.adaption.TypeAdaptor;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
-import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
-import spoon.test.prettyprinter.testclasses.RefactorCast;
-import spoon.test.prettyprinter.testclasses.Throw;
-import spoon.test.prettyprinter.testclasses.InvocationReplacement;
+import spoon.test.prettyprinter.testclasses.*;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
 import spoon.testing.utils.GitHubIssue;
 import java.io.File;
@@ -1174,6 +1171,15 @@ public class TestSniperPrinter {
 			refactor.setNewName("b");
 			refactor.refactor();
 		}, (type, result) -> assertThat(result, containsString("((Double) b).toString();")));
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 5001, fixed = true)
+	public void testCorrectPrintingOfUnchangedStringAssignment() throws IOException {
+		// We want to make sure that if there are no changes made to the source code, then the output is the same
+		// as the input.
+		testNoChangeDiffFailing(
+				Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/SampleClassIssue5001").toFile());
 	}
 	/**
 	 * Test various syntax by doing an change to every element that should not
