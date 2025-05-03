@@ -90,10 +90,10 @@
     </issueManagement>
 
     <scm>
-        <url>https://github.com/INRIA/spoon</url>
+        <url>https://github.com/INRIA/spoon/tree/${project.scm.tag}/spoon-pom</url>
         <connection>scm:git:https://github.com/INRIA/spoon.git</connection>
         <developerConnection>scm:git:ssh://github.com/INRIA/spoon.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v${project.version}</tag>
     </scm>
 
     <distributionManagement>

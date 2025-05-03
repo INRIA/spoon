@@ -16,6 +16,12 @@
     <name>Spoon Javadoc</name>
     <description>A javadoc parser for the java source code analysis tool spoon.</description>
     <url>http://spoon.gforge.inria.fr/</url>
+    <scm>
+        <url>https://github.com/INRIA/spoon/tree/${project.scm.tag}/spoon-javadoc</url>
+        <connection>scm:git:https://github.com/INRIA/spoon.git</connection>
+        <developerConnection>scm:git:ssh://github.com/INRIA/spoon.git</developerConnection>
+        <tag>v${project.version}</tag>
+    </scm>
     <build>
         <plugins>
             <plugin>
