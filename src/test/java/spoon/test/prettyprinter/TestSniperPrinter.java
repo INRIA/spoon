@@ -1175,6 +1175,15 @@ public class TestSniperPrinter {
 			refactor.refactor();
 		}, (type, result) -> assertThat(result, containsString("((Double) b).toString();")));
 	}
+
+	@Test
+	@GitHubIssue(issueNumber = 5001, fixed = true)
+	public void testCorrectPrintingOfUnchangedStringAssignment() throws IOException {
+		// We want to make sure that if there are no changes made to the source code, then the output is the same
+		// as the input.
+		testNoChangeDiffFailing(
+				Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/SampleClassIssue5001").toFile());
+	}
 	/**
 	 * Test various syntax by doing an change to every element that should not
 	 * result in any change in source. This forces the sniper printer to recreate
