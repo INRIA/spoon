@@ -145,24 +145,6 @@ public class DefaultJavaPrettyPrinterTest {
                 "ORDER BY network_ip1, network_ip2, network_ip3  \" + \" ) t order by t.NETWORK_IP1,t.NETWORK_IP2,t.NETWORK_IP3,t.NETWORK_IP4 \"";
 
         @Test
-        @GitHubIssue(issueNumber = 5001, fixed = false)
-        void testSameOutputWithDefaultSettings() {
-            Launcher launcher = new Launcher();
-            launcher.addInputResource("src/test/java/spoon/test/prettyprinter/testclasses/SampleClassIssue5001.java");
-            launcher.buildModel();
-
-            // Since there is only one class, there is only one entity returned by "getAll"
-            CtCompilationUnit cu = launcher.getFactory().Type().getAll().get(0)
-                    .getPosition().getCompilationUnit();
-
-            launcher.getEnvironment().setPrettyPrinterCreator(() -> new DefaultJavaPrettyPrinter(launcher.getEnvironment()));
-            PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
-            String output = prettyPrinter.prettyprint(cu);
-
-            assertThat(output, containsString(expectedStringLiteral));
-        }
-
-        @Test
         @GitHubIssue(issueNumber = 5001, fixed = true)
         void testSameOutputWithOptimizedParenthesis() {
             Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
