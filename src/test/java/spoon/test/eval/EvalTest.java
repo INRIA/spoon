@@ -18,6 +18,9 @@ package spoon.test.eval;
 
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -55,6 +58,7 @@ import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.AccessibleVariablesFinder;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.OperatorHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
@@ -62,6 +66,7 @@ import spoon.support.reflect.eval.EvalHelper;
 import spoon.support.reflect.eval.InlinePartialEvaluator;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.eval.testclasses.Foo;
+import spoon.testing.utils.GitHubIssue;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.utils.ModelUtils.build;
@@ -608,5 +613,29 @@ public class EvalTest {
 			ctBinaryOperator.getFactory().createLiteral(Double.POSITIVE_INFINITY),
 			ctLiteral
 		);
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 5001, fixed = true)
+	public void testVisitCtLiteralWithLongStringValue() throws Exception {
+		CtClass<?> ctClass = Launcher.parseClass(Files.readString(Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/SampleClassIssue5001.java")));
+		CtExpression<?> sql = ctClass.getField("sql").getAssignment();
+		StringBuilder result = new StringBuilder();
+		sql.accept(new CtScanner() {
+			@Override
+			public <T> void visitCtLiteral(CtLiteral<T> literal) {
+				result.append(literal.getValue());
+			}
+		});
+
+		String expectedValue = "Select distinct t.NETWORK_IP, t.NETWORK_IP1, t.NETWORK_IP2, " +
+				"t.NETWORK_IP3, t.NETWORK_IP4 from (SELECT DISTINCT t1.ipv4digit1 || '.' || t1.ipv4digit2 || '.' || " +
+				"t1.ipv4digit3 || '.0' network_ip, TO_NUMBER (t1.ipv4digit1) network_ip1, TO_NUMBER (t1.ipv4digit2) " +
+				"network_ip2, TO_NUMBER (t1.ipv4digit3) network_ip3, TO_NUMBER ('0') network_ip4, t1.t2_team_id, " +
+				"t1.system_owner_id, t1.system_owner_team_id FROM ip_info t1 where t1.binary_ip >= '' and t1.binary_ip " +
+				"<= '' ORDER BY network_ip1, network_ip2, network_ip3 ) t order by t.NETWORK_IP1,t.NETWORK_IP2,t.NETWORK_IP3,t.NETWORK_IP4";
+
+		String actualValue = result.toString().strip().replaceAll("\\s{2,}", " ");
+		assertEquals(expectedValue, actualValue);
 	}
 }
