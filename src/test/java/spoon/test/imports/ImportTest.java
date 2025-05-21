@@ -1578,7 +1578,7 @@ public class ImportTest {
 		}
 	}
 
-	@ModelTest(value = "./src/main/java/spoon/", autoImport = true)
+	@ModelTest(value = "./src/main/java/spoon/", autoImport = true, complianceLevel = 17)
 	public void testImportOnSpoon(Launcher launcher, CtModel model, Factory factory) throws IOException {
 		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(launcher.getEnvironment());
 
