@@ -2108,37 +2108,7 @@ public class RedemptionServiceImpl extends BaseServiceImpl<Redemption> implement
     }
 
     private APIErrorCode getRedemptionErrorCode(int status) {
-
-        APIErrorCode apiErrorCode = APIErrorCode.ERR_CATALOGUE_REDEMPTION_FAILED;
-
-        switch( status) {
-
-            case CatalogueRedemptionStatus.CAT_RDM_EXTERNAL_SERVICE_FAILED:
-
-                apiErrorCode =  APIErrorCode.ERR_CATALOGUE_REDEMPTION_FAILED;
-
-            case CatalogueRedemptionStatus.CAT_RDM_BCODE_GENERATION_FAILED:
-
-                apiErrorCode =  APIErrorCode.ERR_CATALOGUE_REDEMPTION_FAILED;
-
-            case CatalogueRedemptionStatus.CAT_RDM_BILL_REBATE_REQUEST_FAILED:
-
-                apiErrorCode =  APIErrorCode.ERR_CATALOGUE_REDEMPTION_FAILED;
-
-            case CatalogueRedemptionStatus.CAT_RDM_VOUCHER_GENERATION_FAILED:
-
-                apiErrorCode =  APIErrorCode.ERR_CATALOGUE_REDEMPTION_FAILED;
-
-            case CatalogueRedemptionStatus.CAT_RDM_REDEEM_FAILED:
-
-                apiErrorCode = APIErrorCode.ERR_CATALOGUE_REDEMPTION_FAILED;
-
-
-
-        }
-
-        return apiErrorCode;
-
+        return APIErrorCode.ERR_CATALOGUE_REDEMPTION_FAILED;
     }
 
     public RewardAdjustment createRewardAdjustmentObject(Long merchantNo, String loyaltyId, Long adjCurrencyId, Double adjPoints, boolean isTierAffected, Long adjProgramNo, String adjIntReference,String adExtReference) {
