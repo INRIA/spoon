@@ -81,12 +81,10 @@ public class CommentHelper {
 			case BLOCK:
 				printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_END);
 				break;
-			case FILE:
+			case FILE, JAVADOC -> {
 				printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_END);
 				break;
-			case JAVADOC:
-				printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_END);
-				break;
+			}
 		}
 	}
 
