@@ -78,13 +78,8 @@ public class CommentHelper {
 		}
 		// suffix
 		switch (commentType) {
-			case BLOCK:
-				printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_END);
-				break;
-			case FILE, JAVADOC -> {
-				printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_END);
-				break;
-			}
+			case BLOCK -> printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_END);
+			case FILE, JAVADOC -> printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_END);
 		}
 	}
 
