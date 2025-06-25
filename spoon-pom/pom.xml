@@ -56,7 +56,7 @@
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
-            <version>1.13.1</version>
+            <version>1.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
