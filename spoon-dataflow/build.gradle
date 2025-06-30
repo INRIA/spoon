@@ -23,7 +23,7 @@ repositories {
 dependencies {
     implementation group: 'fr.inria.gforge.spoon', name: 'spoon-core', version: '+'
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.9.0'
-    implementation group: 'tools.aqua', name: 'z3-turnkey', version: '4.14.0'
+    implementation group: 'tools.aqua', name: 'z3-turnkey', version: '4.14.1'
     testImplementation("org.junit.jupiter:junit-jupiter:5.13.2")
 }
 
