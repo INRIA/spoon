@@ -51,7 +51,5 @@ deploy:
         snapshotUrl: https://central.sonatype.com/repository/maven-snapshots/
         applyMavenCentralRules: true
         snapshotSupported: true
-        closeRepository: true
-        releaseRepository: false # for the first trial, we do a manual click on the Sonatype UI to release
         stagingRepositories:
           - target/staging-deploy
