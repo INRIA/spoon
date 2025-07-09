@@ -1,6 +1,7 @@
 name: Manual Release Workflow
 
 on:
+  workflow_dispatch:
     inputs:
       version:
         description: 'Next release version'
