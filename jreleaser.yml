@@ -47,7 +47,7 @@ deploy:
           - target/staging-deploy
     nexus2:
       snapshot-deploy:
-        active: ALWAYS
+        active: SNAPSHOT
         snapshotUrl: https://central.sonatype.com/repository/maven-snapshots/
         applyMavenCentralRules: true
         snapshotSupported: true
