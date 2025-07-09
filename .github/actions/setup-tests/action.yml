@@ -10,7 +10,7 @@ runs:
         git config --global user.email "<>"
     - name: Install Nix
       uses: DeterminateSystems/nix-installer-action@21a544727d0c62386e78b4befe52d19ad12692e3 # v17
-    - uses: DeterminateSystems/magic-nix-cache-action@def9f5a5c6a6b8751c0534e8813a5d0ad2635660 # v11
+    - uses: DeterminateSystems/magic-nix-cache-action@e1c1dae8e170ed20fd2e6aaf9979ca2d3905d636 # v12
     - name: Check Nixpkgs inputs
       uses: DeterminateSystems/flake-checker-action@f6b84c9884c22039e1fc23dadb4a0d0add56c197 # v11
       with:
