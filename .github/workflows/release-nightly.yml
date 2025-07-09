@@ -1,7 +1,6 @@
 name: Release nightly version
 
 on:
-    workflow_dispatch:
     schedule:
       - cron: '0 0 * * *' # Every day at 00:00 UTC (https://crontab.guru/#0_0_*_*_*)
 
