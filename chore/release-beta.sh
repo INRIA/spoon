@@ -13,7 +13,7 @@ fi
 
 # Compute next beta number
 echo "::group::Computing next beta number"
-LAST_BETA_NUMBER="$(curl -L "http://search.maven.org/solrsearch/select?q=a:spoon-core+g:fr.inria.gforge.spoon&rows=40&wt=json&core=gav" | jq -r ".response.docs | map(.v) | map((match(\"$OLD_VERSION-beta-(.*)\") | .captures[0].string) // \"0\") | .[0]")"
+LAST_BETA_NUMBER="$(curl -L "https://central.sonatype.com/solrsearch/select?q=a:spoon-core+g:fr.inria.gforge.spoon" | jq -r ".response.docs | map(.latestVersion) | map((match(\"$OLD_VERSION-beta-(.*)\") | .captures[0].string) // \"0\") | .[0]")"
 echo "LAST_BETA_NUMBER $LAST_BETA_NUMBER"
 
 NEW_BETA_NUMBER=$((LAST_BETA_NUMBER + 1))
