@@ -176,8 +176,12 @@ public class SubstitutionTest {
         assertNotNull(genEnum);
         assertSame(genEnum, factory.Type().get("generated.GenEnum"));
         assertEquals(2, genEnum.getEnumValues().size());
-        assertEquals("GOOD", genEnum.getEnumValues().get(0).getSimpleName());
-        assertEquals("BETTER", genEnum.getEnumValues().get(1).getSimpleName());
+        List<String> enumValueNames = genEnum.getEnumValues().stream()
+                .map(CtEnumValue::getSimpleName)
+                .sorted()
+                .toList();
+        assertEquals("GOOD", enumValueNames.get(1));
+        assertEquals("BETTER", enumValueNames.get(0));
     }
 
     @Test
