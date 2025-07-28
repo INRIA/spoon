@@ -50,6 +50,18 @@ public interface CtClass<T> extends CtType<T>, CtStatement, CtSealable {
 	CtConstructor<T> getConstructor(CtTypeReference<?>... parameterTypes);
 
 	/**
+	 * Returns the constructor of the class that takes the given signature.
+	 * e.g. java.util.HashSet has constructor with no parameters `()`
+	 * e.g. java.util.HashSet has constructor with a int and a float parameters `(int,float)`
+	 * e.g. java.util.HashSet has constructor with a java.util.Collection parameter `(java.util.Collection)`
+	 *
+	 * Derived from {@link #getTypeMembers()}
+	 */
+	@DerivedProperty
+	@PropertyGetter(role = CONSTRUCTOR)
+	CtConstructor<T> getConstructorBySignature(String signature);
+
+	/**
 	 * Returns the constructors of this class. This includes the default
 	 * constructor if this class has no constructors explicitly declared.
 	 *
