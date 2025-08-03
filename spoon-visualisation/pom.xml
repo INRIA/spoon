@@ -23,7 +23,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jfx.version>25-ea+27</jfx.version>
+        <jfx.version>26-ea+2</jfx.version>
     </properties>
 
     <build>
