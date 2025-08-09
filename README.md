@@ -172,7 +172,6 @@ Spoon is developed with the help of JProfiler, a Java profiler by ej-technologie
 
 ### Powered by
 
-Thanksfully JetBrains provides us with license. 
 [![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSource)
 
 
