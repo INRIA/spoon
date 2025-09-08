@@ -18,7 +18,7 @@
     <parent>
         <groupId>fr.inria.gforge.spoon</groupId>
         <artifactId>spoon-pom</artifactId>
-        <version>1.0</version>
+        <version>11.2.0</version>
         <relativePath>../spoon-pom</relativePath>
     </parent>
     
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>11.2.0</version>
+            <version>11.2.1</version>
         </dependency>
 
         <dependency>

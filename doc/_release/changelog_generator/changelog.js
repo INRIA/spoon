@@ -1,6 +1,6 @@
 var log      = require('git-log-parser');
 var through2 = require('through2');
-var request = require('request');
+var https = require('https');
 
 // hide merge commits
 log.fields.merge = "P";
@@ -93,14 +93,21 @@ function parseCommitLog(version, callback) {
 
             if (!found) {
                 var url = SPOON_REPOSITORY + "branch_commits/" + commit.commit.long;
-                request(url, function (error, response, body) {
-                    if (!error && response.statusCode == 200) {
+                https.get(url, function (response) {
+                    let body = '';
+                    response.on('data', function (chunk) {
+                        body += chunk;
+                    });
+                    response.on('end', function () {
                         var match = body.match(/">#([0-9]+)<\/a>/);
                         if (match) {
                             commit.pr = "#" + match[1];
                             found = true;
                         }
-                    }
+                        callback(null, null);
+                    });
+                }).on('error', function (error) {
+                    console.error(error);
                     callback(null, null);
                 });
             } else {

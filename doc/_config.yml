@@ -20,7 +20,7 @@ include: [_includes]
 sidebar_tagline: Spoon
 
 # this is replaced at deployment time by job https://ci.inria.fr/sos/job/Website Deployer/
-# LATESTVERSION=`curl -s "http://search.maven.org/solrsearch/select?q=g:%22fr.inria.gforge.spoon%22+AND+a:%22spoon-core%22" | jq .response.docs[0].latestVersion`
+# LATESTVERSION=`curl -s "https://central.sonatype.com/solrsearch/select?q=a:spoon-core+g:fr.inria.gforge.spoon" | jq .response.docs[0].latestVersion`
 # sed -i -e "s/^spoon_release: .*/spoon_release: $LATESTVERSION/" _config.yml
 spoon_release: "TO_BE_REPLACED"
 

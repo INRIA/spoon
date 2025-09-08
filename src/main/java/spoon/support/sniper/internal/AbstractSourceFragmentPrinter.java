@@ -16,6 +16,7 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtTypeReference;
 
 import static spoon.support.sniper.internal.ElementSourceFragment.findIndexOfNextFragment;
 import static spoon.support.sniper.internal.ElementSourceFragment.filter;
@@ -57,11 +58,54 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 		int index = update(event);
 		if (index != -1) { // means we have found a source code fragment corresponding to this event
 
-			// we print all spaces and comments before this fragment
-			printSpaces(getLastNonSpaceNonCommentBefore(index, prevIndex), index);
+			// We DO NOT want to print spaces between `index` and `prevIndex` in the case that there
+			// has been a "jump" from `prevIndex` to `index` and the pretty-printer is about to print a `(` token
+			// that is NOT the `(` token required for the type-cast. Note that the beginning `(` token that surrounds
+			// the type-cast is explicitly printed by the current pretty printer.
+			if (
+					// We want to PREVENT printing spaces if the large condition below is true -- thus the negation
+					!(
+							// the "next" index after the last index is in range
+							(prevIndex + 1 < childFragments.size())
+							// the "next" index would have been a type-cast token
+							&& isTypeCastFragment(childFragments.get(prevIndex + 1))
+							// the current index is actually a beginning `(` token
+							&& childFragments.get(index).getSourceCode().equals("(")
+							// explicitly checks that there has been a "jump". While the previous conditions
+							// *should* automatically make this true, this is still being added for explicitness.
+							&& (prevIndex + 1 != index)
+					)
+			) {
+				// we print all spaces and comments before this fragment
+				printSpaces(getLastNonSpaceNonCommentBefore(index, prevIndex), index);
+			}
 
 			SourceFragment fragment = childFragments.get(index);
 			event.printSourceFragment(fragment, isFragmentModified(fragment));
+		}
+	}
+
+	/**
+	 * Determines if the provided fragment is an instance of a TypeCast (ie, the CtTypeReference).
+	 * At the moment, this returns true if the fragment is either a singleton CollectionSourceFragment which
+	 * has only one element -- the CtTypeReference. It also returns true if the provided fragment is an
+	 * ElementSourceFragment that is a CtTypeReference.
+	 * A CtTypeReference is like the "(double)" in " ... = (double) b;"
+	 * */
+	private boolean isTypeCastFragment(SourceFragment fragment) {
+		if (fragment instanceof CollectionSourceFragment collection) {
+			// The type-cast fragment *generally* seems to be present inside a singleton CollectionSourceFragment.
+			// So, if there is more than one element in the collection, we are likely *not* processing a type-cast
+			// fragment
+			if (collection.getItems().size() != 1) {
+				return false;
+			}
+			ElementSourceFragment element = (ElementSourceFragment) collection.getItems().get(0);
+			return element.getElement() instanceof CtTypeReference<?>;
+		} else if (fragment instanceof ElementSourceFragment element) {
+			return element.getElement() instanceof CtTypeReference<?>;
+		} else {
+			return false;
 		}
 	}
 

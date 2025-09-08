@@ -1,6 +1,7 @@
 name: Release beta version
 
 on:
+    workflow_dispatch:
     schedule:
       - cron: '0 0 * * 0' # Sundays at 00:00 (https://crontab.guru/#0_0_*_*_0)
 
