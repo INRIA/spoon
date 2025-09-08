@@ -342,9 +342,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(BreakStatement breakStatement, BlockScope scope) {
-		if (breakStatement.isSynthetic) {
-			return; // we never entered
-		}
 		context.exit(breakStatement);
 	}
 
@@ -1080,9 +1077,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(BreakStatement breakStatement, BlockScope scope) {
-		if (breakStatement.isSynthetic) {
-			return false;
-		}
 		CtBreak b = factory.Core().createBreak();
 		if (breakStatement.label != null) {
 			b.setTargetLabel(new String(breakStatement.label));
@@ -1780,6 +1774,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(SwitchStatement switchStatement, BlockScope scope) {
+		// JDT 3.40.0 removes SwitchExpression#traverse method, so let's emulate it
+		if (switchStatement instanceof SwitchExpression switchExpression) {
+			return visit(switchExpression, scope);
+		}
 		context.enter(factory.Core().createSwitch(), switchStatement);
 		return true;
 	}

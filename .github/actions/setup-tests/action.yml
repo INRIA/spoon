@@ -9,14 +9,14 @@ runs:
         git config --global user.name "GitHub Actions Bot"
         git config --global user.email "<>"
     - name: Install Nix
-      uses: DeterminateSystems/nix-installer-action@da36cb69b1c3247ad7a1f931ebfd954a1105ef14 # v14
-    - uses: DeterminateSystems/magic-nix-cache-action@87b14cf437d03d37989d87f0fa5ce4f5dc1a330b # v8
+      uses: DeterminateSystems/nix-installer-action@90bb610b90bf290cad97484ba341453bd1cbefea # v19
+    - uses: DeterminateSystems/magic-nix-cache-action@e1c1dae8e170ed20fd2e6aaf9979ca2d3905d636 # v12
     - name: Check Nixpkgs inputs
-      uses: DeterminateSystems/flake-checker-action@078f5f7f47ee188aa6cb472527ca5984e195222d # v9
+      uses: DeterminateSystems/flake-checker-action@f6b84c9884c22039e1fc23dadb4a0d0add56c197 # v11
       with:
         fail-mode: true
     - name: Use Maven dependency cache
-      uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+      uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
       with:
         path: ~/.m2/repository
         # We use a unique key and restore from the base one, to ensure that

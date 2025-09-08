@@ -141,7 +141,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 
 	@Override
 	public CtType<?> getMainType() {
-		if (getFile() == null) {
+		if (getFile() == null || getDeclaredTypes().size() == 1) {
 			return getDeclaredTypes().get(0);
 		}
 		for (CtType<?> t : getDeclaredTypes()) {

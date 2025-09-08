@@ -13,7 +13,7 @@
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-pom</artifactId>
     <packaging>pom</packaging>
-    <version>11.2.1-SNAPSHOT</version>
+    <version>11.2.2-SNAPSHOT</version>
     <name>Spoon POM</name>
     <description>Common Maven config for Spoon modules</description>
     <url>http://spoon.gforge.inria.fr/</url>
@@ -26,9 +26,10 @@
 
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.testRelease>17</maven.compiler.testRelease>
         <runtime.log>target/velocity.log</runtime.log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.outputTimestamp>1737612198</project.build.outputTimestamp>
+        <project.build.outputTimestamp>1750085106</project.build.outputTimestamp>
     </properties>
 
     <dependencies>
@@ -37,31 +38,31 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.15.2</version>
+            <version>5.19.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.11.4</version>
+            <version>5.13.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>5.11.4</version>
+            <version>5.13.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
-            <version>1.11.4</version>
+            <version>1.13.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.15.2</version>
+            <version>5.19.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -73,7 +74,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.27.3</version>
+            <version>3.27.4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -89,10 +90,10 @@
     </issueManagement>
 
     <scm>
-        <url>https://github.com/INRIA/spoon</url>
+        <url>https://github.com/INRIA/spoon/tree/${project.scm.tag}/spoon-pom</url>
         <connection>scm:git:https://github.com/INRIA/spoon.git</connection>
         <developerConnection>scm:git:ssh://github.com/INRIA/spoon.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v${project.version}</tag>
     </scm>
 
     <distributionManagement>
@@ -135,10 +136,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>${java.src.version}</source>
-                    <target>${java.src.version}</target>
-                    <testSource>${java.test.version}</testSource>
-                    <testTarget>${java.test.version}</testTarget>
                     <showWarnings>true</showWarnings>
                     <compilerArgs>
                         <arg>-Xlint:deprecation,unchecked</arg>
@@ -182,6 +179,19 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.cyclonedx</groupId>
+                <artifactId>cyclonedx-maven-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>makeAggregateBom</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
 
 
             <plugin>
@@ -209,11 +219,11 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.13.0</version>
+                    <version>3.14.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-dependency-plugin</artifactId>
@@ -221,19 +231,19 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.1.3</version>
+                    <version>3.1.4</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>3.1.3</version>
+                    <version>3.1.4</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.11.2</version>
+                    <version>3.11.3</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-project-info-reports-plugin</artifactId>
-                    <version>3.8.0</version>
+                    <version>3.9.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-release-plugin</artifactId>
@@ -249,13 +259,13 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.5.2</version>
+                    <version>3.5.3</version>
                 </plugin>
 
                 <plugin>
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>4.6</version>
+                    <version>5.0.0</version>
                     <configuration>
                         <licenseSets>
                             <licenseSet>
@@ -287,7 +297,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.12</version>
+                    <version>0.8.13</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -455,7 +465,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.7</version>
+                        <version>3.2.8</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -469,7 +479,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
-                        <version>3.1.3</version>
+                        <version>3.1.4</version>
                     </plugin>
                 </plugins>
             </build>
@@ -510,12 +520,12 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
-                        <version>3.1.3</version>
+                        <version>3.1.4</version>
                     </plugin>
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.12</version>
+                        <version>0.8.13</version>
                         <configuration>
                             <skip>true</skip>
                         </configuration>

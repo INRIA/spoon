@@ -5,17 +5,23 @@
     <parent>
         <artifactId>spoon-pom</artifactId>
         <groupId>fr.inria.gforge.spoon</groupId>
-        <version>11.2.1-SNAPSHOT</version>
+        <version>11.2.0</version>
         <relativePath>../spoon-pom</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>spoon-javadoc</artifactId>
     <packaging>jar</packaging>
-    <version>11.2.1-SNAPSHOT</version>
+    <version>11.2.2-SNAPSHOT</version>
     <name>Spoon Javadoc</name>
     <description>A javadoc parser for the java source code analysis tool spoon.</description>
     <url>http://spoon.gforge.inria.fr/</url>
+    <scm>
+        <url>https://github.com/INRIA/spoon/tree/${project.scm.tag}/spoon-javadoc</url>
+        <connection>scm:git:https://github.com/INRIA/spoon.git</connection>
+        <developerConnection>scm:git:ssh://github.com/INRIA/spoon.git</developerConnection>
+        <tag>v${project.version}</tag>
+    </scm>
     <build>
         <plugins>
             <plugin>
@@ -70,7 +76,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.27.3</version>
+            <version>3.27.4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

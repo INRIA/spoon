@@ -13,7 +13,7 @@ fi
 
 # Compute next beta number
 echo "::group::Computing next beta number"
-LAST_BETA_NUMBER="$(curl -L "http://search.maven.org/solrsearch/select?q=a:spoon-core+g:fr.inria.gforge.spoon&rows=40&wt=json&core=gav" | jq -r ".response.docs | map(.v) | map((match(\"$OLD_VERSION-beta-(.*)\") | .captures[0].string) // \"0\") | .[0]")"
+LAST_BETA_NUMBER="$(curl -L "https://central.sonatype.com/solrsearch/select?q=a:spoon-core+g:fr.inria.gforge.spoon" | jq -r ".response.docs | map(.latestVersion) | map((match(\"$OLD_VERSION-beta-(.*)\") | .captures[0].string) // \"0\") | .[0]")"
 echo "LAST_BETA_NUMBER $LAST_BETA_NUMBER"
 
 NEW_BETA_NUMBER=$((LAST_BETA_NUMBER + 1))
@@ -24,9 +24,7 @@ echo "::endgroup::"
 BRANCH_NAME="beta-release/$NEXT_BETA_VERSION"
 
 echo "::group::Setting beta-release version"
-mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_BETA_VERSION" -DprocessAllModules
-mvn --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_BETA_VERSION" -DprocessAllModules
-mvn -f spoon-javadoc --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_BETA_VERSION" -DprocessAllModules
+mvn -f spoon-pom --no-transfer-progress --batch-mode versions:set -DnewVersion="$NEXT_BETA_VERSION" -DprocessAllModules -DprocessParent=false
 echo "::endgroup::"
 
 echo "::group::Commit & Push changes"
