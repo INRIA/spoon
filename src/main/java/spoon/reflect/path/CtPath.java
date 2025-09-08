@@ -22,6 +22,11 @@ public interface CtPath {
 	<T extends CtElement> List<T> evaluateOn(CtElement... startNode);
 
 	/**
+	 * Search for elements matching this CtPatch from shadow model.
+	 */
+	CtElement evaluateOnShadowModel();
+
+	/**
 	 *
 	 * Returns the path that is relative to the given element (subpath from it to the end of the path).
 	 * This is used to have relative paths, instead of absolute path from the root package.
