@@ -11,7 +11,11 @@ package spoon.reflect.visitor.filter;
 import spoon.SpoonException;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnumValue;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
@@ -71,15 +75,15 @@ public class VariableReferenceFunction implements CtConsumableFunction<CtElement
 			new FieldReferenceFunction((CtField<?>) variable).apply(scope, outputConsumer);
 		}
 
-        /**
-         * calls outputConsumer for each reference of the enum value
-         */
-        @Override
-        public <T> void visitCtEnumValue(CtEnumValue<T> enumValue) {
-            (new EnumValueReferenceFunction((CtEnumValue<?>) variable)).apply(scope, outputConsumer);
-        }
+		/**
+		 * calls outputConsumer for each reference of the enum value
+		 */
+		@Override
+		public <T> void visitCtEnumValue(CtEnumValue<T> enumValue) {
+			(new EnumValueReferenceFunction((CtEnumValue<?>) variable)).apply(scope, outputConsumer);
+		}
 
-        /**
+		/**
 		 * calls outputConsumer for each reference of the local variable
 		 */
 		@Override

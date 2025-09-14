@@ -16,11 +16,11 @@ import spoon.reflect.declaration.CtEnumValue;
  * </pre>
  */
 public class EnumValueReferenceFunction extends FieldReferenceFunction {
-    public EnumValueReferenceFunction() {
-        super();
-    }
+	public EnumValueReferenceFunction() {
+		super();
+	}
 
-    public EnumValueReferenceFunction(CtEnumValue<?> element) {
-        super(element);
-    }
+	public EnumValueReferenceFunction(CtEnumValue<?> element) {
+		super(element);
+	}
 }
