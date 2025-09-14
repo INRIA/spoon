@@ -17,29 +17,62 @@
 package spoon.test.query_function;
 
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
-import spoon.reflect.code.*;
+import spoon.reflect.code.CtAbstractInvocation;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtLambda;
+import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.NoSourcePosition;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
-import spoon.reflect.visitor.filter.*;
+import spoon.reflect.visitor.filter.CatchVariableReferenceFunction;
+import spoon.reflect.visitor.filter.CatchVariableScopeFunction;
+import spoon.reflect.visitor.filter.FieldScopeFunction;
+import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
+import spoon.reflect.visitor.filter.LocalVariableScopeFunction;
+import spoon.reflect.visitor.filter.NamedElementFilter;
+import spoon.reflect.visitor.filter.ParameterReferenceFunction;
+import spoon.reflect.visitor.filter.ParameterScopeFunction;
+import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.reflect.visitor.filter.VariableReferenceFunction;
+import spoon.reflect.visitor.filter.VariableScopeFunction;
 import spoon.test.query_function.testclasses.EnumValueReferences;
 import spoon.test.query_function.testclasses.VariableReferencesFromStaticMethod;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
 import spoon.testing.utils.ModelUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class VariableReferencesTest {
 	CtClass<?> modelClass;
@@ -57,13 +90,15 @@ public class VariableReferencesTest {
 
 	@Test
 	public void testCheckModelConsistency() {
+		//1) search for all variable declarations with name isTestFieldName(name)==true
+		//2) check that each of them is using different identification value
 		class Context {
-			final Map<Integer, CtElement> unique = new HashMap<>();
+			Map<Integer, CtElement> unique = new HashMap<>();
 			int maxKey = 0;
 			void checkKey(int key, CtElement ele) {
 				CtElement ambiguous = unique.put(key, ele);
 				if(ambiguous!=null) {
-					fail("Two variables [" + ambiguous + " in " + getParentMethodName(ambiguous) + "," + ele.toString() + " in " + getParentMethodName(ele) + "] has same value");
+					fail("Two variables [" + ambiguous.toString() + " in " + getParentMethodName(ambiguous) + "," + ele.toString() + " in " + getParentMethodName(ele) + "] has same value");
 				}
 				maxKey = Math.max(maxKey, key);
 			}
@@ -71,8 +106,9 @@ public class VariableReferencesTest {
 		Context context = new Context();
 
 		modelClass.filterChildren((CtElement e)->{
-			if (e instanceof CtVariable<?> var) {
-                if(!isTestFieldName(var.getSimpleName())) {
+			if (e instanceof CtVariable) {
+				CtVariable<?> var = (CtVariable<?>) e;
+				if(isTestFieldName(var.getSimpleName())==false) {
 					return false;
 				}
 				//check only these variables whose name is isTestFieldName(name)==true
@@ -86,17 +122,13 @@ public class VariableReferencesTest {
 		assertEquals((int) getLiteralValue((CtVariable<?>) modelClass.filterChildren(new NamedElementFilter<>(CtVariable.class, "maxValue")).first()), context.maxKey, "AllLocalVars#maxValue must be equal to maximum value number ");
 	}
 
-	/**
-	 * Visits all {@code CtCatchVariable} elements with name <code>field</code> and searches for all their references.
-     * The test verifies the correctness of the found references using the following two checks:
-	 * <ul>
-	 *   <li>Each found reference must be on the left side of a binary operator, with a unique identification number on the right (e.g., {@code field == 7}).</li>
-	 *   <li>The model is searched for all variable references with the same identification number and counts them.</li>
-	 * </ul>
-	 * Finally, it checks that the counted number of references matches the found number.
-	 */
 	@Test
 	public void testCatchVariableReferenceFunction() {
+		//visits all the CtCatchVariable elements whose name is isTestFieldName(name)==true and search for all their references
+		//The test detects whether found references are correct by these two checks:
+		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
+		//2) the model is searched for all variable references which has same identification number and counts them
+		//Then it checks that counted number of references and found number of references is same 
 		modelClass.filterChildren((CtCatchVariable<?> var)->{
 			if(isTestFieldName(var.getSimpleName())) {
 				int value = getLiteralValue(var);
@@ -106,17 +138,13 @@ public class VariableReferencesTest {
 		}).list();
 	}
 
-	/**
-	 * Visits all {@code CtLocalVariable} elements with name {@link #isTestFieldName(String)} and searches for all their references.
-     * The test verifies the correctness of the found references using the following two checks:
-	 * <ul>
-	 *   <li>Each found reference must be on the left side of a binary operator, with a unique identification number on the right (e.g., {@code field == 7}).</li>
-	 *   <li>The model is searched for all variable references with the same identification number and counts them.</li>
-	 * </ul>
-	 * Finally, it checks that the counted number of references matches the found number.
-	 */
 	@Test
 	public void testLocalVariableReferenceFunction() {
+		//visits all the CtLocalVariable elements whose name is isTestFieldName(name)==true and search for all their references
+		//The test detects whether found references are correct by these two checks:
+		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
+		//2) the model is searched for all variable references which has same identification number and counts them
+		//Then it checks that counted number of references and found number of references is same 
 		modelClass.filterChildren((CtLocalVariable<?> var)->{
 			if(isTestFieldName(var.getSimpleName())) {
 				int value = getLiteralValue(var);
@@ -126,17 +154,13 @@ public class VariableReferencesTest {
 		}).list();
 	}
 
-	/**
-	 * Visits all {@code CtParameter} elements with name <code>field</code> and searches for all their references.
-     * The test verifies the correctness of the found references using the following two checks:
-	 * <ul>
-	 *   <li>Each found reference must be on the left side of a binary operator, with a unique identification number on the right (e.g., {@code field == 7}).</li>
-	 *   <li>The model is searched for all variable references with the same identification number and counts them.</li>
-	 * </ul>
-	 * Finally, it checks that the counted number of references matches the found number.
-	 */
 	@Test
 	public void testParameterReferenceFunction() {
+		//visits all the CtParameter elements whose name is isTestFieldName(name)==true and search for all their references
+		//The test detects whether found references are correct by these two checks:
+		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
+		//2) the model is searched for all variable references which has same identification number and counts them
+		//Then it checks that counted number of references and found number of references is same 
 		modelClass.filterChildren((CtParameter<?> var)->{
 			if(isTestFieldName(var.getSimpleName())) {
 				int value = getLiteralValue(var);
@@ -144,19 +168,15 @@ public class VariableReferencesTest {
 			}
 			return false;
 		}).list();
-	}
+	}	
 
-    /**
-     * Visits all the {@link CtVariable} elements whose name is <code>field</code> and searches for all their references.
-     * The test verifies the correctness of the found references using the following two checks:
-     * <ol>
-     *   <li>Each found reference appears on the left side of a binary operator, with a unique reference identification number on the right side (e.g. {@code field == 7}).</li>
-     *   <li>The model is searched for all variable references with the same identification number, and counts these.</li>
-     * </ol>
-     * Finally, it checks that the counted number of references matches the number of found references.
-     */
 	@Test
 	public void testVariableReferenceFunction() {
+		//visits all the CtVariable elements whose name is isTestFieldName(name)==true and search for all their references
+		//The test detects whether found references are correct by these two checks:
+		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
+		//2) the model is searched for all variable references which has same identification number and counts them
+		//Then it checks that counted number of references and found number of references is same 
 		modelClass.filterChildren((CtVariable<?> var)->{
 			if(isTestFieldName(var.getSimpleName())) {
 				int value = getLiteralValue(var);
@@ -166,17 +186,15 @@ public class VariableReferencesTest {
 		}).list();
 	}
 
-    private boolean isTestFieldName(String name) {
+	private boolean isTestFieldName(String name) {
 		return "field".equals(name);
 	}
 
-    /**
-     * Visits all {@link CtVariable} elements named "field" and searches for all elements in their scopes.
-     * Compares the result with those found by basic functions.
-     */
 	@Test
 	public void testVariableScopeFunction() {
-		List<CtVariable<?>> list = modelClass.filterChildren((CtVariable<?> var)->{
+		//visits all the CtVariable elements whose name is "field" and search for all elements in their scopes
+		//Comparing with the result found by basic functions
+		List list = modelClass.filterChildren((CtVariable<?> var)->{
 			if("field".equals(var.getSimpleName())) {
 				if(var instanceof CtField) {
 					//field scope is not supported
@@ -199,17 +217,14 @@ public class VariableReferencesTest {
 		assertFalse(list.isEmpty());
 	}
 
-	/**
-	 * Contract: {@link FieldScopeFunction} matches the correct elements.
-	 */
 	@Test
 	public void testFieldScopeFunction() {
-		List<CtElement> real0 = modelClass.getFields().get(0).map(new FieldScopeFunction()).list();
-        assertFalse(real0.isEmpty());
-		List<CtElement> real1 = modelClass.getFields().get(1).map(new FieldScopeFunction()).list();
-        assertFalse(real1.isEmpty());
+		// contract: FieldScopeFunction matches the right elements
+		CtElement[] real0 = modelClass.getFields().get(0).map(new FieldScopeFunction()).list().toArray(new CtElement[0]);
+		assertTrue(real0.length > 0);
+		CtElement[] real1 = modelClass.getFields().get(1).map(new FieldScopeFunction()).list().toArray(new CtElement[0]);
+		assertTrue(real1.length > 0);
 	}
-
 	@Test
 	public void testLocalVariableReferenceDeclarationFunction() {
 		modelClass.filterChildren((CtLocalVariableReference<?> varRef)->{
@@ -226,6 +241,7 @@ public class VariableReferencesTest {
 		class Context {
 			int realCount = 0;
 			int expectedCount = 0;
+			Set<String> unique = new HashSet<>();
 		}
 		try {
 			Context context = new Context();
@@ -239,7 +255,7 @@ public class VariableReferencesTest {
 			//use filterChildren to scan all field references in model and count the number of field references which has same value => expectedCount
 			modelClass.filterChildren(new TypeFilter<>(CtVariableReference.class))
 			.forEach((CtVariableReference varRef)->{
-				if(!isTestFieldName(varRef.getSimpleName())) {
+				if(isTestFieldName(varRef.getSimpleName())==false) {
 					return;
 				}
 				int refValue = getVariableReferenceValue(varRef);
@@ -252,6 +268,7 @@ public class VariableReferencesTest {
 			});
 			//check that both scans found same number of references
 			assertEquals(context.expectedCount, context.realCount, "Number of references to field=" + value + " does not match");
+			
 		} catch (Throwable e) {
 			e.printStackTrace();
 			throw new AssertionError("Test failed on " + getParentMethodName(var), e);
@@ -361,21 +378,21 @@ public class VariableReferencesTest {
 		assertEquals(1, vars.size(), "Found unexpected variable declaration.");
 	}
 
-    /**
-     * Check support for enum values in {@link VariableReferenceFunction}.
-     * Each enum value should have a single reference linking back to itself.
-     */
-    @Test
-    public void testVariableReferenceFunctionWithEnum() throws Exception {
-        Factory factory = ModelUtils.build(EnumValueReferences.class);
-        CtClass<?> clazz = factory.Class().get(EnumValueReferences.class);
-        CtEnum<?> testEnum = clazz.getNestedType("TestEnum");
-        var values = testEnum.getEnumValues();
-        assertEquals(2, values.size());
-        values.forEach(ev -> {
-            List<CtVariableReference<?>> refs = ev.map(new VariableReferenceFunction()).list();
-            assertEquals(1, refs.size());
-            assertEquals(ev.getReference(), refs.get(0));
-        });
-    }
+	/**
+	 * Check support for enum values in {@link VariableReferenceFunction}.
+	 * Each enum value should have a single reference linking back to itself.
+	 */
+	@Test
+	public void testVariableReferenceFunctionWithEnum() throws Exception {
+		Factory factory = ModelUtils.build(EnumValueReferences.class);
+		CtClass<?> clazz = factory.Class().get(EnumValueReferences.class);
+		CtEnum<?> testEnum = clazz.getNestedType("TestEnum");
+		var values = testEnum.getEnumValues();
+		assertEquals(2, values.size());
+		values.forEach(ev -> {
+			List<CtVariableReference<?>> refs = ev.map(new VariableReferenceFunction()).list();
+			assertEquals(1, refs.size());
+			assertEquals(ev.getReference(), refs.get(0));
+		});
+	}
 }
