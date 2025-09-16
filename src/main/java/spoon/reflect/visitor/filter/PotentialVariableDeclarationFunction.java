@@ -146,10 +146,10 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 			} else if (parent instanceof CtIf ifElement) {
 				var cond = ifElement.getCondition();
 				searchTypePattern(outputConsumer, cond);
-			} else if(parent instanceof CtWhile whileElement) {
+			} else if (parent instanceof CtWhile whileElement) {
 				var expr = whileElement.getLoopingExpression();
 				searchTypePattern(outputConsumer, expr);
-			} else if(parent instanceof CtFor forElement) {
+			} else if (parent instanceof CtFor forElement) {
 				var expr = forElement.getExpression();
 				searchTypePattern(outputConsumer, expr);
 			} else if (parent instanceof CtBodyHolder || parent instanceof CtStatementList || parent instanceof CtExpression<?>) {
