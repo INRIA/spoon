@@ -8,6 +8,7 @@
 package spoon.reflect.visitor.filter;
 
 import spoon.reflect.code.CaseKind;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
@@ -157,6 +158,11 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 							return;
 						}
 					}
+				}
+			} else if (parent instanceof CtBinaryOperator<?>) {
+				siblingsQuery.setInput(scopeElement).forEach(outputConsumer);
+				if (query.isTerminated()) {
+					return;
 				}
 			}
 			if (parent instanceof CtModifiable) {
