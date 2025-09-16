@@ -7,9 +7,6 @@
  */
 package spoon.reflect.visitor.filter;
 
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
@@ -75,15 +72,7 @@ public class SiblingsFunction implements CtConsumableFunction<CtElement> {
 						canVisit = includingSelf;
 					}
 					if (canVisit) {
-						if (element instanceof CtLocalVariable) {
-							outputConsumer.accept(element);
-						} else if (element instanceof CtExpression) {
-							element.filterChildren(new TypeFilter<>(CtTypePattern.class))
-								.forEach(typePattern -> {
-									var var = ((CtTypePattern) typePattern).getVariable();
-									outputConsumer.accept(var);
-								});
-						}
+						outputConsumer.accept(element);
 					}
 				}
 			}
