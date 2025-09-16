@@ -12,6 +12,7 @@ import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -137,7 +138,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 						}
 					}
 				}
-			} else if (parent instanceof CtBodyHolder || parent instanceof CtStatementList) {
+			} else if (parent instanceof CtBodyHolder || parent instanceof CtStatementList || parent instanceof CtIf) {
 				//visit all previous CtVariable siblings of scopeElement element in parent BodyHolder or Statement list
 				siblingsQuery.setInput(scopeElement).forEach(outputConsumer);
 				if (query.isTerminated()) {
