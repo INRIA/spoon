@@ -12,6 +12,7 @@ import spoon.SpoonException;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
@@ -21,14 +22,15 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 
 /**
- * The mapping function, accepting {@link CtVariable}
+ * Mapping function for determining all {@link CtVariableReference}s that refer to a given {@link CtVariable}.
+ * The following subtypes of {@link CtVariable} are supported:
  * <ul>
  * <li>CtLocalVariable - local variable declared in body
- * <li>CtField - member field of an type
+ * <li>CtField - member field of a type
+ * <li>CtEnumValue - member field of an enum
  * <li>CtParameter - method parameter
- * <li>CtCatchVariable - try - catch variable
+ * <li>CtCatchVariable - try-catch variable
  * </ul>
- * and returning all the {@link CtVariableReference}, which refers this variable
  */
 public class VariableReferenceFunction implements CtConsumableFunction<CtElement> {
 
@@ -71,6 +73,14 @@ public class VariableReferenceFunction implements CtConsumableFunction<CtElement
 		@Override
 		public <T> void visitCtField(CtField<T> field) {
 			new FieldReferenceFunction((CtField<?>) variable).apply(scope, outputConsumer);
+		}
+
+		/**
+		 * calls outputConsumer for each reference of the enum value
+		 */
+		@Override
+		public <T> void visitCtEnumValue(CtEnumValue<T> enumValue) {
+			(new EnumValueReferenceFunction((CtEnumValue<?>) variable)).apply(scope, outputConsumer);
 		}
 
 		/**
