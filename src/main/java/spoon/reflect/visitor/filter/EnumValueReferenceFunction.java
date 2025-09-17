@@ -23,10 +23,18 @@ import spoon.reflect.declaration.CtEnumValue;
  * </pre>
  */
 public class EnumValueReferenceFunction extends FieldReferenceFunction {
+	/**
+	 * Creates a new {@link EnumValueReferenceFunction}.
+	 */
 	public EnumValueReferenceFunction() {
 		super();
 	}
 
+	/**
+	 * Creates a new {@link EnumValueReferenceFunction}.
+	 *
+	 * @param element The enum value to find references to
+	 */
 	public EnumValueReferenceFunction(CtEnumValue<?> element) {
 		super(element);
 	}
