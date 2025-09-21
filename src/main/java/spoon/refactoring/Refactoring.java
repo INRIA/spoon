@@ -9,6 +9,8 @@ package spoon.refactoring;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -21,6 +23,7 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -72,21 +75,50 @@ public final class Refactoring {
 	}
 
 	/**
-	 * Changes name of a method, propagates the change in the executable references of the model.
+	 * Changes name of a method, propagates the change to the executable references of the model.
+	 * If the method is a CtAnnotationMethod, the references in the annotations are changed too.
 	 */
 	public static void changeMethodName(final CtMethod<?> method, String newName) {
 
-		final List<CtExecutableReference<?>> references = Query.getElements(method.getFactory(), new TypeFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
+		renameExecutableReferences(method, newName);
+
+		if (method instanceof CtAnnotationMethod<?> annotationMethod) {
+			renameAnnotationReferences(annotationMethod, newName);
+		}
+
+		method.setSimpleName(newName);
+	}
+
+	private static void renameExecutableReferences(CtMethod<?> method, String newName) {
+		final List<CtExecutableReference<?>> references = Query.getElements(method.getFactory(), new TypeFilter<>(CtExecutableReference.class) {
 			@Override
 			public boolean matches(CtExecutableReference<?> reference) {
 				return reference.getDeclaration() == method;
 			}
 		});
 
-		method.setSimpleName(newName);
-
 		for (CtExecutableReference<?> reference : references) {
 			reference.setSimpleName(newName);
+		}
+	}
+
+	private static void renameAnnotationReferences(CtAnnotationMethod<?> method, String newName) {
+		final List<CtAnnotation<?>> references = Query.getElements(method.getFactory(), new TypeFilter<>(CtAnnotation.class) {
+			@Override
+			public boolean matches(CtAnnotation<?> annotation) {
+				var declaration = annotation.getAnnotationType().getDeclaration();
+				return method.getDeclaringType().equals(declaration);
+			}
+		});
+
+		String oldName = method.getSimpleName();
+		for (var reference : references) {
+			var copy = new HashMap<>(reference.getValues());
+			if (copy.containsKey(oldName)) {
+				var oldValue = copy.remove(oldName);
+				copy.put(newName, oldValue);
+				reference.setValues(copy);
+			}
 		}
 	}
 
@@ -237,7 +269,7 @@ public final class Refactoring {
 	 * Result is written to /$Path/$Package. For different output folder see
 	 * {@link Refactoring#removeDeprecatedMethods(String, String)}.
 	 *
-	 * @param input Path to java files in folder.
+	 * @param path Path to java files in folder.
 	 */
 	public static void removeDeprecatedMethods(String path) {
 		new CtDeprecatedRefactoring().removeDeprecatedMethods(path);
