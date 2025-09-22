@@ -42,8 +42,7 @@ public final class Refactoring {
 		final List<CtTypeReference<?>> references = Query.getElements(type.getFactory(), new TypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference<?> reference) {
-				String refFQN = reference.getQualifiedName();
-				return typeQFN.equals(refFQN);
+				return type == reference.getDeclaration();
 			}
 		});
 
