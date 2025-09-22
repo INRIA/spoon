@@ -143,15 +143,11 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 						}
 					}
 				}
-			} else if (parent instanceof CtIf ifElement) {
+			}
+			else if (parent instanceof CtIf ifElement) {
+				// search for variable declaration in if expression
 				var cond = ifElement.getCondition();
 				searchTypePattern(outputConsumer, cond);
-			} else if (parent instanceof CtWhile whileElement) {
-				var expr = whileElement.getLoopingExpression();
-				searchTypePattern(outputConsumer, expr);
-			} else if (parent instanceof CtFor forElement) {
-				var expr = forElement.getExpression();
-				searchTypePattern(outputConsumer, expr);
 			} else if (parent instanceof CtBodyHolder || parent instanceof CtStatementList || parent instanceof CtExpression<?>) {
 				//visit all previous CtVariable siblings of scopeElement element in parent BodyHolder or Statement list
 				siblingsQuery.setInput(scopeElement).forEach(outputConsumer);
@@ -159,25 +155,28 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 					return;
 				}
 				//visit parameters of CtCatch and CtExecutable (method, lambda)
-				if (parent instanceof CtCatch) {
-					CtCatch ctCatch = (CtCatch) parent;
+				if (parent instanceof CtCatch ctCatch) {
 					if (sendToOutput(ctCatch.getParameter(), outputConsumer)) {
 						return;
 					}
-				} else if (parent instanceof CtExecutable) {
-					CtExecutable<?> exec = (CtExecutable<?>) parent;
+				} else if (parent instanceof CtExecutable<?> exec) {
 					for (CtParameter<?> param : exec.getParameters()) {
 						if (sendToOutput(param, outputConsumer)) {
 							return;
 						}
 					}
+				} else if (parent instanceof CtFor forElement) {
+					// search for variable declaration in for loop expression
+					var expr = forElement.getExpression();
+					searchTypePattern(outputConsumer, expr);
+				} else if (parent instanceof CtWhile whileElement) {
+					// search for variable declaration in while loop expression
+					var expr = whileElement.getLoopingExpression();
+					searchTypePattern(outputConsumer, expr);
 				} else if (parent instanceof CtBinaryOperator<?> op) {
-					//search for type pattern in binary operator
+					// search for type pattern in binary operator
 					var left = op.getLeftHandOperand();
 					searchTypePattern(outputConsumer, left);
-					if (query.isTerminated()) {
-						return;
-					}
 				}
 			}
 			if (parent instanceof CtModifiable) {
@@ -187,8 +186,11 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 		}
 	}
 
-	private void searchTypePattern(CtConsumer<Object> outputConsumer, CtExpression<?> cond) {
-		cond.filterChildren(new TypeFilter<>(CtTypePattern.class))
+	/**
+	 * Search for the variable declaration in type patterns and send matches to outputConsumer
+	 */
+	private void searchTypePattern(CtConsumer<Object> outputConsumer, CtExpression<?> expr) {
+		expr.filterChildren(new TypeFilter<>(CtTypePattern.class))
 				.forEach(typePattern -> {
 					var var = ((CtTypePattern) typePattern).getVariable();
 					if (var != null && (variableName == null || variableName.equals(var.getSimpleName()))) {
