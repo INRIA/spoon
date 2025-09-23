@@ -235,6 +235,14 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	<R> CtMethod<R> getMethod(String name, CtTypeReference<?>... parameterTypes);
 
 	/**
+	 * Gets a method from its signature.
+	 *
+	 * @return null if does not exit
+	 */
+	@PropertyGetter(role = METHOD)
+	<R> CtMethod<R> getMethodBySignature(String signature);
+
+	/**
 	 * Returns the methods that are directly declared by this class or
 	 * interface.
 	 *
