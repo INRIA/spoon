@@ -42,6 +42,8 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -50,6 +52,9 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 import spoon.test.refactoring.processors.ThisTransformationProcessor;
 import spoon.test.refactoring.testclasses.AClass;
+import spoon.test.refactoring.testclasses.GenericRenaming;
+import spoon.test.refactoring.testclasses.MethodGenericRenaming;
+import spoon.testing.utils.ModelUtils;
 
 public class RefactoringTest {
 	@Test
@@ -212,4 +217,66 @@ public class RefactoringTest {
 		);
 	}
 
+	@Test
+	void testRenameType() throws Exception {
+		Factory factory = ModelUtils.build(GenericRenaming.class);
+		CtClass<?> clazz = factory.Class().get(GenericRenaming.class);
+		var nestedClass = clazz.getNestedType("SomeNestedType");
+		Refactoring.changeTypeName(nestedClass, "RenamedNestedType");
+
+		assertEquals("RenamedNestedType", nestedClass.getSimpleName());
+
+		var refs = clazz.getElements(new TypeFilter<>(CtTypeReference.class)).stream().filter(t -> t.getSimpleName().equals("RenamedNestedType")).toList();
+		assertEquals(2, refs.size());
+		for (var ref : refs) {
+			assertEquals(nestedClass, ref.getDeclaration());
+		}
+	}
+
+	@Test
+	void testRenameGenerics() throws Exception {
+		Factory factory = ModelUtils.build(GenericRenaming.class);
+		CtClass<?> clazz = factory.Class().get(GenericRenaming.class);
+		List<CtType<?>> types = clazz.getElements(new TypeFilter<>(CtType.class));
+
+		renameAndCheckClassGeneric(clazz, types, "SomeIdentifier", "TNew1", 15);
+		renameAndCheckClassGeneric(clazz, types, "SomeOther", "TNew2", 17);
+		renameAndCheckMethodGeneric(clazz, "doTheThing", types, "SomeMethodGeneric", "TNew3", 2);
+	}
+
+	@Test
+	void testRenameGenericsShouldRespectScope() throws Exception {
+		Factory factory = ModelUtils.build(MethodGenericRenaming.class);
+		CtClass<?> clazz = factory.Class().get(MethodGenericRenaming.class);
+		List<CtType<?>> types = clazz.getElements(new TypeFilter<>(CtType.class));
+		renameAndCheckMethodGeneric(clazz, "sort", types, "T", "TNew", 3);
+	}
+
+	private static void renameAndCheckMethodGeneric(CtClass<?> clazz, String method, List<CtType<?>> types, String oldName, String newName, int expectedRefs) {
+		var generic = clazz.getMethodsByName(method).get(0).getElements(new TypeFilter<>(CtType.class))
+				.stream().filter(t -> t.getSimpleName().equals(oldName)).findFirst().orElseThrow();
+		Refactoring.changeTypeName(generic, newName);
+		assertEquals(newName, generic.getSimpleName());
+
+		var typeRefs = clazz.getElements(new TypeFilter<>(CtTypeReference.class))
+				.stream().filter(typeRef -> typeRef.getSimpleName().equals(newName)).toList();
+		assertEquals(expectedRefs, typeRefs.size());
+		for (var typeRef : typeRefs) {
+			assertEquals(generic.getParent(CtMethod.class), typeRef.getParent(CtMethod.class));
+		}
+	}
+
+	private static void renameAndCheckClassGeneric(CtClass<?> clazz, List<CtType<?>> types, String oldName, String newName, int expectedRefs) {
+		var classGeneric = types.stream().filter((CtType<?> t) -> t.getSimpleName().equals(oldName)).findFirst().orElseThrow();
+		Refactoring.changeTypeName(classGeneric, newName);
+		assertEquals(newName, classGeneric.getSimpleName());
+
+		var typeRefs = clazz.getElements(new TypeFilter<>(CtTypeReference.class))
+				.stream().filter(typeRef -> typeRef.getSimpleName().equals(newName)).toList();
+
+		assertEquals(expectedRefs, typeRefs.size());
+		for (var typeRef : typeRefs) {
+			assertEquals(classGeneric, typeRef.getDeclaration());
+		}
+	}
 }
