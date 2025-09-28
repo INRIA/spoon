@@ -1934,17 +1934,35 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	@java.lang.Override
-	public <T> void visitCtMethod(final spoon.reflect.declaration.CtMethod<T> m) {
-		replaceInListIfExist(m.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(m));
-		replaceInListIfExist(m.getFormalCtTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener(m));
-		replaceElementIfExist(m.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(m));
-		replaceElementIfExist(m.getReceiverParameter(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableReceiverParameterReplaceListener(m));
-		replaceInListIfExist(m.getParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableParametersReplaceListener(m));
-		replaceInSetIfExist(m.getThrownTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableThrownTypesReplaceListener(m));
-		replaceElementIfExist(m.getBody(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableBodyReplaceListener(m));
-		replaceInListIfExist(m.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(m));
-	}
+	   @java.lang.Override
+    public <T> void visitCtMethod(final spoon.reflect.declaration.CtMethod<T> m) {
+        replaceInListIfExist(m.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(m));
+        replaceInListIfExist(m.getFormalCtTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener(m));
+        replaceElementIfExist(m.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(m));
+        replaceElementIfExist(m.getReceiverParameter(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableReceiverParameterReplaceListener(m));
+        replaceInListIfExist(m.getParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableParametersReplaceListener(m));
+        replaceInSetIfExist(m.getThrownTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableThrownTypesReplaceListener(m));
+
+        // FIX for single-statement body replacement
+        if (m.getBody() == original && original instanceof spoon.reflect.code.CtStatement) {
+            if (replace.length > 1) {
+                throw new spoon.support.visitor.replace.InvalidReplaceException("Cannot replace a single statement body with multiple elements.");
+            }
+            spoon.reflect.code.CtBlock<?> newBlock = m.getFactory().createBlock();
+            if (replace.length == 1) {
+                if (!(replace[0] instanceof spoon.reflect.code.CtStatement)) {
+                    throw new spoon.support.visitor.replace.InvalidReplaceException("A single statement body can only be replaced by another statement.");
+                }
+                newBlock.addStatement((spoon.reflect.code.CtStatement) replace[0]);
+            }
+            m.setBody(newBlock);
+        } else {
+            replaceElementIfExist(m.getBody(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableBodyReplaceListener(m));
+        }
+
+        replaceInListIfExist(m.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(m));
+    }
+
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	@java.lang.Override
