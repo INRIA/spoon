@@ -45,8 +45,7 @@ public final class Refactoring {
 		final List<CtTypeReference<?>> references = Query.getElements(type.getFactory(), new TypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference<?> reference) {
-				String refFQN = reference.getQualifiedName();
-				return typeQFN.equals(refFQN);
+				return type == reference.getDeclaration();
 			}
 		});
 
@@ -79,7 +78,6 @@ public final class Refactoring {
 	 * If the method is a CtAnnotationMethod, the references in the annotations are changed too.
 	 */
 	public static void changeMethodName(final CtMethod<?> method, String newName) {
-
 		renameExecutableReferences(method, newName);
 
 		if (method instanceof CtAnnotationMethod<?> annotationMethod) {
