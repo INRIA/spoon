@@ -8,14 +8,20 @@
 package spoon.reflect.visitor.filter;
 
 import spoon.reflect.code.CaseKind;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtFor;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtTypePattern;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -137,7 +143,16 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 						}
 					}
 				}
-			} else if (parent instanceof CtBodyHolder || parent instanceof CtStatementList) {
+			} else if (parent instanceof CtIf ifElement) {
+				var cond = ifElement.getCondition();
+				searchTypePattern(outputConsumer, cond);
+			} else if (parent instanceof CtWhile whileElement) {
+				var expr = whileElement.getLoopingExpression();
+				searchTypePattern(outputConsumer, expr);
+			} else if (parent instanceof CtFor forElement) {
+				var expr = forElement.getExpression();
+				searchTypePattern(outputConsumer, expr);
+			} else if (parent instanceof CtBodyHolder || parent instanceof CtStatementList || parent instanceof CtExpression<?>) {
 				//visit all previous CtVariable siblings of scopeElement element in parent BodyHolder or Statement list
 				siblingsQuery.setInput(scopeElement).forEach(outputConsumer);
 				if (query.isTerminated()) {
@@ -156,6 +171,13 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 							return;
 						}
 					}
+				} else if (parent instanceof CtBinaryOperator<?> op) {
+					//search for type pattern in binary operator
+					var left = op.getLeftHandOperand();
+					searchTypePattern(outputConsumer, left);
+					if (query.isTerminated()) {
+						return;
+					}
 				}
 			}
 			if (parent instanceof CtModifiable) {
@@ -163,6 +185,16 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 			}
 			scopeElement = parent;
 		}
+	}
+
+	private void searchTypePattern(CtConsumer<Object> outputConsumer, CtExpression<?> cond) {
+		cond.filterChildren(new TypeFilter<>(CtTypePattern.class))
+				.forEach(typePattern -> {
+					var var = ((CtTypePattern) typePattern).getVariable();
+					if (var != null && (variableName == null || variableName.equals(var.getSimpleName()))) {
+						outputConsumer.accept(var);
+					}
+				});
 	}
 
 	/**
