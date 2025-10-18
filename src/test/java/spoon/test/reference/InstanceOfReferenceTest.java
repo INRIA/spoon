@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTypePattern;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.testing.utils.GitHubIssue;
@@ -204,5 +205,34 @@ public class InstanceOfReferenceTest {
 		var decl = refs.get(0).getDeclaration();
 		assertNotNull(decl);
 		assertEquals(variable, decl);
+	}
+
+	@Test
+	public void testRecordPatterns() {
+		String code = """
+			record Point(int x, int y) {}
+			record Circle(Point center, int radius) {}
+		
+			public class Y {
+				public void test() {
+					Object obj = new Circle(new Point(10, 20), 5);
+					if (obj instanceof Circle(Point (int x, int y), int r)) {
+							System.out.println("Object is a Circle at center (" + x + ", " + y + ") with radius " + r);
+					}
+				}
+			}
+		""";
+		CtModel model = createModelFromString(code, 21);
+		CtLocalVariable<?> varX = model.getElements(new TypeFilter<>(CtTypePattern.class)).get(0).getVariable();
+		CtLocalVariable<?> varY = model.getElements(new TypeFilter<>(CtTypePattern.class)).get(1).getVariable();
+		CtLocalVariable<?> varR = model.getElements(new TypeFilter<>(CtTypePattern.class)).get(2).getVariable();
+		var refs = model.getElements(new TypeFilter<>(CtLocalVariableReference.class));
+		assertEquals(4, refs.size()); // includes reference to 'obj'
+		var declX = refs.get(1).getDeclaration();
+		var declY = refs.get(2).getDeclaration();
+		var declR = refs.get(3).getDeclaration();
+		assertEquals(varX, declX);
+		assertEquals(varY, declY);
+		assertEquals(varR, declR);
 	}
 }
