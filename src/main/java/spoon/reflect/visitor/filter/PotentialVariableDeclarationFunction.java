@@ -148,8 +148,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 				// search for variable declaration in case
 				var expr = caseElement.getCaseExpression();
 				searchTypePattern(outputConsumer, expr);
-			}
-			else if (parent instanceof CtIf ifElement) {
+			} else if (parent instanceof CtIf ifElement) {
 				// search for variable declaration in if expression
 				var cond = ifElement.getCondition();
 				searchTypePattern(outputConsumer, cond);
