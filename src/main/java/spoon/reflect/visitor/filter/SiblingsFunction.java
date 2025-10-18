@@ -7,7 +7,9 @@
  */
 package spoon.reflect.visitor.filter;
 
+import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
@@ -72,7 +74,15 @@ public class SiblingsFunction implements CtConsumableFunction<CtElement> {
 						canVisit = includingSelf;
 					}
 					if (canVisit) {
-						outputConsumer.accept(element);
+						if (element instanceof CtIf ctIf) {
+							// check for flow scoped variable declarations in if conditions
+							var vars = ctIf.getCondition().getElements(new TypeFilter<>(CtVariable.class));
+							for (var var : vars) {
+								outputConsumer.accept(var);
+							}
+						} else {
+							outputConsumer.accept(element);
+						}
 					}
 				}
 			}
