@@ -40,8 +40,14 @@ import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -50,6 +56,13 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 import spoon.test.refactoring.processors.ThisTransformationProcessor;
 import spoon.test.refactoring.testclasses.AClass;
+import spoon.test.refactoring.testclasses.GenericRenaming;
+import spoon.test.refactoring.testclasses.MethodGenericRenaming;
+import spoon.testing.utils.ModelUtils;
+import spoon.test.refactoring.testclasses.AnnotationMethodRenaming;
+import spoon.test.refactoring.testclasses.ExampleAnnotation;
+import spoon.test.refactoring.testclasses.InterfaceRenaming;
+import spoon.test.refactoring.testclasses.MethodRenaming;
 
 public class RefactoringTest {
 	@Test
@@ -212,4 +225,127 @@ public class RefactoringTest {
 		);
 	}
 
+	@Test
+	void testRenameType() throws Exception {
+		Factory factory = ModelUtils.build(GenericRenaming.class);
+		CtClass<?> clazz = factory.Class().get(GenericRenaming.class);
+		var nestedClass = clazz.getNestedType("SomeNestedType");
+		Refactoring.changeTypeName(nestedClass, "RenamedNestedType");
+
+		assertEquals("RenamedNestedType", nestedClass.getSimpleName());
+
+		var refs = clazz.getElements(new TypeFilter<>(CtTypeReference.class)).stream().filter(t -> t.getSimpleName().equals("RenamedNestedType")).toList();
+		assertEquals(2, refs.size());
+		for (var ref : refs) {
+			assertEquals(nestedClass, ref.getDeclaration());
+		}
+	}
+
+	@Test
+	void testRenameGenerics() throws Exception {
+		Factory factory = ModelUtils.build(GenericRenaming.class);
+		CtClass<?> clazz = factory.Class().get(GenericRenaming.class);
+		List<CtType<?>> types = clazz.getElements(new TypeFilter<>(CtType.class));
+
+		renameAndCheckClassGeneric(clazz, types, "SomeIdentifier", "TNew1", 15);
+		renameAndCheckClassGeneric(clazz, types, "SomeOther", "TNew2", 17);
+		renameAndCheckMethodGeneric(clazz, "doTheThing", types, "SomeMethodGeneric", "TNew3", 2);
+	}
+
+	@Test
+	void testRenameGenericsShouldRespectScope() throws Exception {
+		Factory factory = ModelUtils.build(MethodGenericRenaming.class);
+		CtClass<?> clazz = factory.Class().get(MethodGenericRenaming.class);
+		List<CtType<?>> types = clazz.getElements(new TypeFilter<>(CtType.class));
+		renameAndCheckMethodGeneric(clazz, "sort", types, "T", "TNew", 3);
+	}
+
+	private static void renameAndCheckMethodGeneric(CtClass<?> clazz, String method, List<CtType<?>> types, String oldName, String newName, int expectedRefs) {
+		var generic = clazz.getMethodsByName(method).get(0).getElements(new TypeFilter<>(CtType.class))
+				.stream().filter(t -> t.getSimpleName().equals(oldName)).findFirst().orElseThrow();
+		Refactoring.changeTypeName(generic, newName);
+		assertEquals(newName, generic.getSimpleName());
+
+		var typeRefs = clazz.getElements(new TypeFilter<>(CtTypeReference.class))
+				.stream().filter(typeRef -> typeRef.getSimpleName().equals(newName)).toList();
+		assertEquals(expectedRefs, typeRefs.size());
+		for (var typeRef : typeRefs) {
+			assertEquals(generic.getParent(CtMethod.class), typeRef.getParent(CtMethod.class));
+		}
+	}
+
+	private static void renameAndCheckClassGeneric(CtClass<?> clazz, List<CtType<?>> types, String oldName, String newName, int expectedRefs) {
+		var classGeneric = types.stream().filter((CtType<?> t) -> t.getSimpleName().equals(oldName)).findFirst().orElseThrow();
+		Refactoring.changeTypeName(classGeneric, newName);
+		assertEquals(newName, classGeneric.getSimpleName());
+
+		var typeRefs = clazz.getElements(new TypeFilter<>(CtTypeReference.class))
+				.stream().filter(typeRef -> typeRef.getSimpleName().equals(newName)).toList();
+
+		assertEquals(expectedRefs, typeRefs.size());
+		for (var typeRef : typeRefs) {
+			assertEquals(classGeneric, typeRef.getDeclaration());
+		}
+	}
+
+	@Test
+	void testChangeMethodName() throws Exception {
+		String newName = "methodRenamed";
+		String newNameStaticMethod = "nestedStaticMethodRenamed";
+		String newNameNestedMethod = "nestedMethodRenamed";
+
+		Factory factory = ModelUtils.build(MethodRenaming.class);
+		CtClass<?> clazz = factory.Class().get(MethodRenaming.class);
+		var methods = clazz.getElements(new TypeFilter<>(CtMethod.class));
+		Refactoring.changeMethodName(methods.get(1), newName);
+		Refactoring.changeMethodName(methods.get(2), newNameStaticMethod);
+		Refactoring.changeMethodName(methods.get(3), newNameNestedMethod);
+
+		var refs = clazz.getElements(new TypeFilter<>(CtExecutableReference.class))
+				.stream().filter(e -> !e.getSimpleName().equals("<init>")).toList();
+
+		assertEquals(newName, methods.get(1).getSimpleName());
+		assertEquals(newNameStaticMethod, methods.get(2).getSimpleName());
+		assertEquals(newNameNestedMethod, methods.get(3).getSimpleName());
+
+		assertEquals(newName, refs.get(1).getSimpleName());
+		assertEquals(newNameStaticMethod, refs.get(2).getSimpleName());
+		assertEquals(newNameNestedMethod, refs.get(3).getSimpleName());
+	}
+
+	@Test
+	void testChangeDefaultInterfaceMethodName() throws Exception {
+		String newName = "defaultInterfaceMethodRenamed";
+		Factory factory = ModelUtils.build(MethodRenaming.class, InterfaceRenaming.class);
+		CtType<?> ctInterface = factory.Interface().get(InterfaceRenaming.class);
+		var methods = ctInterface.getElements(new TypeFilter<>(CtMethod.class));
+		Refactoring.changeMethodName(methods.get(0), newName);
+
+		assertEquals(newName, methods.get(0).getSimpleName(), "Default interface method name was not changed");
+		CtClass<?> clazz = factory.Class().get(MethodRenaming.class);
+		var executableRefs = clazz.getElements(new TypeFilter<>(CtExecutableReference.class));
+		assertEquals(newName, executableRefs.get(2).getSimpleName(), "Default interface method reference was not changed");
+	}
+
+	@Test
+	void testChangeAnnotationMethodName() throws Exception {
+		String newName = "annotationMethodRenamed";
+		Factory factory = ModelUtils.build(AnnotationMethodRenaming.class, ExampleAnnotation.class);
+		CtType<?> ctInterface = factory.Annotation().get(ExampleAnnotation.class);
+		var methods = ctInterface.getElements(new TypeFilter<>(CtAnnotationMethod.class));
+		Refactoring.changeMethodName(methods.get(0), newName);
+
+		assertEquals(newName, methods.get(0).getSimpleName(), "Annotation method name was not changed");
+		CtClass<?> clazz = factory.Class().get(AnnotationMethodRenaming.class);
+		var annotations = clazz.getElements(new TypeFilter<>(CtAnnotation.class));
+		assertEquals(5, annotations.size());
+		assertEquals((Integer) 0, annotations.get(0).getValue(newName).getValueByRole(CtRole.VALUE));
+		assertEquals((Integer) 1, annotations.get(1).getValue(newName).getValueByRole(CtRole.VALUE));
+		assertEquals((Integer) 1, annotations.get(2).getValue(newName).getValueByRole(CtRole.VALUE));
+		assertEquals((Integer) 2, annotations.get(3).getValue(newName).getValueByRole(CtRole.VALUE));
+		assertEquals((Integer) 3, annotations.get(4).getValue(newName).getValueByRole(CtRole.VALUE));
+
+		var refs = clazz.getMethodsByName("processingTheAnnotation").get(0).getElements(new TypeFilter<>(CtExecutableReference.class));
+		assertEquals(newName, refs.get(3).getSimpleName());
+	}
 }
