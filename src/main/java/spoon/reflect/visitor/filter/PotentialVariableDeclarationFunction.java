@@ -126,23 +126,28 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 				if (query.isTerminated()) {
 					return;
 				}
-			} else if (parent instanceof CtSwitch
-					&& scopeElement instanceof CtCase && ((CtCase<?>) scopeElement).getCaseKind() == CaseKind.COLON) {
-				SiblingsFunction siblingsFunction = new SiblingsFunction().mode(SiblingsFunction.Mode.PREVIOUS);
-				List<CtCase<?>> list = input.getFactory().createQuery()
-						.map(siblingsFunction)
-						.setInput(scopeElement)
-						.filterChildren(new TypeFilter<>(CtCase.class))
-						.list();
+			} else if (parent instanceof CtSwitch && scopeElement instanceof CtCase<?> caseElement) {
+				if (caseElement.getCaseKind() == CaseKind.COLON) {
+					SiblingsFunction siblingsFunction = new SiblingsFunction().mode(SiblingsFunction.Mode.PREVIOUS);
+					List<CtCase<?>> list = input.getFactory().createQuery()
+							.map(siblingsFunction)
+							.setInput(scopeElement)
+							.filterChildren(new TypeFilter<>(CtCase.class))
+							.list();
 
-				for (CtCase<?> c : list) {
-					for (CtStatement statement : c.getStatements()) {
-						if (statement instanceof CtLocalVariable && ((CtLocalVariable<?>) statement).getSimpleName().equals(variableName)) {
-							sendToOutput((CtVariable<?>) statement, outputConsumer);
-							return;
+					for (CtCase<?> c : list) {
+						for (CtStatement statement : c.getStatements()) {
+							if (statement instanceof CtLocalVariable && ((CtLocalVariable<?>) statement).getSimpleName().equals(variableName)) {
+								sendToOutput((CtVariable<?>) statement, outputConsumer);
+								return;
+							}
 						}
 					}
 				}
+
+				// search for variable declaration in case
+				var expr = caseElement.getCaseExpression();
+				searchTypePattern(outputConsumer, expr);
 			}
 			else if (parent instanceof CtIf ifElement) {
 				// search for variable declaration in if expression
