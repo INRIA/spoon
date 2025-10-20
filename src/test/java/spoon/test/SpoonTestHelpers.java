@@ -159,11 +159,6 @@ public class SpoonTestHelpers {
 						isMetamodelRelatedType(m.getType());
 	}
 
-	/** Place at the top of a JUnit4 test method to disable it for Windows. */
-	public static void assumeNotWindows() {
-		assumeFalse(System.getProperty("os.name").toLowerCase().contains("windows"));
-	}
-
 	/** Builds a model from code given as string */
 	public static CtModel createModelFromString(String code, int complianceLevel) {
 		Launcher launcher = new Launcher();
