@@ -25,7 +25,11 @@ import spoon.metamodel.MetamodelConcept;
 import spoon.metamodel.MetamodelProperty;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtTypePattern;
+import spoon.reflect.code.CtUnnamedPattern;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -98,9 +102,19 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 			} else if (CtFieldAccess.class.isAssignableFrom(o.getClass()) &&  mmField.getRole()==CtRole.VARIABLE) {
 				itemType = factory.createCtTypeReference(CtFieldReference.class);
 			}
+			if (mmField.getRole() == CtRole.IMPORT_REFERENCE) {
+				itemType = factory.createCtTypeReference(CtTypeReference.class);
+			}
+
 			CtElement argument = (CtElement) createCompatibleObject(itemType);
 
 			assertNotNull(argument);
+
+			if (mmField.getRole() == CtRole.PATTERN && argument instanceof CtUnnamedPattern) {
+				CtTypePattern safe = factory.Core().createTypePattern();
+				safe.setType(factory.Type().OBJECT);
+				argument = safe;
+			}
 
 			// we create a fresh object
 			CtElement receiver = o.clone();
