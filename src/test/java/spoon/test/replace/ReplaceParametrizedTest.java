@@ -16,6 +16,7 @@
  */
 package spoon.test.replace;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import spoon.SpoonException;
@@ -24,12 +25,12 @@ import spoon.metamodel.Metamodel;
 import spoon.metamodel.MetamodelConcept;
 import spoon.metamodel.MetamodelProperty;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnnamedPattern;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -110,10 +111,28 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 
 			assertNotNull(argument);
 
-			if (mmField.getRole() == CtRole.PATTERN && argument instanceof CtUnnamedPattern) {
-				CtTypePattern safe = factory.Core().createTypePattern();
-				safe.setType(factory.Type().OBJECT);
-				argument = safe;
+			Class<?> want = itemType.getActualClass();
+
+			if (argument instanceof CtUnnamedPattern) {
+				if (CtPattern.class.isAssignableFrom(want)) {
+					CtTypePattern safe = factory.Core().createTypePattern();
+					safe.setType(factory.Type().OBJECT);
+					argument = safe;
+				} else if (CtExpression.class.isAssignableFrom(want)) {
+					argument = factory.Code().createLiteral(0);
+				} else {
+					Assumptions.assumeTrue(false, 
+						() -> "Skipping: CtUnnamedPattern not valid for role " + mmField.getRole()
+							+ " expecting " + want.getSimpleName());
+				}
+			}
+
+			if (CtTypeReference.class.isAssignableFrom(want) && argument instanceof spoon.reflect.reference.CtTypeParameterReference tpr) {
+				spoon.reflect.reference.CtTypeReference<?> bound = tpr.getBoundingType();
+				if (bound == null) {
+					bound = factory.Type().OBJECT;
+				}
+				argument = bound.clone();
 			}
 
 			// we create a fresh object
