@@ -41,3 +41,7 @@ echo "::endgroup::"
 echo "::group::Running jreleaser"
 JRELEASER_PROJECT_VERSION="$NEXT_BETA_VERSION" jreleaser-cli release
 echo "::endgroup::"
+
+echo "::group::Delete branch"
+git push origin --delete "$BRANCH_NAME"
+echo "::endgroup::"
