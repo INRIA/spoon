@@ -38,7 +38,7 @@ jobs:
       - name: Prepare Signature Subject Checksums
         run: |
           cd target/staging-deploy
-          sha256sum $(find fr -type f -not -name maven-metadata.xml -not -name '*.md5' -not -name '*.sha1' -print) > ../subject-checksums.txt
+          sha256sum $(find fr -type f -not -name maven-metadata.xml -not -name '*.asc' -not -name '*.md5' -not -name '*.sha1' -not -name '*.sha256' -not -name '*.sha512' -print) > ../subject-checksums.txt
 
       - name: Sign artifacts with sigstore/cosign
         uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
