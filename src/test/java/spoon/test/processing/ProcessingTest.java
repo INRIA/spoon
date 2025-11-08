@@ -259,22 +259,24 @@ public class ProcessingTest {
 		Launcher launcher = new Launcher();
 		p.setFactory(launcher.getFactory());
 
+		Object o = "foo";
 		ProcessorProperties props = new ProcessorPropertiesImpl();
 		props.set("aString", "foo");
-		props.set("anObject", "foo");
-		props.set("anInt", "foo");
-
-		try {
-			ProcessorUtils.initProperties(p, props);
-			fail();
-		} catch (SpoonException e) {
-			assertTrue(e.getMessage().contains("anInt"));
-		}
-
+		props.set("anObject", o);
+		ProcessorUtils.initProperties(p, props);
 
 		assertEquals("foo", p.aString);
 		assertEquals(0, p.anInt);
-		assertNull(p.anObject);
+		assertSame(o, p.anObject);
+		
+		ProcessorProperties bad = new ProcessorPropertiesImpl();
+		bad.set("anInt", "foo"); 
+		SpoonException ex = assertThrows(SpoonException.class, () -> ProcessorUtils.initProperties(p, bad));
+		assertTrue(ex.getMessage().contains("anInt"));
+
+		assertEquals("foo", p.aString);
+		assertEquals(0, p.anInt);
+		assertSame(o, p.anObject);	
 	}
 
 	@Test
