@@ -56,6 +56,9 @@ public interface CtClass<T> extends CtType<T>, CtStatement, CtSealable {
 	 * e.g. java.util.HashSet has constructor with a java.util.Collection parameter `(java.util.Collection)`
 	 *
 	 * Derived from {@link #getTypeMembers()}
+	 *
+	 * @param signature the constructor signature
+	 * @return the constructor matching the signature
 	 */
 	@DerivedProperty
 	@PropertyGetter(role = CONSTRUCTOR)

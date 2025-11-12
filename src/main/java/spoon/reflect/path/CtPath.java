@@ -23,6 +23,7 @@ public interface CtPath {
 
 	/**
 	 * Search for elements matching this CtPatch from shadow model.
+	 * @return the list of matched elements for this path
 	 */
 	CtElement evaluateOnShadowModel();
 
