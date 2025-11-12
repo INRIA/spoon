@@ -35,15 +35,20 @@ jobs:
           JRELEASER_DEPLOY_MAVEN_MAVENCENTRAL_SONATYPE_USERNAME: ${{ secrets.JRELEASER_DEPLOY_MAVEN_MAVENCENTRAL_SONATYPE_USERNAME }}
           JRELEASER_DEPLOY_MAVEN_MAVENCENTRAL_SONATYPE_TOKEN: ${{ secrets.JRELEASER_DEPLOY_MAVEN_MAVENCENTRAL_SONATYPE_TOKEN }}
 
+      - name: Prepare Signature Subject Checksums
+        run: |
+          cd target/staging-deploy
+          sha256sum $(find fr -type f -not -name maven-metadata.xml -not -name '*.asc' -not -name '*.md5' -not -name '*.sha1' -not -name '*.sha256' -not -name '*.sha512' -print) > ../subject-checksums.txt
+
       - name: Sign artifacts with sigstore/cosign
         uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
         with:
-          subject-path: './target/staging-deploy/**/*.jar'
+          subject-checksums: './target/subject-checksums.txt'
 
         # Log failures
       - name: JReleaser release output
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: jreleaser-release
           path: |
