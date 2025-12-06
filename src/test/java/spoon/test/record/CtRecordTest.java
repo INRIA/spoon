@@ -266,11 +266,11 @@ public class CtRecordTest {
 
 		// Assert
 		assertFalse(sortedConstructors[0].isImplicit());
-		assertEquals(sortedConstructors[0].getParameters().get(0).getSimpleName(), "s");
+		assertEquals("s", sortedConstructors[0].getParameters().get(0).getSimpleName());
 		assertFalse(sortedConstructors[0].isCompactConstructor());
 
 		assertTrue(sortedConstructors[1].isImplicit());
-		assertEquals(sortedConstructors[1].getParameters().get(0).getSimpleName(), "i");
+		assertEquals("i", sortedConstructors[1].getParameters().get(0).getSimpleName());
 		assertFalse(sortedConstructors[1].isCompactConstructor());
 	}
 
@@ -291,7 +291,7 @@ public class CtRecordTest {
 		// Assert
 		assertFalse(constructor.isImplicit());
 		assertFalse(constructor.isCompactConstructor());
-		assertEquals(constructor.getParameters().get(0).getSimpleName(), "x");
+		assertEquals("x", constructor.getParameters().get(0).getSimpleName());
 	}
 
 	@ModelTest(value = "./src/test/resources/records/GenericRecord.java", complianceLevel = 16)
