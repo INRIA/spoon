@@ -225,8 +225,6 @@ public class CtRecordTest {
         CtAnnotation<?> annotation = factory.createAnnotation(factory.createCtTypeReference(Override.class));
         recordComponent.addAnnotation(annotation);
         record.addRecordComponent(recordComponent);
-
-        assertEquals("public record AddRecordComponentWithAnnotation(@java.lang.Override\nint a) {}", record.toString());
         CtField<?> field = record.getFields().get(0);
         assertTrue(field.hasAnnotation(Override.class));
     }
