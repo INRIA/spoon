@@ -23,6 +23,7 @@ import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -32,6 +33,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -211,7 +213,25 @@ public class CtRecordTest {
 		assertTrue(head(head(records).getMethods()).hasAnnotation(Override.class));
 	}
 
-	@Test
+    @Test
+    public void testAddRecordComponentWithAnnotation() {
+        Factory factory = new Launcher().getFactory();
+        CtRecord record = factory.createRecord();
+        record.addModifier(ModifierKind.PUBLIC);
+        record.setSimpleName("AddRecordComponentWithAnnotation");
+        CtRecordComponent recordComponent = factory.createRecordComponent();
+        recordComponent.setSimpleName("a");
+        recordComponent.setType(factory.createCtTypeReference(int.class));
+        CtAnnotation<?> annotation = factory.createAnnotation(factory.createCtTypeReference(Override.class));
+        recordComponent.addAnnotation(annotation);
+        record.addRecordComponent(recordComponent);
+
+        assertEquals("public record AddRecordComponentWithAnnotation(@java.lang.Override\nint a) {}", record.toString());
+        CtField<?> field = record.getFields().get(0);
+        assertTrue(field.hasAnnotation(Override.class));
+    }
+
+    @Test
 	void printRecordWithInterface() {
 		// a record with an interface should be printed like a class with an interface
 		String code = "src/test/resources/records/RecordWithInterface.java";

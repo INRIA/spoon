@@ -7,14 +7,17 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 import spoon.JLSViolation;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -77,6 +80,7 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 	@Override
 	public CtField<?> toField() {
 		CtField<?> field = this.getFactory().createField();
+		field.setAnnotations(getClonedAnnotations());
 		field.setSimpleName(getSimpleName());
 		field.setType(getClonedType());
 		Set<CtExtendedModifier> modifiers = new HashSet<>();
@@ -93,6 +97,14 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 
 	private @Nullable CtTypeReference<?> getClonedType() {
 		return getType() != null ? getType().clone() : null;
+	}
+
+	private List<CtAnnotation<?>> getClonedAnnotations() {
+		List<CtAnnotation<?>> clonedAnnotations = new ArrayList<>(getAnnotations().size());
+		for (CtAnnotation<?> annotation: annotations) {
+			clonedAnnotations.add(annotation.clone());
+		}
+		return clonedAnnotations;
 	}
 
 	@Override
