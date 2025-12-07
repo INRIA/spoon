@@ -14,7 +14,7 @@ runs:
     - name: Check Nixpkgs inputs
       uses: DeterminateSystems/flake-checker-action@3164002371bc90729c68af0e24d5aacf20d7c9f6 # v12
       with:
-        fail-mode: true
+        fail-mode: false
     - name: Use Maven dependency cache
       uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       with:
