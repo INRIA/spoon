@@ -68,7 +68,9 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 		components.add(component);
 
 		if (getField(component.getSimpleName()) == null) {
-			addField(component.toField());
+			// Implicit fields are inserted at index 0
+			// Preserve the same ordering as the one of record components
+			addField(components.size(), component.toField());
 		}
 		if (!hasMethodWithSameNameAndNoParameter(component)) {
 			addMethod(component.toMethod());

@@ -32,6 +32,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -329,6 +330,26 @@ public class CtRecordTest {
 		assertThat(parsed.getFields()).anySatisfy(it -> assertThat(it.getSimpleName()).isEqualTo("id"));
 		assertThat(parsed.getFields()).anySatisfy(it -> assertThat(it.getSimpleName()).isEqualTo("name"));
 		assertThat(parsed.getFields()).anySatisfy(it -> assertThat(it.getSimpleName()).isEqualTo("ADMIN_NAME"));
+	}
+
+	@Test
+	void testRecordComponentOrder() {
+		// contract: implicit fields generated from record components are the same order as the record components
+		Factory factory = new Launcher().getFactory();
+		CtRecord record = factory.createRecord();
+		record.addModifier(ModifierKind.PUBLIC);
+		record.setSimpleName("RecordComponentOrder");
+		CtRecordComponent recordComponent1 = factory.createRecordComponent();
+		recordComponent1.setType(factory.createCtTypeReference(int.class));
+		recordComponent1.setSimpleName("first");
+		record.addRecordComponent(recordComponent1);
+		CtRecordComponent recordComponent2 = factory.createRecordComponent();
+		recordComponent2.setType(factory.createCtTypeReference(float.class));
+		recordComponent2.setSimpleName("second");
+		record.addRecordComponent(recordComponent2);
+
+		assertEquals("first", record.getFields().get(0).getSimpleName());
+		assertEquals("second", record.getFields().get(1).getSimpleName());
 	}
 
 	private <T> T head(Collection<T> collection) {
