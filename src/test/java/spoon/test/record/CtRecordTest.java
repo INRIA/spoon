@@ -336,20 +336,22 @@ public class CtRecordTest {
 	void testRecordComponentOrder() {
 		// contract: implicit fields generated from record components are the same order as the record components
 		Factory factory = new Launcher().getFactory();
-		CtRecord record = factory.createRecord();
-		record.addModifier(ModifierKind.PUBLIC);
-		record.setSimpleName("RecordComponentOrder");
-		CtRecordComponent recordComponent1 = factory.createRecordComponent();
-		recordComponent1.setType(factory.createCtTypeReference(int.class));
-		recordComponent1.setSimpleName("first");
-		record.addRecordComponent(recordComponent1);
-		CtRecordComponent recordComponent2 = factory.createRecordComponent();
-		recordComponent2.setType(factory.createCtTypeReference(float.class));
-		recordComponent2.setSimpleName("second");
-		record.addRecordComponent(recordComponent2);
-
-		assertEquals("first", record.getFields().get(0).getSimpleName());
-		assertEquals("second", record.getFields().get(1).getSimpleName());
+		CtRecord record = factory.createRecord()
+			.<CtRecord>setSimpleName("RecordComponentOrder")
+			.<CtRecord>addModifier(ModifierKind.PUBLIC)
+			.addRecordComponent(
+				factory.createRecordComponent()
+					.<CtRecordComponent>setType(factory.Type().integerPrimitiveType())
+					.setSimpleName("first")
+			)
+			.addRecordComponent(
+				factory.createRecordComponent()
+					.<CtRecordComponent>setType(factory.Type().floatPrimitiveType())
+					.setSimpleName("second")
+			);
+		assertThat(record.getFields())
+			.map(CtField::getSimpleName)
+			.containsExactly("first", "second");
 	}
 
 	private <T> T head(Collection<T> collection) {
