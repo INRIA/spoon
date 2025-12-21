@@ -30,6 +30,12 @@ public interface CtRecord extends CtClass<Object> {
 	@PropertySetter(role = CtRole.RECORD_COMPONENT)
 	CtRecord  removeRecordComponent(CtRecordComponent component);
 
+	/**
+	 * Adds the canonical constructor for this record if it is not already present.
+	 */
+	@PropertySetter(role = CtRole.RECORD_COMPONENT)
+	CtRecord addCanonicalConstructor();
+
 	@PropertyGetter(role = CtRole.RECORD_COMPONENT)
 	Set<CtRecordComponent> getRecordComponents();
 	@PropertySetter(role = CtRole.RECORD_COMPONENT)

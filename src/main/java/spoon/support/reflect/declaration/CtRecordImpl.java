@@ -18,8 +18,11 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.jspecify.annotations.Nullable;
 import spoon.JLSViolation;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
@@ -32,9 +35,11 @@ import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
@@ -90,6 +95,46 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 			typeMembers.remove(component.toMethod());
 		}
 		return this;
+	}
+
+	@Override
+	public CtRecord addCanonicalConstructor() {
+
+		CtTypeReference<?>[] typeReferences =
+			getFields().stream()
+				.filter(CtElement::isImplicit)
+				.map(CtTypedElement::getType)
+				.toList().toArray(new CtTypeReference[0]);
+
+		// If a canonical constructor is not already present, adds one
+		CtConstructor<?> constructor = getConstructor(typeReferences);
+		if (constructor == null) {
+			CtConstructor<?> canonical = getFactory().createConstructor();
+			canonical.setImplicit(true);
+			canonical.setExtendedModifiers(Collections.singleton(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
+			CtBlock<?> body = getFactory().createBlock();
+			for (CtField<?> field: getFields()) {
+				if (field.isImplicit()) {
+					CtParameter<?> parameter = getFactory().createParameter();
+					CtTypeReference<?> type = getClonedType(field.getType());
+					parameter.setType(type);
+					parameter.setSimpleName(field.getSimpleName());
+					canonical.addParameter(parameter);
+					var write = getFactory().Code().createVariableWrite(field.getReference(), false);
+					var read = getFactory().Code().createVariableRead(parameter.getReference(), false);
+					var assignment = getFactory().Code().createVariableAssignment((CtVariableReference)write.getVariable(), false, read);
+					body.addStatement(assignment);
+				}
+			}
+			canonical.setBody(body);
+			addTypeMember(canonical);
+		}
+
+		return this;
+	}
+
+	private @Nullable CtTypeReference<?> getClonedType(CtTypeReference<?> type) {
+		return type != null ? type.clone() : null;
 	}
 
 	@Override
