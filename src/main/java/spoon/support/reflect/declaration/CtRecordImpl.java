@@ -125,8 +125,8 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 					CtVariableAccess<?> write = getFactory().Code().createVariableWrite(field.getReference(), false);
 					CtVariableReference<?> writeRef = write.getVariable();
 					CtVariableAccess<?> read = getFactory().Code().createVariableRead(parameter.getReference(), false);
-					@SuppressWarnings({"rawtypes","unchecked"})
-					CtAssignment<?,?> assignment = getFactory().Code().createVariableAssignment((CtVariableReference) writeRef, false, read);
+					@SuppressWarnings({"rawtypes", "unchecked"})
+					CtAssignment<?, ?> assignment = getFactory().Code().createVariableAssignment((CtVariableReference) writeRef, false, read);
 					body.addStatement(assignment);
 				}
 			}
