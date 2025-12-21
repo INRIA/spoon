@@ -22,7 +22,9 @@ import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import spoon.JLSViolation;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
@@ -120,9 +122,11 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 					parameter.setType(type);
 					parameter.setSimpleName(field.getSimpleName());
 					canonical.addParameter(parameter);
-					var write = getFactory().Code().createVariableWrite(field.getReference(), false);
-					var read = getFactory().Code().createVariableRead(parameter.getReference(), false);
-					var assignment = getFactory().Code().createVariableAssignment((CtVariableReference) write.getVariable(), false, read);
+					CtVariableAccess<?> write = getFactory().Code().createVariableWrite(field.getReference(), false);
+					CtVariableReference<?> writeRef = write.getVariable();
+					CtVariableAccess<?> read = getFactory().Code().createVariableRead(parameter.getReference(), false);
+					@SuppressWarnings({"rawtypes", "unchecked"})
+					CtAssignment<?,?> assignment = getFactory().Code().createVariableAssignment((CtVariableReference) writeRef, false, read);
 					body.addStatement(assignment);
 				}
 			}
