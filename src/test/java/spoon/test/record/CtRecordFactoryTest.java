@@ -42,7 +42,7 @@ public class CtRecordFactoryTest {
 					.<CtRecordComponent>setType(factory.Type().integerPrimitiveType())
 					.setSimpleName("value")
 			)
-			.addCanonicalConstructor();
+			.canonicalConstructor();
 
 		assertEquals(1, record.getFields().size());
 		assertEquals(1, record.getMethods().size());
@@ -78,7 +78,7 @@ public class CtRecordFactoryTest {
 					.<CtRecordComponent>setType(factory.Type().floatPrimitiveType())
 					.setSimpleName("second")
 			)
-			.addCanonicalConstructor();
+			.canonicalConstructor();
 
 		assertEquals("public record MultiParameter(int first, float second) {}", record.toString());
 
@@ -167,7 +167,7 @@ public class CtRecordFactoryTest {
 					.<CtRecordComponent>setType(factory.Type().integerPrimitiveType())
 					.setSimpleName("i")
 			)
-			.addCanonicalConstructor()
+			.canonicalConstructor()
 			.addConstructor(
 				factory.createConstructor()
 					.addParameter(
