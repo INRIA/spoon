@@ -32,6 +32,8 @@ public interface CtRecord extends CtClass<Object> {
 
 	/**
 	 * Adds the canonical constructor for this record if it is not already present.
+	 *
+	 * @return the current record declaration instance
 	 */
 	CtRecord canonicalConstructor();
 
