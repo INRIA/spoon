@@ -122,7 +122,7 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 					canonical.addParameter(parameter);
 					var write = getFactory().Code().createVariableWrite(field.getReference(), false);
 					var read = getFactory().Code().createVariableRead(parameter.getReference(), false);
-					var assignment = getFactory().Code().createVariableAssignment((CtVariableReference)write.getVariable(), false, read);
+					var assignment = getFactory().Code().createVariableAssignment((CtVariableReference) write.getVariable(), false, read);
 					body.addStatement(assignment);
 				}
 			}
