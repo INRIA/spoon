@@ -40,6 +40,7 @@ import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -122,7 +123,10 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 					parameter.setType(type);
 					parameter.setSimpleName(field.getSimpleName());
 					canonical.addParameter(parameter);
-					CtVariableAccess<?> write = getFactory().Code().createVariableWrite(field.getReference(), false);
+					CtFieldReference<?> fieldReference = getFactory().createFieldReference();
+					fieldReference.setSimpleName(field.getSimpleName());
+					fieldReference.setType(getClonedType(field.getType()));
+					CtVariableAccess<?> write = getFactory().Code().createVariableWrite(fieldReference, false);
 					CtVariableReference<?> writeRef = write.getVariable();
 					CtVariableAccess<?> read = getFactory().Code().createVariableRead(parameter.getReference(), false);
 					@SuppressWarnings({"rawtypes", "unchecked"})
