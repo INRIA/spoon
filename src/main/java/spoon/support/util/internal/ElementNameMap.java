@@ -62,9 +62,9 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 	/**
 	 * Wrapper class that allows us to return entries in the order they were inserted.
 	 */
-		private record InsertOrderWrapper<T extends Serializable>(T value, long insertionNumber) implements Serializable {
-			@Serial
-			private static final long serialVersionUID = 1L;
+	private record InsertOrderWrapper<T extends Serializable>(T value, long insertionNumber) implements Serializable {
+		@Serial
+		private static final long serialVersionUID = 1L;
 
 	}
 
