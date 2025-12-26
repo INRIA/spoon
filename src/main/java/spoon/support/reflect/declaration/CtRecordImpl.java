@@ -114,7 +114,7 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 		if (constructor == null) {
 			CtConstructor<?> canonical = getFactory().createConstructor();
 			canonical.setImplicit(true);
-			canonical.setExtendedModifiers(Collections.singleton(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
+			canonical.setExtendedModifiers(Set.of(CtExtendedModifier.implicit(ModifierKind.PUBLIC)));
 			CtBlock<?> body = getFactory().createBlock();
 			for (CtField<?> field: getFields()) {
 				if (field.isImplicit()) {
