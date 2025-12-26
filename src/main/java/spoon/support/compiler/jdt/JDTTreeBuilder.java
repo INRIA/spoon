@@ -780,7 +780,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (typeDeclaration.isRecord()) {
 			String fullyQualifiedName = CharOperation.toString(typeDeclaration.binding.compoundName);
 			CtRecord record = (CtRecord) getFactory().Type().get(fullyQualifiedName);
-			record.canonicalConstructor();
+			record.createCanonicalConstructorIfMissing();
 		}
 		while (context.hasCurrentContext() && context.getCurrentNode() == typeDeclaration) {
 			context.exit(typeDeclaration);

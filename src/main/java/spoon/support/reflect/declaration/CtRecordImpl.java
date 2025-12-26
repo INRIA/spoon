@@ -101,7 +101,7 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 	}
 
 	@Override
-	public CtRecord canonicalConstructor() {
+	public CtRecord createCanonicalConstructorIfMissing() {
 
 		CtTypeReference<?>[] typeReferences =
 			getFields().stream()

@@ -11,7 +11,6 @@ import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
-import spoon.testing.assertions.CtRecordAssert;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,7 +42,7 @@ public class CtRecordFactoryTest {
 					.<CtRecordComponent>setType(factory.Type().integerPrimitiveType())
 					.setSimpleName("value")
 			)
-			.canonicalConstructor();
+			.createCanonicalConstructorIfMissing();
 
 		assertThat(record).getFields().hasSize(1);
 
@@ -78,7 +77,7 @@ public class CtRecordFactoryTest {
 					.<CtRecordComponent>setType(factory.Type().floatPrimitiveType())
 					.setSimpleName("second")
 			)
-			.canonicalConstructor();
+			.createCanonicalConstructorIfMissing();
 
 		assertEquals("public record MultiParameter(int first, float second) {}", record.toString());
 
@@ -167,7 +166,7 @@ public class CtRecordFactoryTest {
 					.<CtRecordComponent>setType(factory.Type().integerPrimitiveType())
 					.setSimpleName("i")
 			)
-			.canonicalConstructor()
+			.createCanonicalConstructorIfMissing()
 			.addConstructor(
 				factory.createConstructor()
 					.addParameter(

@@ -35,7 +35,7 @@ public interface CtRecord extends CtClass<Object> {
 	 *
 	 * @return the current record declaration instance
 	 */
-	CtRecord canonicalConstructor();
+	CtRecord createCanonicalConstructorIfMissing();
 
 	@PropertyGetter(role = CtRole.RECORD_COMPONENT)
 	Set<CtRecordComponent> getRecordComponents();
