@@ -46,15 +46,15 @@ public class CtRecordFactoryTest {
 
 		assertThat(record).getFields().hasSize(1);
 
-		CtField<?> field = head(record.getFields());
+		CtField<?> field = getFirst(record.getFields());
 		assertThat(field).isImplicit();
 		assertThat(field).getSimpleName().isEqualTo("value");
 
-		CtMethod<?> method = head(record.getMethods());
+		CtMethod<?> method = getFirst(record.getMethods());
 		assertThat(method).isImplicit();
 		assertThat(method).getSimpleName().isEqualTo("value");
 
-		CtConstructor<?> constructor = head(record.getConstructors());
+		CtConstructor<?> constructor = getFirst(record.getConstructors());
 		assertThat(constructor).isImplicit();
 		assertThat(constructor).getParameters().hasSize(1);
 		assertThat(field.getType()).isEqualTo(constructor.getParameters().get(0).getType());
@@ -193,7 +193,7 @@ public class CtRecordFactoryTest {
 		assertFalse(sortedConstructors[1].isCompactConstructor());
 	}
 
-	private <T> T head(Collection<T> collection) {
+	private <T> T getFirst(Collection<T> collection) {
 		return collection.iterator().next();
 	}
 }
