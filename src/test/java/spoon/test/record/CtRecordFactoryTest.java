@@ -11,6 +11,7 @@ import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
+import spoon.testing.assertions.CtRecordAssert;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,21 +45,20 @@ public class CtRecordFactoryTest {
 			)
 			.canonicalConstructor();
 
-		assertEquals(1, record.getFields().size());
-		assertEquals(1, record.getMethods().size());
+		assertThat(record).getFields().hasSize(1);
 
 		CtField<?> field = head(record.getFields());
-		assertTrue(field.isImplicit());
-		assertEquals("value", field.getSimpleName());
+		assertThat(field).isImplicit();
+		assertThat(field).getSimpleName().isEqualTo("value");
 
 		CtMethod<?> method = head(record.getMethods());
-		assertTrue(method.isImplicit());
-		assertEquals("value", method.getSimpleName());
+		assertThat(method).isImplicit();
+		assertThat(method).getSimpleName().isEqualTo("value");
 
 		CtConstructor<?> constructor = head(record.getConstructors());
-		assertTrue(constructor.isImplicit());
-		assertEquals(1, constructor.getParameters().size());
-		assertEquals(field.getType(), head(constructor.getParameters()).getType());
+		assertThat(constructor).isImplicit();
+		assertThat(constructor).getParameters().hasSize(1);
+		assertThat(field.getType()).isEqualTo(constructor.getParameters().get(0).getType());
 	}
 
 	@Test
