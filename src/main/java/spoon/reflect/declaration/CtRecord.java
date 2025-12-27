@@ -13,6 +13,7 @@ import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.Experimental;
 import spoon.support.UnsettableProperty;
 /**
  * This element represents a record declaration.
@@ -29,6 +30,14 @@ public interface CtRecord extends CtClass<Object> {
 	CtRecord  addRecordComponent(CtRecordComponent component);
 	@PropertySetter(role = CtRole.RECORD_COMPONENT)
 	CtRecord  removeRecordComponent(CtRecordComponent component);
+
+	/**
+	 * Adds the canonical constructor for this record if it is not already present.
+	 *
+	 * @return the current record declaration instance
+	 */
+	@Experimental
+	CtRecord createCanonicalConstructorIfMissing();
 
 	@PropertyGetter(role = CtRole.RECORD_COMPONENT)
 	Set<CtRecordComponent> getRecordComponents();

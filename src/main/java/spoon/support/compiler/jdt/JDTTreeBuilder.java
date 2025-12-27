@@ -163,6 +163,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtReceiverParameter;
+import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -776,6 +777,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
+		if (typeDeclaration.isRecord()) {
+			String fullyQualifiedName = CharOperation.toString(typeDeclaration.binding.compoundName);
+			CtRecord record = (CtRecord) getFactory().Type().get(fullyQualifiedName);
+			record.createCanonicalConstructorIfMissing();
+		}
 		while (context.hasCurrentContext() && context.getCurrentNode() == typeDeclaration) {
 			context.exit(typeDeclaration);
 		}
