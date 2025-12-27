@@ -12,7 +12,7 @@
 
     <artifactId>spoon-javadoc</artifactId>
     <packaging>jar</packaging>
-    <version>11.2.2-SNAPSHOT</version>
+    <version>11.3.0</version>
     <name>Spoon Javadoc</name>
     <description>A javadoc parser for the java source code analysis tool spoon.</description>
     <url>http://spoon.gforge.inria.fr/</url>
