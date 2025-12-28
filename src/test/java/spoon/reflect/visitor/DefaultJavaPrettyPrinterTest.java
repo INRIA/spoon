@@ -51,6 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static spoon.testing.assertions.SpoonAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DefaultJavaPrettyPrinterTest {
 
@@ -155,7 +156,7 @@ public class DefaultJavaPrettyPrinterTest {
 			PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
 			String output = prettyPrinter.prettyprint(cu);
 
-			Assertions.assertThat(output).contains(expectedStringLiteral);
+			assertThat(output).contains(expectedStringLiteral);
 		}
 	}
 
@@ -188,14 +189,14 @@ public class DefaultJavaPrettyPrinterTest {
 
 		String output = cu.prettyprint();
 		// local classes will always have a leading space, without leading digits
-		Assertions.assertThat(output)
+		assertThat(output)
 				.contains(" MyClass")
 				.contains(" MyEnum")
 				.contains(" MyInterface");
 
 		// the code does not contain a 1, which would be the prefix of the local types' binary names
 		// in the given code snippet
-		Assertions.assertThat(output).doesNotContain("1");
+		assertThat(output).doesNotContain("1");
 	}
 
 	@Test
@@ -396,7 +397,7 @@ public class DefaultJavaPrettyPrinterTest {
 		SpoonModelBuilder spoonModelBuilder = launcherForCompilingPrettyPrintedString.createCompiler(SpoonResourceHelper.resources("spooned/TypeCastOnFieldRead.java"));
 
 		// assert
-		Assertions.assertThat(spoonModelBuilder.build()).isTrue();
+		assertThat(spoonModelBuilder.build()).isTrue();
 
 		CtLocalVariable<Integer> localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
 		assertThat(localVariable).asString().isEqualTo("int myInt = (int) myDouble");
@@ -422,7 +423,7 @@ public class DefaultJavaPrettyPrinterTest {
 		SpoonModelBuilder spoonModelBuilder = launcherForCompilingPrettyPrintedString.createCompiler(SpoonResourceHelper.resources("spooned/ShadowFieldRead.java", "spooned/A.java", "spooned/C.java"));
 
 		// assert
-		Assertions.assertThat(spoonModelBuilder.build()).isTrue();
+		assertThat(spoonModelBuilder.build()).isTrue();
 
 		CtLocalVariable<Integer> localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(1);
 		assertThat(localVariable).asString().isEqualTo("int fieldReadOfA = ((A) c).a.i");
