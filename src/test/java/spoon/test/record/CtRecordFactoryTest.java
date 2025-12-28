@@ -6,6 +6,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.ModifierKind;
@@ -171,6 +172,7 @@ public class CtRecordFactoryTest {
 				factory.createConstructor()
 					.addParameter(
 						factory.createParameter()
+							.<CtParameter<?>>setType(factory.Type().stringType())
 							.setSimpleName("s")
 					)
 			);
