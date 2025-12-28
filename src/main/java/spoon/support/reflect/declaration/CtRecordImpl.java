@@ -113,7 +113,14 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 		if (constructor == null) {
 			CtConstructor<?> canonical = getFactory().createConstructor();
 			canonical.setImplicit(true);
-			canonical.setExtendedModifiers(Set.of(CtExtendedModifier.implicit(ModifierKind.PUBLIC)));
+			// Set the same visibility as the one of the record
+			if (hasModifier(ModifierKind.PUBLIC)) {
+				canonical.setExtendedModifiers(Set.of(CtExtendedModifier.implicit(ModifierKind.PUBLIC)));
+			} else if (hasModifier(ModifierKind.PROTECTED)) {
+				canonical.setExtendedModifiers(Set.of(CtExtendedModifier.implicit(ModifierKind.PROTECTED)));
+			} else if (hasModifier(ModifierKind.PRIVATE)) {
+				canonical.setExtendedModifiers(Set.of(CtExtendedModifier.implicit(ModifierKind.PRIVATE)));
+			}
 			CtBlock<?> body = getFactory().createBlock();
 			for (CtField<?> field: getFields()) {
 				if (field.isImplicit()) {
