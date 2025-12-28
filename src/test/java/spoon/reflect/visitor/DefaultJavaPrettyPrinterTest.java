@@ -172,7 +172,7 @@ public class DefaultJavaPrettyPrinterTest {
 
         PrettyPrinter autoImportPrettyPrinter = launcher.getEnvironment().createPrettyPrinterAutoImport();
         String output = autoImportPrettyPrinter.prettyprint(cu);
-		Assertions.assertThat(output).doesNotContain("import java.util.function.Function;");
+		Assertions.assertThat(output).doesNotContain("import java.util.function.IntFunction;");
 	}
 
     @Test
