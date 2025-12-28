@@ -33,7 +33,6 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.compiler.VirtualFile;
 
-import javax.annotation.RegEx;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -187,7 +186,7 @@ public class SpoonTestHelpers {
 	}
 
 	/** @see RegexFindMatcher */
-	public static Matcher<String> containsRegexMatch(@RegEx String regex) {
+	public static Matcher<String> containsRegexMatch(String regex) {
 		return new RegexFindMatcher(Pattern.compile(regex));
 	}
 
