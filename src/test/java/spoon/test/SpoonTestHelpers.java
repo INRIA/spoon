@@ -39,8 +39,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
-
 public class SpoonTestHelpers {
 	// only static methods
 	private SpoonTestHelpers(){
