@@ -104,8 +104,7 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 	public CtRecord createCanonicalConstructorIfMissing() {
 
 		CtTypeReference<?>[] typeReferences =
-			getFields().stream()
-				.filter(CtElement::isImplicit)
+			getRecordComponents().stream()
 				.map(CtTypedElement::getType)
 				.toList().toArray(new CtTypeReference[0]);
 
