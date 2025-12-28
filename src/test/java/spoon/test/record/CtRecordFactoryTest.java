@@ -11,6 +11,7 @@ import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 
 import java.util.Arrays;
@@ -193,6 +194,67 @@ public class CtRecordFactoryTest {
 		assertTrue(sortedConstructors[1].isImplicit());
 		assertEquals("i", sortedConstructors[1].getParameters().get(0).getSimpleName());
 		assertFalse(sortedConstructors[1].isCompactConstructor());
+	}
+
+	@Test
+	void testCreateCanonicalConstructorIfMissing() {
+		// contract: a canonical constructor is added when the record is missing one
+		Factory factory = new Launcher().getFactory();
+		CtRecord record = factory.createRecord()
+			.<CtRecord>setSimpleName("RecordWithNoCanonicalConstructor")
+			.<CtRecord>addModifier(ModifierKind.PUBLIC)
+			.addRecordComponent(
+				factory.createRecordComponent()
+					.<CtRecordComponent>setType(factory.Type().integerPrimitiveType())
+					.setSimpleName("value")
+			);
+
+		assertThat(record).getConstructors().hasSize(0);
+
+		record.createCanonicalConstructorIfMissing();
+
+		assertThat(record).getConstructors().hasSize(1);
+		CtConstructor<?> constructor = getFirst(record.getConstructors());
+		assertThat(constructor).isImplicit();
+		assertThat(constructor).getParameters().hasSize(1);
+		CtTypeReference<?> expectedType = factory.Type().integerPrimitiveType();
+		assertThat(expectedType).isEqualTo(constructor.getParameters().get(0).getType());
+	}
+
+	@Test
+	void testCreateCanonicalConstructorIfPresent() {
+		// contract: a canonical constructor is not added when the record defines one
+		Factory factory = new Launcher().getFactory();
+		CtRecord record = factory.createRecord()
+			.<CtRecord>setSimpleName("RecordWithCanonicalConstructor")
+			.<CtRecord>addModifier(ModifierKind.PUBLIC)
+			.addRecordComponent(
+				factory.createRecordComponent()
+					.<CtRecordComponent>setType(factory.Type().integerPrimitiveType())
+					.setSimpleName("value")
+			)
+			.addConstructor(
+				factory.createConstructor()
+					.addParameter(
+						factory.createParameter()
+							.<CtParameter<?>>setType(factory.Type().integerPrimitiveType())
+							.setSimpleName("s")
+					)
+			);
+
+		assertThat(record).getConstructors().hasSize(1);
+		CtConstructor<?> constructor = getFirst(record.getConstructors());
+		assertThat(constructor).getParameters().hasSize(1);
+		CtTypeReference<?> expectedType = factory.Type().integerPrimitiveType();
+		assertThat(expectedType).isEqualTo(constructor.getParameters().get(0).getType());
+
+		record.createCanonicalConstructorIfMissing();
+
+		assertThat(record).getConstructors().hasSize(1);
+		constructor = getFirst(record.getConstructors());
+		assertThat(constructor).isImplicit();
+		assertThat(constructor).getParameters().hasSize(1);
+		assertThat(expectedType).isEqualTo(constructor.getParameters().get(0).getType());
 	}
 
 	private <T> T getFirst(Collection<T> collection) {
