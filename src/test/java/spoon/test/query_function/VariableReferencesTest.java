@@ -38,6 +38,7 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -61,6 +62,7 @@ import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.filter.VariableReferenceFunction;
 import spoon.reflect.visitor.filter.VariableScopeFunction;
+import spoon.test.query_function.testclasses.EnumValueReferences;
 import spoon.test.query_function.testclasses.VariableReferencesFromStaticMethod;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
 import spoon.testing.utils.ModelUtils;
@@ -374,5 +376,23 @@ public class VariableReferencesTest {
 		CtLocalVariableReference varRef = stmt.filterChildren(new TypeFilter<>(CtLocalVariableReference.class)).first();
 		List<CtVariable> vars = varRef.map(new PotentialVariableDeclarationFunction()).list();
 		assertEquals(1, vars.size(), "Found unexpected variable declaration.");
+	}
+
+	/**
+	 * Check support for enum values in {@link VariableReferenceFunction}.
+	 * Each enum value should have a single reference linking back to itself.
+	 */
+	@Test
+	public void testVariableReferenceFunctionWithEnum() throws Exception {
+		Factory factory = ModelUtils.build(EnumValueReferences.class);
+		CtClass<?> clazz = factory.Class().get(EnumValueReferences.class);
+		CtEnum<?> testEnum = clazz.getNestedType("TestEnum");
+		var values = testEnum.getEnumValues();
+		assertEquals(2, values.size());
+		values.forEach(ev -> {
+			List<CtVariableReference<?>> refs = ev.map(new VariableReferenceFunction()).list();
+			assertEquals(1, refs.size());
+			assertEquals(ev.getReference(), refs.get(0));
+		});
 	}
 }

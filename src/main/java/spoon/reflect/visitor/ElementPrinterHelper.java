@@ -513,7 +513,7 @@ public class ElementPrinterHelper {
 	 * prefixed with `start`, separated by `next` and suffixed by `end`
 	 * @param startPrefixSpace if true then `start` token is prefixed with space
 	 * @param start the string which has to be printed at the beginning of the list
-	 * @param startSufficSpace if true then `start` token is suffixed with space
+	 * @param startSuffixSpace if true then `start` token is suffixed with space
 	 * @param nextPrefixSpace if true then `next` token is prefixed with space
 	 * @param next the string which has to be used as separator before each next item
 	 * @param nextSuffixSpace if true then `next` token is suffixed with space
@@ -522,8 +522,8 @@ public class ElementPrinterHelper {
 	 * @return the {@link ListPrinter} whose {@link ListPrinter#printSeparatorIfAppropriate()} has to be called
 	 * before printing of each item.
 	 */
-	private ListPrinter createListPrinter(boolean startPrefixSpace, String start, boolean startSufficSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
-		return new ListPrinter(printer, startPrefixSpace, start, startSufficSpace, nextPrefixSpace, next, nextSuffixSpace, endPrefixSpace, end);
+	private ListPrinter createListPrinter(boolean startPrefixSpace, String start, boolean startSuffixSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
+		return new ListPrinter(printer, startPrefixSpace, start, startSuffixSpace, nextPrefixSpace, next, nextSuffixSpace, endPrefixSpace, end);
 	}
 
 	private static final String QUALIFIED_NAME_SEPARATORS = ".$";

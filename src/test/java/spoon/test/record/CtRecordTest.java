@@ -32,6 +32,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -266,11 +267,11 @@ public class CtRecordTest {
 
 		// Assert
 		assertFalse(sortedConstructors[0].isImplicit());
-		assertEquals(sortedConstructors[0].getParameters().get(0).getSimpleName(), "s");
+		assertEquals("s", sortedConstructors[0].getParameters().get(0).getSimpleName());
 		assertFalse(sortedConstructors[0].isCompactConstructor());
 
 		assertTrue(sortedConstructors[1].isImplicit());
-		assertEquals(sortedConstructors[1].getParameters().get(0).getSimpleName(), "i");
+		assertEquals("i", sortedConstructors[1].getParameters().get(0).getSimpleName());
 		assertFalse(sortedConstructors[1].isCompactConstructor());
 	}
 
@@ -291,7 +292,7 @@ public class CtRecordTest {
 		// Assert
 		assertFalse(constructor.isImplicit());
 		assertFalse(constructor.isCompactConstructor());
-		assertEquals(constructor.getParameters().get(0).getSimpleName(), "x");
+		assertEquals("x", constructor.getParameters().get(0).getSimpleName());
 	}
 
 	@ModelTest(value = "./src/test/resources/records/GenericRecord.java", complianceLevel = 16)
@@ -329,6 +330,28 @@ public class CtRecordTest {
 		assertThat(parsed.getFields()).anySatisfy(it -> assertThat(it.getSimpleName()).isEqualTo("id"));
 		assertThat(parsed.getFields()).anySatisfy(it -> assertThat(it.getSimpleName()).isEqualTo("name"));
 		assertThat(parsed.getFields()).anySatisfy(it -> assertThat(it.getSimpleName()).isEqualTo("ADMIN_NAME"));
+	}
+
+	@Test
+	void testRecordComponentOrder() {
+		// contract: implicit fields generated from record components are the same order as the record components
+		Factory factory = new Launcher().getFactory();
+		CtRecord record = factory.createRecord()
+			.<CtRecord>setSimpleName("RecordComponentOrder")
+			.<CtRecord>addModifier(ModifierKind.PUBLIC)
+			.addRecordComponent(
+				factory.createRecordComponent()
+					.<CtRecordComponent>setType(factory.Type().integerPrimitiveType())
+					.setSimpleName("first")
+			)
+			.addRecordComponent(
+				factory.createRecordComponent()
+					.<CtRecordComponent>setType(factory.Type().floatPrimitiveType())
+					.setSimpleName("second")
+			);
+		assertThat(record.getFields())
+			.map(CtField::getSimpleName)
+			.containsExactly("first", "second");
 	}
 
 	private <T> T head(Collection<T> collection) {

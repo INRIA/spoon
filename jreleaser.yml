@@ -1,9 +1,9 @@
 project:
   name: spoon
-  description: Spoon is an open-source library to analyze, rewrite, transform, transpile Java source code. 
-  longDescription: Spoon is an open-source library to analyze, rewrite, transform, transpile Java source code. 
-                   It parses source files to build a well-designed AST with powerful analysis and transformation API. 
-                   It supports modern Java versions up to Java 20.
+  description: Spoon is an open-source library to analyze, rewrite, transform, transpile Java source code.
+  longDescription: Spoon is an open-source library to analyze, rewrite, transform, transpile Java source code.
+    It parses source files to build a well-designed AST with powerful analysis and transformation API.
+    It supports modern Java versions up to Java 20.
   authors:
     - monperrus
     - nharrand
@@ -13,9 +13,10 @@ project:
   license: (MIT OR CECILL-C)
   links:
     homepage: https://spoon.gforge.inria.fr/
-  java:
-    groupId: fr.inria.gforge
-    version: "17"
+  languages:
+    java:
+      groupId: fr.inria.gforge
+      version: "17"
   inceptionYear: "2015"
 
 release:
@@ -38,14 +39,18 @@ signing:
   armored: true
 deploy:
   maven:
+    mavenCentral:
+      sonatype:
+        active: RELEASE
+        url: https://central.sonatype.com/api/v1/publisher
+        applyMavenCentralRules: true
+        stagingRepositories:
+          - target/staging-deploy
     nexus2:
-      maven-central:
-        active: ALWAYS
-        # Spoon is hosted on the legacy sonatype instance, see
-        # https://central.sonatype.org/publish/publish-guide/#releasing-to-central
-        url: https://oss.sonatype.org/service/local
-        snapshotUrl: https://oss.sonatype.org/content/repositories/snapshots
-        closeRepository: true
-        releaseRepository: true
+      snapshot-deploy:
+        active: SNAPSHOT
+        snapshotUrl: https://central.sonatype.com/repository/maven-snapshots/
+        applyMavenCentralRules: true
+        snapshotSupported: true
         stagingRepositories:
           - target/staging-deploy

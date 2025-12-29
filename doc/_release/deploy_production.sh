@@ -28,7 +28,7 @@ cd $DIR_WEBSITE
 cp ../README.md doc_homepage.md
 
 # Generate the website.
-LATESTVERSION=`curl -s "http://search.maven.org/solrsearch/select?q=g:%22fr.inria.gforge.spoon%22+AND+a:%22spoon-core%22&core=gav" | jq -r '.response.docs | map(select(.v | match("^[0-9.]+$")) | .v )| .[0]'`
+LATESTVERSION=`curl -s "https://central.sonatype.com/solrsearch/select?q=a:spoon-core+g:fr.inria.gforge.spoon" | jq -r '.response.docs | map(select(.latestVersion | match("^[0-9.]+$")) | .v )| .[0]'`
 sed -i -e "s/^spoon_release: .*/spoon_release: $LATESTVERSION/" _config.yml
 SNAPSHOTVERSION=`xmlstarlet sel -t -v /_:project/_:version ../pom.xml`
 sed -i -e "s/^spoon_snapshot: .*/spoon_snapshot: \"$SNAPSHOTVERSION\"/" _config.yml

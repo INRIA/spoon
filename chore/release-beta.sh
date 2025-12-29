@@ -13,7 +13,7 @@ fi
 
 # Compute next beta number
 echo "::group::Computing next beta number"
-LAST_BETA_NUMBER="$(curl -L "http://search.maven.org/solrsearch/select?q=a:spoon-core+g:fr.inria.gforge.spoon&rows=40&wt=json&core=gav" | jq -r ".response.docs | map(.v) | map((match(\"$OLD_VERSION-beta-(.*)\") | .captures[0].string) // \"0\") | .[0]")"
+LAST_BETA_NUMBER="$(curl -L "https://central.sonatype.com/solrsearch/select?q=a:spoon-core+g:fr.inria.gforge.spoon" | jq -r ".response.docs | map(.latestVersion) | map((match(\"$OLD_VERSION-beta-(.*)\") | .captures[0].string) // \"0\") | .[0]")"
 echo "LAST_BETA_NUMBER $LAST_BETA_NUMBER"
 
 NEW_BETA_NUMBER=$((LAST_BETA_NUMBER + 1))
@@ -42,15 +42,6 @@ echo "::group::Running jreleaser"
 JRELEASER_PROJECT_VERSION="$NEXT_BETA_VERSION" jreleaser-cli release
 echo "::endgroup::"
 
-echo "::group::Reverting to old SNAPSHOT version"
-git revert --no-commit HEAD
-git commit -m "release: Reverting to SNAPSHOT version $OLD_VERSION_WITH_SNAPSHOT"
-git push origin "$BRANCH_NAME"
-echo "::endgroup::"
-
-echo "::group::Merging into master (fast-forward)"
-git checkout master
-git merge --ff-only "$BRANCH_NAME"
-git push origin master
+echo "::group::Delete branch"
 git push origin --delete "$BRANCH_NAME"
 echo "::endgroup::"
