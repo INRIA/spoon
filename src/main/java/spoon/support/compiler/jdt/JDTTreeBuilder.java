@@ -1056,7 +1056,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(Assignment assignment, BlockScope scope) {
 		context.enter(factory.Core().createAssignment(), assignment);
-			// .setImplicit((assignment.bits & ASTNode.IsImplicit) != 0), assignment);
 		return true;
 	}
 
