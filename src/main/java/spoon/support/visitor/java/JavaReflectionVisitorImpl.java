@@ -8,7 +8,6 @@
 package spoon.support.visitor.java;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -17,20 +16,19 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.RecordComponent;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.reflect.path.CtRole;
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
 class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
-	private static Class<?> recordClass = getRecordClass();
 
 	@Override
 	public void visitPackage(Package aPackage) {
@@ -524,10 +522,6 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T> void visitRecord(Class<T> clazz) {
-		if (recordClass == null) {
-			// the record class is missing we cant create any shadow element for it.
-			return;
-		}
 		try {
 			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
 					visitTypeParameter(generic);
@@ -593,33 +587,22 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
-		for (AnnotatedElement element : MethodHandleUtils.getRecordComponents(clazz)) {
-			visitRecordComponent(element);
+		for (RecordComponent component : clazz.getRecordComponents()) {
+			visitRecordComponent(component);
 		}
-
-
-
 	}
 
 	private static boolean isTopLevelType(Class<?> clazz) {
 		return clazz.getEnclosingClass() == null && clazz.getPackage() != null;
 	}
 
-	private static @Nullable Class<?> getRecordClass() {
-		try {
-			return Class.forName("java.lang.Record");
-		} catch (Exception e) {
-				return null;
-		}
-	}
-
 	@Override
-	public void visitRecordComponent(AnnotatedElement recordComponent) {
+	public void visitRecordComponent(RecordComponent recordComponent) {
 
 	}
 
 	private void scanPermittedTypes(Class<?> clazz) {
-		Class<?>[] permittedSubclasses = MethodHandleUtils.getPermittedSubclasses(clazz);
+		Class<?>[] permittedSubclasses = clazz.getPermittedSubclasses();
 		if (permittedSubclasses == null) {
 			return;
 		}

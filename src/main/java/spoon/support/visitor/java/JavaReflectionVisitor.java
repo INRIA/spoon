@@ -17,6 +17,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.RecordComponent;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
@@ -92,5 +93,5 @@ interface JavaReflectionVisitor {
 	/** Visits a record component.
 	 * @param recordComponent a record component
 	*/
-	void visitRecordComponent(AnnotatedElement recordComponent);
+	void visitRecordComponent(RecordComponent recordComponent);
 }
