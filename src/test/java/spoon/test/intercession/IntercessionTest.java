@@ -207,6 +207,7 @@ public class IntercessionTest {
 		}
 
 		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(17);
 		launcher.addInputResource("./src/main/java/spoon/reflect/");
 		launcher.addInputResource("./src/main/java/spoon/support/");
 		launcher.getModelBuilder().setSourceClasspath((String[]) classpath.toArray(new String[]{}));
