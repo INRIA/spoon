@@ -88,6 +88,16 @@ public class CtRecordTest {
 		assertEquals(1, records.size());
 		assertEquals("public record MultiParameter(int first, float second) {}", head(records).toString());
 
+		// Make them explicit so we can print them (but assert they were implicit initially)
+		assertThat(head(records)).getFields().allSatisfy(CtElement::isImplicit);
+		head(records).getFields().forEach(f -> f.accept(new CtScanner() {
+			@Override
+			protected void enter(CtElement e) {
+				e.setImplicit(false);
+			}
+		}));
+		head(records).getFields().forEach(f -> f.getExtendedModifiers().forEach(em -> em.setImplicit(false)));
+
 		// test fields
 		assertEquals(
 				Arrays.asList(

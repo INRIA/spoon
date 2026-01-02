@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
@@ -32,7 +33,6 @@ import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.eclipse.jdt.internal.compiler.ast.CharLiteral;
 import org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess;
-import org.eclipse.jdt.internal.compiler.ast.CompactConstructorDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompoundAssignment;
 import org.eclipse.jdt.internal.compiler.ast.ConditionalExpression;
@@ -1055,7 +1055,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(Assignment assignment, BlockScope scope) {
-		context.enter(factory.Core().createAssignment().setImplicit((assignment.bits & ASTNode.IsImplicit) != 0), assignment);
+		context.enter(factory.Core().createAssignment(), assignment);
 		return true;
 	}
 
@@ -1172,10 +1172,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 				c.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
 			}
 		}
-		if (constructorDeclaration instanceof CompactConstructorDeclaration) {
-			c.setCompactConstructor(true);
-		}
 		context.enter(c, constructorDeclaration);
+		if (constructorDeclaration.isCompactConstructor()) {
+			c.setCompactConstructor(true);
+			// Handle RecordComponent -> CtParameter conversion ourselves
+			for (AbstractVariableDeclaration declaration : constructorDeclaration.protoArguments) {
+				declaration.traverse(this, constructorDeclaration.scope);
+			}
+		}
 
 		// Create block
 		context.enter(factory.Core().createBlock(), constructorDeclaration);
@@ -1911,6 +1915,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(RecordComponent recordComponent, BlockScope scope) {
+		// JDT gives us a RecordComponent instead of an Argument for compact record constructors.
+		// They also aren't visited directly, so this call should come from the explicit invocation
+		// in visit(ConstructorDeclaration, ClassScope)
+		if (context.getCurrentElement() instanceof CtConstructor<?> ctor && ctor.isCompactConstructor()) {
+			CtParameter<?> parameter = helper.createParameter(recordComponent);
+			context.enter(parameter, recordComponent);
+			return true;
+		}
 		context.enter(factory.Core().createRecordComponent().setSimpleName(String.valueOf(recordComponent.name)), recordComponent);
 		return super.visit(recordComponent, scope);
 	}
