@@ -7,7 +7,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
@@ -23,7 +22,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtTypeReference;
 
 import java.util.Arrays;
 import java.util.HashSet;
