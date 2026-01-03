@@ -1923,7 +1923,7 @@ public class ImportTest {
 		CtImport ctImport = imports.stream().filter(it -> it.getImportKind() == CtImportKind.MODULE).findFirst().orElseThrow();
 		SpoonAssertions.assertThat(ctImport)
 			.matches(it -> it.getImportKind() == CtImportKind.MODULE)
-			.matches(it -> it.getReference().getSimpleName().equals("base")
+			.matches(it -> it.getReference().getSimpleName().equals("java.base")
 		);
 	}
 }
