@@ -54,7 +54,7 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 		} else if (ref instanceof CtModuleReference) {
 			return CtImportKind.MODULE;
 		} else {
-			throw new SpoonException("Only CtFieldReference, CtExecutableReference, CtPackageReference and CtTypeReference are accepted reference types. Given " + ref.getClass());
+			throw new SpoonException("Only CtFieldReference, CtExecutableReference, CtPackageReference, CtTypeReference and CtModuleReference are accepted reference types. Given " + ref.getClass());
 		}
 	}
 
