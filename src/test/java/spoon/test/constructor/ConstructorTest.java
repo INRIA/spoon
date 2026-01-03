@@ -27,7 +27,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
+import spoon.reflect.CtModel;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtParameter;
@@ -36,6 +41,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.constructor.testclasses.AClass;
 import spoon.test.constructor.testclasses.ImplicitConstructor;
@@ -50,6 +56,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class ConstructorTest {
@@ -242,5 +249,40 @@ public class ConstructorTest {
 
 		assertThrows(IndexOutOfBoundsException.class,
 				() -> constructor.addFormalCtTypeParameterAt(1, typeParam));
+	}
+
+	@Test
+	public void testFlexibleConstructorBody() {
+		// contract: with Java 25 flexible constructor bodies, statements can be inserted before super() or this() in constructors
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(25);
+		launcher.addInputResource("src/test/resources/constructor/Employee.java");
+		CtModel model = launcher.buildModel();
+
+		CtClass<?> cl = model.getElements(
+			(Filter<CtClass<?>>) element -> element.getSimpleName().equals("Employee")
+		).get(0);
+		assertThat(cl).getConstructors().hasSize(2);
+
+		// Test for public Employee(String name, int age, String officeID)
+		CtConstructor<?> constructor0 = cl.getConstructors().stream()
+			.filter(c -> c.getParameters().size() == 3)
+			.iterator().next();
+		assertThat(constructor0).getBody().getStatements().hasSize(3);
+		List<CtStatement> statements0 = constructor0.getBody().getStatements();
+		assertThat(statements0.get(0)).isInstanceOf(CtIf.class);
+		assertThat(statements0.get(1)).isInstanceOf(CtInvocation.class);
+		assertTrue(((CtInvocation<?>) statements0.get(1)).getExecutable().isConstructor());
+		assertThat(statements0.get(2)).isInstanceOf(CtAssignment.class);
+
+		// Test for public Employee(int age, String officeID)
+		CtConstructor<?> constructor1 = cl.getConstructors().stream()
+			.filter(c -> c.getParameters().size() == 2)
+			.iterator().next();
+		assertThat(constructor1).getBody().getStatements().hasSize(2);
+		List<CtStatement> statements1 = constructor1.getBody().getStatements();
+		assertThat(statements1.get(0)).isInstanceOf(CtIf.class);
+		assertThat(statements1.get(1)).isInstanceOf(CtInvocation.class);
+		assertTrue(((CtInvocation<?>) statements1.get(1)).getExecutable().isConstructor());
 	}
 }
