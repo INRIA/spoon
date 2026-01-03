@@ -479,10 +479,10 @@ public class DefaultJavaPrettyPrinterTest {
     }
 
 	@ModelTest(value = {"src/test/resources/imports/ModuleImport.java"}, autoImport = true, complianceLevel = 25)
-	void moduleImportsAreCorrectAddedToTheModel(@BySimpleName("ModuleImport") CtType<?> type, Launcher launcher) {
+	void moduleImportsArePrinted(@BySimpleName("ModuleImport") CtType<?> type, Launcher launcher) {
 		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
 		String output = prettyPrinter.prettyprint(type.getPosition().getCompilationUnit());
-		Assertions.assertThat(output).contains("import module java.base", "module import is present");
+		Assertions.assertThat(output).contains("import module java.base");
 	}
 
 }
