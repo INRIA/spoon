@@ -5,6 +5,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -39,6 +41,7 @@ import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.test.SpoonTestHelpers;
 import spoon.testing.assertions.SpoonAssertions;
+import spoon.testing.utils.BySimpleName;
 import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelTest;
 
@@ -474,4 +477,12 @@ public class DefaultJavaPrettyPrinterTest {
     private @interface TypeUseAnnotation {
 
     }
+
+	@ModelTest(value = {"src/test/resources/imports/ModuleImport.java"}, autoImport = true, complianceLevel = 25)
+	void moduleImportsAreCorrectAddedToTheModel(@BySimpleName("ModuleImport") CtType<?> type, Launcher launcher) {
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+		String output = prettyPrinter.prettyprint(type.getPosition().getCompilationUnit());
+		Assertions.assertThat(output).contains("import module java.base;");
+	}
+
 }

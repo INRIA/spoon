@@ -10,6 +10,7 @@ package spoon.reflect.visitor;
 import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
@@ -48,4 +49,6 @@ public interface CtImportVisitor {
 	 * Called for unresolved import
 	 */
 	<T> void visitUnresolvedImport(CtUnresolvedImport ctUnresolvedImport);
+
+	void visitModuleImport(CtModuleReference moduleReference);
 }
