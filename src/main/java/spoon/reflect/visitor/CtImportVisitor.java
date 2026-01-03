@@ -50,5 +50,9 @@ public interface CtImportVisitor {
 	 */
 	<T> void visitUnresolvedImport(CtUnresolvedImport ctUnresolvedImport);
 
+	/**
+	 * Called for import like:
+	 * <code>import module my.module.name;</code>
+	 */
 	void visitModuleImport(CtModuleReference moduleReference);
 }
