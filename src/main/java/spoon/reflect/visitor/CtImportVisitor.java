@@ -53,6 +53,7 @@ public interface CtImportVisitor {
 	/**
 	 * Called for import like:
 	 * <code>import module my.module.name;</code>
+	 * @param moduleReference the module reference
 	 */
 	void visitModuleImport(CtModuleReference moduleReference);
 }
