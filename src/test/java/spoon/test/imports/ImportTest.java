@@ -1923,7 +1923,7 @@ public class ImportTest {
 		//check that we only have one import
 		assertThat(imports, hasSize(1));
 		//check that it is module import
-		CtImport ctImport = imports.stream().filter(it -> it.getImportKind() == CtImportKind.MODULE).findFirst().orElseThrow();
+		CtImport ctImport = imports.stream().findFirst().orElseThrow();
 		SpoonAssertions.assertThat(ctImport)
 			.matches(it -> it.getImportKind() == CtImportKind.MODULE)
 			.matches(it -> it.getReference().getSimpleName().equals("java.base")

@@ -11,7 +11,7 @@ package spoon.reflect.declaration;
  * Enumeration of the different kinds of Java imports that can appear in a compilation unit.
  *
  * <p>This enum represents both traditional package imports (from Java source files) and module
- * imports (from the Java Platform Module System, JPMS).
+ * imports
  *
  */
 public enum CtImportKind {
@@ -54,11 +54,11 @@ public enum CtImportKind {
 	FIELD,
 
 	/**
-	 * A static import declaration for a single static method.
+	 * A static import declaration for all static methods with this name.
 	 *
 	 * <p>Example: {@code import static my.package.Type.m;}
 	 *
-	 * <p>This allows calling the static method by its simple name within the importing
+	 * <p>This allows calling a static method by its simple name within the importing
 	 * compilation unit.
 	 */
 	METHOD,
