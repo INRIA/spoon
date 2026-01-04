@@ -16,8 +16,10 @@
  */
 package spoon.test.ctClass;
 
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 import java.util.concurrent.TimeUnit;
@@ -30,9 +32,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
@@ -43,6 +48,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -55,6 +61,8 @@ import spoon.test.SpoonTestHelpers;
 import spoon.test.ctClass.testclasses.AnonymousClass;
 import spoon.test.ctClass.testclasses.Foo;
 import spoon.test.ctClass.testclasses.Pozole;
+import spoon.testing.utils.BySimpleName;
+import spoon.testing.utils.ModelTest;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -422,5 +430,18 @@ public class CtClassTest {
 		MatcherAssert.assertThat(clazz.getFields().size(), CoreMatchers.is(1));
 		MatcherAssert.assertThat(clazz.getMethods().size(), CoreMatchers.is(1));
 		MatcherAssert.assertThat(clazz.getExtendedModifiers(), contentEquals());
+	}
+
+	@ModelTest(value = {"src/test/resources/ctClass/Main.java"}, complianceLevel = 25)
+	public void testCompactSourceFilesAndInstanceMainMethods(@BySimpleName("Main") CtClass<?> cl) {
+		// contract: Java 25 supports compact source files and instance main methods
+		assertThat(cl).getSimpleName().isEqualTo("Main");
+		assertThat(cl).getMethods().hasSize(1);
+		CtMethod<?> main = cl.getMethods().iterator().next();
+		assertThat(main).getSimpleName().isEqualTo("main");
+		assertThat(main).getParameters().hasSize(0);
+		assertThat(main).getBody().getStatements().hasSize(1);
+		CtStatement statement = main.getBody().getStatements().get(0);
+		assertThat(statement).isInstanceOf(CtInvocation.class);
 	}
 }
