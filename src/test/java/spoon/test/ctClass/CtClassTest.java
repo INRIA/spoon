@@ -61,6 +61,8 @@ import spoon.test.SpoonTestHelpers;
 import spoon.test.ctClass.testclasses.AnonymousClass;
 import spoon.test.ctClass.testclasses.Foo;
 import spoon.test.ctClass.testclasses.Pozole;
+import spoon.testing.utils.BySimpleName;
+import spoon.testing.utils.ModelTest;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -430,15 +432,9 @@ public class CtClassTest {
 		MatcherAssert.assertThat(clazz.getExtendedModifiers(), contentEquals());
 	}
 
-	@Test
-	public void testCompactSourceFilesAndInstanceMainMethods() {
+	@ModelTest(value = {"src/test/resources/ctClass/Main.java"}, complianceLevel = 25)
+	public void testCompactSourceFilesAndInstanceMainMethods(@BySimpleName("Main") CtClass<?> cl) {
 		// contract: Java 25 supports compact source files and instance main methods
-		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setComplianceLevel(25);
-		launcher.addInputResource("src/test/resources/ctClass/Main.java");
-		CtModel model = launcher.buildModel();
-
-		CtClass<?> cl = model.getElements(new TypeFilter<>(CtClass.class)).get(0);
 		assertThat(cl).getSimpleName().isEqualTo("Main");
 		assertThat(cl).getMethods().hasSize(1);
 		CtMethod<?> main = cl.getMethods().iterator().next();
