@@ -1920,6 +1920,9 @@ public class ImportTest {
 	void moduleImportsAreCorrectAddedToTheModel(@BySimpleName("ModuleImport") CtType<?> type) {
 		// contract: we can handle module imports correctly
 		ModelList<CtImport> imports = type.getPosition().getCompilationUnit().getImports();
+		//check that we only have one import
+		assertThat(imports, hasSize(1));
+		//check that it is module import
 		CtImport ctImport = imports.stream().filter(it -> it.getImportKind() == CtImportKind.MODULE).findFirst().orElseThrow();
 		SpoonAssertions.assertThat(ctImport)
 			.matches(it -> it.getImportKind() == CtImportKind.MODULE)

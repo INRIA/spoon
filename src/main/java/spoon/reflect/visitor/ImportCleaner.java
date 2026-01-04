@@ -265,7 +265,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			Set<CtImport> computedImports = new HashSet<>(this.computedImports.values());
 			topfor: for (CtImport oldImport : new ArrayList<>(existingImports)) {
 				if (oldImport.getImportKind() == CtImportKind.MODULE) {
-					//never remove module imports
+					// be conservative: do not remove any module imports
 					continue;
 				}
 				if (!removeImport(oldImport, computedImports)) {

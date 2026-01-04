@@ -480,6 +480,7 @@ public class DefaultJavaPrettyPrinterTest {
 
 	@ModelTest(value = {"src/test/resources/imports/ModuleImport.java"}, autoImport = true, complianceLevel = 25)
 	void moduleImportsArePrinted(@BySimpleName("ModuleImport") CtType<?> type, Launcher launcher) {
+		// contract: module imports are printed when auto-import is enabled
 		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
 		String output = prettyPrinter.prettyprint(type.getPosition().getCompilationUnit());
 		Assertions.assertThat(output).contains("import module java.base");
