@@ -275,6 +275,21 @@ public class ConstructorTest {
 		assertTrue(((CtInvocation<?>) statements0.get(1)).getExecutable().isConstructor());
 		assertThat(statements0.get(2)).isInstanceOf(CtAssignment.class);
 
+		assertEquals(
+			Arrays.asList(
+				"""
+					if ((age < 18) || (age > 65)) {
+					    throw new java.lang.IllegalArgumentException();
+					}""",
+				"super(name, age)",
+				"this.officeID = officeID"
+			),
+			statements0.stream()
+				.map(String::valueOf)
+				.map(s -> s.replaceAll("\\R", "\n")) // fix newlines on windows
+				.collect(Collectors.toList())
+		);
+
 		// Test for public Employee(int age, String officeID)
 		CtConstructor<?> constructor1 = cl.getConstructors().stream()
 			.filter(c -> c.getParameters().size() == 2)
@@ -284,5 +299,19 @@ public class ConstructorTest {
 		assertThat(statements1.get(0)).isInstanceOf(CtIf.class);
 		assertThat(statements1.get(1)).isInstanceOf(CtInvocation.class);
 		assertTrue(((CtInvocation<?>) statements1.get(1)).getExecutable().isConstructor());
+
+		assertEquals(
+			Arrays.asList(
+				"""
+					if ((age < 18) || (age > 65)) {
+					    throw new java.lang.IllegalArgumentException();
+					}""",
+				"this(\"Bob\", age, officeID)"
+			),
+			statements1.stream()
+				.map(String::valueOf)
+				.map(s -> s.replaceAll("\\R", "\n")) // fix newlines on windows
+				.collect(Collectors.toList())
+		);
 	}
 }
