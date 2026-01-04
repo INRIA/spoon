@@ -73,7 +73,7 @@ public enum CtImportKind {
 	UNRESOLVED,
 
 	/**
-	 * A module import declaration for all public types of a Java Platform Module System module.
+	 * A module import declaration for all public types of a Java module.
 	 *
 	 * <p>Example: {@code import module java.base;}
 	 *
