@@ -357,10 +357,8 @@ public class ElementPrinterHelper {
 
 		boolean isFirst = true;
 		if(!moduleImports.isEmpty()) {
-			if (isFirst) {
-				printer.writeln();
-				isFirst = false;
-			}
+			printer.writeln();
+			isFirst = false;
 			printer.writeln();
 			List<String> sortedModuleImports = new ArrayList<>(moduleImports);
 			Collections.sort(sortedModuleImports);
@@ -385,7 +383,6 @@ public class ElementPrinterHelper {
 		if (!setStaticImports.isEmpty()) {
 			if (isFirst) {
 				printer.writeln();
-				isFirst = false;
 			}
 			printer.writeln();
 			List<String> sortedStaticImports = new ArrayList<>(setStaticImports);
