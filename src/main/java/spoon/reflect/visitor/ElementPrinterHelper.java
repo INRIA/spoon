@@ -356,7 +356,7 @@ public class ElementPrinterHelper {
 		}
 
 		boolean isFirst = true;
-		if(!moduleImports.isEmpty()) {
+		if (!moduleImports.isEmpty()) {
 			printer.writeln();
 			isFirst = false;
 			printer.writeln();
@@ -367,7 +367,7 @@ public class ElementPrinterHelper {
 				writeQualifiedName(importLine).writeSeparator(";").writeln();
 			}
 		}
-		if(!setImports.isEmpty()) {
+		if (!setImports.isEmpty()) {
 			if (isFirst) {
 				printer.writeln();
 				isFirst = false;
