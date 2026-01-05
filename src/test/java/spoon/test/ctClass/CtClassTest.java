@@ -447,7 +447,7 @@ public class CtClassTest {
 		org.assertj.core.api.Assertions.assertThat(cl.toString()).isEqualTo(
 				"""
 				void main() {
-				    java.lang.IO.println("Hello, World!");
+				    IO.println("Hello, World!");
 				}
 				""");
 	}
