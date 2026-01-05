@@ -13,6 +13,7 @@ import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.ExportsStatement;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
+import org.eclipse.jdt.internal.compiler.ast.ImplicitTypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
@@ -866,6 +867,10 @@ public class JDTTreeBuilderHelper {
 			type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
 		} else {
 			type.setSimpleName(new String(typeDeclaration.name));
+		}
+
+		if (typeDeclaration instanceof ImplicitTypeDeclaration) {
+			type.setImplicit(true);
 		}
 
 		return type;

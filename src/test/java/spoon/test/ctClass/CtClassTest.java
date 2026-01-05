@@ -443,5 +443,12 @@ public class CtClassTest {
 		assertThat(main).getBody().getStatements().hasSize(1);
 		CtStatement statement = main.getBody().getStatements().get(0);
 		assertThat(statement).isInstanceOf(CtInvocation.class);
+
+		org.assertj.core.api.Assertions.assertThat(cl.toString()).isEqualTo(
+				"""
+				void main() {
+				    java.lang.IO.println("Hello, World!");
+				}
+				""");
 	}
 }
