@@ -448,6 +448,14 @@ public class CtClassTest {
 
 		org.assertj.core.api.Assertions.assertThat(cl.toString()).isEqualTo(
 				"""
+				static class Person {
+				    private java.lang.String name;
+
+				    public Person(java.lang.String name) {
+				        this.name = name;
+				    }
+				}
+
 				void main() {
 				    IO.println(greeting());
 				}
