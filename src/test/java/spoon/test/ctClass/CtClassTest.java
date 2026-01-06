@@ -439,10 +439,9 @@ public class CtClassTest {
 	public void testCompactSourceFilesAndInstanceMainMethods(@BySimpleName("Main") CtClass<?> cl) {
 		// contract: Java 25 supports compact source files and instance main methods
 		assertThat(cl).getSimpleName().isEqualTo("Main");
-		assertThat(cl).getMethods().hasSize(1);
-		CtMethod<?> main = cl.getMethods().iterator().next();
-		assertThat(main).getSimpleName().isEqualTo("main");
-		assertThat(main).getParameters().hasSize(0);
+		assertThat(cl).getMethods().hasSize(2);
+		assertThat(cl).getFields().hasSize(1);
+		CtMethod<?> main = cl.getMethod("main");
 		assertThat(main).getBody().getStatements().hasSize(1);
 		CtStatement statement = main.getBody().getStatements().get(0);
 		assertThat(statement).isInstanceOf(CtInvocation.class);
@@ -450,8 +449,14 @@ public class CtClassTest {
 		org.assertj.core.api.Assertions.assertThat(cl.toString()).isEqualTo(
 				"""
 				void main() {
-				    IO.println("Hello, World!");
+				    IO.println(greeting());
 				}
+
+				java.lang.String greeting() {
+				    return message;
+				}
+
+				java.lang.String message = "Hello, World!";
 				""");
 	}
 }

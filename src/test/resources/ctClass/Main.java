@@ -1,3 +1,9 @@
 void main() {
-	IO.println("Hello, World!");
+	IO.println(greeting());
 }
+
+String greeting() {
+	return message;
+}
+
+String message = "Hello, World!";
