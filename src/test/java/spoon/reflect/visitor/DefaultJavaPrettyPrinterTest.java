@@ -5,6 +5,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
@@ -35,9 +36,9 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.test.SpoonTestHelpers;
 import spoon.testing.assertions.SpoonAssertions;
@@ -201,6 +202,51 @@ public class DefaultJavaPrettyPrinterTest {
         // the code does not contain a 1, which would be the prefix of the local types' binary names
         // in the given code snippet
         assertThat(output, not(containsString("1")));
+    }
+
+    @Test
+    void testWriteImportsGroupsAndSortsImports() {
+		// contract: imports are grouped and sorted correctly when printed module imports first, then regular imports, then static imports
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setComplianceLevel(11);
+        Factory factory = launcher.getFactory();
+        CtCompilationUnit cu = factory.createCompilationUnit();
+        cu.setDeclaredPackage(factory.Package().getOrCreate("spoon.test.imports"));
+
+        CtTypeReference<?> listRef = factory.Type().createReference("java.util.List");
+        CtPackageReference pkgRef = factory.Package().createReference("spoon.test.imports.foo");
+        CtTypeReference<?> mathRef = factory.Type().createReference("java.lang.Math");
+        CtTypeReference<?> collectionsRef = factory.Type().createReference("java.util.Collections");
+
+        cu.getImports().add(factory.createImport(listRef));
+        cu.getImports().add(factory.createImport(pkgRef));
+        cu.getImports().add(factory.createImport(factory.Field().createReference(mathRef, factory.Type().doublePrimitiveType(), "PI")));
+        cu.getImports().add(factory.createImport(factory.Type().createTypeMemberWildcardImportReference(collectionsRef)));
+        cu.getImports().add(factory.createUnresolvedImport("my.static.Helper.doStuff", true));
+        cu.getImports().add(factory.createImport(factory.Module().getOrCreate("foo.module").getReference()));
+        cu.getImports().add(factory.createImport(factory.Type().createReference("java.lang.String"))); // filtered as java.lang
+
+        DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(factory.getEnvironment());
+        PrinterHelper printerHelper = new PrinterHelper(factory.getEnvironment());
+        DefaultTokenWriter tokenWriter = new DefaultTokenWriter(printerHelper);
+        printer.setPrinterTokenWriter(tokenWriter);
+        printer.getElementPrinterHelper().writeImports(cu.getImports());
+        String output = printerHelper.toString();
+		System.out.println(output);
+
+		List<String> importLines = output.lines()
+                .filter(line -> line.startsWith("import"))
+                .collect(Collectors.toList());
+
+        Assertions.assertThat(importLines).containsExactly(
+                "import module foo.module;",
+                "import java.util.List;",
+                "import spoon.test.imports.foo.*;",
+                "import static java.lang.Math.PI;",
+                "import static java.util.Collections.*;",
+                "import static my.static.Helper.doStuff;"
+        );
+
     }
 
     @Test
