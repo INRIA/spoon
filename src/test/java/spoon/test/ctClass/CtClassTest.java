@@ -30,6 +30,7 @@ import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtAssignment;
@@ -62,6 +63,7 @@ import spoon.test.ctClass.testclasses.AnonymousClass;
 import spoon.test.ctClass.testclasses.Foo;
 import spoon.test.ctClass.testclasses.Pozole;
 import spoon.testing.utils.BySimpleName;
+import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelTest;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -432,6 +434,7 @@ public class CtClassTest {
 		MatcherAssert.assertThat(clazz.getExtendedModifiers(), contentEquals());
 	}
 
+	@ExtendWith(LineSeparatorExtension.class)
 	@ModelTest(value = {"src/test/resources/ctClass/Main.java"}, complianceLevel = 25)
 	public void testCompactSourceFilesAndInstanceMainMethods(@BySimpleName("Main") CtClass<?> cl) {
 		// contract: Java 25 supports compact source files and instance main methods
