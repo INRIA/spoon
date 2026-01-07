@@ -39,8 +39,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
-
 public class SpoonTestHelpers {
 	// only static methods
 	private SpoonTestHelpers(){
@@ -178,11 +176,12 @@ public class SpoonTestHelpers {
 
 	/** wraps code into a method in a class */
 	public static String wrapLocal(String localDeclarationSnippet) {
-		return  "class X {\n" +
-				"	public void myMethod() {\n" +
-				localDeclarationSnippet +
-				"	}\n" +
-				"}";
+		return """
+			class X {
+			  public void myMethod() {
+			  %s
+			  }
+			}""".formatted(localDeclarationSnippet);
 	}
 
 	/** @see RegexFindMatcher */
