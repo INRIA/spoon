@@ -439,7 +439,7 @@ public class CtClassTest {
 	public void testCompactSourceFilesAndInstanceMainMethods(@BySimpleName("Main") CtClass<?> cl) {
 		// contract: Java 25 supports compact source files and instance main methods
 		assertThat(cl).getSimpleName().isEqualTo("Main");
-		assertThat(cl).getMethods().hasSize(2);
+		assertThat(cl).getMethods().hasSize(3);
 		assertThat(cl).getFields().hasSize(2);
 		CtMethod<?> main = cl.getMethod("main");
 		assertThat(main).getBody().getStatements().hasSize(1);
@@ -448,7 +448,12 @@ public class CtClassTest {
 
 		org.assertj.core.api.Assertions.assertThat(cl.toString()).isEqualTo(
 				"""
-				final java.net.http.HttpClient httpClient = java.net.http.HttpClient.newBuilder().version(java.net.http.HttpClient.Version.HTTP_1_1).build();
+				static java.net.http.HttpClient httpClient = java.net.http.HttpClient.newBuilder().version(java.net.http.HttpClient.Version.HTTP_1_1).build();
+
+				void jdbc() throws java.sql.SQLException {
+				    try (java.sql.Connection connection = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/myDb", "user1", "pass")) {
+				    }
+				}
 
 				static class Person {
 				    private java.lang.String name;
@@ -466,7 +471,7 @@ public class CtClassTest {
 				    return message;
 				}
 
-				java.lang.String message = "Hello, World!";
+				final java.lang.String message = "Hello, World!";
 				""");
 	}
 }
