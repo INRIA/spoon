@@ -440,7 +440,7 @@ public class CtClassTest {
 		// contract: Java 25 supports compact source files and instance main methods
 		assertThat(cl).getSimpleName().isEqualTo("Main");
 		assertThat(cl).getMethods().hasSize(2);
-		assertThat(cl).getFields().hasSize(1);
+		assertThat(cl).getFields().hasSize(2);
 		CtMethod<?> main = cl.getMethod("main");
 		assertThat(main).getBody().getStatements().hasSize(1);
 		CtStatement statement = main.getBody().getStatements().get(0);
@@ -448,6 +448,8 @@ public class CtClassTest {
 
 		org.assertj.core.api.Assertions.assertThat(cl.toString()).isEqualTo(
 				"""
+				final java.net.http.HttpClient httpClient = java.net.http.HttpClient.newBuilder().version(java.net.http.HttpClient.Version.HTTP_1_1).build();
+
 				static class Person {
 				    private java.lang.String name;
 

@@ -13,7 +13,6 @@ import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.ExportsStatement;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
-import org.eclipse.jdt.internal.compiler.ast.ImplicitTypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
@@ -869,7 +868,8 @@ public class JDTTreeBuilderHelper {
 			type.setSimpleName(new String(typeDeclaration.name));
 		}
 
-		if (typeDeclaration instanceof ImplicitTypeDeclaration) {
+		// The generated class for a compact source file is implicit
+		if (typeDeclaration.isImplicitType()) {
 			type.setImplicit(true);
 		}
 
