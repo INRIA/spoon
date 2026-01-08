@@ -4,11 +4,15 @@ import org.junit.jupiter.api.Test;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTypePattern;
-import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.reflect.visitor.filter.VariableReferenceFunction;
 import spoon.testing.utils.GitHubIssue;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static spoon.test.SpoonTestHelpers.createModelFromString;
@@ -212,7 +216,7 @@ public class InstanceOfReferenceTest {
 		String code = """
 			record Point(int x, int y) {}
 			record Circle(Point center, int radius) {}
-		
+
 			public class Y {
 				public void test() {
 					Object obj = new Circle(new Point(10, 20), 5);
@@ -234,5 +238,26 @@ public class InstanceOfReferenceTest {
 		assertEquals(varX, declX);
 		assertEquals(varY, declY);
 		assertEquals(varR, declR);
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 6591, fixed = true)
+	void testVarUsageInIf() {
+		// contract: Variable reference finding should look into if bodies
+		String code = """
+				class X {
+					public void foo() {
+						String buffer = "hello";
+						if (true) {
+						  buffer += " world";
+						}
+					}
+				}
+				""";
+		CtModel model = createModelFromString(code, 21);
+		CtLocalVariable<?> variable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+
+		List<CtVariableReference<?>> references = variable.map(new VariableReferenceFunction()).list();
+		assertThat(references).hasSize(1);
 	}
 }
