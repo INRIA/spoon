@@ -1158,10 +1158,27 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
 		CtConstructor<Object> c = factory.Core().createConstructor();
-		// if the source start of the class is equals to the source start of the constructor
-		// it means that the constructor is implicit.
+		/*
+		 * If the source start of the class is equals to the source start of the constructor;
+		 * it means that the constructor is implicit.
+		 *
+		 * For a class generated from a compact source file, two cases can occur:
+		 *
+		 * either the compact source file does not declare any import statement and in this case the condition
+		 * 		scope.referenceContext.sourceStart() == constructorDeclaration.sourceStart()
+		 * is sufficient to decide of the implicitness of the constructor;
+		 *
+		 * or the compact source file declares some import statements and in this case the source start of the class
+		 * differs from the source start of the constructor. The previous condition would wrongly set
+		 * the implicitness of the constructor to false. In this case, the implicitness of the class is tested to
+		 * decide of the implicitness of the constructor.
+		 */
 		if (scope != null && scope.referenceContext != null) {
-			c.setImplicit(scope.referenceContext.sourceStart() == constructorDeclaration.sourceStart());
+			if (scope.referenceContext.isImplicitType()) {
+				c.setImplicit(true);
+			} else {
+				c.setImplicit(scope.referenceContext.sourceStart() == constructorDeclaration.sourceStart());
+			}
 		}
 		if (constructorDeclaration.binding != null) {
 			c.setExtendedModifiers(getModifiers(constructorDeclaration.binding.modifiers, true, ModifierTarget.CONSTRUCTOR));

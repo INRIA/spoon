@@ -868,6 +868,11 @@ public class JDTTreeBuilderHelper {
 			type.setSimpleName(new String(typeDeclaration.name));
 		}
 
+		// The generated class for a compact source file is implicit
+		if (typeDeclaration.isImplicitType()) {
+			type.setImplicit(true);
+		}
+
 		return type;
 	}
 

@@ -30,6 +30,7 @@ import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtAssignment;
@@ -62,6 +63,7 @@ import spoon.test.ctClass.testclasses.AnonymousClass;
 import spoon.test.ctClass.testclasses.Foo;
 import spoon.test.ctClass.testclasses.Pozole;
 import spoon.testing.utils.BySimpleName;
+import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelTest;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -432,16 +434,44 @@ public class CtClassTest {
 		MatcherAssert.assertThat(clazz.getExtendedModifiers(), contentEquals());
 	}
 
+	@ExtendWith(LineSeparatorExtension.class)
 	@ModelTest(value = {"src/test/resources/ctClass/Main.java"}, complianceLevel = 25)
 	public void testCompactSourceFilesAndInstanceMainMethods(@BySimpleName("Main") CtClass<?> cl) {
 		// contract: Java 25 supports compact source files and instance main methods
 		assertThat(cl).getSimpleName().isEqualTo("Main");
-		assertThat(cl).getMethods().hasSize(1);
-		CtMethod<?> main = cl.getMethods().iterator().next();
-		assertThat(main).getSimpleName().isEqualTo("main");
-		assertThat(main).getParameters().hasSize(0);
+		assertThat(cl).getMethods().hasSize(3);
+		assertThat(cl).getFields().hasSize(2);
+		CtMethod<?> main = cl.getMethod("main");
 		assertThat(main).getBody().getStatements().hasSize(1);
 		CtStatement statement = main.getBody().getStatements().get(0);
 		assertThat(statement).isInstanceOf(CtInvocation.class);
+
+		org.assertj.core.api.Assertions.assertThat(cl.toString()).isEqualTo(
+				"""
+				static java.net.http.HttpClient httpClient = java.net.http.HttpClient.newBuilder().version(java.net.http.HttpClient.Version.HTTP_1_1).build();
+
+				void jdbc() throws java.sql.SQLException {
+				    try (java.sql.Connection connection = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/myDb", "user1", "pass")) {
+				    }
+				}
+
+				static class Person {
+				    private java.lang.String name;
+
+				    public Person(java.lang.String name) {
+				        this.name = name;
+				    }
+				}
+
+				void main() {
+				    IO.println(greeting());
+				}
+
+				java.lang.String greeting() {
+				    return message;
+				}
+
+				final java.lang.String message = "Hello, World!";
+				""");
 	}
 }
