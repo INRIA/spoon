@@ -80,9 +80,8 @@ public class SiblingsFunction implements CtConsumableFunction<CtElement> {
 							for (var var : vars) {
 								outputConsumer.accept(var);
 							}
-						} else {
-							outputConsumer.accept(element);
 						}
+						outputConsumer.accept(element);
 					}
 				}
 			}
