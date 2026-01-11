@@ -56,7 +56,7 @@ Guidelines for bug-fix pull-requests:
 
 Guidelines for feature pull-requests:
 
-* The pull request must contain a set of test case to specify the expected behavior of the new feature.
+* The pull request must contain a set of test cases to specify the expected behavior of the new feature.
 * The pull request must contain an update in the documentation folder (`doc`) to explain the new feature.
 * The pull request must pass all architectural rules that are checked in [SpoonArchitectureEnforcerTest](https://github.com/INRIA/spoon/blob/master/src/test/java/spoon/test/architecture/SpoonArchitectureEnforcerTest.java) (eg new packages must be registered there)
 
