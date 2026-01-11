@@ -116,7 +116,7 @@ Tests in Spoon must follow these guidelines:
 * **Contract Comments**: Every test must include a Javadoc contract comment explaining what behavior the test verifies. For example:
   ```java
   @Test
-  public void testSetType() {
+  void testSetType() {
       // contract: one can use setType without having a very hard generics type checking error
       // ...test code...
   }
