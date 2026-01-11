@@ -124,12 +124,6 @@ Tests in Spoon must follow these guidelines:
 
 * **@ModelTest Annotation**: This annotation automatically builds and injects a Spoon model into your test. It is useful when your test needs to analyze or transform Java source code.
   * Usage: `@ModelTest(value = {"path/to/source"})` or `@ModelTest("./src/test/resources/...")`
-  * Supported parameters:
-    * `value`: Array of paths to Java source files or directories (required)
-    * `noClasspath`: Whether to build the model in no-classpath mode (default: true)
-    * `commentsEnabled`: Whether to preserve comments (default: true)
-    * `autoImport`: Whether to auto-import types (default: false)
-    * `complianceLevel`: Java compliance level (default: -1, which uses project default)
   * The annotation automatically injects `Factory`, `CtModel`, and/or `Launcher` parameters into your test method. You can request any or all of them.
   * Basic Example:
     ```java
