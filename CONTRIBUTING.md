@@ -36,7 +36,7 @@ There are different kinds of pull-requests, in particular bug-fix, new features,
 
 Guidelines for all pull-requests:
 
-* The pull request does a single thing (eg a single bug fix or a single feature). 
+* The pull request does a single thing (eg a single bug fix or a single feature).
 * The pull request must pass all continuous integration checks (incl. formatting rules).
 * The pull request must have an explicit and clear explanation.
 * If the pull request resolves an issue, simply add "fix #issueNumber" or "close #issueNumber" to the description, see [doc](https://docs.github.com/en/free-pro-team@latest/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue) for details
@@ -52,11 +52,11 @@ Guidelines for all pull-requests:
 
 Guidelines for bug-fix pull-requests:
 
-* The pull request must contain a test case highlighting the bug. 
+* The pull request must contain a test case highlighting the bug.
 
 Guidelines for feature pull-requests:
 
-* The pull request must contain a set of test case to specify the expected behavior of the new feature. 
+* The pull request must contain a set of test cases to specify the expected behavior of the new feature.
 * The pull request must contain an update in the documentation folder (`doc`) to explain the new feature.
 * The pull request must pass all architectural rules that are checked in [SpoonArchitectureEnforcerTest](https://github.com/INRIA/spoon/blob/master/src/test/java/spoon/test/architecture/SpoonArchitectureEnforcerTest.java) (eg new packages must be registered there)
 
@@ -95,3 +95,113 @@ OR
 3) the integrator team welcomes the contribution, but cannot commit to maintaining it.
 
 Submodules are not published to Maven central, and so need to be built from source.
+
+Testing
+-------
+
+### Test Framework and Assertions
+
+Tests in Spoon must follow these guidelines:
+
+* **Test Framework**: Use JUnit 6 with the `@Test` annotation or `@ModelTest` for tests that need a Spoon model.
+* **Assertions**: Always use **AssertJ** combined with **SpoonAssertions** from `spoon.testing.assertions.SpoonAssertions`. Never use Hamcrest assertions.
+  * Import: `import static spoon.testing.assertions.SpoonAssertions.assertThat;`
+  * SpoonAssertions provides fluent assertions for Spoon elements (e.g., `CtElement`, `CtTypeReference`, `CtMethod`). For example:
+    ```java
+    assertThat(element).isEqualTo(expected);
+    assertThat(parameter).hasSimpleName("paramName");
+    ```
+  * For standard assertions (objects, strings, numbers), use `org.assertj.core.api.Assertions.assertThat`.
+
+* **Contract Comments**: Every test must include a Javadoc contract comment explaining what behavior the test verifies. For example:
+  ```java
+  @Test
+  void testSetType() {
+      // contract: one can use setType without having a very hard generics type checking error
+      // ...test code...
+  }
+  ```
+
+* **@ModelTest Annotation**: This annotation automatically builds and injects a Spoon model into your test. It is useful when your test needs to analyze or transform Java source code.
+  * Usage: `@ModelTest(value = {"path/to/source"})` or `@ModelTest("./src/test/resources/...")`
+  * The annotation automatically injects `Factory`, `CtModel`, and/or `Launcher` parameters into your test method. You can request any or all of them.
+  * Basic Example:
+    ```java
+    @ModelTest("./src/test/resources/spoon/test/visitor/Foo.java")
+    public void testRecursiveDescent(Factory factory) {
+        final MyVisitor visitor = new MyVisitor(2);
+        visitor.scan(factory.Package().getRootPackage());
+        assertThat(visitor.equals).isTrue();
+    }
+    ```
+  * **@BySimpleName Annotation**: Use this to inject a specific type from the model by its simple name. This is useful when you want to directly work with a specific class.
+    ```java
+    @ModelTest("./src/test/resources/path/to/source")
+    public void testSpecificType(@BySimpleName("MyClass") CtType<?> myClass) {
+        // contract: we can directly access and manipulate the MyClass type
+        assertThat(myClass).isNotNull();
+        assertThat(myClass.getSimpleName()).isEqualTo("MyClass");
+        // test your logic with myClass...
+    }
+    ```
+
+* **@GitHubIssue Annotation**: Use this to mark tests related to reported bugs that are not yet fixed. This prevents the CI from failing when the test fails (as the test is expected to fail).
+  * Use `@GitHubIssue(issueNumber = <number>, fixed = false)` when writing a test that reproduces a bug reported in a GitHub issue. The test is expected to fail initially.
+  * Once you fix the bug, change `fixed` to `true` to signal that the issue is resolved and the test should now pass.
+  * Example:
+    ```java
+    @Test
+    @GitHubIssue(issueNumber = 1234, fixed = false)
+    public void testBugReproduction() {
+        // contract: this test reproduces bug #1234
+        // The test will fail, but this is expected and won't fail the CI
+        CtClass c = Launcher.parseClass("class C { void f() { /*...*/ } }");
+        // Add assertions that should pass once the bug is fixed
+        assertThat(c.getSimpleName()).isEqualTo("C");
+    }
+    ```
+  * Once the bug is fixed:
+    ```java
+    @Test
+    @GitHubIssue(issueNumber = 1234, fixed = true)
+    public void testBugReproduction() {
+        // contract: this test verifies that bug #1234 is fixed
+        // The test will now pass
+        // ...same test code...
+    }
+    ```
+
+* **Test Resources**: Place test resources  under `src/test/resources` and not in `src/test/java`. This keeps the test code and test data properly separated. `src/test/java` should only contain test classes.
+
+* **@ParameterizedTest**: Use this annotation from JUnit 6 when you want to run the same test with different parameters. This reduces code duplication and improves test maintainability.
+  * Example:
+    ```java
+    @ParameterizedTest
+    @ValueSource(strings = { "foo", "bar", "baz" })
+    public void testWithMultipleInputs(String input) {
+        // contract: the function works correctly with various string inputs
+        assertThat(input).isNotNull();
+    }
+    ```
+
+* **@TestFactory**: Use this annotation when you want to dynamically generate test cases. This is useful when you have a large number of similar test cases that need to be generated based on data or conditions.
+  * Example:
+    ```java
+    @TestFactory
+    Collection<DynamicTest> testAllFiles() {
+        // contract: all Java files in the test resources are parsed correctly
+        return Files.list(Paths.get("src/test/resources"))
+            .filter(p -> p.toString().endsWith(".java"))
+            .map(path -> DynamicTest.dynamicTest(
+                "Testing " + path.getFileName(),
+                () -> {
+                    CtModel model = Launcher.parseFile(path.toFile());
+                    assertThat(model).isNotNull();
+                }
+            ))
+            .collect(Collectors.toList());
+    }
+    ```
+
+For more examples of test patterns and SpoonAssertions usage, look at existing test cases in the `src/test/java` directory, particularly in `spoon.test.variable.VariableTest` and similar test classes.
+
