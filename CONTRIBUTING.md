@@ -123,7 +123,7 @@ Tests in Spoon must follow these guidelines:
   ```
 
 * **@ModelTest Annotation**: This annotation automatically builds and injects a Spoon model into your test. It is useful when your test needs to analyze or transform Java source code.
-  * Usage: `@ModelTest(value = {"path/to/source"})` or `@ModelTest("./src/test/resources/...)`
+  * Usage: `@ModelTest(value = {"path/to/source"})` or `@ModelTest("./src/test/resources/...")`
   * Supported parameters:
     * `value`: Array of paths to Java source files or directories (required)
     * `noClasspath`: Whether to build the model in no-classpath mode (default: true)
