@@ -103,7 +103,7 @@ Testing
 
 Tests in Spoon must follow these guidelines:
 
-* **Test Framework**: Use JUnit 6 (Jupiter) with the `@Test` annotation or `@ModelTest` for tests that need a Spoon model.
+* **Test Framework**: Use JUnit 6 with the `@Test` annotation or `@ModelTest` for tests that need a Spoon model.
 * **Assertions**: Always use **AssertJ** combined with **SpoonAssertions** from `spoon.testing.assertions.SpoonAssertions`. Never use Hamcrest assertions.
   * Import: `import static spoon.testing.assertions.SpoonAssertions.assertThat;`
   * SpoonAssertions provides fluent assertions for Spoon elements (e.g., `CtElement`, `CtTypeReference`, `CtMethod`). For example:
@@ -174,6 +174,38 @@ Tests in Spoon must follow these guidelines:
         // contract: this test verifies that bug #1234 is fixed
         // The test will now pass
         // ...same test code...
+    }
+    ```
+
+* **Test Resources**: Place test resources  under `src/test/resources` and not in `src/test/java`. This keeps the test code and test data properly separated. `src/test/java` should only contain test classes.
+
+* **@ParameterizedTest**: Use this annotation from JUnit 6 when you want to run the same test with different parameters. This reduces code duplication and improves test maintainability.
+  * Example:
+    ```java
+    @ParameterizedTest
+    @ValueSource(strings = { "foo", "bar", "baz" })
+    public void testWithMultipleInputs(String input) {
+        // contract: the function works correctly with various string inputs
+        assertThat(input).isNotNull();
+    }
+    ```
+
+* **@TestFactory**: Use this annotation when you want to dynamically generate test cases. This is useful when you have a large number of similar test cases that need to be generated based on data or conditions.
+  * Example:
+    ```java
+    @TestFactory
+    Collection<DynamicTest> testAllFiles() {
+        // contract: all Java files in the test resources are parsed correctly
+        return Files.list(Paths.get("src/test/resources"))
+            .filter(p -> p.toString().endsWith(".java"))
+            .map(path -> DynamicTest.dynamicTest(
+                "Testing " + path.getFileName(),
+                () -> {
+                    CtModel model = Launcher.parseFile(path.toFile());
+                    assertThat(model).isNotNull();
+                }
+            ))
+            .collect(Collectors.toList());
     }
     ```
 
