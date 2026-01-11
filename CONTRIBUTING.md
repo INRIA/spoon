@@ -137,7 +137,7 @@ Tests in Spoon must follow these guidelines:
     public void testRecursiveDescent(Factory factory) {
         final MyVisitor visitor = new MyVisitor(2);
         visitor.scan(factory.Package().getRootPackage());
-        assertTrue(visitor.equals);
+        assertThat(visitor.equals).isTrue();
     }
     ```
   * **@BySimpleName Annotation**: Use this to inject a specific type from the model by its simple name. This is useful when you want to directly work with a specific class.
