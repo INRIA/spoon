@@ -1110,6 +1110,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					}
 					printer.writeCodeSnippet(ctUnresolvedImport.getUnresolvedReference());
 				}
+
+				@Override
+				public void visitModuleImport(CtModuleReference moduleReference) {
+					printer.writeKeyword("module");
+					printer.writeSpace();
+					printer.writeIdentifier(moduleReference.getSimpleName());
+				}
 			});
 			printer.writeSeparator(";");
 		}
