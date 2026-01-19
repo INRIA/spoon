@@ -264,8 +264,11 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			ModelList<CtImport> existingImports = compilationUnit.getImports();
 			Set<CtImport> computedImports = new HashSet<>(this.computedImports.values());
 			topfor: for (CtImport oldImport : new ArrayList<>(existingImports)) {
+				if (oldImport.getImportKind() == CtImportKind.MODULE) {
+					// be conservative: do not remove any module imports
+					continue;
+				}
 				if (!removeImport(oldImport, computedImports)) {
-
 					// case: import is required in Javadoc
 					for (CtType type: compilationUnit.getDeclaredTypes()) {
 						for (CtJavaDoc element: type.getElements(new TypeFilter<>(CtJavaDoc.class))) {

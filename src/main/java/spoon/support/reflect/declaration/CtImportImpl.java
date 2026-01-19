@@ -14,6 +14,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.declaration.CtImportKind;
@@ -50,8 +51,10 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 			return CtImportKind.ALL_STATIC_MEMBERS;
 		} else if (ref instanceof CtTypeReference) {
 			return CtImportKind.TYPE;
+		} else if (ref instanceof CtModuleReference) {
+			return CtImportKind.MODULE;
 		} else {
-			throw new SpoonException("Only CtFieldReference, CtExecutableReference, CtPackageReference and CtTypeReference are accepted reference types. Given " + ref.getClass());
+			throw new SpoonException("Only CtFieldReference, CtExecutableReference, CtPackageReference, CtTypeReference and CtModuleReference are accepted reference types. Given " + ref.getClass());
 		}
 	}
 
@@ -82,30 +85,14 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 	@Override
 	public void accept(CtImportVisitor visitor) {
 		switch (getImportKind()) {
-		case TYPE:
-			visitor.visitTypeImport((CtTypeReference<?>) localReference);
-			break;
-
-		case METHOD:
-			visitor.visitMethodImport((CtExecutableReference<?>) localReference);
-			break;
-
-		case FIELD:
-			visitor.visitFieldImport((CtFieldReference<?>) localReference);
-			break;
-
-		case ALL_TYPES:
-			visitor.visitAllTypesImport((CtPackageReference) localReference);
-			break;
-
-		case ALL_STATIC_MEMBERS:
-			visitor.visitAllStaticMembersImport((CtTypeMemberWildcardImportReference) localReference);
-			break;
-		case UNRESOLVED:
-			visitor.visitUnresolvedImport((CtUnresolvedImport) localReference);
-			break;
-		default:
-			throw new SpoonException("Unexpected import kind: " + getImportKind());
+			case TYPE -> visitor.visitTypeImport((CtTypeReference<?>) localReference);
+			case METHOD -> visitor.visitMethodImport((CtExecutableReference<?>) localReference);
+			case FIELD -> visitor.visitFieldImport((CtFieldReference<?>) localReference);
+			case ALL_TYPES -> visitor.visitAllTypesImport((CtPackageReference) localReference);
+			case ALL_STATIC_MEMBERS -> visitor.visitAllStaticMembersImport((CtTypeMemberWildcardImportReference) localReference);
+			case MODULE -> visitor.visitModuleImport((CtModuleReference) localReference);
+			case UNRESOLVED -> visitor.visitUnresolvedImport((CtUnresolvedImport) localReference);
+			default -> throw new SpoonException("Unexpected import kind: " + getImportKind());
 		}
 	}
 

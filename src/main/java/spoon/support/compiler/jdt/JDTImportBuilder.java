@@ -9,15 +9,18 @@ package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
+import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtReference;
 
 import java.util.Arrays;
@@ -73,6 +76,12 @@ class JDTImportBuilder {
 						}
 					}
 
+				} else if ((importRef.modifiers & ClassFileConstants.AccModule) != 0) { // this check is copied from JDT's ImportReference
+					// import of a module
+					String moduleName = JDTTreeBuilderHelper.createQualifiedTypeName(importRef.getImportName());
+					CtModule ctModule = factory.Module().getOrCreate(moduleName);
+					CtModuleReference moduleRef = factory.Module().createReference(ctModule).setSimpleName(moduleName);
+					this.imports.add(createImportWithPosition(moduleRef, importRef));
 				} else {
 					CtType klass = this.getOrLoadClass(importName);
 					if (klass != null) {

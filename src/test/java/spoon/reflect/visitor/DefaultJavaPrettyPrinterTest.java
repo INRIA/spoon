@@ -5,6 +5,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
@@ -35,10 +36,12 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.test.SpoonTestHelpers;
+import spoon.testing.utils.BySimpleName;
 import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelTest;
 
@@ -200,6 +203,51 @@ public class DefaultJavaPrettyPrinterTest {
 	}
 
 	@Test
+    void testWriteImportsGroupsAndSortsImports() {
+		// contract: imports are grouped and sorted correctly when printed module imports first, then regular imports, then static imports
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setComplianceLevel(11);
+        Factory factory = launcher.getFactory();
+        CtCompilationUnit cu = factory.createCompilationUnit();
+        cu.setDeclaredPackage(factory.Package().getOrCreate("spoon.test.imports"));
+
+        CtTypeReference<?> listRef = factory.Type().createReference("java.util.List");
+        CtPackageReference pkgRef = factory.Package().createReference("spoon.test.imports.foo");
+        CtTypeReference<?> mathRef = factory.Type().createReference("java.lang.Math");
+        CtTypeReference<?> collectionsRef = factory.Type().createReference("java.util.Collections");
+
+        cu.getImports().add(factory.createImport(listRef));
+        cu.getImports().add(factory.createImport(pkgRef));
+        cu.getImports().add(factory.createImport(factory.Field().createReference(mathRef, factory.Type().doublePrimitiveType(), "PI")));
+        cu.getImports().add(factory.createImport(factory.Type().createTypeMemberWildcardImportReference(collectionsRef)));
+        cu.getImports().add(factory.createUnresolvedImport("my.static.Helper.doStuff", true));
+        cu.getImports().add(factory.createImport(factory.Module().getOrCreate("foo.module").getReference()));
+        cu.getImports().add(factory.createImport(factory.Type().createReference("java.lang.String"))); // filtered as java.lang
+
+        DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(factory.getEnvironment());
+        PrinterHelper printerHelper = new PrinterHelper(factory.getEnvironment());
+        DefaultTokenWriter tokenWriter = new DefaultTokenWriter(printerHelper);
+        printer.setPrinterTokenWriter(tokenWriter);
+        printer.getElementPrinterHelper().writeImports(cu.getImports());
+        String output = printerHelper.toString();
+		System.out.println(output);
+
+		List<String> importLines = output.lines()
+                .filter(line -> line.startsWith("import"))
+                .collect(Collectors.toList());
+
+        Assertions.assertThat(importLines).containsExactly(
+                "import module foo.module;",
+                "import java.util.List;",
+                "import spoon.test.imports.foo.*;",
+                "import static java.lang.Math.PI;",
+                "import static java.util.Collections.*;",
+                "import static my.static.Helper.doStuff;"
+        );
+
+    }
+
+    @Test
 	void testEmptyIfBlocksArePrintedWithoutError() {
 		// contract: empty if blocks don't crash the DJJP
 		Launcher launcher = new Launcher();
@@ -467,5 +515,13 @@ public class DefaultJavaPrettyPrinterTest {
 	@Retention(RetentionPolicy.SOURCE)
 	private @interface TypeUseAnnotation {
 
+	}
+
+	@ModelTest(value = {"src/test/resources/imports/ModuleImport.java"}, autoImport = true, complianceLevel = 25)
+	void moduleImportsArePrinted(@BySimpleName("ModuleImport") CtType<?> type, Launcher launcher) {
+		// contract: module imports are printed when auto-import is enabled
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+		String output = prettyPrinter.prettyprint(type.getPosition().getCompilationUnit());
+		Assertions.assertThat(output).contains("import module java.base");
 	}
 }
