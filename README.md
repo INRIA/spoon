@@ -36,9 +36,9 @@ If you need professional support on Spoon (development, training, extension), yo
 
 ## Getting started in 2 seconds
 
-**Required Java version:** 
+**Required Java version:**
 
-- Spoon 11.x requires JDK 17 or later. 
+- Spoon 11.x requires JDK 17 or later.
 - Spoon 10.x requires JDK 11 or later.
 - Spoon 9.x requires Java 8.
 
@@ -90,21 +90,6 @@ mvn compile
 To run the tests:
 ```
 mvn test
-```
-
-### Download
-
-Latest version: <https://search.maven.org/remote_content?g=fr.inria.gforge.spoon&a=spoon-core&v=LATEST&c=jar-with-dependencies> - [Javadoc](https://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/index.html)
-
-Maven:
-
-```xml
-<dependency>
-    <groupId>fr.inria.gforge.spoon</groupId>
-    <artifactId>spoon-core</artifactId>
-    <!-- See rendered release value at https://spoon.gforge.inria.fr/ -->
-    <version>{{site.spoon_release}}</version>
-</dependency>
 ```
 
 ## Releases

@@ -706,20 +706,24 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
 		context.pushCurrentThis(ctClass);
-		if (ctClass.getSimpleName() != null && !CtType.NAME_UNKNOWN.equals(ctClass.getSimpleName()) && !ctClass.isAnonymous()) {
-			visitCtType(ctClass);
-			printer.writeKeyword("class").writeSpace()
+		if (!ctClass.isImplicit()) {
+			if (ctClass.getSimpleName() != null && !CtType.NAME_UNKNOWN.equals(ctClass.getSimpleName()) && !ctClass.isAnonymous()) {
+				visitCtType(ctClass);
+				printer.writeKeyword("class").writeSpace()
 					.writeIdentifier(stripLeadingDigits(ctClass.getSimpleName()));
 
-			elementPrinterHelper.writeFormalTypeParameters(ctClass);
-			elementPrinterHelper.writeExtendsClause(ctClass);
-			elementPrinterHelper.writeImplementsClause(ctClass);
+				elementPrinterHelper.writeFormalTypeParameters(ctClass);
+				elementPrinterHelper.writeExtendsClause(ctClass);
+				elementPrinterHelper.writeImplementsClause(ctClass);
+			}
+			elementPrinterHelper.printPermits(ctClass);
+			printer.writeSpace().writeSeparator("{").incTab();
 		}
-		elementPrinterHelper.printPermits(ctClass);
-		printer.writeSpace().writeSeparator("{").incTab();
 		elementPrinterHelper.writeElementList(ctClass.getTypeMembers());
-		getPrinterHelper().adjustEndPosition(ctClass);
-		printer.decTab().writeSeparator("}");
+		if (!ctClass.isImplicit()) {
+			getPrinterHelper().adjustEndPosition(ctClass);
+			printer.decTab().writeSeparator("}");
+		}
 		context.popCurrentThis();
 	}
 

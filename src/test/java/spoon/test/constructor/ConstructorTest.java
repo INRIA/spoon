@@ -25,9 +25,14 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.SpoonAPI;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtParameter;
@@ -40,9 +45,13 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.constructor.testclasses.AClass;
 import spoon.test.constructor.testclasses.ImplicitConstructor;
 import spoon.test.constructor.testclasses.Tacos;
+import spoon.testing.utils.BySimpleName;
+import spoon.testing.utils.LineSeparatorExtension;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,6 +59,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class ConstructorTest {
@@ -243,4 +253,49 @@ public class ConstructorTest {
 		assertThrows(IndexOutOfBoundsException.class,
 				() -> constructor.addFormalCtTypeParameterAt(1, typeParam));
 	}
-}
+
+	@Test
+	@ExtendWith(LineSeparatorExtension.class)
+	@ModelTest(value = {"src/test/resources/constructor/Employee.java"}, complianceLevel = 25)
+	public void testFlexibleConstructorBody(@BySimpleName("Employee") CtClass<?> cl, Factory factory) {
+		// contract: with Java 25 flexible constructor bodies, statements can be inserted before super() or this() in constructors
+		assertThat(cl).getConstructors().hasSize(2);
+
+		// Test for public Employee(String name, int age, String officeID)
+		CtConstructor<?> constructor0 = cl.getConstructor(
+			factory.Type().stringType(), factory.Type().integerPrimitiveType(), factory.Type().stringType()
+		);
+		assertThat(constructor0).getBody().getStatements().hasSize(3);
+		List<CtStatement> statements0 = constructor0.getBody().getStatements();
+		assertThat(statements0.get(0)).isInstanceOf(CtIf.class);
+		assertThat(statements0.get(1)).isInstanceOf(CtInvocation.class);
+		assertThat(((CtInvocation<?>) statements0.get(1)).getExecutable().isConstructor()).isTrue();
+		assertThat(statements0.get(2)).isInstanceOf(CtAssignment.class);
+
+		assertThat(statements0.stream().map(String::valueOf).toList()).containsExactly(
+			"""
+				if ((age < 18) || (age > 65)) {
+				    throw new java.lang.IllegalArgumentException();
+				}""",
+			"super(name, age)",
+			"this.officeID = officeID"
+		);
+
+		// Test for public Employee(int age, String officeID)
+		CtConstructor<?> constructor1 = cl.getConstructor(
+			factory.Type().integerPrimitiveType(), factory.Type().stringType()
+		);
+		assertThat(constructor1).getBody().getStatements().hasSize(2);
+		List<CtStatement> statements1 = constructor1.getBody().getStatements();
+		assertThat(statements1.get(0)).isInstanceOf(CtIf.class);
+		assertThat(statements1.get(1)).isInstanceOf(CtInvocation.class);
+		assertThat(((CtInvocation<?>) statements1.get(1)).getExecutable().isConstructor()).isTrue();
+
+		assertThat(statements1.stream().map(String::valueOf).toList()).containsExactly(
+			"""
+				if ((age < 18) || (age > 65)) {
+				    throw new java.lang.IllegalArgumentException();
+				}""",
+			"this(\"Bob\", age, officeID)"
+		);
+	}}
