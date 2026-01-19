@@ -41,7 +41,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.test.SpoonTestHelpers;
-import spoon.testing.assertions.SpoonAssertions;
 import spoon.testing.utils.BySimpleName;
 import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelTest;
