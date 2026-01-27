@@ -13,9 +13,10 @@ project:
   license: (MIT OR CECILL-C)
   links:
     homepage: https://spoon.gforge.inria.fr/
-  java:
-    groupId: fr.inria.gforge
-    version: "17"
+  languages:
+    java:
+      groupId: fr.inria.gforge
+      version: "17"
   inceptionYear: "2015"
 
 release:

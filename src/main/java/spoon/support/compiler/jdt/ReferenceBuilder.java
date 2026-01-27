@@ -1323,14 +1323,13 @@ public class ReferenceBuilder {
 
 		if (varbin instanceof FieldBinding) {
 			return getVariableReference(((FieldBinding) varbin).declaringClass, (FieldBinding) varbin);
-		} else if (varbin instanceof LocalVariableBinding) {
-			final LocalVariableBinding localVariableBinding = (LocalVariableBinding) varbin;
-			if (localVariableBinding.declaration instanceof Argument && localVariableBinding.declaringScope instanceof MethodScope) {
+		} else if (varbin instanceof LocalVariableBinding localVariableBinding) {
+			if (localVariableBinding.isParameter()) {
 				CtParameterReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createParameterReference();
 				ref.setSimpleName(new String(varbin.name));
 				ref.setType(getTypeReference(varbin.type));
 				return ref;
-			} else if (localVariableBinding.declaration.binding instanceof CatchParameterBinding) {
+			} else if (localVariableBinding.declaration.getBinding() instanceof CatchParameterBinding) {
 				CtCatchVariableReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createCatchVariableReference();
 				ref.setSimpleName(new String(varbin.name));
 				CtTypeReference<T> ref2 = getTypeReference(varbin.type);

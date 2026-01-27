@@ -35,6 +35,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -299,48 +300,44 @@ public class ElementPrinterHelper {
 
 	/** writes the imports in a specific order (eg all static imports together */
 	public void writeImports(Collection<CtImport> imports) {
+		Set<String> moduleImports = new HashSet<>();
 		Set<String> setImports = new HashSet<>();
 		Set<String> setStaticImports = new HashSet<>();
 		for (CtImport ctImport : imports) {
 			String importTypeStr;
 			switch (ctImport.getImportKind()) {
-				case TYPE:
+				case TYPE -> {
 					CtTypeReference typeRef = (CtTypeReference) ctImport.getReference();
 					importTypeStr = typeRef.getQualifiedName();
 					if (!isJavaLangClasses(importTypeStr)) {
 						setImports.add(this.removeInnerTypeSeparator(importTypeStr));
 					}
-					break;
-
-				case ALL_TYPES:
+				}
+				case ALL_TYPES -> {
 					CtPackageReference packageRef = (CtPackageReference) ctImport.getReference();
 					importTypeStr = packageRef.getQualifiedName() + ".*";
 					if (!isJavaLangClasses(importTypeStr)) {
 						setImports.add(this.removeInnerTypeSeparator(importTypeStr));
 					}
-					break;
-
-				case METHOD:
+				}
+				case METHOD -> {
 					CtExecutableReference execRef = (CtExecutableReference) ctImport.getReference();
 					if (execRef.getDeclaringType() != null) {
 						setStaticImports.add(this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName());
 					}
-					break;
-
-				case FIELD:
+				}
+				case FIELD -> {
 					CtFieldReference fieldRef = (CtFieldReference) ctImport.getReference();
 					setStaticImports.add(this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName());
-					break;
-
-				case ALL_STATIC_MEMBERS:
+				}
+				case ALL_STATIC_MEMBERS -> {
 					CtTypeMemberWildcardImportReference typeStarRef = (CtTypeMemberWildcardImportReference) ctImport.getReference();
 					importTypeStr = typeStarRef.getTypeReference().getQualifiedName();
 					if (!isJavaLangClasses(importTypeStr)) {
 						setStaticImports.add(this.removeInnerTypeSeparator(importTypeStr) + ".*");
 					}
-					break;
-
-				case UNRESOLVED:
+				}
+				case UNRESOLVED -> {
 					CtUnresolvedImport unresolvedImport = (CtUnresolvedImport) ctImport;
 					importTypeStr = unresolvedImport.getUnresolvedReference();
 					if (!isJavaLangClasses(importTypeStr)) {
@@ -350,21 +347,38 @@ public class ElementPrinterHelper {
 							setImports.add(importTypeStr);
 						}
 					}
-					break;
+				}
+				case MODULE -> {
+					CtModuleReference moduleRef = (CtModuleReference) ctImport.getReference();
+					moduleImports.add(moduleRef.getSimpleName());
+				}
 			}
 		}
 
-		List<String> sortedImports = new ArrayList<>(setImports);
-		Collections.sort(sortedImports);
 		boolean isFirst = true;
-		for (String importLine : sortedImports) {
+		if (!moduleImports.isEmpty()) {
+			printer.writeln();
+			isFirst = false;
+			printer.writeln();
+			List<String> sortedModuleImports = new ArrayList<>(moduleImports);
+			Collections.sort(sortedModuleImports);
+			for (String importLine : sortedModuleImports) {
+				printer.writeKeyword("import").writeSpace().writeIdentifier("module").writeSpace();
+				writeQualifiedName(importLine).writeSeparator(";").writeln();
+			}
+		}
+		if (!setImports.isEmpty()) {
 			if (isFirst) {
-				printer.writeln();
 				printer.writeln();
 				isFirst = false;
 			}
-			printer.writeKeyword("import").writeSpace();
-			writeQualifiedName(importLine).writeSeparator(";").writeln();
+			printer.writeln();
+			List<String> sortedImports = new ArrayList<>(setImports);
+			Collections.sort(sortedImports);
+			for (String importLine : sortedImports) {
+				printer.writeKeyword("import").writeSpace();
+				writeQualifiedName(importLine).writeSeparator(";").writeln();
+			}
 		}
 		if (!setStaticImports.isEmpty()) {
 			if (isFirst) {
@@ -513,7 +527,7 @@ public class ElementPrinterHelper {
 	 * prefixed with `start`, separated by `next` and suffixed by `end`
 	 * @param startPrefixSpace if true then `start` token is prefixed with space
 	 * @param start the string which has to be printed at the beginning of the list
-	 * @param startSufficSpace if true then `start` token is suffixed with space
+	 * @param startSuffixSpace if true then `start` token is suffixed with space
 	 * @param nextPrefixSpace if true then `next` token is prefixed with space
 	 * @param next the string which has to be used as separator before each next item
 	 * @param nextSuffixSpace if true then `next` token is suffixed with space
@@ -522,8 +536,8 @@ public class ElementPrinterHelper {
 	 * @return the {@link ListPrinter} whose {@link ListPrinter#printSeparatorIfAppropriate()} has to be called
 	 * before printing of each item.
 	 */
-	private ListPrinter createListPrinter(boolean startPrefixSpace, String start, boolean startSufficSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
-		return new ListPrinter(printer, startPrefixSpace, start, startSufficSpace, nextPrefixSpace, next, nextSuffixSpace, endPrefixSpace, end);
+	private ListPrinter createListPrinter(boolean startPrefixSpace, String start, boolean startSuffixSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
+		return new ListPrinter(printer, startPrefixSpace, start, startSuffixSpace, nextPrefixSpace, next, nextSuffixSpace, endPrefixSpace, end);
 	}
 
 	private static final String QUALIFIED_NAME_SEPARATORS = ".$";

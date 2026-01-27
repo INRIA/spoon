@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -163,6 +164,11 @@ class TypeNameScope extends NameScopeImpl {
 				@Override
 				public <T> void visitUnresolvedImport(CtUnresolvedImport ctUnresolvedImport) {
 					//there is no usable type member under unresolved import
+				}
+
+				@Override
+				public void visitModuleImport(CtModuleReference moduleReference) {
+					//modules are not relevant for type members
 				}
 			});
 		});

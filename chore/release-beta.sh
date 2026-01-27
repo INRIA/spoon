@@ -42,15 +42,6 @@ echo "::group::Running jreleaser"
 JRELEASER_PROJECT_VERSION="$NEXT_BETA_VERSION" jreleaser-cli release
 echo "::endgroup::"
 
-echo "::group::Reverting to old SNAPSHOT version"
-git revert --no-commit HEAD
-git commit -m "release: Reverting to SNAPSHOT version $OLD_VERSION_WITH_SNAPSHOT"
-git push origin "$BRANCH_NAME"
-echo "::endgroup::"
-
-echo "::group::Merging into master (fast-forward)"
-git checkout master
-git merge --ff-only "$BRANCH_NAME"
-git push origin master
+echo "::group::Delete branch"
 git push origin --delete "$BRANCH_NAME"
 echo "::endgroup::"

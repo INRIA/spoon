@@ -33,14 +33,11 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.compiler.VirtualFile;
 
-import javax.annotation.RegEx;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 public class SpoonTestHelpers {
 	// only static methods
@@ -179,15 +176,16 @@ public class SpoonTestHelpers {
 
 	/** wraps code into a method in a class */
 	public static String wrapLocal(String localDeclarationSnippet) {
-		return  "class X {\n" +
-				"	public void myMethod() {\n" +
-				localDeclarationSnippet +
-				"	}\n" +
-				"}";
+		return """
+			class X {
+			  public void myMethod() {
+			  %s
+			  }
+			}""".formatted(localDeclarationSnippet);
 	}
 
 	/** @see RegexFindMatcher */
-	public static Matcher<String> containsRegexMatch(@RegEx String regex) {
+	public static Matcher<String> containsRegexMatch(String regex) {
 		return new RegexFindMatcher(Pattern.compile(regex));
 	}
 

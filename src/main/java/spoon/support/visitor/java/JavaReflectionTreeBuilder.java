@@ -8,12 +8,12 @@
 package spoon.support.visitor.java;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.RecordComponent;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
@@ -119,7 +119,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 					visited = true;
 					visitEnum(clazz);
 				}
-				if (MethodHandleUtils.isRecord(clazz) && !visited) {
+				if (clazz.isRecord() && !visited) {
 					visited = true;
 					visitRecord(clazz);
 				}
@@ -644,11 +644,11 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 	@Override
-	public void visitRecordComponent(AnnotatedElement recordComponent) {
+	public void visitRecordComponent(RecordComponent recordComponent) {
 		CtRecordComponent ctRecordComponent = factory.Core().createRecordComponent();
-		ctRecordComponent.setSimpleName(MethodHandleUtils.getRecordComponentName(recordComponent));
+		ctRecordComponent.setSimpleName(recordComponent.getName());
 		enter(new RecordComponentRuntimeBuilderContext(ctRecordComponent));
-		visitTypeReference(CtRole.TYPE, MethodHandleUtils.getRecordComponentType(recordComponent));
+		visitTypeReference(CtRole.TYPE, recordComponent.getGenericType());
 
 		Arrays.stream(recordComponent.getAnnotations()).forEach(this::visitAnnotation);
 		exit();

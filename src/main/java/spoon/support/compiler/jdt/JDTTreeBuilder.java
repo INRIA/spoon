@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
@@ -32,7 +33,6 @@ import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.eclipse.jdt.internal.compiler.ast.CharLiteral;
 import org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess;
-import org.eclipse.jdt.internal.compiler.ast.CompactConstructorDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompoundAssignment;
 import org.eclipse.jdt.internal.compiler.ast.ConditionalExpression;
@@ -163,6 +163,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtReceiverParameter;
+import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -776,6 +777,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
+		if (typeDeclaration.isRecord()) {
+			String fullyQualifiedName = CharOperation.toString(typeDeclaration.binding.compoundName);
+			CtRecord record = (CtRecord) getFactory().Type().get(fullyQualifiedName);
+			record.createCanonicalConstructorIfMissing();
+		}
 		while (context.hasCurrentContext() && context.getCurrentNode() == typeDeclaration) {
 			context.exit(typeDeclaration);
 		}
@@ -1049,7 +1055,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(Assignment assignment, BlockScope scope) {
-		context.enter(factory.Core().createAssignment().setImplicit((assignment.bits & ASTNode.IsImplicit) != 0), assignment);
+		context.enter(factory.Core().createAssignment(), assignment);
 		return true;
 	}
 
@@ -1152,10 +1158,27 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
 		CtConstructor<Object> c = factory.Core().createConstructor();
-		// if the source start of the class is equals to the source start of the constructor
-		// it means that the constructor is implicit.
+		/*
+		 * If the source start of the class is equals to the source start of the constructor;
+		 * it means that the constructor is implicit.
+		 *
+		 * For a class generated from a compact source file, two cases can occur:
+		 *
+		 * either the compact source file does not declare any import statement and in this case the condition
+		 * 		scope.referenceContext.sourceStart() == constructorDeclaration.sourceStart()
+		 * is sufficient to decide of the implicitness of the constructor;
+		 *
+		 * or the compact source file declares some import statements and in this case the source start of the class
+		 * differs from the source start of the constructor. The previous condition would wrongly set
+		 * the implicitness of the constructor to false. In this case, the implicitness of the class is tested to
+		 * decide of the implicitness of the constructor.
+		 */
 		if (scope != null && scope.referenceContext != null) {
-			c.setImplicit(scope.referenceContext.sourceStart() == constructorDeclaration.sourceStart());
+			if (scope.referenceContext.isImplicitType()) {
+				c.setImplicit(true);
+			} else {
+				c.setImplicit(scope.referenceContext.sourceStart() == constructorDeclaration.sourceStart());
+			}
 		}
 		if (constructorDeclaration.binding != null) {
 			c.setExtendedModifiers(getModifiers(constructorDeclaration.binding.modifiers, true, ModifierTarget.CONSTRUCTOR));
@@ -1166,10 +1189,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 				c.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
 			}
 		}
-		if (constructorDeclaration instanceof CompactConstructorDeclaration) {
-			c.setCompactConstructor(true);
-		}
 		context.enter(c, constructorDeclaration);
+		if (constructorDeclaration.isCompactConstructor()) {
+			c.setCompactConstructor(true);
+			// Handle RecordComponent -> CtParameter conversion ourselves
+			for (AbstractVariableDeclaration declaration : constructorDeclaration.protoArguments) {
+				declaration.traverse(this, constructorDeclaration.scope);
+			}
+		}
 
 		// Create block
 		context.enter(factory.Core().createBlock(), constructorDeclaration);
@@ -1905,6 +1932,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(RecordComponent recordComponent, BlockScope scope) {
+		// JDT gives us a RecordComponent instead of an Argument for compact record constructors.
+		// They also aren't visited directly, so this call should come from the explicit invocation
+		// in visit(ConstructorDeclaration, ClassScope)
+		if (context.getCurrentElement() instanceof CtConstructor<?> ctor && ctor.isCompactConstructor()) {
+			CtParameter<?> parameter = helper.createParameter(recordComponent);
+			context.enter(parameter, recordComponent);
+			return true;
+		}
 		context.enter(factory.Core().createRecordComponent().setSimpleName(String.valueOf(recordComponent.name)), recordComponent);
 		return super.visit(recordComponent, scope);
 	}

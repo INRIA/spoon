@@ -9,6 +9,7 @@ package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.ExportsStatement;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
@@ -21,6 +22,7 @@ import org.eclipse.jdt.internal.compiler.ast.ProvidesStatement;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.Receiver;
+import org.eclipse.jdt.internal.compiler.ast.RecordComponent;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.RequiresStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
@@ -740,16 +742,24 @@ public class JDTTreeBuilderHelper {
 	 * 		Used to get the name of the parameter, the modifiers, know if it is a var args parameter.
 	 * @return a parameter.
 	 */
-	<T> CtParameter<T> createParameter(Argument argument) {
+	<T> CtParameter<T> createParameter(AbstractVariableDeclaration argument) {
 		CtParameter<T> p = jdtTreeBuilder.getFactory().Core().createParameter();
 		p.setSimpleName(CharOperation.charToString(argument.name));
 		p.setVarArgs(argument.isVarArgs());
 		p.setExtendedModifiers(getModifiers(argument.modifiers, false, ModifierTarget.PARAMETER));
-		if (argument.binding != null && argument.binding.type != null && argument.type == null) {
-			p.setType(jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(argument.binding.type));
+		VariableBinding binding;
+		if (argument instanceof Argument arg) {
+			binding = arg.binding;
+		} else if (argument instanceof RecordComponent rec) {
+			binding = rec.binding;
+		} else {
+			throw new IllegalArgumentException("unexpected argument type: " + argument.getClass());
+		}
+		if (binding != null && binding.type != null && argument.type == null) {
+			p.setType(jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(binding.type));
 			p.getType().setImplicit(argument.type == null);
-			if (p.getType() instanceof CtArrayTypeReference) {
-				((CtArrayTypeReference) p.getType()).getComponentType().setImplicit(argument.type == null);
+			if (p.getType() instanceof CtArrayTypeReference<?> type) {
+				type.getComponentType().setImplicit(argument.type == null);
 			}
 		}
 		return p;
@@ -856,6 +866,11 @@ public class JDTTreeBuilderHelper {
 			type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
 		} else {
 			type.setSimpleName(new String(typeDeclaration.name));
+		}
+
+		// The generated class for a compact source file is implicit
+		if (typeDeclaration.isImplicitType()) {
+			type.setImplicit(true);
 		}
 
 		return type;

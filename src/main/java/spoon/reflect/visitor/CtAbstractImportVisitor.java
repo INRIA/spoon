@@ -10,6 +10,7 @@ package spoon.reflect.visitor;
 import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
@@ -40,5 +41,9 @@ public class CtAbstractImportVisitor implements CtImportVisitor {
 	}
 	@Override
 	public <T> void visitUnresolvedImport(CtUnresolvedImport unresolvedImport) {
+	}
+
+	@Override
+	public void visitModuleImport(CtModuleReference moduleReference) {
 	}
 }
