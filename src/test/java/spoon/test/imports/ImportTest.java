@@ -1906,7 +1906,16 @@ public class ImportTest {
 		// assert
 		List<CtImport> imports = mainType.getPosition().getCompilationUnit().getImports();
 		assertThat(imports, hasSize(2));
-		imports.sort(Comparator.comparing(importElement -> importElement.getReference().getSimpleName()));
+		imports.sort(
+			Comparator.<CtImport, String>comparing(i -> i.getReference().getSimpleName())
+				.thenComparingInt(i -> {
+					CtImportKind k = i.getImportKind();
+					if (k == CtImportKind.METHOD) return 0;
+					if (k == CtImportKind.TYPE)   return 1;
+					return 2; // any other kinds last just in case
+				})
+				.thenComparing(i -> i.getReference().toString())
+		);
 		CtImport import0 = imports.get(0);
 		assertThat(import0.getImportKind(), is(CtImportKind.METHOD));
 		assertThat(import0.getReference().getSimpleName(), is("foo"));
