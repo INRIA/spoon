@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
-  <publishDate position="left" format="yyyy-MM-dd HH:mm" />
+  <publishDate position="none" format=""/>
 
   <!-- necessary for new site and checkstyle plugins -->
   <skin>
