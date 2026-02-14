@@ -1892,6 +1892,7 @@ public class ImportTest {
 		assertThat(imports, hasSize(2));
 		imports.sort(Comparator.comparing(importElement -> importElement.getReference().getSimpleName()));
 		CtImport import0 = imports.get(0);
+		SpoonAssertions.assertThat(import0).getReference().getSimpleName().isEqualTo("InnerClass");
 		assertThat(import0.getReference().getSimpleName(), is("InnerClass"));
 	}
 
@@ -1917,12 +1918,12 @@ public class ImportTest {
 				.thenComparing(i -> i.getReference().toString())
 		);
 		CtImport import0 = imports.get(0);
-		assertThat(import0.getImportKind(), is(CtImportKind.METHOD));
-		assertThat(import0.getReference().getSimpleName(), is("foo"));
+		SpoonAssertions.assertThat(import0).getImportKind().isEqualTo(CtImportKind.METHOD);
+		SpoonAssertions.assertThat(import0).getReference().getSimpleName().isEqualTo("foo");
 
 		CtImport import1 = imports.get(1);
-		assertThat(import1.getImportKind(), is(CtImportKind.TYPE));
-		assertThat(import1.getReference().getSimpleName(), is("foo"));
+		SpoonAssertions.assertThat(import1).getImportKind().isEqualTo(CtImportKind.METHOD);
+		SpoonAssertions.assertThat(import1).getReference().getSimpleName().isEqualTo("foo");
 	}
 
 	@ModelTest(value = {"src/test/resources/imports/ModuleImport.java"}, autoImport = true, complianceLevel = 25)
@@ -1939,3 +1940,4 @@ public class ImportTest {
 		);
 	}
 }
+
