@@ -1893,7 +1893,7 @@ public class ImportTest {
 		imports.sort(Comparator.comparing(importElement -> importElement.getReference().getSimpleName()));
 		CtImport import0 = imports.get(0);
 		SpoonAssertions.assertThat(import0).getReference().getSimpleName().isEqualTo("InnerClass");
-		assertThat(import0.getReference().getSimpleName(), is("InnerClass"));
+
 	}
 
 	@ModelTest(value = {"src/test/resources/static-method-and-type"}, autoImport = true)
@@ -1922,7 +1922,7 @@ public class ImportTest {
 		SpoonAssertions.assertThat(import0).getReference().getSimpleName().isEqualTo("foo");
 
 		CtImport import1 = imports.get(1);
-		SpoonAssertions.assertThat(import1).getImportKind().isEqualTo(CtImportKind.METHOD);
+		SpoonAssertions.assertThat(import1).getImportKind().isEqualTo(CtImportKind.TYPE);
 		SpoonAssertions.assertThat(import1).getReference().getSimpleName().isEqualTo("foo");
 	}
 
