@@ -20,6 +20,15 @@ path = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.fo
 List<CtElement> l = path.evaluateOn(root)
 ```
 
+If the root parameter is omitted, spoon will try to find shadow elements (e.g. jdk classes).
+
+> Querying shadow elements currently only supports types, methods and fields.
+
+```java
+path = new CtPathStringBuilder().fromString("#subPackage[name=java]#subPackage[name=util]#containedType[name=HashSet]");
+List<CtElement> l = path.evaluateOn()
+```
+
 ### Creating AST paths
 
 #### From an existing element
