@@ -15,7 +15,7 @@ import spoon.testing.utils.ModelTest;
 public class InnerClassInMethodTest {
 
 	@ModelTest(value = "./src/test/resources/innerClassInMethod/InnerClassInMethod.java")
-	void testAnonymicity(Factory factory) {
+	void testAnonymity(Factory factory) {
 		// contract: inner classes declared in methods are supported
 		CtModel model = factory.getModel();
 		CtMethod<?> method = model.getElements(new TypeFilter<>(CtMethod.class)).get(0);
