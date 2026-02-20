@@ -16,7 +16,7 @@ public class InnerClassInMethodTest {
 
 	@ModelTest(value = "./src/test/resources/innerClassInMethod/InnerClassInMethod.java")
 	void testAnonymity(Factory factory) {
-		// contract: inner classes declared in methods are supported
+		// contract: the anonymity status of inner classes declared in methods is preserved
 		CtModel model = factory.getModel();
 		CtMethod<?> method = model.getElements(new TypeFilter<>(CtMethod.class)).get(0);
 		assertThat(method).isNotNull();
