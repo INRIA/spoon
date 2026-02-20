@@ -861,9 +861,13 @@ public class JDTTreeBuilderHelper {
 			((CtClass) type).setSuperclass(jdtTreeBuilder.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
 		}
 		if ((type instanceof CtClass || type instanceof CtInterface)
-				&& typeDeclaration.binding != null
-				&& (typeDeclaration.binding.isAnonymousType() || typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null)) {
-			type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
+				&& typeDeclaration.binding instanceof LocalTypeBinding
+				&& typeDeclaration.binding.enclosingMethod() != null) {
+			if (typeDeclaration.binding.isAnonymousType()) {
+				type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
+			} else {
+				type.setSimpleName(new String(typeDeclaration.name));
+			}
 		} else {
 			type.setSimpleName(new String(typeDeclaration.name));
 		}
