@@ -628,6 +628,14 @@ class TypeAdaptorTest {
 		CtMethod<?> parentOverride1 = classA.getMethodsByName("override1").get(0);
 		CtMethod<?> childOverride1 = classB.getMethodsByName("override1").get(0);
 		assertTrue(typeAdaptor.isOverriding(childOverride1, parentOverride1));
+
+		CtMethod<?> parentOverride2 = classA.getMethodsByName("override2").get(0);
+		CtMethod<?> childOverride2 = classB.getMethodsByName("override2").get(0);
+		assertTrue(typeAdaptor.isOverriding(childOverride2, parentOverride2));
+
+		CtMethod<?> parentOverride3 = classA.getMethodsByName("override3").get(0);
+		CtMethod<?> childOverride3 = classB.getMethodsByName("override3").get(0);
+		assertTrue(typeAdaptor.isOverriding(childOverride3, parentOverride3));
 	}
 
 	private static void verifySubtype(CtTypeReference<?> bottom, CtTypeReference<?> top, boolean shouldSubtype) {
