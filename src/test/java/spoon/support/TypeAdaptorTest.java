@@ -601,6 +601,7 @@ class TypeAdaptorTest {
 
 	@Test
 	void testIsOverridingTakesIntoAccountAccessSpecifiers() {
+		// contract: an overriding method must have an access modifier that is at least as accessible as the method it overrides
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/resources/isOverriding-different-access-specifiers/ClassA.java");
 		launcher.addInputResource("src/test/resources/isOverriding-different-access-specifiers/ClassB.java");
