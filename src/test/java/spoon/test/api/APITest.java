@@ -277,6 +277,7 @@ public class APITest {
 		launcher.run(new String[] {
 				"-i", "./src/main/java", //
 				"-o", "./target/print-not-all/command", //
+				"--compliance", "17", //
 				"-f", "spoon.Launcher:spoon.template.AbstractTemplate"
 		});
 
