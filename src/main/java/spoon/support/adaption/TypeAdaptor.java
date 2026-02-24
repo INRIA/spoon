@@ -7,6 +7,7 @@
  */
 package spoon.support.adaption;
 
+import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtConstructor;
@@ -17,6 +18,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -412,7 +414,7 @@ public class TypeAdaptor {
 	}
 
 	/**
-	 * Checks if {@code subMethod} overrides {@code superMethod}. A method overrides another, iff
+	 * Checks if {@code subMethod} overrides {@code superMethod}. A method overrides another, if
 	 * <ul>
 	 *   <li>They have the same name</li>
 	 *   <li>They have the same amount of parameters</li>
@@ -421,6 +423,9 @@ public class TypeAdaptor {
 	 *     The declaring type of {@code subMethod} is a subtype of the declaring type of
 	 *     {@code superMethod}
 	 *   </li>
+	 *   <li>
+	 * 	  The access specifier for an overriding method allow more, but not less, access than the overridden method
+	 * 	</li>
 	 *   <li>
 	 *     The erasure of the parameters is equal, after {@link #adaptMethod(CtMethod) adapting} the
 	 *     {@code superMethod} to the declaring type of {@code subMethod}. One needs to adapt the
@@ -458,6 +463,14 @@ public class TypeAdaptor {
 			return false;
 		}
 
+		if (subMethod.getVisibility() == ModifierKind.PRIVATE || superMethod.getVisibility() == ModifierKind.PRIVATE) {
+			return false;
+		}
+
+		if (superMethodHasMoreVisibility(subMethod.getVisibility(), superMethod.getVisibility())) {
+			return false;
+		}
+
 		CtType<?> subDeclaringType = subMethod.getDeclaringType();
 		CtType<?> superDeclaringType = superMethod.getDeclaringType();
 
@@ -477,6 +490,21 @@ public class TypeAdaptor {
 			}
 		}
 		return true;
+	}
+
+	private boolean superMethodHasMoreVisibility(
+		@Nullable ModifierKind childAccessModifier,
+		@Nullable ModifierKind parentAccessModifier
+	) {
+		if (childAccessModifier == null) {
+			return parentAccessModifier == ModifierKind.PROTECTED || parentAccessModifier == ModifierKind.PUBLIC;
+		}
+
+		if (childAccessModifier == ModifierKind.PROTECTED) {
+			return parentAccessModifier == ModifierKind.PUBLIC;
+		}
+
+		return false;
 	}
 
 	/**

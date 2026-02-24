@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
@@ -596,6 +597,45 @@ class TypeAdaptorTest {
 		verifySubtype(objArray, factory.createCtTypeReference(Object.class), true);
 		verifySubtype(objArray, factory.createCtTypeReference(Cloneable.class), true);
 		verifySubtype(objArray, factory.createCtTypeReference(Serializable.class), true);
+	}
+
+	@Test
+	void testIsOverridingTakesIntoAccountAccessSpecifiers() {
+		// contract: an overriding method must have an access modifier that is at least as accessible as the method it overrides
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/isOverriding-different-access-specifiers/ClassA.java");
+		launcher.addInputResource("src/test/resources/isOverriding-different-access-specifiers/ClassB.java");
+
+		CtModel model = launcher.buildModel();
+
+		CtType<?> classA = model.getAllTypes().stream().filter(ctType -> ctType.getSimpleName().equals("ClassA")).findFirst().get();
+		CtType<?> classB = model.getAllTypes().stream().filter(ctType -> ctType.getSimpleName().equals("ClassB")).findFirst().get();
+
+		TypeAdaptor typeAdaptor = new TypeAdaptor(classA);
+
+		CtMethod<?> parentNotOverride1 = classA.getMethodsByName("notOverride1").get(0);
+		CtMethod<?> childNotOverride1 = classB.getMethodsByName("notOverride1").get(0);
+		assertFalse(typeAdaptor.isOverriding(childNotOverride1, parentNotOverride1));
+
+		CtMethod<?> parentNotOverride2 = classA.getMethodsByName("notOverride2").get(0);
+		CtMethod<?> childNotOverride2 = classB.getMethodsByName("notOverride2").get(0);
+		assertFalse(typeAdaptor.isOverriding(childNotOverride2, parentNotOverride2));
+
+		CtMethod<?> parentNotOverride3 = classA.getMethodsByName("notOverride3").get(0);
+		CtMethod<?> childNotOverride3 = classB.getMethodsByName("notOverride3").get(0);
+		assertFalse(typeAdaptor.isOverriding(childNotOverride3, parentNotOverride3));
+
+		CtMethod<?> parentOverride1 = classA.getMethodsByName("override1").get(0);
+		CtMethod<?> childOverride1 = classB.getMethodsByName("override1").get(0);
+		assertTrue(typeAdaptor.isOverriding(childOverride1, parentOverride1));
+
+		CtMethod<?> parentOverride2 = classA.getMethodsByName("override2").get(0);
+		CtMethod<?> childOverride2 = classB.getMethodsByName("override2").get(0);
+		assertTrue(typeAdaptor.isOverriding(childOverride2, parentOverride2));
+
+		CtMethod<?> parentOverride3 = classA.getMethodsByName("override3").get(0);
+		CtMethod<?> childOverride3 = classB.getMethodsByName("override3").get(0);
+		assertTrue(typeAdaptor.isOverriding(childOverride3, parentOverride3));
 	}
 
 	private static void verifySubtype(CtTypeReference<?> bottom, CtTypeReference<?> top, boolean shouldSubtype) {
