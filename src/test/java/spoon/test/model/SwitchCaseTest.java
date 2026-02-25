@@ -8,8 +8,8 @@
 
 package spoon.test.model;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -53,7 +53,9 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
+import spoon.testing.utils.BySimpleName;
 import spoon.testing.utils.GitHubIssue;
+import spoon.testing.utils.ModelTest;
 
 @DisplayName("Switchcase Tests")
 public class SwitchCaseTest {
@@ -330,33 +332,38 @@ public class SwitchCaseTest {
 
 		@Test
 		@GitHubIssue(issueNumber = 4696, fixed = true)
-		void testVariableScopeInSwitch() {
+		@ModelTest(code = """
+				public class A {
+					public void function(int value) {
+						switch (value) {
+							case 1: { String test; } // decoy variable declaration, should not be found
+								String test;
+								test = "first";
+								break;
+							default:
+								test = "not first";
+						}
+					}
+				}
+				""")
+		void testVariableScopeInSwitch(@BySimpleName("A") CtClass<?> ctClass) {
 			// contract: different cases do not introduce different scopes in colon-switches
-			String code = "public class A {\n" +
-					"  public void function(int value) {\n" +
-					"    switch (value) {\n" +
-					"      case 1: { String test; }\n" + // decoy variable declaration, should not be found
-					"        String test;\n" +
-					"        test = \"first\";\n" +
-					"        break;\n" +
-					"      default:\n" +
-					"        test = \"not first\";\n" +
-					"    }\n" +
-					"  }\n" +
-					"}";
-			CtModel model = createModelFromString(code);
-			List<CtVariableAccess<?>> accesses = model.<CtVariableAccess<?>>getElements(new TypeFilter<>(CtVariableAccess.class))
-					.stream()
-					.filter(a -> a.getVariable().getSimpleName().equals("test"))
-					.collect(Collectors.<CtVariableAccess<?>>toList());
-			assertEquals(2, accesses.size());
+			List<CtVariableAccess<?>> accesses = ctClass.getElements(new TypeFilter<>(CtVariableAccess.class));
+			assertThat(accesses).hasSize(3);
+			List<CtVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtVariable.class));
+
+			assertThat(accesses.get(0)).getVariable().getSimpleName().isEqualTo("value");
+			assertThat(accesses.get(0)).getVariable().hasExactlyPotentialDeclarations(variables.get(0));
 
 			// access their declarations
-			CtVariable<?> caseOneVariableDeclaration = accesses.get(0).getVariable().getDeclaration();
-			CtVariable<?> defaultVariableDeclaration = accesses.get(1).getVariable().getDeclaration();
+			CtVariable<?> caseOneVariableDeclaration = accesses.get(1).getVariable().getDeclaration();
+			CtVariable<?> defaultVariableDeclaration = accesses.get(2).getVariable().getDeclaration();
 
 			// expect the declarations to be equal (writing to the same variable)
-			assertEquals(caseOneVariableDeclaration, defaultVariableDeclaration);
+			assertThat(caseOneVariableDeclaration).isSameAs(defaultVariableDeclaration);
+
+			assertThat(accesses.get(1)).getVariable().hasExactlyPotentialDeclarations(variables.get(2));
+			assertThat(accesses.get(2)).getVariable().hasExactlyPotentialDeclarations(variables.get(2));
 		}
 	}
 
@@ -536,16 +543,15 @@ public class SwitchCaseTest {
 		}
 
 		@Test
-		public void test_setCaseExpression_removeAllCaseExpressions() {
+		@ModelTest(code = "class A { public void f(int i) { switch(i) { case 1,2,3: break; } } }")
+		public void test_setCaseExpression_removeAllCaseExpressions(@BySimpleName("A") CtClass<?> ctClass) {
 			// contract: `setCaseExpression` should clear the list of case expressions when `null` is passed as
 			// argument
-			String code = "class A { public void f(int i) { switch(i) { case 1,2,3: break; } } }";
-			CtModel model = createModelFromString(code);
-			CtCase<?> ctCase = model.getElements(new TypeFilter<>(CtCase.class)).get(0);
+			CtCase<?> ctCase = ctClass.getElements(new TypeFilter<>(CtCase.class)).get(0);
 
 			ctCase.setCaseExpression(null);
 
-			assertThat(ctCase.getCaseExpressions().size(), equalTo(0));
+			assertThat(ctCase.getCaseExpressions()).hasSize(0);
 		}
 	}
 }
