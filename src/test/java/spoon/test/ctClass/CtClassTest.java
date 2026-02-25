@@ -474,4 +474,55 @@ public class CtClassTest {
 				final java.lang.String message = "Hello, World!";
 				""");
 	}
+
+	@ModelTest(value = "src/test/resources/ctClass/DollarSignInInnerClassName.java")
+	@ExtendWith(LineSeparatorExtension.class)
+	void testDollarSignInInnerClassName(@BySimpleName("DollarSignInInnerClassName") CtClass<?> cl) {
+		// contract: the $ sign in an inner class name is supported
+		assertThat(cl).getMethods().hasSize(1);
+		assertThat(cl.getMethod("m")).getBody().getStatements().hasSize(2);
+		CtMethod<?> m = cl.getMethod("m");
+		assertThat(m).getBody().getStatements().hasSize(2);
+		CtStatement stat0 = m.getBody().getStatements().get(0);
+		CtStatement stat1 = m.getBody().getStatements().get(1);
+		assertThat(stat0).isInstanceOf(CtClass.class);
+		assertThat(stat1).isInstanceOf(CtClass.class);
+		CtClass<?> b = (CtClass<?>) stat0;
+		CtClass<?> c = (CtClass<?>) stat1;
+		assertThat(b).getSimpleName().isEqualTo("1B$1");
+		assertThat(c).getSimpleName().isEqualTo("1C$42");
+		assertThat(c).getMethods().hasSize(1);
+		CtMethod<?> n = c.getMethod("n");
+		assertThat(n).getBody().getStatements().hasSize(1);
+		CtStatement stat2 = n.getBody().getStatements().get(0);
+		assertThat(stat2).isInstanceOf(CtClass.class);
+		CtClass<?> d = (CtClass<?>) stat2;
+		assertThat(d).getSimpleName().isEqualTo("1D$1");
+
+		org.assertj.core.api.Assertions.assertThat(cl.toString()).isEqualTo(
+			"""
+			class DollarSignInInnerClassName {
+			    void m() {
+			        class B$1 {}
+			        class C$42 {
+			            void n() {
+			                class D$1 {}
+			            }
+			        }
+			    }
+			}"""
+		);
+	}
+
+	@ModelTest(value = "src/test/resources/ctClass/ClassWith10InnerClasses.java")
+	void testClassWith10InnerClasses(@BySimpleName("ClassWith10InnerClasses")  CtClass<?> cl) {
+		// contract: inner class names in classes with 10 or more inner classes are supported
+		assertThat(cl).getMethods().hasSize(10);
+		CtMethod<?> m10 = cl.getMethod("m10");
+		assertThat(m10).getBody().getStatements().hasSize(1);
+		CtStatement stat = m10.getBody().getStatements().get(0);
+		assertThat(stat).isInstanceOf(CtClass.class);
+		CtClass<?> b = (CtClass<?>) stat;
+		assertThat(b).getSimpleName().isEqualTo("10B");
+	}
 }

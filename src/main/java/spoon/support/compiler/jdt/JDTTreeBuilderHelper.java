@@ -101,11 +101,26 @@ public class JDTTreeBuilderHelper {
 	 *
 	 * @param anonymousQualifiedName
 	 * 		Qualified name which contains the anonymous name.
+	 * @param sourceName
+	 * 		The source name.
 	 * @return Anonymous simple name.
 	 */
-	static String computeAnonymousName(char[] anonymousQualifiedName) {
+	static String computeAnonymousName(char[] anonymousQualifiedName, char[] sourceName) {
+		/*
+		 * Case 1: Anonymous inner class such as
+		 * class A { void m() { new Runnable() { public void run() {} } } }
+		 * For the anonymous class that implements Runnable, anonymousQualifiedName is "A$1", and sourceName is "".
+		 *
+		 * Case 2: Non-anonymous inner class such as
+		 * class A { void m() { class B$1 {} } }
+		 * For class B$1, anonymousQualifiedName is "A$1B$1", and sourceName is "B$1".
+		 */
+		int idx = anonymousQualifiedName.length - sourceName.length - 1;
+		while (idx >= 0 && Character.isDigit(anonymousQualifiedName[idx])) {
+			idx--;
+		}
 		final String poolName = CharOperation.charToString(anonymousQualifiedName);
-		return poolName.substring(poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR) + 1);
+		return poolName.substring(idx + 1);
 	}
 
 	/**
@@ -863,7 +878,7 @@ public class JDTTreeBuilderHelper {
 		if ((type instanceof CtClass || type instanceof CtInterface)
 				&& typeDeclaration.binding != null
 				&& (typeDeclaration.binding.isAnonymousType() || typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null)) {
-			type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
+			type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName(), typeDeclaration.binding.sourceName));
 		} else {
 			type.setSimpleName(new String(typeDeclaration.name));
 		}
