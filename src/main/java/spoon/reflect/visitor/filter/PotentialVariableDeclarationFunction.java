@@ -10,6 +10,7 @@ package spoon.reflect.visitor.filter;
 import spoon.reflect.code.CaseKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBodyHolder;
+import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
@@ -21,7 +22,9 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtTypePattern;
+import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -158,6 +161,13 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 				if (query.isTerminated()) {
 					return;
 				}
+
+				// Check previous sibling if statements for pattern variables that are in scope after the if
+				// Only do this when scopeElement is a statement (not when it's the body itself)
+				if (scopeElement instanceof CtStatement && parent instanceof CtStatementList) {
+					searchPatternVariablesFromPreviousSiblingIfs(scopeElement, outputConsumer);
+				}
+
 				//visit parameters of CtCatch and CtExecutable (method, lambda)
 				if (parent instanceof CtCatch ctCatch) {
 					if (sendToOutput(ctCatch.getParameter(), outputConsumer)) {
@@ -191,16 +201,92 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 	}
 
 	/**
+	 * Search for pattern variables from previous sibling if statements that may be in scope
+	 * after the if statement due to flow scoping rules.
+	 *
+	 * @param scopeElement the current scope element
+	 * @param outputConsumer the consumer to send matching variables to
+	 */
+	private void searchPatternVariablesFromPreviousSiblingIfs(CtElement scopeElement, CtConsumer<Object> outputConsumer) {
+		// Use query API to find all type patterns in previous sibling if statements
+		scopeElement.getFactory().createQuery()
+				.map(new SiblingsFunction().mode(SiblingsFunction.Mode.PREVIOUS))
+				.setInput(scopeElement)
+				.select(new TypeFilter<>(CtIf.class))
+				.forEach((CtIf ifElement) -> {
+					if (query.isTerminated()) {
+						return;
+					}
+					// Check each type pattern in the if condition
+					ifElement.getCondition()
+							.filterChildren(new TypeFilter<>(CtTypePattern.class))
+							.forEach((CtTypePattern typePattern) -> {
+								CtLocalVariable<?> variable = typePattern.getVariable();
+								// Check if variable matches and is in scope due to flow scoping rules
+								if (matchesVariableName(variable)) {
+									CtStatement branchToCheck = isPatternNegated(typePattern, ifElement.getCondition())
+											? ifElement.getThenStatement()
+											: ifElement.getElseStatement();
+									if (isTerminalStatement(branchToCheck)) {
+										outputConsumer.accept(variable);
+									}
+								}
+							});
+				});
+	}
+
+	/**
 	 * Search for the variable declaration in type patterns and send matches to outputConsumer
 	 */
 	private void searchTypePattern(CtConsumer<Object> outputConsumer, CtExpression<?> expr) {
 		expr.filterChildren(new TypeFilter<>(CtTypePattern.class))
-				.forEach(typePattern -> {
-					var var = ((CtTypePattern) typePattern).getVariable();
-					if (var != null && (variableName == null || variableName.equals(var.getSimpleName()))) {
+				.forEach((CtTypePattern typePattern) -> {
+					CtLocalVariable<?> var = typePattern.getVariable();
+					if (matchesVariableName(var)) {
 						outputConsumer.accept(var);
 					}
 				});
+	}
+
+	/**
+	 * Checks if a variable matches the variableName filter (if set).
+	 *
+	 * @param variable the variable to check
+	 * @return true if the variable is non-null and matches the name filter
+	 */
+	private boolean matchesVariableName(CtLocalVariable<?> variable) {
+		return variable != null && (variableName == null || variableName.equals(variable.getSimpleName()));
+	}
+
+	/**
+	 * Checks if a pattern is negated (wrapped in a logical NOT).
+	 */
+	private boolean isPatternNegated(CtTypePattern typePattern, CtExpression<?> condition) {
+		// Check if the condition itself is a NOT operator containing this pattern
+		if (condition instanceof CtUnaryOperator<?> unaryOp && unaryOp.getKind() == UnaryOperatorKind.NOT) {
+			// The condition is !(...)  where ... contains the pattern
+			return true;
+		}
+		// Check if the pattern's immediate parent is a NOT operator
+		CtElement parent = typePattern.getParent();
+		return parent instanceof CtUnaryOperator<?> unaryOp
+				&& unaryOp.getKind() == UnaryOperatorKind.NOT
+				&& unaryOp.hasParent(condition);
+	}
+
+	/**
+	 * Checks if a statement completes abruptly (throws an exception or returns).
+	 */
+	private boolean isTerminalStatement(CtStatement statement) {
+		if (statement instanceof CtCFlowBreak) {
+			return true;
+		}
+		// Check if it's a block that always throws or returns (check last statement)
+		if (statement instanceof CtStatementList statementList && !statementList.getStatements().isEmpty()) {
+			return isTerminalStatement(statementList.getStatements().get(statementList.getStatements().size() - 1));
+		}
+
+		return false;
 	}
 
 	/**

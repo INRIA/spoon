@@ -186,6 +186,37 @@ public class InstanceOfReferenceTest {
 	}
 
 	@Test
+	public void testFlowScope4() {
+		String code = """
+				class X {
+					String typePattern(Object obj) {
+						if (o instanceof String i) {
+							System.out.println(i);
+						}
+
+						if (!(o instanceof String i)) {
+						} else {
+							System.out.println(i);
+						}
+
+						if (!(o instanceof String i)) {
+							throw new IllegalArgumentException();
+						}
+						System.out.println(i);
+					}
+				}
+				""";
+		CtModel model = createModelFromString(code, 21);
+		CtLocalVariable<?> variable = model.getElements(new TypeFilter<>(CtTypePattern.class)).get(2).getVariable();
+		var refs = model.getElements(new TypeFilter<>(CtLocalVariableReference.class));
+		CtLocalVariableReference<?> ref = refs.get(refs.size() - 1);
+		var decl = ref.getDeclaration();
+		assertNotNull(decl);
+		assertThat(variable).isSameAs(decl);
+	}
+
+
+	@Test
 	public void testCorrectScoping() {
 		String code = """
 			class Example2 {
