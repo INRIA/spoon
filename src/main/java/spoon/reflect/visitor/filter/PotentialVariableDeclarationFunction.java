@@ -162,8 +162,6 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 					return;
 				}
 
-				// Check previous sibling if statements for pattern variables that are in scope after the if
-				// Only do this when scopeElement is a statement (not when it's the body itself)
 				if (scopeElement instanceof CtStatement && parent instanceof CtStatementList) {
 					searchPatternVariablesFromPreviousSiblingIfs(scopeElement, outputConsumer);
 				}
@@ -200,16 +198,9 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 		}
 	}
 
-	/**
-	 * Search for pattern variables from previous sibling if statements that may be in scope
-	 * after the if statement due to flow scoping rules.
-	 *
-	 * @param scopeElement the current scope element
-	 * @param outputConsumer the consumer to send matching variables to
-	 */
 	private void searchPatternVariablesFromPreviousSiblingIfs(CtElement scopeElement, CtConsumer<Object> outputConsumer) {
-		// Use query API to find all type patterns in previous sibling if statements
-		scopeElement.getFactory().createQuery()
+		scopeElement.getFactory()
+				.createQuery()
 				.map(new SiblingsFunction().mode(SiblingsFunction.Mode.PREVIOUS))
 				.setInput(scopeElement)
 				.select(new TypeFilter<>(CtIf.class))
@@ -217,7 +208,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 					if (query.isTerminated()) {
 						return;
 					}
-					// Check each type pattern in the if condition
+
 					ifElement.getCondition()
 							.filterChildren(new TypeFilter<>(CtTypePattern.class))
 							.forEach((CtTypePattern typePattern) -> {
@@ -274,14 +265,13 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 				&& unaryOp.hasParent(condition);
 	}
 
-	/**
-	 * Checks if a statement completes abruptly (throws an exception or returns).
-	 */
 	private boolean isTerminalStatement(CtStatement statement) {
 		if (statement instanceof CtCFlowBreak) {
 			return true;
 		}
-		// Check if it's a block that always throws or returns (check last statement)
+
+		// There might be something like { /* statements */ { throw } } where the last statement is a block.
+		// this resolves such cases by checking the last statement of the block recursively
 		if (statement instanceof CtStatementList statementList && !statementList.getStatements().isEmpty()) {
 			return isTerminalStatement(statementList.getStatements().get(statementList.getStatements().size() - 1));
 		}

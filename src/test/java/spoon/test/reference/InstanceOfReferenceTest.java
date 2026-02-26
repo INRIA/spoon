@@ -1,16 +1,24 @@
 package spoon.test.reference;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTypePattern;
+import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.filter.VariableReferenceFunction;
 import spoon.testing.utils.GitHubIssue;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -189,7 +197,7 @@ public class InstanceOfReferenceTest {
 	public void testFlowScope4() {
 		String code = """
 				class X {
-					String typePattern(Object obj) {
+					void typePattern(Object obj) {
 						if (o instanceof String i) {
 							System.out.println(i);
 						}
@@ -211,8 +219,93 @@ public class InstanceOfReferenceTest {
 		var refs = model.getElements(new TypeFilter<>(CtLocalVariableReference.class));
 		CtLocalVariableReference<?> ref = refs.get(refs.size() - 1);
 		var decl = ref.getDeclaration();
-		assertNotNull(decl);
-		assertThat(variable).isSameAs(decl);
+		assertThat(decl).isNotNull().isSameAs(variable);
+	}
+
+	private static Stream<Arguments> provideTestCasesForNegatedScoping() {
+		return Stream.of(
+			Arguments.of("o instanceof String s", List.of("s"), List.of()),
+			Arguments.of("!(o instanceof String s)", List.of(), List.of("s")),
+			Arguments.of("!(!(o instanceof String s))", List.of("s"), List.of()),
+			Arguments.of("!(!(!(o instanceof String s)))", List.of(), List.of("s")),
+			Arguments.of("o instanceof String s && s.length() > 5", List.of("s"), List.of()),
+			Arguments.of("o instanceof String s || number > 5", List.of(), List.of()),
+			Arguments.of("!(o instanceof String s) || s.length() > 5", List.of(), List.of("s")),
+			Arguments.of("!(o instanceof String s1) || !(obj instanceof String s2)", List.of(), List.of())
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource("provideTestCasesForNegatedScoping")
+	public void testNegatedInstanceofScoping(String condition, Collection<String> patternVarsInThen, Collection<String> patternVarsInElse) {
+		// The code declares three variables that are both referenced in the then and else branch.
+		//
+		// If a pattern is defined, this will shadow the field where it is true.
+		// The test then checks that the references resolve to either the pattern variable or the local variable.
+		String code = """
+				class Test {
+					String s = "abc";
+					String s1 = "def";
+					String s2 = "ghi";
+
+					void test(Object o, Object obj, int number) {
+						if (%s) {
+							System.out.printf("", s, s1, s2);
+							throw new IllegalArgumentException();
+						}
+
+						System.out.printf("", s, s1, s2);
+					}
+				}
+				""".formatted(condition);
+
+		CtModel model = createModelFromString(code, 21);
+
+		List<? extends CtLocalVariable<?>> patternVariables = model.getElements(new TypeFilter<>(CtTypePattern.class))
+			.stream()
+			.map(CtTypePattern::getVariable)
+			.toList();
+
+		var invocations = model.getElements(new TypeFilter<>(CtInvocation.class)).stream().filter(
+			ctInvocation -> ctInvocation.getExecutable().getSimpleName().equals("printf")
+		).toList();
+		CtInvocation<?> thenPrint = invocations.get(0);
+		CtInvocation<?> elsePrint = invocations.get(1);
+
+		for (var fallback : model.getElements(new TypeFilter<>(CtField.class))) {
+			CtLocalVariable<?> patternVariable = patternVariables.stream()
+				.filter(variable -> variable.getSimpleName().equals(fallback.getSimpleName()))
+				.findFirst()
+				.orElse(null);
+
+			CtVariableRead<?> thenVariableRead = thenPrint.getArguments()
+				.stream()
+				.filter(arg -> arg instanceof CtVariableRead<?>)
+				.map(arg -> (CtVariableRead<?>) arg)
+				.filter(access -> access.getVariable().getSimpleName().equals(fallback.getSimpleName()))
+				.findFirst()
+				.orElseThrow();
+
+			CtVariableRead<?> elseVariableRead = elsePrint.getArguments()
+				.stream()
+				.filter(arg -> arg instanceof CtVariableRead<?>)
+				.map(arg -> (CtVariableRead<?>) arg)
+				.filter(access -> access.getVariable().getSimpleName().equals(fallback.getSimpleName()))
+				.findFirst()
+				.orElseThrow();
+
+			boolean refersToPatternVarInThen = patternVarsInThen.contains(fallback.getSimpleName());
+			boolean refersToPatternVarInElse = patternVarsInElse.contains(fallback.getSimpleName());
+
+			assertThat(thenVariableRead.getVariable().getDeclaration())
+				.as("'%s' should reference the %s variable in 'then'", thenVariableRead, refersToPatternVarInThen ? "pattern" : "field")
+				.isSameAs(refersToPatternVarInThen ? patternVariable : fallback);
+
+			assertThat(elseVariableRead.getVariable().getDeclaration())
+				.as("'%s' should reference the %s variable in 'else'", elseVariableRead, refersToPatternVarInElse ? "pattern" : "field")
+				.isSameAs(refersToPatternVarInElse ? patternVariable : fallback);
+
+		}
 	}
 
 
