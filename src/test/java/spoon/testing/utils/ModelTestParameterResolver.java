@@ -10,6 +10,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.ModelConsistencyCheckerTestHelper;
+import spoon.support.compiler.VirtualFile;
 
 import java.lang.reflect.Executable;
 
@@ -82,6 +83,9 @@ public class ModelTestParameterResolver implements ParameterResolver {
 		launcher.getEnvironment().setNoClasspath(annotation.noClasspath());
 		for (String path : annotation.value()) {
 			launcher.addInputResource(path);
+		}
+		for (String code : annotation.code()) {
+			launcher.addInputResource(new VirtualFile(code));
 		}
 		launcher.buildModel();
 
