@@ -98,7 +98,7 @@ public class JDTTreeBuilderHelper {
 	}
 
 	/**
-	 * Computes the anonymous simple name of the specified type..
+	 * Computes the anonymous simple name of the specified type.
 	 *
 	 * @param binding the binding for the type.
 	 * @return Anonymous simple name.
