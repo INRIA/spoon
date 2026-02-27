@@ -113,7 +113,8 @@ public class JDTTreeBuilderHelper {
 		 */
 		char[] name = binding.constantPoolName();
 		int n = binding.enclosingType().constantPoolName().length + 1;
-		return new String(name, n, name.length - n);	}
+		return new String(name, n, name.length - n);
+	}
 
 	/**
 	 * Creates a qualified type name from a two-dimensional array.
