@@ -74,6 +74,15 @@ public class ModelTestParameterResolver implements ParameterResolver {
 	private Launcher createLauncher(Executable method) {
 		ModelTest annotation = method.getAnnotation(ModelTest.class);
 
+		if (annotation.value().length == 0 && annotation.code().length == 0) {
+			throw new IllegalArgumentException(
+				"""
+					@ModelTest on %s must specify either 'value' (file paths) or 'code' (inline source), or both.
+					Example: @ModelTest(code = "class Foo {}") or @ModelTest(value = "src/test/resources/...")"""
+					.formatted(method.getName())
+			);
+		}
+
 		Launcher launcher = new Launcher();
 		if (annotation.complianceLevel() > 0) {
 			launcher.getEnvironment().setComplianceLevel(annotation.complianceLevel());
