@@ -480,7 +480,6 @@ public class CtClassTest {
 	void testDollarSignInInnerClassName(@BySimpleName("DollarSignInInnerClassName") CtClass<?> cl) {
 		// contract: the $ sign in an inner class name is supported
 		assertThat(cl).getMethods().hasSize(1);
-		assertThat(cl.getMethod("m")).getBody().getStatements().hasSize(2);
 		CtMethod<?> m = cl.getMethod("m");
 		assertThat(m).getBody().getStatements().hasSize(2);
 		CtStatement stat0 = m.getBody().getStatements().get(0);
