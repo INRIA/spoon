@@ -95,7 +95,7 @@ public class ModelTestParameterResolver implements ParameterResolver {
 		}
 		// we use a indexed for loop here to have distinct names for each file
 		for (int i = 0; i < annotation.code().length; i++) {
-			String virtualFileName = method.getName() + "_code_" + i++ + ".java";
+			String virtualFileName = method.getName() + "_code_" + i + ".java";
 			launcher.addInputResource(new VirtualFile(annotation.code()[i], virtualFileName));
 		}
 		launcher.buildModel();
