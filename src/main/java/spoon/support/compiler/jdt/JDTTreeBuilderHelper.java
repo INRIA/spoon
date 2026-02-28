@@ -39,6 +39,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
+import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
@@ -97,15 +98,22 @@ public class JDTTreeBuilderHelper {
 	}
 
 	/**
-	 * Computes the anonymous simple name from its fully qualified type name.
+	 * Computes the anonymous simple name of the specified type.
 	 *
-	 * @param anonymousQualifiedName
-	 * 		Qualified name which contains the anonymous name.
+	 * @param binding the binding for the type.
 	 * @return Anonymous simple name.
 	 */
-	static String computeAnonymousName(char[] anonymousQualifiedName) {
-		final String poolName = CharOperation.charToString(anonymousQualifiedName);
-		return poolName.substring(poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR) + 1);
+	static String computeAnonymousName(SourceTypeBinding binding) {
+		/*
+		 * Case 1: Anonymous inner class such as
+		 * class A { void m() { new Runnable() { public void run() {} } } }
+		 *
+		 * Case 2: Non-anonymous inner class such as
+		 * class A { void m() { class B$1 {} } }
+		 */
+		char[] name = binding.constantPoolName();
+		int n = binding.enclosingType().constantPoolName().length + 1;
+		return new String(name, n, name.length - n);
 	}
 
 	/**
@@ -863,7 +871,7 @@ public class JDTTreeBuilderHelper {
 		if ((type instanceof CtClass || type instanceof CtInterface)
 				&& typeDeclaration.binding != null
 				&& (typeDeclaration.binding.isAnonymousType() || typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null)) {
-			type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
+			type.setSimpleName(computeAnonymousName(typeDeclaration.binding));
 		} else {
 			type.setSimpleName(new String(typeDeclaration.name));
 		}
