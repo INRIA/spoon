@@ -10,6 +10,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.ModelConsistencyCheckerTestHelper;
+import spoon.support.compiler.VirtualFile;
 
 import java.lang.reflect.Executable;
 
@@ -73,6 +74,15 @@ public class ModelTestParameterResolver implements ParameterResolver {
 	private Launcher createLauncher(Executable method) {
 		ModelTest annotation = method.getAnnotation(ModelTest.class);
 
+		if (annotation.value().length == 0 && annotation.code().length == 0) {
+			throw new IllegalArgumentException(
+				"""
+					@ModelTest on %s must specify either 'value' (file paths) or 'code' (inline source), or both.
+					Example: @ModelTest(code = "class Foo {}") or @ModelTest(value = "src/test/resources/...")"""
+					.formatted(method.getName())
+			);
+		}
+
 		Launcher launcher = new Launcher();
 		if (annotation.complianceLevel() > 0) {
 			launcher.getEnvironment().setComplianceLevel(annotation.complianceLevel());
@@ -82,6 +92,11 @@ public class ModelTestParameterResolver implements ParameterResolver {
 		launcher.getEnvironment().setNoClasspath(annotation.noClasspath());
 		for (String path : annotation.value()) {
 			launcher.addInputResource(path);
+		}
+		// we use a indexed for loop here to have distinct names for each file
+		for (int i = 0; i < annotation.code().length; i++) {
+			String virtualFileName = method.getName() + "_code_" + i + ".java";
+			launcher.addInputResource(new VirtualFile(annotation.code()[i], virtualFileName));
 		}
 		launcher.buildModel();
 

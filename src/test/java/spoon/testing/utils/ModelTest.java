@@ -32,7 +32,21 @@ public @interface ModelTest {
 	/**
 	 * @return the input resources passed to {@link spoon.Launcher#addInputResource(String)}
 	 */
-	String[] value();
+	String[] value() default {};
+
+	/**
+	 * Inline Java source code snippets (e.g. text blocks) to add as virtual input resources.
+	 * Each entry is passed to {@link spoon.Launcher#addInputResource(spoon.compiler.SpoonResource)}
+	 * via {@link spoon.support.compiler.VirtualFile}.
+	 *
+	 * <pre>{@code
+	 * @ModelTest(code = """
+	 *     class Foo {}
+	 *     """)
+	 * public void foo(Factory factory) { ... }
+	 * }</pre>
+	 */
+	String[] code() default {};
 
 	boolean noClasspath() default true;
 

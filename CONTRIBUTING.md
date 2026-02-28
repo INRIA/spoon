@@ -123,15 +123,35 @@ Tests in Spoon must follow these guidelines:
   ```
 
 * **@ModelTest Annotation**: This annotation automatically builds and injects a Spoon model into your test. It is useful when your test needs to analyze or transform Java source code.
-  * Usage: `@ModelTest(value = {"path/to/source"})` or `@ModelTest("./src/test/resources/...")`
+  * **Usage Options**:
+    * From files: `@ModelTest(value = {"path/to/source"})` or `@ModelTest("./src/test/resources/...")`
+    * From inline code: `@ModelTest(code = "class Foo {}")` (ideal for small code snippets or text blocks)
+    * Both: `@ModelTest(value = "path/to/file", code = "class Bar {}")`
   * The annotation automatically injects `Factory`, `CtModel`, and/or `Launcher` parameters into your test method. You can request any or all of them.
-  * Basic Example:
+  * **File-Based Example**:
     ```java
     @ModelTest("./src/test/resources/spoon/test/visitor/Foo.java")
     public void testRecursiveDescent(Factory factory) {
         final MyVisitor visitor = new MyVisitor(2);
         visitor.scan(factory.Package().getRootPackage());
         assertThat(visitor.equals).isTrue();
+    }
+    ```
+  * **Inline Code Example** (using text blocks):
+    ```java
+    @ModelTest(code = """
+        class Foo {
+            void bar() {
+                System.out.println("test");
+            }
+        }
+        """)
+    public void testInlineCode(Factory factory) {
+        // contract: we can define source code inline for testing
+        CtClass<?> foo = factory.Type().get("Foo");
+        assertThat(foo).isNotNull();
+        assertThat(foo.getSimpleName()).isEqualTo("Foo");
+        // test your logic with the inline code...
     }
     ```
   * **@BySimpleName Annotation**: Use this to inject a specific type from the model by its simple name. This is useful when you want to directly work with a specific class.
