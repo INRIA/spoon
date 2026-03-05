@@ -7,20 +7,25 @@
  */
 package spoon.reflect.visitor.filter;
 
+import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CaseKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBodyHolder;
+import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtLabelledFlowBreak;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtWhile;
@@ -40,7 +45,11 @@ import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.chain.CtQueryAware;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This mapping function searches for all {@link CtVariable} instances,
@@ -104,6 +113,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 			siblingsQuery = siblingsQuery.select(new NamedElementFilter<>(CtNamedElement.class, variableName));
 		}
 
+		Set<Scope> scopes = new LinkedHashSet<>();
 		CtElement scopeElement = input;
 		//Search input and then all parents until first CtPackage for element which may represents the declaration of this local variable
 		while (scopeElement != null && !(scopeElement instanceof CtPackage) && scopeElement.isParentInitialized()) {
@@ -147,14 +157,6 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 						}
 					}
 				}
-
-				// search for variable declaration in case
-				var expr = caseElement.getCaseExpression();
-				searchTypePattern(outputConsumer, expr);
-			} else if (parent instanceof CtIf ifElement) {
-				// search for variable declaration in if expression
-				var cond = ifElement.getCondition();
-				searchTypePattern(outputConsumer, cond);
 			} else if (parent instanceof CtBodyHolder || parent instanceof CtStatementList || parent instanceof CtExpression<?>) {
 				//visit all previous CtVariable siblings of scopeElement element in parent BodyHolder or Statement list
 				siblingsQuery.setInput(scopeElement).forEach(outputConsumer);
@@ -162,11 +164,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 					return;
 				}
 
-				if (scopeElement instanceof CtStatement && parent instanceof CtStatementList) {
-					searchPatternVariablesFromPreviousSiblingIfs(scopeElement, outputConsumer);
-				}
-
-				//visit parameters of CtCatch and CtExecutable (method, lambda)
+				// visit parameters of CtCatch and CtExecutable (method, lambda)
 				if (parent instanceof CtCatch ctCatch) {
 					if (sendToOutput(ctCatch.getParameter(), outputConsumer)) {
 						return;
@@ -177,20 +175,19 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 							return;
 						}
 					}
-				} else if (parent instanceof CtFor forElement) {
-					// search for variable declaration in for loop expression
-					var expr = forElement.getExpression();
-					searchTypePattern(outputConsumer, expr);
-				} else if (parent instanceof CtWhile whileElement) {
-					// search for variable declaration in while loop expression
-					var expr = whileElement.getLoopingExpression();
-					searchTypePattern(outputConsumer, expr);
-				} else if (parent instanceof CtBinaryOperator<?> op) {
-					// search for type pattern in binary operator
-					var left = op.getLeftHandOperand();
-					searchTypePattern(outputConsumer, left);
+				}
+
+				// TODO: Does the code resolve a for loop variable? e.g. for (int i = 0; ...) - if not, this should be added here as well.
+			}
+
+			scopes = updateChildScopesForParent(scopes, scopeElement, parent);
+
+			for (var scope : scopes) {
+				if (scope.appliesTo(scopeElement) && sendToOutput(scope.ctLocalVariable, outputConsumer)) {
+					return;
 				}
 			}
+
 			if (parent instanceof CtModifiable) {
 				isInStaticScope = isInStaticScope || ((CtModifiable) parent).hasModifier(ModifierKind.STATIC);
 			}
@@ -198,85 +195,319 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 		}
 	}
 
-	private void searchPatternVariablesFromPreviousSiblingIfs(CtElement scopeElement, CtConsumer<Object> outputConsumer) {
-		scopeElement.getFactory()
-				.createQuery()
-				.map(new SiblingsFunction().mode(SiblingsFunction.Mode.PREVIOUS))
-				.setInput(scopeElement)
-				.select(new TypeFilter<>(CtIf.class))
-				.forEach((CtIf ifElement) -> {
-					if (query.isTerminated()) {
-						return;
-					}
+	private record Scope(CtLocalVariable<?> ctLocalVariable, CtElement ctElement, boolean matches) {
+		public Scope with(CtElement ctElement, boolean matches) {
+			return new Scope(ctLocalVariable, ctElement, matches);
+		}
 
-					ifElement.getCondition()
-							.filterChildren(new TypeFilter<>(CtTypePattern.class))
-							.forEach((CtTypePattern typePattern) -> {
-								CtLocalVariable<?> variable = typePattern.getVariable();
-								// Check if variable matches and is in scope due to flow scoping rules
-								if (matchesVariableName(variable)) {
-									CtStatement branchToCheck = isPatternNegated(typePattern, ifElement.getCondition())
-											? ifElement.getThenStatement()
-											: ifElement.getElseStatement();
-									if (isTerminalStatement(branchToCheck)) {
-										outputConsumer.accept(variable);
-									}
-								}
-							});
-				});
+		public boolean appliesTo(CtElement ctElement) {
+			return ctElement == this.ctElement || ctElement.hasParent(this.ctElement);
+		}
+
+		@Override
+		public String toString() {
+			return "Scope['%s' @ %d, '%s' @ %d, matches=%s]".formatted(
+				ctLocalVariable,
+				System.identityHashCode(ctLocalVariable),
+				ctElement,
+				System.identityHashCode(ctElement),
+				matches
+			);
+		}
+	}
+
+
+	private static Set<Scope> exploreBranchForNewScopes(CtElement branch) {
+		Set<Scope> result = new LinkedHashSet<>();
+
+		// Any type pattern is okay, the sibling branches will be explored by the updateChildScopesForParent.
+		CtElement child = branch.filterChildren(new TypeFilter<>(CtTypePattern.class)).first();
+		while (child != null && child != branch) {
+			// The children should always have a parent, given that they are children of the branch.
+			CtElement parent = child.getParent();
+			result = updateChildScopesForParent(result, child, parent);
+			child = parent;
+		}
+
+		return result.stream().filter(scope -> scope.ctElement == branch).collect(Collectors.toCollection(LinkedHashSet::new));
+	}
+
+	private static boolean completesNormally(CtStatement statement) {
+		// FIXME: The JLS has a definition for what "cannot complete normally" is
+		return !(statement instanceof CtStatementList ctStatementList
+			&& !ctStatementList.getStatements().isEmpty()
+			&& ctStatementList.getLastStatement() instanceof CtCFlowBreak);
+	}
+
+	private static boolean hasNoReachableBreakWithTarget(CtStatement statement, CtStatement breakTarget) {
+		// FIXME: This does not check whether the break statement is actually reachable
+		return statement
+			.filterChildren(new TypeFilter<>(CtBreak.class))
+			.filterChildren((CtLabelledFlowBreak ctBreak) -> ctBreak.getLabelledStatement() == breakTarget)
+			.first() == null;
 	}
 
 	/**
-	 * Search for the variable declaration in type patterns and send matches to outputConsumer
-	 */
-	private void searchTypePattern(CtConsumer<Object> outputConsumer, CtExpression<?> expr) {
-		expr.filterChildren(new TypeFilter<>(CtTypePattern.class))
-				.forEach((CtTypePattern typePattern) -> {
-					CtLocalVariable<?> var = typePattern.getVariable();
-					if (matchesVariableName(var)) {
-						outputConsumer.accept(var);
-					}
-				});
-	}
-
-	/**
-	 * Checks if a variable matches the variableName filter (if set).
+	 * Updates the child scopes for the parent by applying the JLS rules for pattern variable scopes.
 	 *
-	 * @param variable the variable to check
-	 * @return true if the variable is non-null and matches the name filter
+	 * @param childScopes the scopes that have been found in the child, on the first call pass an empty set.
+	 * @param child       the child for which the scopes have been found
+	 * @param parent      the parent of the passed child, this is passed separately in case the child is not initialized with the parent
+	 * @return the scopes that apply to the parent
 	 */
-	private boolean matchesVariableName(CtLocalVariable<?> variable) {
-		return variable != null && (variableName == null || variableName.equals(variable.getSimpleName()));
-	}
+	private static Set<Scope> updateChildScopesForParent(Collection<Scope> childScopes, CtElement child, CtElement parent) {
+		Set<Scope> filteredChildScopes = childScopes.stream()
+			.filter(scope -> scope.ctElement == child)
+			.collect(Collectors.toCollection(LinkedHashSet::new));
 
-	/**
-	 * Checks if a pattern is negated (wrapped in a logical NOT).
-	 */
-	private boolean isPatternNegated(CtTypePattern typePattern, CtExpression<?> condition) {
-		// Check if the condition itself is a NOT operator containing this pattern
-		if (condition instanceof CtUnaryOperator<?> unaryOp && unaryOp.getKind() == UnaryOperatorKind.NOT) {
-			// The condition is !(...)  where ... contains the pattern
-			return true;
-		}
-		// Check if the pattern's immediate parent is a NOT operator
-		CtElement parent = typePattern.getParent();
-		return parent instanceof CtUnaryOperator<?> unaryOp
-				&& unaryOp.getKind() == UnaryOperatorKind.NOT
-				&& unaryOp.hasParent(condition);
-	}
-
-	private boolean isTerminalStatement(CtStatement statement) {
-		if (statement instanceof CtCFlowBreak) {
-			return true;
+		// TODO: Later remove for performance optimization?
+		if (child.isParentInitialized() && !child.hasParent(parent)) {
+			throw new IllegalStateException("The parent '%s' does not seem to be a parent of the child '%s'".formatted(parent, child));
 		}
 
-		// There might be something like { /* statements */ { throw } } where the last statement is a block.
-		// this resolves such cases by checking the last statement of the block recursively
-		if (statement instanceof CtStatementList statementList && !statementList.getStatements().isEmpty()) {
-			return isTerminalStatement(statementList.getStatements().get(statementList.getStatements().size() - 1));
+		// TODO: Add missing expression/statements, mainly a ? b : c and switch expressions/switch statements
+
+
+		if (parent instanceof CtStatementList ctStatementList) {
+			Set<Scope> result = new LinkedHashSet<>();
+
+			// The following rule applies to a block statement S contained in a block that is not a switch block:
+			// - A pattern variable introduced by S is definitely matched at all the block statements following S,
+			//   if any, in the block.
+
+			List<CtStatement> previousSiblings = ctStatementList.getFactory().createQuery()
+				.map(new SiblingsFunction().mode(SiblingsFunction.Mode.PREVIOUS))
+				.select(new TypeFilter<>(CtStatement.class))
+				.setInput(child)
+				.list();
+
+			for (CtStatement previousSibling : previousSiblings) {
+				for (var scope : exploreBranchForNewScopes(previousSibling)) {
+					result.add(scope.with(child, scope.matches()));
+				}
+			}
+
+			return result;
 		}
 
-		return false;
+		if (parent instanceof CtBinaryOperator<?> operator && (operator.getKind() == BinaryOperatorKind.AND
+			|| operator.getKind() == BinaryOperatorKind.OR)) {
+			// In `a <op> b`, both a and b can introduce pattern variables, but the passed child scopes will be for only one of the
+			// branches. This will add the other branch's scopes as well:
+			CtElement otherBranch =
+				operator.getLeftHandOperand() == child ? operator.getRightHandOperand() : operator.getLeftHandOperand();
+			filteredChildScopes.addAll(exploreBranchForNewScopes(otherBranch));
+
+
+			// A pattern variable is introduced by a && b when true iff either
+			// -  (i) it is introduced by a when true or
+			// - (ii) it is introduced by b when true.
+			//
+			// A pattern variable is introduced by a || b when false iff either
+			// -  (i) it is introduced by a when false or
+			// - (ii) it is introduced by b when false.
+			//
+			// The difference between && and || is that for && it must match true,
+			// and for || it must match false. The operator.getKind() == BinaryOperatorKind.AND is true
+			// when it is an &&, and false when it is an ||, which matches the above rules.
+			//
+			// The **either** part is only relevant for code that does not compile, which is assumed to not
+			// be the case here?
+			return filteredChildScopes.stream()
+				.filter(scope -> scope.matches() == (operator.getKind() == BinaryOperatorKind.AND))
+				.map(scope -> scope.with(operator, scope.matches()))
+				.collect(Collectors.toCollection(LinkedHashSet::new));
+		}
+
+		if (parent instanceof CtUnaryOperator<?> operator && operator.getKind() == UnaryOperatorKind.NOT) {
+			// TODO: Later remove for performance optimization?
+			if (operator.getOperand() != child) {
+				throw new IllegalStateException("Unknown child for unary operator: " + child);
+			}
+
+			// For !(expr) the following holds:
+			// - If a pattern variable is introduced by expr when true, then it is available for matching when false.
+			// - If a pattern variable is introduced by expr when false, then it is available for matching when true.
+
+			return filteredChildScopes.stream()
+				// swap the matches, because the operator is a NOT, matchesTrue will become matchesFalse and vice versa
+				.map(scope -> scope.with(operator, !scope.matches))
+				.collect(Collectors.toCollection(LinkedHashSet::new));
+		}
+
+		if (parent instanceof CtBinaryOperator<?> operator && operator.getKind() == BinaryOperatorKind.INSTANCEOF) {
+			Set<Scope> result = new LinkedHashSet<>();
+			// This handles both regular type patterns and record patterns that could introduce pattern variables too
+			for (var ctTypePattern : operator.getRightHandOperand().getElements(new TypeFilter<>(CtTypePattern.class))) {
+				result.add(new Scope(ctTypePattern.getVariable(), operator, true));
+			}
+
+			return result;
+		}
+
+		if (parent instanceof CtSwitchExpression<?,?> ctSwitchExpression) {
+			// The following rule applies to a switch expression with a switch block consisting of switch rules:
+			//
+ 			// A pattern variable introduced by a switch label is definitely matched in the associated switch rule
+			// expression, switch rule block, or switch rule throw statement.
+			throw new IllegalStateException("To be implemented");
+		}
+
+		// The child of a switch statement can only be
+		// - the selector, which cannot introduce pattern variables according to the JLS, or
+		// - a case, which can introduce pattern variables
+		if (parent instanceof CtSwitch<?> ctSwitch && child instanceof CtCase<?> ctCase) {
+			throw new IllegalStateException("To be implemented");
+		}
+
+		// An if without a then statement `if (a);` can introduce pattern variables, but they can only be referenced from the
+		// then, which does not exist -> these can be ignored.
+		if (parent instanceof CtIf ctIf && ctIf.getThenStatement() != null) {
+			Set<Scope> result = new LinkedHashSet<>();
+			// The child could be:
+			// - the condition (can introduce scopes)
+			// - the then branch
+			// - the else branch
+			//
+			// According to the JLS scopes can only be introduced by the condition
+			// -> scopes from the then/else branch should be discarded
+			if (ctIf.getCondition() != child) {
+				filteredChildScopes = exploreBranchForNewScopes(ctIf.getCondition());
+			}
+
+			boolean canThenComplete = completesNormally(ctIf.getThenStatement());
+			for (Scope scope : filteredChildScopes) {
+				// For an `if (e) S` (with maybe an else), a pattern variable introduced by `e` when `true` is definitely matched at `S`.
+				if (scope.matches) {
+					result.add(scope.with(ctIf.getThenStatement(), true));
+				}
+
+				// A pattern variable is introduced by `if (e) S` iff
+				// -  (i) it is introduced by e when false and
+				// - (ii) S cannot complete normally.
+				if (ctIf.getElseStatement() == null && !scope.matches && !canThenComplete) {
+					result.add(scope.with(ctIf, false));
+				}
+
+				// The following rules apply to a statement `if (e) S else T`:
+				if (ctIf.getElseStatement() != null) {
+					// A pattern variable introduced by e when false is definitely matched at T.
+					if (!scope.matches) {
+						result.add(scope.with(ctIf.getElseStatement(), false));
+					}
+
+					// A pattern variable is introduced by if (e) S else T iff either:
+					// - It is introduced by e when true, and S can complete normally, and T cannot complete normally; or
+					boolean canElseComplete = completesNormally(ctIf.getElseStatement());
+					if (scope.matches && canThenComplete && !canElseComplete) {
+						result.add(scope.with(ctIf, true));
+					}
+
+					// - It is introduced by e when false, and S cannot complete normally, and T can complete normally.
+					if (!scope.matches && !canThenComplete && canElseComplete) {
+						result.add(scope.with(ctIf, false));
+					}
+				}
+			}
+
+			return result;
+		}
+
+		if (parent instanceof CtWhile ctWhile) {
+			Set<Scope> result = new LinkedHashSet<>();
+			if (child != ctWhile.getLoopingExpression()) {
+				filteredChildScopes = exploreBranchForNewScopes(ctWhile.getLoopingExpression());
+			}
+
+			for (Scope scope : filteredChildScopes) {
+				if (scope.ctElement != ctWhile.getLoopingExpression()) {
+					throw new IllegalStateException("Found an invalid scope for while statement: " + scope);
+				}
+
+				// The following rules apply to a statement `while (e) S`:
+
+				// A pattern variable introduced by e when true is definitely matched at S.
+				if (scope.matches) {
+					result.add(scope.with(ctWhile.getBody(), true));
+				}
+
+				// A pattern variable is introduced by while (e) S iff
+				// - (i) it is introduced by e when false and
+				// - (ii) S does not contain a reachable break statement for which the while
+				//        statement is the break target
+				if (!scope.matches && hasNoReachableBreakWithTarget(ctWhile.getBody(), ctWhile)) {
+					result.add(scope.with(ctWhile, false));
+				}
+			}
+
+			return result;
+		}
+
+		if (parent instanceof CtDo ctDo) {
+			Set<Scope> result = new LinkedHashSet<>();
+			if (child != ctDo.getLoopingExpression()) {
+				filteredChildScopes = exploreBranchForNewScopes(ctDo.getLoopingExpression());
+			}
+
+			// TODO: This is how it should work:
+			/*do { System.out.println(); } while (!(scopeElement instanceof CtDo ctElement)); System.out.println(ctElement);*/
+
+			// The following rule applies to a statement `do S while (e)`:
+			// - A pattern variable is introduced by do S while (e) iff
+			//   - (i) it is introduced by e when false and
+			//   - (ii) S does not contain a reachable break statement
+			//          for which the do statement is the break target.
+			for (Scope scope : filteredChildScopes) {
+				if (scope.ctElement != ctDo.getLoopingExpression()) {
+					throw new IllegalStateException("Found an invalid scope for while statement: " + scope);
+				}
+
+				if (!scope.matches && hasNoReachableBreakWithTarget(ctDo.getBody(), ctDo)) {
+					result.add(scope.with(ctDo, false));
+				}
+			}
+
+			return result;
+		}
+
+		if (parent instanceof CtFor ctFor) {
+			Set<Scope> result = new LinkedHashSet<>();
+			if (child != ctFor.getExpression()) {
+				filteredChildScopes = exploreBranchForNewScopes(ctFor.getExpression());
+			}
+
+			// The following rules apply to a basic for statement (§14.14.1):
+			for (Scope scope : filteredChildScopes) {
+				if (scope.ctElement != ctFor.getExpression()) {
+					throw new IllegalStateException("Found an invalid scope for for statement: " + scope);
+				}
+
+				// - A pattern variable introduced by the condition expression when true is definitely
+				//   matched at both the incrementation part and the contained statement.
+				if (scope.matches) {
+					for (var update : ctFor.getForUpdate()) {
+						result.add(scope.with(update, true));
+					}
+
+					result.add(scope.with(ctFor.getBody(), true));
+				}
+
+				// - A pattern variable is introduced by a basic for statement iff
+				//   - (i) it is introduced by the condition expression when false and
+				//   - (ii) the contained statement, S, does not contain a reachable break for which the
+				//          basic for statement is the break target.
+				//
+				// An enhanced for statement (§14.14.2) is defined by translation to a basic for statement, so no special rules need to be provided for it.
+				// TODO: Handle enhanced for statement translation, and figure out how one could instanceof pattern match in an enhanced for?
+				if (!scope.matches && hasNoReachableBreakWithTarget(ctFor.getBody(), ctFor)) {
+					result.add(scope.with(ctFor, false));
+				}
+			}
+
+			return result;
+		}
+
+		return Set.of();
 	}
 
 	/**

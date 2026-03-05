@@ -231,7 +231,7 @@ public class InstanceOfReferenceTest {
 			Arguments.of("o instanceof String s && s.length() > 5", List.of("s"), List.of()),
 			Arguments.of("o instanceof String s || number > 5", List.of(), List.of()),
 			Arguments.of("!(o instanceof String s) || s.length() > 5", List.of(), List.of("s")),
-			Arguments.of("!(o instanceof String s1) || !(obj instanceof String s2)", List.of(), List.of())
+			Arguments.of("!(o instanceof String s1) || !(obj instanceof String s2)", List.of(), List.of("s1", "s2"))
 		);
 	}
 
