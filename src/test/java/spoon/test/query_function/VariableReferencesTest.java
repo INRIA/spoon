@@ -65,8 +65,12 @@ import spoon.reflect.visitor.filter.VariableScopeFunction;
 import spoon.test.query_function.testclasses.EnumValueReferences;
 import spoon.test.query_function.testclasses.VariableReferencesFromStaticMethod;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
+import spoon.testing.assertions.SpoonAssertions;
+import spoon.testing.utils.BySimpleName;
+import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -128,7 +132,7 @@ public class VariableReferencesTest {
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
 		//2) the model is searched for all variable references which has same identification number and counts them
-		//Then it checks that counted number of references and found number of references is same 
+		//Then it checks that counted number of references and found number of references is same
 		modelClass.filterChildren((CtCatchVariable<?> var)->{
 			if(isTestFieldName(var.getSimpleName())) {
 				int value = getLiteralValue(var);
@@ -144,7 +148,7 @@ public class VariableReferencesTest {
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
 		//2) the model is searched for all variable references which has same identification number and counts them
-		//Then it checks that counted number of references and found number of references is same 
+		//Then it checks that counted number of references and found number of references is same
 		modelClass.filterChildren((CtLocalVariable<?> var)->{
 			if(isTestFieldName(var.getSimpleName())) {
 				int value = getLiteralValue(var);
@@ -160,7 +164,7 @@ public class VariableReferencesTest {
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
 		//2) the model is searched for all variable references which has same identification number and counts them
-		//Then it checks that counted number of references and found number of references is same 
+		//Then it checks that counted number of references and found number of references is same
 		modelClass.filterChildren((CtParameter<?> var)->{
 			if(isTestFieldName(var.getSimpleName())) {
 				int value = getLiteralValue(var);
@@ -168,7 +172,7 @@ public class VariableReferencesTest {
 			}
 			return false;
 		}).list();
-	}	
+	}
 
 	@Test
 	public void testVariableReferenceFunction() {
@@ -176,7 +180,7 @@ public class VariableReferencesTest {
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
 		//2) the model is searched for all variable references which has same identification number and counts them
-		//Then it checks that counted number of references and found number of references is same 
+		//Then it checks that counted number of references and found number of references is same
 		modelClass.filterChildren((CtVariable<?> var)->{
 			if(isTestFieldName(var.getSimpleName())) {
 				int value = getLiteralValue(var);
@@ -268,7 +272,7 @@ public class VariableReferencesTest {
 			});
 			//check that both scans found same number of references
 			assertEquals(context.expectedCount, context.realCount, "Number of references to field=" + value + " does not match");
-			
+
 		} catch (Throwable e) {
 			e.printStackTrace();
 			throw new AssertionError("Test failed on " + getParentMethodName(var), e);
@@ -302,7 +306,7 @@ public class VariableReferencesTest {
 			try {
 				return getLiteralValue(exp);
 			} catch (ClassCastException e) {
-				
+
 			}
 		}
 		if (var instanceof CtParameter) {
@@ -394,5 +398,31 @@ public class VariableReferencesTest {
 			assertEquals(1, refs.size());
 			assertEquals(ev.getReference(), refs.get(0));
 		});
+	}
+
+	@ModelTest(code = """
+		class Test {
+			void method() {
+				for (int i = 0; i < 10; i++) {
+					System.out.println(i);
+				}
+			}
+		}
+		""")
+	public void testForInitReference(@BySimpleName("Test") CtClass<?> ctClass) {
+		// contract: a reference to a variable declared in a for loop must be resolved to the correct declaration
+		List<CtLocalVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtLocalVariable.class));
+		List<CtLocalVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtLocalVariableReference.class));
+
+		assertThat(variables)
+			.hasSize(1);
+		SpoonAssertions.assertThat(variables.get(0)).getSimpleName().isEqualTo("i");
+
+		assertThat(references).hasSize(3);
+		assertThat(references).extracting(CtLocalVariableReference::getSimpleName).allMatch("i"::equals);
+
+		SpoonAssertions.assertThat(references.get(0)).getDeclaration().isSameAs(variables.get(0));
+		SpoonAssertions.assertThat(references.get(1)).getDeclaration().isSameAs(variables.get(0));
+		SpoonAssertions.assertThat(references.get(2)).getDeclaration().isSameAs(variables.get(0));
 	}
 }
