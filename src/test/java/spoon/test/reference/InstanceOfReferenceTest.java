@@ -9,12 +9,16 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.filter.VariableReferenceFunction;
+import spoon.testing.utils.BySimpleName;
 import spoon.testing.utils.GitHubIssue;
+import spoon.testing.utils.ModelTest;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static spoon.test.SpoonTestHelpers.createModelFromString;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 /**
  * Tests that references to pattern variables declared using the <code>instanceof</code> operator can be resolved.
@@ -193,34 +198,284 @@ public class InstanceOfReferenceTest {
 		assertEquals(variable, decl);
 	}
 
-	@Test
-	public void testFlowScope4() {
-		String code = """
-				class X {
-					void typePattern(Object obj) {
-						if (o instanceof String i) {
-							System.out.println(i);
-						}
-
-						if (!(o instanceof String i)) {
-						} else {
-							System.out.println(i);
-						}
-
-						if (!(o instanceof String i)) {
-							throw new IllegalArgumentException();
-						}
-						System.out.println(i);
-					}
+	@ModelTest(code = """
+		class Test {
+			void typePattern(Object o) {
+				if (o instanceof String i) {
+					System.out.println(i);
 				}
-				""";
-		CtModel model = createModelFromString(code, 21);
-		CtLocalVariable<?> variable = model.getElements(new TypeFilter<>(CtTypePattern.class)).get(2).getVariable();
-		var refs = model.getElements(new TypeFilter<>(CtLocalVariableReference.class));
-		CtLocalVariableReference<?> ref = refs.get(refs.size() - 1);
-		var decl = ref.getDeclaration();
-		assertThat(decl).isNotNull().isSameAs(variable);
+
+				if (!(o instanceof String i)) {
+				} else {
+					System.out.println(i);
+				}
+
+				if (!(o instanceof String i)) {
+					throw new IllegalArgumentException();
+				}
+				System.out.println(i);
+			}
+		}
+		""", complianceLevel = 21)
+	public void testFlowScope4(@BySimpleName("Test") CtClass<?> ctClass) {
+		// contract: references to pattern variables hiding other variables with the same name are resolved correctly
+		List<CtLocalVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtLocalVariable.class));
+		List<CtLocalVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtLocalVariableReference.class));
+
+		assertThat(variables)
+			.hasSize(3);
+		assertThat(variables).extracting(CtLocalVariable::getSimpleName).allMatch("i"::equals);
+
+		assertThat(references).hasSize(3);
+		assertThat(references).extracting(CtLocalVariableReference::getSimpleName).allMatch("i"::equals);
+
+		assertThat(references.get(0)).getDeclaration().isSameAs(variables.get(0));
+		assertThat(references.get(1)).getDeclaration().isSameAs(variables.get(1));
+		assertThat(references.get(2)).getDeclaration().isSameAs(variables.get(2));
 	}
+
+	@ModelTest(code = """
+		class Test {
+			void typePattern(Object o) {
+				do {
+					if (!(o instanceof Integer i)) {
+						continue;
+					}
+
+					System.out.println(i);
+				} while (!(o instanceof String i));
+
+				System.out.println(i);
+			}
+		}
+		""", complianceLevel = 21)
+	public void testDoWhilePattern(@BySimpleName("Test") CtClass<?> ctClass) {
+		// contract: references to pattern variables introduced in a do-while are resolved correctly
+		List<CtLocalVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtLocalVariable.class));
+		List<CtLocalVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtLocalVariableReference.class));
+
+		assertThat(variables)
+			.hasSize(2);
+		assertThat(variables).extracting(CtLocalVariable::getSimpleName).allMatch("i"::equals);
+
+		CtLocalVariable<?> doWhileVariable = variables.get(0);
+		CtLocalVariable<?> ifVariable = variables.get(1);
+
+		assertThat(doWhileVariable).getType().isEqualTo(String.class);
+		assertThat(ifVariable).getType().isEqualTo(Integer.class);
+
+
+		assertThat(references).hasSize(2);
+		assertThat(references).extracting(CtLocalVariableReference::getSimpleName).allMatch("i"::equals);
+
+		assertThat(references.get(0)).getType().isEqualTo(Integer.class);
+		assertThat(references.get(0)).getDeclaration().isSameAs(ifVariable);
+
+		assertThat(references.get(1)).getType().isEqualTo(String.class);
+		assertThat(references.get(1)).getDeclaration().isSameAs(doWhileVariable);
+	}
+
+	@ModelTest(code = """
+		class Test {
+			void typePattern(Object o) {
+				while (!(o instanceof String i)) {
+					if (!(o instanceof Integer i)) {
+						continue;
+					}
+
+					System.out.println(i);
+				}
+
+				System.out.println(i);
+			}
+		}
+		""", complianceLevel = 21)
+	public void testNegatedWhilePattern(@BySimpleName("Test") CtClass<?> ctClass) {
+		// contract: a pattern variable is introduced by while (e) S iff it is introduced by e when false
+		List<CtLocalVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtLocalVariable.class));
+		List<CtLocalVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtLocalVariableReference.class));
+
+		assertThat(variables)
+			.hasSize(2);
+		assertThat(variables).extracting(CtLocalVariable::getSimpleName).allMatch("i"::equals);
+
+		CtLocalVariable<?> whileVariable = variables.get(0);
+		CtLocalVariable<?> ifVariable = variables.get(1);
+
+		assertThat(whileVariable).getType().isEqualTo(String.class);
+		assertThat(ifVariable).getType().isEqualTo(Integer.class);
+
+
+		assertThat(references).hasSize(2);
+		assertThat(references).extracting(CtLocalVariableReference::getSimpleName).allMatch("i"::equals);
+
+		assertThat(references.get(0)).getType().isEqualTo(Integer.class);
+		assertThat(references.get(0)).getDeclaration().isSameAs(ifVariable);
+
+		assertThat(references.get(1)).getType().isEqualTo(String.class);
+		assertThat(references.get(1)).getDeclaration().isSameAs(whileVariable);
+	}
+
+
+	@ModelTest(code = """
+		class Test {
+			String i = "";
+			void typePattern(Object o) {
+				label: while (!(o instanceof String i)) {
+					if (!(o instanceof Integer i)) {
+						break label;
+					}
+
+					System.out.println(i);
+				}
+
+				System.out.println(i);
+			}
+		}
+		""", complianceLevel = 21)
+	public void testNegatedWhilePatternWithBreakLabel(@BySimpleName("Test") CtClass<?> ctClass) {
+		// contract: a pattern variable is introduced by while (e) S iff it is introduced by e when false
+		List<CtVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtVariable.class));
+		List<CtVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtVariableReference.class));
+
+		assertThat(variables).hasSize(4);
+
+		CtVariable<?> fieldVariable = variables.get(0);
+		assertThat(fieldVariable).getType().isEqualTo(String.class);
+		assertThat(fieldVariable).getSimpleName().isEqualTo("i");
+
+		CtVariable<?> whileVariable = variables.get(2);
+		assertThat(whileVariable).getSimpleName().isEqualTo("i");
+
+		CtVariable<?> ifVariable = variables.get(3);
+		assertThat(ifVariable).getSimpleName().isEqualTo("i");
+		assertThat(ifVariable).getType().isEqualTo(Integer.class);
+
+		assertThat(references).hasSize(6); // System.out are references to fields
+
+		assertThat(references.get(0)).getDeclaration().isSameAs(variables.get(1));
+		assertThat(references.get(1)).getDeclaration().isSameAs(variables.get(1));
+		// skip the System.out reference
+		assertThat(references.get(3)).getDeclaration().isSameAs(ifVariable);
+		// skip the System.out reference
+
+		// Because of the break target label the while pattern variable is not in scope in the last print statement:
+		assertThat(references.get(5)).getDeclaration().isSameAs(fieldVariable);
+	}
+
+	@ModelTest(code = """
+		class Test {
+			String i = "";
+
+			void typePattern(Object o) {
+				while (o instanceof String i) {
+					System.out.println(i);
+				}
+
+				System.out.println(i);
+			}
+		}
+		""", complianceLevel = 21)
+	public void testMatchingWhilePattern(@BySimpleName("Test") CtClass<?> ctClass) {
+		// contract: a pattern variable introduced by e when true is definitely matched at S.
+		List<CtLocalVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtLocalVariable.class));
+		List<CtLocalVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtLocalVariableReference.class));
+
+		assertThat(variables)
+			.hasSize(1);
+		assertThat(variables).extracting(CtLocalVariable::getSimpleName).allMatch("i"::equals);
+
+		CtLocalVariable<?> whileVariable = variables.get(0);
+		assertThat(whileVariable).getType().isEqualTo(String.class);
+
+
+		assertThat(references).hasSize(1);
+		assertThat(references).extracting(CtLocalVariableReference::getSimpleName).allMatch("i"::equals);
+
+		assertThat(references.get(0)).getDeclaration().isSameAs(whileVariable);
+	}
+
+	@ModelTest(code = """
+		class Test {
+			String s1 = "";
+			String s2 = "";
+
+			void typePattern(Object a, Object b) {
+				if (a instanceof String s1 && b instanceof String s2) {
+					System.out.println("s1" + s1 + "s2" + s2);
+				}
+
+				if (!(a instanceof String s1) && b instanceof String s2) {
+					System.out.println("s1" + s1 + "s2" + s2);
+				}
+
+				if (a instanceof String s1 && !(b instanceof String s2)) {
+					System.out.println("s1" + s1 + "s2" + s2);
+				}
+
+				if (!(a instanceof String s1) && !(b instanceof String s2)) {
+					System.out.println("s1" + s1 + "s2" + s2);
+				}
+
+				System.out.println(s1 + s2);
+			}
+		}
+		""", complianceLevel = 21)
+	public void testBinaryOperatorAnd(@BySimpleName("Test") CtClass<?> ctClass) {
+		// contract: references to pattern variables introduced by a && b are resolved correctly
+		List<CtVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtVariable.class));
+		List<CtVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtVariableReference.class));
+
+		assertThat(variables)
+			.hasSize(12);
+
+		// The fields:
+		assertThat(variables.get(0)).getSimpleName().isEqualTo("s1");
+		assertThat(variables.get(1)).getSimpleName().isEqualTo("s2");
+
+		var s1Field = variables.get(0);
+		var s2Field = variables.get(1);
+
+		// The parameters:
+		assertThat(variables.get(2)).getSimpleName().isEqualTo("a");
+		assertThat(variables.get(3)).getSimpleName().isEqualTo("b");
+
+		var aParameter = variables.get(2);
+		var bParameter = variables.get(3);
+
+		// For the first if condition, the first reference will be to the parameters, then to the pattern variables:
+		assertThat(references.get(0)).getDeclaration().isSameAs(aParameter);
+		assertThat(references.get(1)).getDeclaration().isSameAs(bParameter);
+
+		assertThat(references.get(3)).getDeclaration().isSameAs(variables.get(4));
+		assertThat(references.get(4)).getDeclaration().isSameAs(variables.get(5));
+
+		// The second if condition
+		assertThat(references.get(5)).getDeclaration().isSameAs(aParameter);
+		assertThat(references.get(6)).getDeclaration().isSameAs(bParameter);
+
+		assertThat(references.get(8)).getDeclaration().isSameAs(s1Field);
+		assertThat(references.get(9)).getDeclaration().isSameAs(variables.get(7));
+
+		// The third if condition
+		assertThat(references.get(10)).getDeclaration().isSameAs(aParameter);
+		assertThat(references.get(11)).getDeclaration().isSameAs(bParameter);
+
+		assertThat(references.get(13)).getDeclaration().isSameAs(variables.get(8));
+		assertThat(references.get(14)).getDeclaration().isSameAs(s2Field);
+
+		// The fourth if condition
+		assertThat(references.get(15)).getDeclaration().isSameAs(aParameter);
+		assertThat(references.get(16)).getDeclaration().isSameAs(bParameter);
+
+		assertThat(references.get(18)).getDeclaration().isSameAs(s1Field);
+		assertThat(references.get(19)).getDeclaration().isSameAs(s2Field);
+
+		// The last print statement (the else) references the negated pattern variables:
+		assertThat(references.get(21)).getDeclaration().isSameAs(s1Field);
+		assertThat(references.get(22)).getDeclaration().isSameAs(s2Field);
+	}
+
 
 	private static Stream<Arguments> provideTestCasesForNegatedScoping() {
 		return Stream.of(

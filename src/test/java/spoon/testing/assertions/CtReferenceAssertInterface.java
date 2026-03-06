@@ -7,4 +7,8 @@ public interface CtReferenceAssertInterface<A extends AbstractObjectAssert<A, W>
 	default AbstractStringAssert<?> getSimpleName() {
 		return Assertions.assertThat(actual().getSimpleName());
 	}
+
+	default CtElementAssert getDeclaration() {
+		return new CtElementAssert(actual().getDeclaration());
+	}
 }
