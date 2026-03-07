@@ -20,7 +20,7 @@ static class Person {
 }
 
 void main() {
-	IO.println(greeting());
+	System.out.println(greeting());
 }
 
 String greeting() {
