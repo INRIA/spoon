@@ -99,6 +99,16 @@ class SwitchPatternTest {
 	}
 
 	@Test
+	void testCaseDefault() {
+		// contract: standalone "case default" has the includesDefault property set to true
+		CtSwitch<?> sw = createFromSwitchStatement("case default", false);
+		CtCase<?> ctCase = sw.getCases().get(0);
+		List<? extends CtExpression<?>> caseExpressions = ctCase.getCaseExpressions();
+		assertThat(caseExpressions).isEmpty();
+		assertThat(ctCase.getIncludesDefault()).isTrue();
+	}
+
+	@Test
 	void testCaseQualifiedEnumConstant() {
 		// contract: fully qualified enum constants in cases are present in the model and printed again
 		CtSwitch<?> sw = createFromSwitchStatement("case java.nio.file.StandardCopyOption.ATOMIC_MOVE");

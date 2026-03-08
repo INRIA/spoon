@@ -349,10 +349,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public void endVisit(CaseStatement caseStatement, BlockScope scope) {
 		Expression[] constantExpressions = caseStatement.constantExpressions;
-		if (constantExpressions != null && constantExpressions.length == 2 && constantExpressions[1] instanceof FakeDefaultLiteral) {
+		if (constantExpressions != null
+				&& ((constantExpressions.length == 2 && constantExpressions[1] instanceof FakeDefaultLiteral)
+						|| (constantExpressions.length == 1 && constantExpressions[0] instanceof FakeDefaultLiteral))) {
 			context.getCurrentElement();
-			CtCase<?> caseNullDefault = (CtCase<?>) context.getCurrentElement();
-			caseNullDefault.setIncludesDefault(true);
+			CtCase<?> ctCase = (CtCase<?>) context.getCurrentElement();
+			ctCase.setIncludesDefault(true);
 		}
 	}
 
