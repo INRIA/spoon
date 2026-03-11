@@ -22,7 +22,7 @@ public enum TokenType {
 	IDENTIFIER(false, false),
 	CODE_SNIPPET(false, false),
 	COMMENT(false, false),
-	NEW_LINE(false, false),
+	NEW_LINE(true, false),
 	INC_TAB(true, true),
 	DEC_TAB(true, true),
 	SPACE(true, false);

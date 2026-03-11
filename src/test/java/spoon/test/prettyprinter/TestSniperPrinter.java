@@ -1230,6 +1230,7 @@ public class TestSniperPrinter {
 
 	@Test
 	@ExtendWith(LineSeparatorExtension.class)
+	@GitHubIssue(issueNumber = 6665, fixed = false)
 	void testSniperModeInlineComment() {
 		// contract: inline comments are printed with a newline at the end in the sniper mode
 
