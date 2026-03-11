@@ -54,6 +54,7 @@ import spoon.test.prettyprinter.testclasses.Throw;
 import spoon.test.prettyprinter.testclasses.InvocationReplacement;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
 import spoon.testing.utils.GitHubIssue;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
