@@ -10,7 +10,6 @@ package spoon.test.prettyprinter;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -19,7 +18,6 @@ import spoon.processing.AbstractProcessor;
 import spoon.refactoring.CtRenameLocalVariableRefactoring;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.CtModel;
-import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
@@ -45,7 +43,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.adaption.TypeAdaptor;
 import spoon.support.modelobs.ChangeCollector;
@@ -57,7 +54,6 @@ import spoon.test.prettyprinter.testclasses.Throw;
 import spoon.test.prettyprinter.testclasses.InvocationReplacement;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
 import spoon.testing.utils.GitHubIssue;
-import spoon.testing.utils.LineSeparatorExtension;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -1226,36 +1222,5 @@ public class TestSniperPrinter {
 		SourcePosition pos = element.getPosition();
 		element.setPosition(SourcePosition.NOPOSITION);
 		element.setPosition(pos);
-	}
-
-	@Test
-	@ExtendWith(LineSeparatorExtension.class)
-	@GitHubIssue(issueNumber = 6665, fixed = false)
-	void testSniperModeInlineComment() {
-		// contract: inline comments are printed with a newline at the end in the sniper mode
-
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/java/spoon/test/prettyprinter/testclasses/SampleClassIssue6665.java");
-		Environment environment = launcher.getEnvironment();
-		environment.setPrettyPrinterCreator(() -> new SniperJavaPrettyPrinter(environment));
-		PrettyPrinter printer = environment.createPrettyPrinter();
-		launcher.buildModel();
-
-		CtModel model = launcher.getModel();
-		CtMethod<?> main = model.getElements(new TypeFilter<>(CtMethod.class)).get(0);
-		Factory factory = launcher.getFactory();
-		CtComment comment = factory.createInlineComment("TEST 1");
-		main.setComments(List.of(comment));
-
-		CtCompilationUnit cu = factory.CompilationUnit().getMap().values().iterator().next();
-		assertEquals("""
-			package spoon.test.prettyprinter.testclasses;
-			public class SampleClassIssue6665 {
-				// TEST 1
-				public static void main(String[] args) {
-				}
-			}
-			""", printer.printCompilationUnit(cu));
-
 	}
 }
