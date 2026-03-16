@@ -10,6 +10,7 @@ import requests
 import time
 
 URLS = []
+REQUEST_TIMEOUT = 10
 
 def check_external_url(url, tries = 0):
   if tries > 10:
@@ -21,10 +22,10 @@ def check_external_url(url, tries = 0):
   if url in URLS: return
   time.sleep(0.5)
   print(f"HEAD {url}")
-  r = requests.head(url, headers = {"user-agent": "Mozilla/5.0 FakeBrowser"}, allow_redirects=True)
+  r = requests.head(url, headers = {"user-agent": "Mozilla/5.0 FakeBrowser"}, allow_redirects=True, timeout=REQUEST_TIMEOUT)
   if r.status_code == 405:
     print(f"GET  {url}")
-    r = requests.get(url, headers = {"user-agent": "Mozilla/5.0 FakeBrowser"}, allow_redirects=True)
+    r = requests.get(url, headers = {"user-agent": "Mozilla/5.0 FakeBrowser"}, allow_redirects=True, timeout=REQUEST_TIMEOUT)
   if r.status_code == 429:
     print("Got 429, sleeping for a bit")
     print(r.text)
