@@ -19,7 +19,12 @@ def check_external_url(url, tries = 0):
   if "spoon.forge" not in url and "INRIA/spoon" not in url : return
 
   if url in URLS: return
-  r = requests.get(url, headers = {"user-agent": "Mozilla/5.0 FakeBrowser"}) # sf.net, elsevier use stupid UA detection
+  time.sleep(0.5)
+  print(f"HEAD {url}")
+  r = requests.head(url, headers = {"user-agent": "Mozilla/5.0 FakeBrowser"}, allow_redirects=True)
+  if r.status_code == 405:
+    print(f"GET  {url}")
+    r = requests.get(url, headers = {"user-agent": "Mozilla/5.0 FakeBrowser"}, allow_redirects=True)
   if r.status_code == 429:
     print("Got 429, sleeping for a bit")
     print(r.text)
