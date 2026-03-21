@@ -73,7 +73,7 @@ public class MainTest {
 		// we verify all the contracts
 		new ContractVerifier(rootPackage).verify();
 	}
-	
+
 	private boolean filePathContains(Path path, String substring) {
 		//normalize path separators to linux, to simplify searching for substring
 		return path.toFile().getAbsolutePath().replace('\\', '/').contains(substring);
@@ -88,7 +88,7 @@ public class MainTest {
 				"-i", "src/test/java",
 				"-o", "target/spooned",
 				"--disable-comments",
-				"--compliance", "8",
+				"--compliance", "17",
 				"--level", "OFF"
 		});
 
