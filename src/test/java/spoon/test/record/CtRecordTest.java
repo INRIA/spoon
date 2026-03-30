@@ -20,9 +20,11 @@ import org.assertj.core.api.InstanceOfAssertFactory;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -37,6 +39,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.testing.assertions.SpoonAssertions;
+import spoon.testing.utils.BySimpleName;
 import spoon.testing.utils.ModelTest;
 
 public class CtRecordTest {
@@ -362,6 +365,29 @@ public class CtRecordTest {
 		assertThat(record.getFields())
 			.map(CtField::getSimpleName)
 			.containsExactly("first", "second");
+	}
+
+	@ModelTest(code = """
+		record Test(String value) {
+			Test {
+				value = value + "!";
+			}
+		}
+		""", complianceLevel = 17)
+	public void testCompactConstructorFieldWrite(@BySimpleName("Test") CtClass<?> ctClass) {
+		// contract: the assignment in the compact constructor writes to the field, not to the parameter
+
+		assertThat(ctClass.getConstructors()).hasSize(1);
+
+		var constructor = ctClass.getConstructors().iterator().next();
+
+		assertThat(constructor).isCompactConstructor();
+		var assignment = constructor.getBody().getStatement(1);
+		assertThat(assignment).isInstanceOf(CtAssignment.class)
+			.extracting(statement -> ((CtAssignment<?, ?>) statement).getAssigned())
+			.isInstanceOf(CtVariableWrite.class)
+			.extracting(variableWrite -> ((CtVariableWrite<?>) variableWrite).getVariable().getDeclaration())
+			.isInstanceOf(CtField.class);
 	}
 
 	private <T> T head(Collection<T> collection) {

@@ -32,6 +32,7 @@ import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UsesStatement;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
@@ -53,6 +54,7 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
@@ -175,14 +177,48 @@ public class JDTTreeBuilderHelper {
 	 * @return a variable access.
 	 */
 	<T> CtVariableAccess<T> createVariableAccess(SingleNameReference singleNameReference) {
+		boolean isAssignmentLhs = isLhsAssignment(jdtTreeBuilder.getContextBuilder(), singleNameReference);
 		CtVariableAccess<T> va;
-		if (isLhsAssignment(jdtTreeBuilder.getContextBuilder(), singleNameReference)) {
+		if (isAssignmentLhs) {
 			va = jdtTreeBuilder.getFactory().Core().createVariableWrite();
 		} else {
 			va = jdtTreeBuilder.getFactory().Core().createVariableRead();
 		}
-		va.setVariable(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference((VariableBinding) singleNameReference.binding));
+
+		CtVariableReference<T> variableReference = jdtTreeBuilder.getReferencesBuilder().getVariableReference((VariableBinding) singleNameReference.binding);
+		CtVariableReference<T> compactCtorFieldWriteReference = resolveCompactConstructorFieldWriteReference(singleNameReference, isAssignmentLhs);
+		if (compactCtorFieldWriteReference != null) {
+			variableReference = compactCtorFieldWriteReference;
+		}
+
+		va.setVariable(variableReference);
 		return va;
+	}
+
+	private <T> CtVariableReference<T> resolveCompactConstructorFieldWriteReference(SingleNameReference singleNameReference, boolean isAssignmentLhs) {
+		if (!isAssignmentLhs) {
+			return null;
+		}
+		if (!(singleNameReference.binding instanceof LocalVariableBinding localVariableBinding) || !localVariableBinding.isParameter()) {
+			return null;
+		}
+		CtConstructor<?> enclosingConstructor = jdtTreeBuilder.getContextBuilder().getParentElementOfType(CtConstructor.class);
+		if (enclosingConstructor == null || !enclosingConstructor.isCompactConstructor()) {
+			return null;
+		}
+		CtType<?> enclosingType = jdtTreeBuilder.getContextBuilder().getParentElementOfType(CtType.class);
+		if (enclosingType == null) {
+			return null;
+		}
+		CtField<?> matchingField = enclosingType.getField(CharOperation.charToString(singleNameReference.token));
+		if (matchingField == null) {
+			return null;
+		}
+
+		// In compact constructors, assigning to a component name updates the backing field.
+		@SuppressWarnings("unchecked")
+		CtVariableReference<T> fieldReference = (CtVariableReference<T>) matchingField.getReference();
+		return fieldReference;
 	}
 
 	/**
