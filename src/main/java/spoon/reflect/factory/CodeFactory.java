@@ -431,14 +431,17 @@ public class CodeFactory extends SubFactory {
 	 */
 	public <T> CtVariableAccess<T> createVariableRead(CtVariableReference<T> variable, boolean isStatic) {
 		CtVariableAccess<T> va;
-		if (variable instanceof CtFieldReference) {
+		if (variable instanceof CtFieldReference<T> ctFieldReference) {
 			va = factory.Core().createFieldRead();
 			// creates a this target for non-static fields to avoid name conflicts...
 			if (!isStatic) {
 				// We do not want to change the parent of the declaring type, so clone here
-				((CtFieldAccess<T>) va).setTarget(
-					createThisAccess(((CtFieldReference<T>) variable).getDeclaringType().clone())
-				);
+				CtTypeReference<T> declaringTypeRef = null;
+				if (ctFieldReference.getDeclaringType() != null) {
+					declaringTypeRef = (CtTypeReference<T>) ctFieldReference.getDeclaringType().clone();
+				}
+
+				((CtFieldAccess<T>) va).setTarget(createThisAccess(declaringTypeRef));
 			}
 		} else {
 			va = factory.Core().createVariableRead();
@@ -463,13 +466,20 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a variable access for write.
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> CtVariableAccess<T> createVariableWrite(CtVariableReference<T> variable, boolean isStatic) {
 		CtVariableAccess<T> va;
-		if (variable instanceof CtFieldReference) {
+		if (variable instanceof CtFieldReference<T> ctFieldReference) {
 			va = factory.Core().createFieldWrite();
 			// creates a this target for non-static fields to avoid name conflicts...
 			if (!isStatic) {
-				((CtFieldAccess<T>) va).setTarget(createThisAccess(((CtFieldReference<T>) variable).getDeclaringType()));
+				// We do not want to change the parent of the declaring type, so clone here
+				CtTypeReference<T> declaringTypeRef = null;
+				if (ctFieldReference.getDeclaringType() != null) {
+					declaringTypeRef = (CtTypeReference<T>) ctFieldReference.getDeclaringType().clone();
+				}
+
+				((CtFieldAccess<T>) va).setTarget(createThisAccess(declaringTypeRef));
 			}
 		} else {
 			va = factory.Core().createVariableWrite();
