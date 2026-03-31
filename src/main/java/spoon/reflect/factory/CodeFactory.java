@@ -436,9 +436,9 @@ public class CodeFactory extends SubFactory {
 			// creates a this target for non-static fields to avoid name conflicts...
 			if (!isStatic) {
 				// We do not want to change the parent of the declaring type, so clone here
-				CtTypeReference<T> declaringTypeRef = null;
+				CtTypeReference<?> declaringTypeRef = null;
 				if (ctFieldReference.getDeclaringType() != null) {
-					declaringTypeRef = (CtTypeReference<T>) ctFieldReference.getDeclaringType().clone();
+					declaringTypeRef = ctFieldReference.getDeclaringType().clone();
 				}
 
 				((CtFieldAccess<T>) va).setTarget(createThisAccess(declaringTypeRef));
@@ -466,7 +466,6 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a variable access for write.
 	 */
-	@SuppressWarnings("unchecked")
 	public <T> CtVariableAccess<T> createVariableWrite(CtVariableReference<T> variable, boolean isStatic) {
 		CtVariableAccess<T> va;
 		if (variable instanceof CtFieldReference<T> ctFieldReference) {
@@ -474,9 +473,9 @@ public class CodeFactory extends SubFactory {
 			// creates a this target for non-static fields to avoid name conflicts...
 			if (!isStatic) {
 				// We do not want to change the parent of the declaring type, so clone here
-				CtTypeReference<T> declaringTypeRef = null;
+				CtTypeReference<?> declaringTypeRef = null;
 				if (ctFieldReference.getDeclaringType() != null) {
-					declaringTypeRef = (CtTypeReference<T>) ctFieldReference.getDeclaringType().clone();
+					declaringTypeRef = ctFieldReference.getDeclaringType().clone();
 				}
 
 				((CtFieldAccess<T>) va).setTarget(createThisAccess(declaringTypeRef));
