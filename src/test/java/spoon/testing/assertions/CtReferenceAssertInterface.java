@@ -1,9 +1,11 @@
 package spoon.testing.assertions;
+import java.util.Comparator;
 import java.util.List;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 public interface CtReferenceAssertInterface<A extends AbstractObjectAssert<A, W>, W extends CtReference> extends CtElementAssertInterface<A, W> , SpoonAssert<A, W> {
@@ -27,18 +29,20 @@ public interface CtReferenceAssertInterface<A extends AbstractObjectAssert<A, W>
 	 * 		the potential declarations that the reference could resolve to, in the order they would be resolved
 	 */
 	default CtReferenceAssertInterface<? extends A, ? extends W> hasExactlyPotentialDeclarations(CtVariable<?>... potentialDeclarations) {
-		// TODO: Is this method okay here? It is technically only necessary to test the getDeclaration() resolution of a LocalVariableReference,
-		// but given that this is done in multiple test classes, I don't know where this should be placed?
-		//
-		// TODO: Open for name suggestions
-		List<CtVariable<?>> declarations = actual().map(new PotentialVariableDeclarationFunction(actual().getSimpleName())).list();
+		List<CtVariable<?>> declarations;
+		if (actual() instanceof CtFieldReference<?> ctFieldReference) {
+			// If necessary, this can be extended to resolve hidden variables from super types as well
+			declarations = List.of(ctFieldReference.getFieldDeclaration());
+		} else {
+			declarations = actual().map(new PotentialVariableDeclarationFunction(actual().getSimpleName())).list();
+		}
 		// By default, the containsExactly assertion checks with equals or compareTo.
 		// A declaration `String i` and an unrelated `String i` are considered equal.
 		// Given that the potential declarations will all have the same name it is important to check
-		// that they are not only equal, but the same object through ==
+		// that they are not only equal, but the same object through ==.
 		//
-		// We are not sorting, so the else should be fine.
-		Assertions.assertThat(declarations).as("Potential declarations of variable <%s>", actual()).usingElementComparator((a, b) -> a == b ? 0 : Integer.compare(System.identityHashCode(a), System.identityHashCode(b))).containsExactly(potentialDeclarations);
+		// The code expects a comparator, so we are using the identity hash code (= pointer value) for the comparison.
+		Assertions.assertThat(declarations).as("Potential declarations of variable <%s>", actual()).usingElementComparator(Comparator.comparing(System::identityHashCode)).containsExactly(potentialDeclarations);
 		return this;
 	}
 }

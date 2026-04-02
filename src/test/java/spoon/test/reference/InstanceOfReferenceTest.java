@@ -222,8 +222,7 @@ public class InstanceOfReferenceTest {
 		List<CtLocalVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtLocalVariable.class));
 		List<CtLocalVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtLocalVariableReference.class));
 
-		assertThat(variables)
-			.hasSize(3);
+		assertThat(variables).hasSize(3);
 		assertThat(variables).extracting(CtLocalVariable::getSimpleName).allMatch("i"::equals);
 
 		assertThat(references).hasSize(3);
@@ -254,8 +253,7 @@ public class InstanceOfReferenceTest {
 		List<CtLocalVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtLocalVariable.class));
 		List<CtLocalVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtLocalVariableReference.class));
 
-		assertThat(variables)
-			.hasSize(2);
+		assertThat(variables).hasSize(2);
 		assertThat(variables).extracting(CtLocalVariable::getSimpleName).allMatch("i"::equals);
 
 		CtLocalVariable<?> doWhileVariable = variables.get(0);
@@ -295,8 +293,7 @@ public class InstanceOfReferenceTest {
 		List<CtLocalVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtLocalVariable.class));
 		List<CtLocalVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtLocalVariableReference.class));
 
-		assertThat(variables)
-			.hasSize(2);
+		assertThat(variables).hasSize(2);
 		assertThat(variables).extracting(CtLocalVariable::getSimpleName).allMatch("i"::equals);
 
 		CtLocalVariable<?> whileVariable = variables.get(0);
@@ -377,12 +374,13 @@ public class InstanceOfReferenceTest {
 		}
 		""", complianceLevel = 21)
 	public void testMatchingWhilePattern(@BySimpleName("Test") CtClass<?> ctClass) {
-		// contract: a pattern variable introduced by e when true is definitely matched at S.
+		// contract: a pattern variable introduced by condition c in `while (c) S` when true is definitely matched at S.
+		//           In simpler words: The variable `i` introduced by the instanceof pattern `o instanceof String i`, must
+		//           be accessible by the associated statement/block of the while.
 		List<CtLocalVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtLocalVariable.class));
 		List<CtLocalVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtLocalVariableReference.class));
 
-		assertThat(variables)
-			.hasSize(1);
+		assertThat(variables).hasSize(1);
 		assertThat(variables).extracting(CtLocalVariable::getSimpleName).allMatch("i"::equals);
 
 		CtLocalVariable<?> whileVariable = variables.get(0);
@@ -426,8 +424,7 @@ public class InstanceOfReferenceTest {
 		List<CtVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtVariable.class));
 		List<CtVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtVariableReference.class));
 
-		assertThat(variables)
-			.hasSize(12);
+		assertThat(variables).hasSize(12);
 
 		// The fields:
 		assertThat(variables.get(0)).getSimpleName().isEqualTo("s1");

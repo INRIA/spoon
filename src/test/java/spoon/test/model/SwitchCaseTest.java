@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -551,7 +550,7 @@ public class SwitchCaseTest {
 
 			ctCase.setCaseExpression(null);
 
-			assertThat(ctCase.getCaseExpressions()).hasSize(0);
+			assertThat(ctCase.getCaseExpressions()).isEmpty();
 		}
 	}
 }

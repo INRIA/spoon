@@ -400,8 +400,7 @@ public class VariableReferencesTest {
 		List<CtLocalVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtLocalVariable.class));
 		List<CtLocalVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtLocalVariableReference.class));
 
-		assertThat(variables)
-			.hasSize(1);
+		assertThat(variables).hasSize(1);
 		assertThat(variables.get(0)).getSimpleName().isEqualTo("i");
 
 		assertThat(references).hasSize(3);
@@ -439,8 +438,7 @@ public class VariableReferencesTest {
 		List<CtLocalVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtLocalVariable.class));
 		List<CtVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtVariableReference.class));
 
-		assertThat(variables)
-			.hasSize(2);
+		assertThat(variables).hasSize(2);
 		CtVariable<?> tryWithVariable = variables.get(0);
 		CtVariable<?> errTryWithVariable = variables.get(1);
 		assertThat(tryWithVariable).getSimpleName().isEqualTo("scanner");
@@ -500,11 +498,10 @@ public class VariableReferencesTest {
 		var innerLocalVar1 = variables.get(2);
 		assertThat(innerLocalVar1).isInstanceOf(CtLocalVariable.class).getSimpleName().isEqualTo("var1");
 
-		assertThat(references.get(0)).hasExactlyPotentialDeclarations(runnableFieldVar1, outerLocalVar1);
-		assertThat(references.get(1)).hasExactlyPotentialDeclarations(innerLocalVar1, runnableFieldVar1, outerLocalVar1);
-		// The code does not filter out local variables on the way for a field reference
-		assertThat(references.get(2)).hasExactlyPotentialDeclarations(innerLocalVar1, runnableFieldVar1, outerLocalVar1);
-		assertThat(references.get(3)).hasExactlyPotentialDeclarations(outerLocalVar1);
+		assertThat(references.get(0)).hasExactlyPotentialDeclarations(runnableFieldVar1); // assertTrue(var1 == 3);
+		assertThat(references.get(1)).hasExactlyPotentialDeclarations(innerLocalVar1, runnableFieldVar1, outerLocalVar1); // assertTrue(var1 == 4);
+		assertThat(references.get(2)).hasExactlyPotentialDeclarations(runnableFieldVar1); // assertTrue(this.var1 == 3);
+		assertThat(references.get(3)).hasExactlyPotentialDeclarations(outerLocalVar1); // assertTrue(var1 == 2);
 	}
 
 
@@ -523,8 +520,7 @@ public class VariableReferencesTest {
 		List<CtVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtVariable.class));
 		List<CtVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtVariableReference.class));
 
-		assertThat(variables)
-			.hasSize(3);
+		assertThat(variables).hasSize(3);
 		CtVariable<?> fieldVariable = variables.get(0);
 		CtVariable<?> arrayParam = variables.get(1);
 		CtVariable<?> forEachVariable = variables.get(2);
@@ -535,5 +531,61 @@ public class VariableReferencesTest {
 		assertThat(references.get(0)).hasExactlyPotentialDeclarations(arrayParam); // for (String string : array)
 		// System.out
 		assertThat(references.get(2)).hasExactlyPotentialDeclarations(forEachVariable, fieldVariable); // println(string)
+	}
+
+	@ModelTest(code = """
+		class Test {
+			String s = "";
+
+			void method(Object in) {
+				if(in instanceof String s) {
+				} else {
+				  return;
+				}
+				System.out.println(s);
+			}
+		}
+		""")
+	public void testPatternVariableOutsideThen(@BySimpleName("Test") CtClass<?> ctClass) {
+		// contract: a pattern variable is accessible outside the then, if the other branch returns
+		List<CtVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtVariable.class));
+		List<CtVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtVariableReference.class));
+
+		assertThat(variables).hasSize(3);
+		CtVariable<?> fieldVariable = variables.get(0);
+		CtVariable<?> paramVar = variables.get(1);
+		CtVariable<?> patternVar = variables.get(2);
+
+		assertThat(references.get(0)).hasExactlyPotentialDeclarations(paramVar); // if(in instanceof String s)
+		// System.out
+		assertThat(references.get(2)).hasExactlyPotentialDeclarations(patternVar, fieldVariable); // println(s)
+	}
+
+	@ModelTest(code = """
+		class Test {
+			String s = "";
+
+			void method(Object obj) {
+				if(obj instanceof String s); else {
+				  return;
+				}
+
+				System.out.println(s);
+			}
+		}
+		""")
+	public void testIfWithNullThen(@BySimpleName("Test") CtClass<?> ctClass) {
+		// contract: the code does not crash when then is null, and correctly resolves the reference to the pattern
+		List<CtVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtVariable.class));
+		List<CtVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtVariableReference.class));
+
+		assertThat(variables).hasSize(3);
+		CtVariable<?> fieldVariable = variables.get(0);
+		CtVariable<?> paramVar = variables.get(1);
+		CtVariable<?> patternVar = variables.get(2);
+
+		assertThat(references.get(0)).hasExactlyPotentialDeclarations(paramVar); // if (obj instanceof String s)
+		// System.out
+		assertThat(references.get(2)).hasExactlyPotentialDeclarations(patternVar, fieldVariable); // println(s)
 	}
 }

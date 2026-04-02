@@ -7,6 +7,8 @@
  */
 package spoon.reflect.visitor.filter;
 
+import org.jspecify.annotations.NonNull;
+import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAbstractSwitch;
 import spoon.reflect.code.CtBinaryOperator;
@@ -16,6 +18,7 @@ import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCasePattern;
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtDo;
@@ -24,16 +27,19 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLabelledFlowBreak;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtRecordPattern;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
@@ -139,111 +145,181 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 			scopes = updateChildScopesForParent(scopes, scopeElement, parent);
 
 			for (var scope : scopes) {
-				if (scope.appliesTo(scopeElement) && sendToOutput(scope.ctVariable(), outputConsumer)) {
+				if (scope.appliesTo(scopeElement) && sendToOutput(scope.variable(), outputConsumer)) {
 					return;
 				}
 			}
 
-			if (parent instanceof CtModifiable ctModifiable) {
-				isInStaticScope = isInStaticScope || ctModifiable.hasModifier(ModifierKind.STATIC);
+			if (parent instanceof CtModifiable ctModifiable && ctModifiable.hasModifier(ModifierKind.STATIC)) {
+				isInStaticScope = true;
 			}
 			scopeElement = parent;
 		}
 	}
 
 	/**
-	 * Interface for all scopes
+	 * Common interface for all scopes, declaring in which {@code CtElement} a variable is valid.
 	 */
-	private interface Scope {
+	private sealed interface Scope permits PatternScope, VariableScope {
 		/**
-		 * The variable this scope applies to.
+		 * The declaration of the variable that can be referenced where the scope applies
+		 * ({@link Scope#appliesTo(CtElement)}).
 		 *
-		 * @return the variable
+		 * @return the variable declaration, is never null.
 		 */
-		CtVariable<?> ctVariable();
+		@NonNull CtVariable<?> variable();
 
 		/**
-		 * The element in which the variable can be referenced.
+		 * The spoon {@link CtElement} in which the {@link Scope#variable()} can be referenced.
+		 * <p>
+		 * The variable is in scope/can be referenced in the element or a child of the element.
+		 * For convenience {@link Scope#appliesTo(CtElement)} can be used to check whether the variable of the scope
+		 * can be referenced by the given element.
 		 *
-		 * @return the element
+		 * @return the element in which the variable can be referenced, is never null
 		 */
-		CtElement ctElement();
+		@NonNull CtElement element();
 
 		/**
 		 * Checks whether the scope applies to the given element.
+		 * <p>
+		 * It only applies if the given element is {@link Scope#element()} or has the element as a parent.
+		 * If it applies, the {@link Scope#variable()} can be referenced from the given element. This is useful to check
+		 * whether a given reference could reference a variable.
 		 *
 		 * @param ctElement the element to check.
 		 * @return true if it applies, false if it does not
 		 */
 		default boolean appliesTo(CtElement ctElement) {
-			return ctElement == this.ctElement() || ctElement.hasParent(this.ctElement());
+			return ctElement == this.element() || ctElement.hasParent(this.element());
 		}
 	}
 
 	/**
 	 * Represents the scope of a local pattern variable.
 	 *
-	 * @param ctVariable the local variable
-	 * @param ctElement  the element in which the variable can be referenced
-	 * @param matches    for pattern variables whether the variable matches when true or false, for other variables this should be empty
+	 * @param variable the local variable
+	 * @param element  the element in which the variable can be referenced
+	 * @param matches  whether the variable matches when true or false, for example a {@code !(< pattern >)} negates the matches
 	 */
-	private record PatternScope(CtVariable<?> ctVariable, CtElement ctElement, boolean matches) implements Scope {
+	private record PatternScope(CtVariable<?> variable, CtElement element, boolean matches) implements Scope {
 		public PatternScope with(CtElement ctElement, boolean matches) {
-			return new PatternScope(ctVariable, ctElement, matches);
+			return new PatternScope(variable, ctElement, matches);
 		}
 
 		@Override
 		public String toString() {
 			return "PatternScope['%s' @ %d, '%s' @ %d, matches=%s]".formatted(
-				ctVariable,
-				System.identityHashCode(ctVariable),
-				ctElement,
-				System.identityHashCode(ctElement),
+				variable,
+				System.identityHashCode(variable),
+				element,
+				System.identityHashCode(element),
 				matches
 			);
 		}
 	}
 
-	private record VariableScope(CtVariable<?> ctVariable, CtElement ctElement) implements Scope {
+	private record VariableScope(CtVariable<?> variable, CtElement element) implements Scope {
 	}
 
-	// This searches for new scopes introduced by the branch and returns the ones that apply to the branch
+	// Note for the below code:
+	//
+	// The scopes are returned as a List of scopes. A Set would be better, because the order does not matter, and there shouldn't
+	// be any duplicates (if there are the code does something twice/needs to be adjusted).
+	// Some spoon code relies on the fact that the function does not return duplicate declarations, but with Sets the code was
+	// noticeably slower. Most of the time being spent in the equals/hash function of the scope.
+	//
+	// Therefore, it is important to use the hasExactlyPotentialDeclarations to discover when the same declaration is returned multiple
+	// times.
+
+	// This searches for new scopes introduced by the branch and returns the ones that apply to the branch.
+	//
+	// The code is represented as an Abstract Syntax Tree, for example
+	//
+	// `a && b` would be represented as
+	//
+	//     CtBinaryOperator
+	//    /                \
+	// CtExpression a     CtExpression b
+	//
+	// Here the tree has the two branches `CtExpression a` and `CtExpression b`.
+	//
+	// Given that we have explored `CtExpression a` and know which variables have been introduced by it, when moving up to
+	// the parent `CtBinaryOperator`, the variables introduced by the branch `CtExpression b` will become relevant too.
+	//
+	// The function below can be used to explore the variables introduced by that unexplored branch `CtExpression b`.
 	private static List<Scope> exploreBranchForNewScopes(CtQueryable branch) {
 		List<Scope> result = new ArrayList<>();
 
-		// Any type pattern is okay, the sibling branches will be explored by the updateChildScopesForParent.
+		// Where pattern variables apply changes depending on their parents (e.g. !(< pattern >) will change the matches),
+		// so we have to start at a declaration and then move up the tree to figure out where these variables apply.
+		//
+		// The below searches for any declaration as a starting point. This works, because the updateChildScopesForParent
+		// will explore the other branches too, for example suppose we want to explore this tree:
+		//
+		//                CtBinaryOperator &&
+		//            /                          \
+		//    CtBinaryOperator &&             instanceof
+		//     /             \                    |
+		//  instanceof     instanceof         CtVariable c
+		//    |                 |
+		//  CtVariable a  CtVariable b
+		//
+		//
+		// It has been a bit simplified, actual tree is a bit more elements, corresponding code could be
+		// (x instanceof String a && y instanceof String b) && z instanceof String c
+		//
+		// We choose any one of the variables as a starting point, for example variable b, then move up the parents.
+		//
+		// The instanceof is irrelevant for the scope of variables, so nothing changes.
+		// For the binary operator we haven't explored the left side, which might introduce variables that
+		// would be in scope. So these are explored by the updateChildScopesForParent which will call this function with
+		// the instanceof as the branch root.
+		//
+		// When it returns, it will have explored both branches.
+		//
+		// Then it moves up to the next parent which is what we were passed initially as the branch.
+		// Again it will look at branches we have not explored, then stops, because we have reached
+		// the top of the branch we wanted to explore.
+		//
+		// Which variable we choose as a starting point for exploration does not matter, because the other
+		// ones will be visited later as well.
 		CtElement child = branch.filterChildren(new TypeFilter<>(CtVariable.class)).first();
 		while (child != null && child != branch) {
-			// The children should always have a parent, given that they are children of the branch.
+			// The children should always have a parent, given that they are children of the branch
+			// -> this never returns null
 			CtElement parent = child.getParent();
 			result = updateChildScopesForParent(result, child, parent);
 			child = parent;
 		}
 
 		// If the branch itself is a variable declaration, then this variable is in scope for the branch.
-		// The updateChildScopesForParent would have introduced it, but it was not called, because of the loop conidition
+		// The updateChildScopesForParent would have introduced it, but it was not called, because of the loop condition
 		// -> it has to be manually added here
 		if (child == branch && child instanceof CtVariable<?> ctVariable) {
 			result.add(new VariableScope(ctVariable, ctVariable));
 		}
 
-		return result.stream().filter(scope -> scope.ctElement() == branch).toList();
+		// Any variables that are only valid in some child of the branch can be filtered out, because
+		// this function is expected to only return scopes that apply to the entire branch.
+		return result.stream().filter(scope -> scope.element() == branch).toList();
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T> List<T> castList(List<?> sourceList) {
-		return (List<T>) sourceList;
-	}
-
 	private static List<PatternScope> exploreBranchForNewPatternScopes(CtExpression<?> branch) {
-		return castList(exploreBranchForNewScopes(branch));
+		// SAFETY: In an expression only PatternScope can appear
+		//      -> the returns of exploreBranchForNewScopes is guaranteed to be a list of PatternScope
+		return (List<PatternScope>) (List<?>) exploreBranchForNewScopes(branch);
 	}
 
+	@SuppressWarnings("unchecked")
 	private static List<PatternScope> exploreBranchForNewPatternScopes(CtPattern branch) {
-		return castList(exploreBranchForNewScopes(branch));
+		// SAFETY: In a pattern only PatternScope can appear
+		//      -> the returns of exploreBranchForNewScopes is guaranteed to be a list of PatternScope
+		return (List<PatternScope>) (List<?>) exploreBranchForNewScopes(branch);
 	}
 
-	private static boolean completesNormally(CtStatement statement) {
+	private static boolean completesNormally(@NonNull CtStatement statement) {
 		// FIXME: The JLS has a definition for what "cannot complete normally" is
 		return !(statement instanceof CtStatementList ctStatementList
 			&& !ctStatementList.getStatements().isEmpty()
@@ -258,7 +334,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 	 * @param ctStatement the statement to check
 	 * @return true if the statement has no label or no break where the target matches the label of the statement, false otherwise
 	 */
-	private static boolean hasNoReachableBreakWithTarget(CtStatement ctStatement) {
+	private static boolean hasNoReachableBreakWithTarget(@NonNull CtStatement ctStatement) {
 		// FIXME: This does not check whether the break statement is actually reachable
 		return ctStatement.getLabel() == null || (ctStatement instanceof CtBodyHolder bodyHolder ? bodyHolder.getBody() : ctStatement)
 			.filterChildren(new TypeFilter<>(CtBreak.class))
@@ -267,18 +343,22 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 	}
 
 	/**
-	 * Updates the child scopes for the parent.
+	 * Will update the list of scopes/variables that applied to the child to those that apply to the parent.
+	 * <p>
+	 * If a variable was valid in the child, it might continue to be valid in the parent (for example with instanceof patterns)
+	 * or it might not be valid anymore. In addition to that, other siblings of the child element could introduce variables
+	 * that are valid for the parent. This function will update the scopes, add new scopes and remove scopes that no longer apply.
 	 *
 	 * @param childScopes the scopes that have been found in the child, on the first call pass an empty collection.
 	 * @param child       the child for which the scopes have been found
 	 * @param parent      the parent of the passed child, this is passed separately in case the child is not initialized with the parent
 	 * @return the scopes that apply to the parent
 	 */
-	private static List<Scope> updateChildScopesForParent(Collection<? extends Scope> childScopes, CtElement child, CtElement parent) {
+	private static List<Scope> updateChildScopesForParent(Collection<? extends Scope> childScopes, @NonNull CtElement child, @NonNull CtElement parent) {
 		List<Scope> filteredChildScopes = childScopes.stream()
 			// only keep the scopes that were valid for the child, the ones where the scope was less than the child
 			// can not escape the child, so they can be discarded
-			.filter(scope -> scope.ctElement() == child)
+			.filter(scope -> scope.element() == child)
 			.collect(Collectors.toCollection(ArrayList::new));
 
 		// This needs special handling, because of how the code is structured.
@@ -323,7 +403,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 					}
 
 					for (var scope : exploreBranchForNewScopes(statement)) {
-						result.add(new VariableScope(scope.ctVariable(), child));
+						result.add(new VariableScope(scope.variable(), child));
 					}
 				}
 			}
@@ -345,7 +425,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 					//
 					// The following rule applies to a switch statement S with switch block B:
 					// - A pattern variable introduced by a switch rule is definitely matched at all the switch rules following it, if any, in B.
-					result.add(new VariableScope(scope.ctVariable(), child));
+					result.add(new VariableScope(scope.variable(), child));
 				}
 			}
 
@@ -355,28 +435,21 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 		if (parent instanceof CtTryWithResource ctTryWith) {
 			for (var resource : ctTryWith.getResources()) {
 				for (var scope : resource == child ? filteredChildScopes : exploreBranchForNewScopes(resource)) {
-					result.add(new VariableScope(scope.ctVariable(), ctTryWith.getBody()));
+					result.add(new VariableScope(scope.variable(), ctTryWith.getBody()));
 				}
 			}
 
 			return result;
 		}
 
-		// This covers (CtBodyHolder):
-		// - CtCatch,
-		// - CtExecutable<R>: CtAnnotationMethod<T>, CtAnonymousExecutable, CtConstructor<T>, CtLambda<T>, CtMethod<T>
-		// - CtLoop: CtDo, CtFor, CtForEach, CtWhile
-		// - CtTry: CtTryWithResource,
-
-		// TODO: With the current implementation any new CtBodyHolders will be resolved by the below code, potentially causing
-		//       wrong variable resolution. Instead one could constrain the below if to
-		//       if (parent instanceof CtCatch || parent instanceof CtExecutable || ...)
-		//       Then in any new implementation the variables would resolve to null instead of a wrong variable (trickier to discover)
-
-		if (parent instanceof CtBodyHolder) {
+		// For these elements the SiblingsFunction works fine to discover the variable declarations introduced by them like
+		// - function parameters
+		// - loop variables
+		// - catch variables
+		if (parent instanceof CtCatch || parent instanceof CtExecutable<?> || parent instanceof CtLoop || parent instanceof CtTry) {
 			result.addAll(child
 				.map(new SiblingsFunction().mode(SiblingsFunction.Mode.PREVIOUS))
-				//select only CtVariable nodes
+				// select only CtVariable nodes
 				.select(new TypeFilter<>(CtVariable.class))
 				.list(CtVariable.class)
 				.stream()
@@ -411,16 +484,15 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 				.list(CtStatement.class)
 				.stream()
 				.flatMap(sibling -> exploreBranchForNewScopes(sibling).stream())
-				.map(scope -> (Scope) new VariableScope(scope.ctVariable(), child))
+				.map(scope -> (Scope) new VariableScope(scope.variable(), child))
 				.toList();
 		}
 
-		// An if without a then statement `if (a);` can introduce pattern variables, but they can only be referenced from the
-		// then, which does not exist -> these can be ignored.
-		if (parent instanceof CtIf ctIf && ctIf.getThenStatement() != null) {
+		if (parent instanceof CtIf ctIf) {
 			List<Scope> result = new ArrayList<>();
 
-			boolean canThenComplete = completesNormally(ctIf.getThenStatement());
+			// The then is null with code `if (a);`, in this case the then branch completes normally given that it is empty.
+			boolean canThenComplete = ctIf.getThenStatement() == null || completesNormally(ctIf.getThenStatement());
 
 			// The child could be:
 			// - the condition (can introduce scopes)
@@ -431,14 +503,14 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 			// -> scopes from the then/else branch should be discarded
 			for (PatternScope scope : ctIf.getCondition() == child ? scopes : exploreBranchForNewPatternScopes(ctIf.getCondition())) {
 				// For an `if (e) S` (with maybe an else), a pattern variable introduced by `e` when `true` is definitely matched at `S`.
-				if (scope.matches()) {
+				if (scope.matches() && ctIf.getThenStatement() != null) {
 					result.add(scope.with(ctIf.getThenStatement(), true));
 				}
 
 				// A pattern variable is introduced by `if (e) S` iff
 				// -  (i) it is introduced by e when false and
 				// - (ii) S cannot complete normally.
-				if (ctIf.getElseStatement() == null && !scope.matches() && !canThenComplete) {
+				if ((ctIf.getElseStatement() == null && !scope.matches()) && !canThenComplete) {
 					result.add(scope.with(ctIf, false));
 				}
 
@@ -578,8 +650,11 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 			List<Scope> result = new ArrayList<>();
 			for (var expr : ctCase.getCaseExpressions()) {
 				for (var scope : expr == child ? scopes : exploreBranchForNewPatternScopes(expr)) {
-					// NOTE: This assumes negated patterns can not appear in the case expression
-					result.add(new VariableScope(scope.ctVariable(), ctCase));
+					if (!scope.matches()) {
+						throw new SpoonException("Unexpected negated pattern variable in a case: " + expr);
+					}
+
+					result.add(new VariableScope(scope.variable(), ctCase));
 				}
 			}
 
