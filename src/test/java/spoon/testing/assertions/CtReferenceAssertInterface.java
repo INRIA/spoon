@@ -1,6 +1,7 @@
 package spoon.testing.assertions;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
