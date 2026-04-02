@@ -588,4 +588,24 @@ public class VariableReferencesTest {
 		// System.out
 		assertThat(references.get(2)).hasExactlyPotentialDeclarations(patternVar, fieldVariable); // println(s)
 	}
+
+	@ModelTest(code = """
+		class Test {
+			void method() {
+				int i = 0;
+				for (; ;) {
+					System.out.println(i);
+				}
+			}
+		}
+		""")
+	public void testForConditionNull(@BySimpleName("Test") CtClass<?> ctClass) {
+		// contract: the code must not crash if the condition in the for is null
+		List<CtVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtVariable.class));
+		List<CtVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtVariableReference.class));
+
+		assertThat(variables).hasSize(1);
+
+		assertThat(references.get(1)).hasExactlyPotentialDeclarations(variables.get(0));
+	}
 }

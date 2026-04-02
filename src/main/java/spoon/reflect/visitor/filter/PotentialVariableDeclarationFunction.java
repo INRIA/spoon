@@ -248,7 +248,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 	// the parent `CtBinaryOperator`, the variables introduced by the branch `CtExpression b` will become relevant too.
 	//
 	// The function below can be used to explore the variables introduced by that unexplored branch `CtExpression b`.
-	private static List<Scope> exploreBranchForNewScopes(CtQueryable branch) {
+	private static List<Scope> exploreBranchForNewScopes(@NonNull CtQueryable branch) {
 		List<Scope> result = new ArrayList<>();
 
 		// Where pattern variables apply changes depending on their parents (e.g. !(< pattern >) will change the matches),
@@ -306,14 +306,14 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 	}
 
 	@SuppressWarnings("unchecked")
-	private static List<PatternScope> exploreBranchForNewPatternScopes(CtExpression<?> branch) {
+	private static List<PatternScope> exploreBranchForNewPatternScopes(@NonNull CtExpression<?> branch) {
 		// SAFETY: In an expression only PatternScope can appear
 		//      -> the returns of exploreBranchForNewScopes is guaranteed to be a list of PatternScope
 		return (List<PatternScope>) (List<?>) exploreBranchForNewScopes(branch);
 	}
 
 	@SuppressWarnings("unchecked")
-	private static List<PatternScope> exploreBranchForNewPatternScopes(CtPattern branch) {
+	private static List<PatternScope> exploreBranchForNewPatternScopes(@NonNull CtPattern branch) {
 		// SAFETY: In a pattern only PatternScope can appear
 		//      -> the returns of exploreBranchForNewScopes is guaranteed to be a list of PatternScope
 		return (List<PatternScope>) (List<?>) exploreBranchForNewScopes(branch);
@@ -577,7 +577,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 			return result;
 		}
 
-		if (parent instanceof CtFor ctFor) {
+		if (parent instanceof CtFor ctFor && ctFor.getExpression() != null) {
 			List<Scope> result = new ArrayList<>();
 
 			// The following rules apply to a basic for statement (§14.14.1):
