@@ -76,7 +76,7 @@ public class CommentHelper {
 						printer.writeln();
 					}
 					String mdLine = mdLines[i];
-					printer.write(mdLine.isEmpty() ? "///" : DefaultJavaPrettyPrinter.MARKDOWN_COMMENT_START + mdLine);
+					printer.write((DefaultJavaPrettyPrinter.MARKDOWN_COMMENT_START + mdLines[i]).stripTrailing());
 				}
 			}
 			case FILE, BLOCK -> {
