@@ -661,7 +661,7 @@ public class JDTCommentBuilder {
 	 * @param content the raw comment content (may be {@code null})
 	 * @return the cleaned content, or null if {@code content} is {@code null}
 	 */
-	private static String cleanMarkdownComment(String content) {
+	private static @Nullable String cleanMarkdownComment(String content) {
 		if (content == null) {
 			return null;
 		}
