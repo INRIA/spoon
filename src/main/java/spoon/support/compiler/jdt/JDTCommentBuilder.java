@@ -659,11 +659,11 @@ public class JDTCommentBuilder {
 	 * be used for other comment types.
 	 *
 	 * @param content the raw comment content (may be {@code null})
-	 * @return the cleaned content, or an empty string if {@code content} is {@code null}
+	 * @return the cleaned content, or null if {@code content} is {@code null}
 	 */
 	private static String cleanMarkdownComment(String content) {
 		if (content == null) {
-			return "";
+			return null;
 		}
 		return content.lines()
 			.map(JDTCommentBuilder::stripMarkdownCommentLine)
