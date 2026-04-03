@@ -71,6 +71,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * The comment builder that will insert all element of a CompilationUnitDeclaration into the Spoon AST
@@ -660,25 +661,13 @@ public class JDTCommentBuilder {
 	 * @param content the raw comment content (may be {@code null})
 	 * @return the cleaned content, or an empty string if {@code content} is {@code null}
 	 */
-	public static String cleanMarkdownComment(String content) {
+	private static String cleanMarkdownComment(String content) {
 		if (content == null) {
 			return "";
 		}
-		StringBuilder ret = new StringBuilder();
-		try (BufferedReader br = new BufferedReader(new StringReader(content))) {
-			String line = br.readLine();
-			if (line == null) {
-				return ret.toString();
-			}
-			ret.append(stripMarkdownCommentLine(line));
-			while ((line = br.readLine()) != null) {
-				ret.append(CtComment.LINE_SEPARATOR);
-				ret.append(stripMarkdownCommentLine(line));
-			}
-		} catch (IOException e) {
-			throw new SpoonException(e);
-		}
-		return ret.toString();
+		return content.lines()
+			.map(JDTCommentBuilder::stripMarkdownCommentLine)
+			.collect(Collectors.joining(System.lineSeparator()));
 	}
 
 	private static String cleanComment(Reader comment) {

@@ -8,6 +8,7 @@
 package spoon.reflect.visitor;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
@@ -70,7 +71,7 @@ public class CommentHelper {
 				// Each line of a markdown comment gets a "/// " prefix.
 				// Lines are separated by writeln() so the output is one "///" line per logical line.
 				// Empty lines use "///" without a trailing space to stay idiomatic.
-				String[] mdLines = content.split("\n", -1);
+				String[] mdLines = content.lines().toArray(String[]::new);
 				for (int i = 0; i < mdLines.length; i++) {
 					if (i > 0) {
 						printer.writeln();
