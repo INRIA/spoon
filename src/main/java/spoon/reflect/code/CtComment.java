@@ -40,7 +40,12 @@ public interface CtComment extends CtStatement {
 		/**
 		 * Block comment (/* *\/)
 		 */
-		BLOCK
+		BLOCK,
+		/**
+		 * Markdown documentation comment (///) (Java 23+, JEP 467).
+		 * Each line of a markdown comment starts with {@code ///}.
+		 */
+		MARKDOWN
 	}
 
 	/**

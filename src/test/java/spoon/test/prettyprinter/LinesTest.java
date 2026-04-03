@@ -123,7 +123,7 @@ public class LinesTest {
 	@Test
 	public void testCompileWhenUsingLinesArgument() {
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--compile", "--with-imports", "--lines"});
+		launcher.setArgs(new String[] {"--compile", "--with-imports", "--lines", "--compliance", "23"});
 		launcher.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/FooCasper.java");
 		launcher.run();
 

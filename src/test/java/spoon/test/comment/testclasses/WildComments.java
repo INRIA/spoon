@@ -6,19 +6,19 @@ public class WildComments {
 	 * The string literal value defines expected value of `CtComment#getContent()` of it's comment
 	 */
 	String[] comments = new String[]{
-			///* test single line comments with nested * and */ and **/
+			// /* test single line comments with nested * and */ and **/
 			"/* test single line comments with nested * and */ and **/",
 			//* starts with *
 			"* starts with *",
-			///* starts with /*
+			// /* starts with /*
 			"/* starts with /*",
 			//*/ starts with */
 			"*/ starts with */",
 			// */ starts with space and */
 			"*/ starts with space and */",
-			/// starts with /
+			// / starts with /
 			"/ starts with /",
-			//// starts with //
+			// // starts with //
 			"// starts with //",
 
 			/* test wild multiline comments */
