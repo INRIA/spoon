@@ -7,11 +7,13 @@
  */
 package spoon.test.comment;
 
+import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelTest;
 
 import java.util.List;
@@ -24,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @see <a href="https://openjdk.org/jeps/467">JEP 467: Markdown Documentation Comments</a>
  */
+@ExtendWith(LineSeparatorExtension.class)
 public class MarkdownCommentTest {
 
     // -----------------------------------------------------------------------
