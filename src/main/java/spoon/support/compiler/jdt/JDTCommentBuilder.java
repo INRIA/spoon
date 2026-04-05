@@ -125,7 +125,7 @@ public class JDTCommentBuilder {
 
 		CtComment comment;
 
-		// Javadoc comments (and markdown comments) have negative end position
+		// Javadoc comments (and markdown comments) have negative end position (i.e. positive positions[1])
 		if (end <= 0) {
 			end = -end;
 			// Distinguish markdown comments (starting with ///) from Javadoc (starting with /**)
@@ -146,7 +146,14 @@ public class JDTCommentBuilder {
 			}
 		}
 
-		comment.setContent(getCommentContent(start, end));
+		// For markdown comments, pre-clean the "///" prefix from the raw source before setContent,
+		// so that cleanComment (called inside setContent) receives content without "///" markers.
+		// All other comment types pass the raw source to setContent and let cleanComment handle it.
+		if (comment.getCommentType() == CtComment.CommentType.MARKDOWN) {
+			comment.setContent(cleanMarkdownComment(getCommentContent(start, end)));
+		} else {
+			comment.setContent(getCommentContent(start, end));
+		}
 
 		// set the position
 		int[] lineSeparatorPositions = declarationUnit.compilationResult.lineSeparatorPositions;
@@ -620,9 +627,6 @@ public class JDTCommentBuilder {
 		if (comment == null) {
 			return "";
 		}
-		if (comment.startsWith("///")) {
-			return cleanMarkdownComment(comment);
-		}
 		return cleanComment(new StringReader(comment));
 	}
 
@@ -654,13 +658,16 @@ public class JDTCommentBuilder {
 	 * This method is intended only for markdown comments (JEP 467, Java 23+) and must not
 	 * be used for other comment types.
 	 *
-	 * @param content the raw comment content
-	 * @return the cleaned content
+	 * @param content the raw comment content (may be {@code null})
+	 * @return the cleaned content, or null if {@code content} is {@code null}
 	 */
-	private static String cleanMarkdownComment(String content) {
+	private static @Nullable String cleanMarkdownComment(String content) {
+		if (content == null) {
+			return null;
+		}
 		return content.lines()
 			.map(JDTCommentBuilder::stripMarkdownCommentLine)
-			.collect(Collectors.joining(CtComment.LINE_SEPARATOR));
+			.collect(Collectors.joining(System.lineSeparator()));
 	}
 
 	private static String cleanComment(Reader comment) {
