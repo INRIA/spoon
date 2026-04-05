@@ -125,7 +125,7 @@ public class JDTCommentBuilder {
 
 		CtComment comment;
 
-		// Javadoc comments (and markdown comments) have negative end position (i.e. positive positions[1])
+		// Javadoc comments have negative end position
 		if (end <= 0) {
 			end = -end;
 			// Distinguish markdown comments (starting with ///) from Javadoc (starting with /**)
