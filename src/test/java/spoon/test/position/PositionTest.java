@@ -1436,6 +1436,20 @@ public class PositionTest {
 	}
 
 	@Test
+	public void testGetEndColumnWithVirtualFileContainingNewlines() {
+		// contract: getEndColumn() should not throw NPE when using VirtualFile with newlines
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile("class Source {\n// comment\n}", "x/y/z/Source.java"));
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+
+		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getMap().values().iterator().next();
+		assertTrue(cu.getPosition().isValidPosition());
+		// should not throw NPE
+		cu.getPosition().getEndColumn();
+	}
+
+	@Test
 	public void testLambdaParameterPosition() {
 		// contract: position of lambda parameter is correct
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/FooLambda.java"));

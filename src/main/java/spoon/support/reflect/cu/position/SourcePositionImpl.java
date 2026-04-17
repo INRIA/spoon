@@ -83,9 +83,11 @@ public class SourcePositionImpl implements SourcePosition {
 		if (getCompilationUnit() != null) {
 			tabSize = getCompilationUnit().getFactory().getEnvironment().getTabulationSize();
 			String source = getCompilationUnit().getOriginalSourceCode();
-			for (int j = lineSeparatorPositions[i]; j < position; j++) {
-				if (source.charAt(j) == '\t') {
-					tabCount++;
+			if (source != null) {
+				for (int j = lineSeparatorPositions[i]; j < position; j++) {
+					if (source.charAt(j) == '\t') {
+						tabCount++;
+					}
 				}
 			}
 		}
