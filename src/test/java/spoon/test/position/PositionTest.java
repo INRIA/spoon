@@ -1445,8 +1445,8 @@ public class PositionTest {
 
 		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getMap().values().iterator().next();
 		assertTrue(cu.getPosition().isValidPosition());
-		// should not throw NPE
-		cu.getPosition().getEndColumn();
+		int endColumn = assertDoesNotThrow(() -> cu.getPosition().getEndColumn());
+		assertTrue(endColumn > 0, "getEndColumn should return a positive column");
 	}
 
 	@Test
