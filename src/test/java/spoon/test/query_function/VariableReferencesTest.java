@@ -575,7 +575,7 @@ public class VariableReferencesTest {
 		}
 		""")
 	public void testIfWithNullThen(@BySimpleName("Test") CtClass<?> ctClass) {
-		// contract: the code does not crash when then is null, and correctly resolves the reference to the pattern
+		// contract: a pattern variable is accessible outside the then, if the other branch returns, even if the then is empty
 		List<CtVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtVariable.class));
 		List<CtVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtVariableReference.class));
 
@@ -600,7 +600,8 @@ public class VariableReferencesTest {
 		}
 		""")
 	public void testForConditionNull(@BySimpleName("Test") CtClass<?> ctClass) {
-		// contract: the code must not crash if the condition in the for is null
+		// contract: a variable declared in the initialization of a for loop is correctly resolved in the body,
+		//           even if the condition and update are null
 		List<CtVariable<?>> variables = ctClass.getElements(new TypeFilter<>(CtVariable.class));
 		List<CtVariableReference<?>> references = ctClass.getElements(new TypeFilter<>(CtVariableReference.class));
 

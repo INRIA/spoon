@@ -355,12 +355,6 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 	 * @return the scopes that apply to the parent
 	 */
 	private static List<Scope> updateChildScopesForParent(Collection<? extends Scope> childScopes, @NonNull CtElement child, @NonNull CtElement parent) {
-		List<Scope> filteredChildScopes = childScopes.stream()
-			// only keep the scopes that were valid for the child, the ones where the scope was less than the child
-			// can not escape the child, so they can be discarded
-			.filter(scope -> scope.element() == child)
-			.collect(Collectors.toCollection(ArrayList::new));
-
 		// This needs special handling, because of how the code is structured.
 		//
 		// The code related to type patterns operates on PatternScopes, and without this
@@ -369,6 +363,12 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 		if (child instanceof CtVariable<?> ctVariable && parent instanceof CtTypePattern) {
 			return List.of(new PatternScope(ctVariable, parent, true));
 		}
+
+		List<Scope> filteredChildScopes = childScopes.stream()
+			// only keep the scopes that were valid for the child, the ones where the scope was less than the child
+			// can not escape the child, so they can be discarded
+			.filter(scope -> scope.element() == child)
+			.collect(Collectors.toCollection(ArrayList::new));
 
 		if (child instanceof CtVariable<?> ctVariable) {
 			filteredChildScopes.add(new VariableScope(ctVariable, ctVariable));
