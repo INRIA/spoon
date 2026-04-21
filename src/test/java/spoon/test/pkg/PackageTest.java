@@ -205,6 +205,21 @@ public class PackageTest {
 		});
 	}
 
+	@Test
+	@GitHubIssue(issueNumber = 6707, fixed = true)
+	public void testPackageInfoWithFullyQualifiedAnnotationNoclasspath() {
+		// package-info.java with fully-qualified annotation refs should not throw JLSViolation
+		assertDoesNotThrow(() -> {
+			Launcher launcher = new Launcher();
+			launcher.addInputResource("src/test/resources/noclasspath/package-info-fqn");
+			launcher.getEnvironment().setNoClasspath(true);
+			launcher.getEnvironment().setSourceClasspath(new String[0]);
+			launcher.getEnvironment().setCommentEnabled(false);
+			launcher.getEnvironment().setComplianceLevel(17);
+			launcher.buildModel();
+		});
+	}
+
 	@ModelTest("./src/test/java/spoon/test/pkg/testclasses/Foo.java")
 	public void testRenamePackageAndPrettyPrint(CtModel model, Launcher launcher, Factory factory) {
 		CtPackage ctPackage = model.getElements(new NamedElementFilter<>(CtPackage.class, "spoon")).get(0);
