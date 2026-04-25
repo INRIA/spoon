@@ -1,7 +1,6 @@
 package spoon.testing.assertions;
-import java.util.Comparator;
+import com.google.common.collect.Ordering;
 import java.util.List;
-import java.util.function.Function;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
@@ -38,12 +37,23 @@ public interface CtReferenceAssertInterface<A extends AbstractObjectAssert<A, W>
 			declarations = actual().map(new PotentialVariableDeclarationFunction(actual().getSimpleName())).list();
 		}
 		// By default, the containsExactly assertion checks with equals or compareTo.
-		// A declaration `String i` and an unrelated `String i` are considered equal.
-		// Given that the potential declarations will all have the same name it is important to check
-		// that they are not only equal, but the same object through ==.
+		// A declaration `String i` and an unrelated `String i` are considered equal, because that is how CtElement#equals
+		// is implemented.
 		//
-		// The code expects a comparator, so we are using the identity hash code (= pointer value) for the comparison.
-		Assertions.assertThat(declarations).as("Potential declarations of variable <%s>", actual()).usingElementComparator(Comparator.comparing(System::identityHashCode)).containsExactly(potentialDeclarations);
+		// For a list of potential declarations, all of them will have the same name and (likely) the same type,
+		// so it wouldn't work here.
+		//
+		// Therefore, we want to check for object equality through ==.
+		// To change how elements are compared in AssertJ, you have to provide a Comparator to the usingElementComparator
+		// method. A comparator is not only for equality, but also for ordering. Technically, the library should not need
+		// to sort our input/use our comparator for that, but who knows what will happen in the future. It is not ideal
+		// to use an inconsistent ordering, hence Ordering.arbitrary() is used here, which does exactly what is desired here.
+		//
+		// Previous ideas:
+		// If one were to have a unique identifier for a java object, one could sort by that. System.identityHashCode() does not work here,
+		// because:
+		// a.hashCode() == b.hashCode() =!> a == b (see equals contract)
+		Assertions.assertThat(declarations).as("Potential declarations of variable <%s>", actual()).usingElementComparator(Ordering.arbitrary()).containsExactly(potentialDeclarations);
 		return this;
 	}
 }
