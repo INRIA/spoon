@@ -20,7 +20,9 @@ import org.assertj.core.api.InstanceOfAssertFactory;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -37,6 +39,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.testing.assertions.SpoonAssertions;
+import spoon.testing.utils.BySimpleName;
 import spoon.testing.utils.ModelTest;
 
 public class CtRecordTest {
@@ -362,6 +365,30 @@ public class CtRecordTest {
 		assertThat(record.getFields())
 			.map(CtField::getSimpleName)
 			.containsExactly("first", "second");
+	}
+
+	@ModelTest(code = "record Point(int x, int y) {}", complianceLevel = 17)
+	void testCanonicalConstructorFieldReferenceResolves(@BySimpleName("Point") CtClass<?> ctClass) {
+		// contract: field writes in the generated constructor resolve to the record fields
+		assertThat(ctClass.getConstructors()).hasSize(1);
+
+		var constructor = ctClass.getConstructors().iterator().next();
+
+		for (var statement : constructor.getBody().getStatements()) {
+			if (!(statement instanceof CtAssignment<?,?> ctAssignment)) {
+				continue;
+			}
+
+			var fieldRef = assertThat(ctAssignment.getAssigned())
+				.isInstanceOf(CtFieldWrite.class)
+				.extracting(write -> (CtFieldWrite<?>) write)
+				.extracting(CtFieldWrite::getVariable)
+				.actual();
+
+			var actualField = assertThat(ctClass.getField(fieldRef.getSimpleName())).isNotNull().actual();
+
+			assertThat(fieldRef.getFieldDeclaration()).isSameAs(actualField);
+		}
 	}
 
 	private <T> T head(Collection<T> collection) {
