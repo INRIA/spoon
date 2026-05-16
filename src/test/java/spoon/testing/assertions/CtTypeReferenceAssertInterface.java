@@ -30,4 +30,9 @@ public interface CtTypeReferenceAssertInterface<A extends AbstractObjectAssert<A
 	default CtTypeReferenceAssertInterface<?, ?> getSuperclass() {
 		return SpoonAssertions.assertThat(actual().getSuperclass());
 	}
+
+	default CtTypeReferenceAssertInterface<?, ?> isEqualTo(Class<?> type) {
+		Assertions.assertThat(actual().getFactory().Type().get(type).getReference()).isEqualTo(actual());
+		return this;
+	}
 }
