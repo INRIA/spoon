@@ -5,7 +5,7 @@
   "main": "changelog.js",
   "dependencies": {
     "git-log-parser": "^1.2.0",
-    "through2": "^4.0.0"
+    "through2": "^5.0.0"
   },
   "author": "Thomas Durieux",
   "license": "MIT"
