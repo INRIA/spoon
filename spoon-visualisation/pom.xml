@@ -17,13 +17,13 @@
     <parent>
         <groupId>fr.inria.gforge.spoon</groupId>
         <artifactId>spoon-pom</artifactId>
-        <version>11.1.0</version>
+        <version>11.3.1-beta-8</version>
         <relativePath>../spoon-pom</relativePath>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jfx.version>26-ea+6</jfx.version>
+        <jfx.version>27-ea+16</jfx.version>
     </properties>
 
     <build>
