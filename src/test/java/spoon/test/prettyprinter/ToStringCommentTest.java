@@ -21,8 +21,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.testing.utils.ModelTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ToStringCommentTest {
 
