@@ -660,7 +660,7 @@ public class JDTCommentBuilder {
 	private static String cleanMarkdownComment(String content) {
 		return content.lines()
 			.map(JDTCommentBuilder::stripMarkdownCommentLine)
-			.collect(Collectors.joining(System.lineSeparator()));
+			.collect(Collectors.joining(CtComment.LINE_SEPARATOR));
 	}
 
 	private static String cleanComment(Reader comment) {
