@@ -146,14 +146,7 @@ public class JDTCommentBuilder {
 			}
 		}
 
-		// For markdown comments, pre-clean the "///" prefix from the raw source before setContent,
-		// so that cleanComment (called inside setContent) receives content without "///" markers.
-		// All other comment types pass the raw source to setContent and let cleanComment handle it.
-		if (comment.getCommentType() == CtComment.CommentType.MARKDOWN) {
-			comment.setContent(cleanMarkdownComment(getCommentContent(start, end)));
-		} else {
 			comment.setContent(getCommentContent(start, end));
-		}
 
 		// set the position
 		int[] lineSeparatorPositions = declarationUnit.compilationResult.lineSeparatorPositions;
@@ -626,6 +619,9 @@ public class JDTCommentBuilder {
 	public static String cleanComment(String comment) {
 		if (comment == null) {
 			return "";
+		}
+		if (comment.startsWith("///")) {
+			return cleanMarkdownComment(comment);
 		}
 		return cleanComment(new StringReader(comment));
 	}
