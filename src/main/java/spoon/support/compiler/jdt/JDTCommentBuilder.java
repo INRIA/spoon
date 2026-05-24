@@ -146,7 +146,7 @@ public class JDTCommentBuilder {
 			}
 		}
 
-			comment.setContent(getCommentContent(start, end));
+		comment.setContent(getCommentContent(start, end));
 
 		// set the position
 		int[] lineSeparatorPositions = declarationUnit.compilationResult.lineSeparatorPositions;
