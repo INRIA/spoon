@@ -186,6 +186,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public static final String INLINE_COMMENT_START = "// ";
 
 	/**
+	 * The beginning of a markdown documentation comment line (Java 23+, JEP 467)
+	 */
+	public static final String MARKDOWN_COMMENT_START = "/// ";
+
+	/**
 	 * The beginning of a block comment
 	 */
 	public static final String BLOCK_COMMENT_START = "/* ";

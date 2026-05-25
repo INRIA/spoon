@@ -71,6 +71,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * The comment builder that will insert all element of a CompilationUnitDeclaration into the Spoon AST
@@ -126,8 +127,14 @@ public class JDTCommentBuilder {
 
 		// Javadoc comments have negative end position
 		if (end <= 0) {
-			comment = factory.Core().createJavaDoc();
 			end = -end;
+			// Distinguish markdown comments (starting with ///) from Javadoc (starting with /**)
+			if (start + 2 < end && contents[start] == '/' && contents[start + 1] == '/' && contents[start + 2] == '/') {
+				comment = factory.Core().createComment();
+				comment.setCommentType(CtComment.CommentType.MARKDOWN);
+			} else {
+				comment = factory.Core().createJavaDoc();
+			}
 		} else {
 			comment = factory.Core().createComment();
 			comment.setCommentType(CtComment.CommentType.BLOCK);
@@ -613,12 +620,48 @@ public class JDTCommentBuilder {
 		if (comment == null) {
 			return "";
 		}
+		if (comment.startsWith("///")) {
+			return cleanMarkdownComment(comment);
+		}
 		return cleanComment(new StringReader(comment));
 	}
 
 	private static final Pattern startCommentRE = Pattern.compile("^/\\*{1,2} ?");
 	private static final Pattern middleCommentRE = Pattern.compile("^[ \t]*\\*? ?");
 	private static final Pattern endCommentRE = Pattern.compile("\\*/$");
+
+	/**
+	 * Strips the {@code ///} prefix (and one optional following space) from a single markdown comment line,
+	 * after first removing any source-level leading whitespace (indentation).
+	 * E.g. {@code "    /// text"} → {@code "text"}, {@code "    ///"} → {@code ""}.
+	 */
+	static String stripMarkdownCommentLine(String line) {
+		// Strip source-level indentation before the marker
+		String stripped = line.stripLeading();
+		if (stripped.startsWith("/// ")) {
+			return stripped.substring(4);
+		}
+		if (stripped.startsWith("///")) {
+			return stripped.substring(3);
+		}
+		// No "///" prefix found – return the line unchanged (handles user-set content without prefix)
+		return line;
+	}
+
+	/**
+	 * Cleans a raw markdown documentation comment by stripping the {@code ///} prefix
+	 * (and source-level indentation) from each line.
+	 * This method is intended only for markdown comments (JEP 467, Java 23+) and must not
+	 * be used for other comment types.
+	 *
+	 * @param content the raw comment content
+	 * @return the cleaned content
+	 */
+	private static String cleanMarkdownComment(String content) {
+		return content.lines()
+			.map(JDTCommentBuilder::stripMarkdownCommentLine)
+			.collect(Collectors.joining(CtComment.LINE_SEPARATOR));
+	}
 
 	private static String cleanComment(Reader comment) {
 		StringBuilder ret = new StringBuilder();
