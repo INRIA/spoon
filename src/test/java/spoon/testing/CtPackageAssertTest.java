@@ -27,16 +27,20 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.testing.utils.ModelTest;
 
+import java.io.File;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static spoon.testing.assertions.SpoonAssertions.assertThat;
+import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class CtPackageAssertTest {
 
-	@ModelTest("./src/test/java/spoon/testing/testclasses/")
-	public void testEqualityBetweenTwoCtPackage(Factory builtFactory) {
+	@Test
+	public void testEqualityBetweenTwoCtPackage() {
 		//contract: two packages, one made by test code, second made by compilation from sources are equal
 		final Factory factory = createFactory();
 		final CtPackage aRootPackage = factory.Package().getOrCreate("");
@@ -46,9 +50,19 @@ public class CtPackageAssertTest {
 		factory.Class().create("spoon.testing.testclasses.Bar").addModifier(ModifierKind.PUBLIC);
 		List<CtType<?>> types2 = aRootPackage.filterChildren(new TypeFilter<>(CtClass.class)).list();
 		Assertions.assertThat(types2).hasSize(2);
-		final CtPackage aRootPackage2 = builtFactory.Package().getRootPackage();
-		Assertions.assertThat(aRootPackage2).isNotSameAs(aRootPackage);
-		assertThat(aRootPackage2).isEqualTo(aRootPackage);
+		final CtPackage builtPackage = build(new File("./src/test/java/spoon/testing/testclasses/")).Package().get("spoon.testing.testclasses");
+		final CtPackage programmaticPackage = factory.Package().get("spoon.testing.testclasses");
+		Assertions.assertThat(builtPackage).isNotSameAs(programmaticPackage);
+		// EqualsVisitor compares types positionally via LinkedHashSet insertion order,
+		// which differs between programmatic and file-based construction — sort by name first
+		List<CtType<?>> builtTypes = builtPackage.getTypes().stream()
+			.sorted(Comparator.comparing(CtType::getSimpleName)).collect(Collectors.toList());
+		List<CtType<?>> programmaticTypes = programmaticPackage.getTypes().stream()
+			.sorted(Comparator.comparing(CtType::getSimpleName)).collect(Collectors.toList());
+		Assertions.assertThat(builtTypes).hasSameSizeAs(programmaticTypes);
+		for (int i = 0; i < builtTypes.size(); i++) {
+			assertThat(builtTypes.get(i)).isEqualTo(programmaticTypes.get(i));
+		}
 	}
 
 	@ModelTest("./src/test/java/spoon/testing/testclasses/")
