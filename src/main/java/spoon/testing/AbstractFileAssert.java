@@ -19,7 +19,7 @@ import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ProcessorUtils.process;
 
 /**
- * @deprecated Use {@link spoon.testing.assertions.SpoonAssertions} instead.
+ * @deprecated Use {@code spoon.testing.assertions.SpoonAssertions} instead.
  */
 @Deprecated(since = "11", forRemoval = true)
 public abstract class AbstractFileAssert<T extends AbstractFileAssert<T>> extends AbstractAssert<T, File> {

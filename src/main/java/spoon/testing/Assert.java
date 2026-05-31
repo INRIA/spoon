@@ -21,7 +21,7 @@ import static spoon.testing.utils.Check.assertNotNull;
  * assertion objects. The purpose of this class is to make test code
  * more readable.
  *
- * @deprecated Use {@link spoon.testing.assertions.SpoonAssertions} instead.
+ * @deprecated Use {@code spoon.testing.assertions.SpoonAssertions} instead.
  */
 @Deprecated(since = "11", forRemoval = true)
 public class Assert {

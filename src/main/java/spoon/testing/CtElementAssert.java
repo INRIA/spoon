@@ -10,7 +10,7 @@ package spoon.testing;
 import spoon.reflect.declaration.CtElement;
 
 /**
- * @deprecated Use {@link spoon.testing.assertions.SpoonAssertions} instead.
+ * @deprecated Use {@code spoon.testing.assertions.SpoonAssertions} instead.
  */
 @Deprecated(since = "11", forRemoval = true)
 public class CtElementAssert extends AbstractCtElementAssert<CtElementAssert> {
