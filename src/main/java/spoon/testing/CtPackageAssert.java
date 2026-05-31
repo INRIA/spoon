@@ -9,6 +9,10 @@ package spoon.testing;
 
 import spoon.reflect.declaration.CtPackage;
 
+/**
+ * @deprecated Use {@link spoon.testing.assertions.SpoonAssertions} instead.
+ */
+@Deprecated(since = "11", forRemoval = true)
 public class CtPackageAssert extends AbstractCtPackageAssert<CtPackageAssert> {
 	public CtPackageAssert(CtPackage actual) {
 		super(actual, CtPackageAssert.class);

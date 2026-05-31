@@ -20,7 +20,9 @@ import java.util.LinkedList;
  * 		the self type of this assertion class.
  * @param <A>
  * 		the type of the actual value.
+ * @deprecated Use {@link spoon.testing.assertions.SpoonAssertions} instead.
  */
+@Deprecated(since = "11", forRemoval = true)
 public abstract class AbstractAssert<T extends AbstractAssert<T, A>, A> {
 	protected final LinkedList<Processor<?>> processors = new LinkedList<>();
 	protected final A actual;

@@ -19,6 +19,10 @@ import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.Check.assertNotNull;
 import static spoon.testing.utils.ProcessorUtils.process;
 
+/**
+ * @deprecated Use {@link spoon.testing.assertions.SpoonAssertions} instead.
+ */
+@Deprecated(since = "11", forRemoval = true)
 public abstract class AbstractCtPackageAssert<T extends AbstractCtPackageAssert<T>> extends AbstractAssert<T, CtPackage> {
 	protected AbstractCtPackageAssert(CtPackage actual, Class<?> selfType) {
 		super(actual, selfType);

@@ -29,16 +29,22 @@ import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.processing.processors.MyProcessor;
 import spoon.test.template.testclasses.AssertToIfAssertedStatementTemplate;
 
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.testing.utils.ModelTest;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static spoon.testing.Assert.assertThat;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class ProcessingTest {
 
@@ -130,8 +136,8 @@ public class ProcessingTest {
 		l.run();
 	}
 	
-	@Test
-	public void testTemplateNotInOutput() throws IOException {
+	@ModelTest("src/test/resources/spoon/test/template/SimpleIfAsserted.java")
+	public void testTemplateNotInOutput(Factory expectedFactory) throws IOException {
 		// https://github.com/INRIA/spoon/issues/2987
 		class AssertProcessor extends AbstractProcessor<CtAssert<?>> {
 			public void process(CtAssert<?> element) {
@@ -141,24 +147,29 @@ public class ProcessingTest {
 				);
 			}
 		}
-		
+
 		String templatePath = "src/test/java/spoon/test/template/testclasses/AssertToIfAssertedStatementTemplate.java";
 		String resourcePath = "src/test/resources/spoon/test/template/";
-		
+
 		final Launcher l = new Launcher();
 		Path outputPath = Files.createTempDirectory("emptydir");
-		
+
 		l.addProcessor(new AssertProcessor());
 		l.addTemplateResource(new FileSystemFile(templatePath));
-		
+
 		l.addInputResource(resourcePath + "SimpleAssert.java");
 		l.setSourceOutputDirectory(outputPath.toFile());
 		l.run();
 
 		// If template is applied to itself then there will be modified spoon/...Template.java on output
-		assertArrayEquals(new String[]{"SimpleAssert.java"}, outputPath.toFile().list(), "Template source found in output");
+		org.assertj.core.api.Assertions.assertThat(outputPath.toFile().list())
+			.containsExactly("SimpleAssert.java");
 		// Check that the template worked as intended
-		assertThat(outputPath.toString() + "/SimpleAssert.java")
-			.isEqualTo(resourcePath + "SimpleIfAsserted.java");
+		List<CtType<?>> actualTypes = build(new File(outputPath.toString() + "/SimpleAssert.java")).Type().getAll();
+		List<CtType<?>> expectedTypes = expectedFactory.Type().getAll();
+		org.assertj.core.api.Assertions.assertThat(actualTypes).hasSameSizeAs(expectedTypes);
+		for (int i = 0; i < actualTypes.size(); i++) {
+			assertThat(actualTypes.get(i)).isEqualTo(expectedTypes.get(i));
+		}
 	}
 }

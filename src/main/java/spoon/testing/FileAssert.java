@@ -9,6 +9,10 @@ package spoon.testing;
 
 import java.io.File;
 
+/**
+ * @deprecated Use {@link spoon.testing.assertions.SpoonAssertions} instead.
+ */
+@Deprecated(since = "11", forRemoval = true)
 public class FileAssert extends AbstractFileAssert<FileAssert> {
 	public FileAssert(File actual) {
 		super(actual, FileAssert.class);
