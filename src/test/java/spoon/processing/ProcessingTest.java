@@ -16,6 +16,7 @@
  */
 package spoon.processing;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
@@ -135,7 +136,7 @@ public class ProcessingTest {
 		l.setSourceOutputDirectory(path.toFile());
 		l.run();
 	}
-	
+
 	@ModelTest("src/test/resources/spoon/test/template/SimpleIfAsserted.java")
 	public void testTemplateNotInOutput(Factory expectedFactory) throws IOException {
 		// https://github.com/INRIA/spoon/issues/2987
@@ -162,12 +163,12 @@ public class ProcessingTest {
 		l.run();
 
 		// If template is applied to itself then there will be modified spoon/...Template.java on output
-		org.assertj.core.api.Assertions.assertThat(outputPath.toFile().list())
+		Assertions.assertThat(outputPath.toFile().list())
 			.containsExactly("SimpleAssert.java");
 		// Check that the template worked as intended
 		List<CtType<?>> actualTypes = build(new File(outputPath.toString() + "/SimpleAssert.java")).Type().getAll();
 		List<CtType<?>> expectedTypes = expectedFactory.Type().getAll();
-		org.assertj.core.api.Assertions.assertThat(actualTypes).hasSameSizeAs(expectedTypes);
+		Assertions.assertThat(actualTypes).hasSameSizeAs(expectedTypes);
 		for (int i = 0; i < actualTypes.size(); i++) {
 			assertThat(actualTypes.get(i)).isEqualTo(expectedTypes.get(i));
 		}

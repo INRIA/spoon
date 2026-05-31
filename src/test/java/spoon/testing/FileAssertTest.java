@@ -27,18 +27,17 @@ import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class FileAssertTest {
-	public static final String PATH = "./src/test/java/spoon/testing/testclasses/";
 
-	@ModelTest(PATH + "Foo.java")
+	@ModelTest("./src/test/java/spoon/testing/testclasses/" + "Foo.java")
 	public void testEqualsBetweenTwoSameFile(Factory factory) {
 		for (CtType<?> type : factory.Type().getAll()) {
 			assertThat(type).isEqualTo(type);
 		}
 	}
 
-	@ModelTest(PATH + "Foo.java")
+	@ModelTest("./src/test/java/spoon/testing/testclasses/" + "Foo.java")
 	public void testEqualsBetweenTwoDifferentFile(Factory fooFactory) {
-		Factory barFactory = build(new File(PATH + "Bar.java"));
+		Factory barFactory = build(new File("./src/test/java/spoon/testing/testclasses/" + "Bar.java"));
 		assertThatThrownBy(() -> {
 			for (CtType<?> fooType : fooFactory.Type().getAll()) {
 				for (CtType<?> barType : barFactory.Type().getAll()) {
