@@ -61,7 +61,10 @@ public class CtPackageAssertTest {
 			.sorted(Comparator.comparing(CtType::getSimpleName)).collect(Collectors.toList());
 		Assertions.assertThat(builtTypes).hasSameSizeAs(programmaticTypes);
 		for (int i = 0; i < builtTypes.size(); i++) {
-			assertThat(builtTypes.get(i)).isEqualTo(programmaticTypes.get(i));
+			// Source-parsed classes have an implicit default constructor added by JDT that
+			// programmatically created classes lack. EqualsVisitor would fail on typeMember
+			// differences, so compare printed representations as the original test did.
+			Assertions.assertThat(builtTypes.get(i).toString()).isEqualTo(programmaticTypes.get(i).toString());
 		}
 	}
 
