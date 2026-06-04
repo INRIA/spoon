@@ -65,6 +65,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
@@ -331,7 +332,7 @@ public class FieldAccessTest {
 
 		assertEquals(1, elements.size());
 		assertTrue(elements.get(0).getType().getDeclaringType().isAnonymous());
-		assertEquals("private final Test test = new Test();", elements.get(0).toString());
+		assertThat(elements.get(0)).hasToString("private final Test test = new Test();");
 	}
 
 	@Test

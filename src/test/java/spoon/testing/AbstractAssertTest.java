@@ -34,37 +34,12 @@ import static spoon.testing.utils.ModelUtils.build;
 
 public class AbstractAssertTest {
 
-	@ModelTest("./src/test/java/spoon/testing/testclasses/" + "Foo.java")
-	public void testTransformationWithProcessorInstantiated(Factory actual) {
+	@ModelTest("./src/test/java/spoon/testing/testclasses/Foo.java")
+	public void testTransformationWithProcessor(Factory actual) {
 		ProcessorUtils.process(actual, List.of(new FooToBarProcessor()));
 		List<CtType<?>> actualTypes = actual.Type().getAll();
-		List<CtType<?>> expectedTypes = build(new File("./src/test/java/spoon/testing/testclasses/" + "Bar.java")).Type().getAll();
-		Assertions.assertThat(actualTypes).hasSameSizeAs(expectedTypes);
-		for (int i = 0; i < actualTypes.size(); i++) {
-			assertThat(actualTypes.get(i)).isEqualTo(expectedTypes.get(i));
-		}
-	}
-
-	@ModelTest("./src/test/java/spoon/testing/testclasses/" + "Foo.java")
-	public void testTransformationWithProcessorClass(Factory actual) {
-		ProcessorUtils.process(actual, List.of(new FooToBarProcessor()));
-		List<CtType<?>> actualTypes = actual.Type().getAll();
-		List<CtType<?>> expectedTypes = build(new File("./src/test/java/spoon/testing/testclasses/" + "Bar.java")).Type().getAll();
-		Assertions.assertThat(actualTypes).hasSameSizeAs(expectedTypes);
-		for (int i = 0; i < actualTypes.size(); i++) {
-			assertThat(actualTypes.get(i)).isEqualTo(expectedTypes.get(i));
-		}
-	}
-
-	@ModelTest("./src/test/java/spoon/testing/testclasses/" + "Foo.java")
-	public void testTransformationWithProcessorName(Factory actual) {
-		ProcessorUtils.process(actual, List.of(new FooToBarProcessor()));
-		List<CtType<?>> actualTypes = actual.Type().getAll();
-		List<CtType<?>> expectedTypes = build(new File("./src/test/java/spoon/testing/testclasses/" + "Bar.java")).Type().getAll();
-		Assertions.assertThat(actualTypes).hasSameSizeAs(expectedTypes);
-		for (int i = 0; i < actualTypes.size(); i++) {
-			assertThat(actualTypes.get(i)).isEqualTo(expectedTypes.get(i));
-		}
+		List<CtType<?>> expectedTypes = build(new File("./src/test/java/spoon/testing/testclasses/Bar.java")).Type().getAll();
+		Assertions.assertThat(actualTypes).containsExactlyElementsOf(expectedTypes);
 	}
 
 	@ModelTest("./src/test/java/spoon/testing/CtElementAssertTest.java")
