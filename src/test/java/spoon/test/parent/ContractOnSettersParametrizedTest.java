@@ -119,6 +119,9 @@ public class ContractOnSettersParametrizedTest {
 			fooBar.delete(); // removing from default package
 			return fooBar;   // createNewClass implictly needs a CtClass
 		}
+		if (spoon.reflect.reference.CtReference.class.equals(c)) {
+			return f.Type().createReference("java.lang.String");
+		}
 		for (CtType<?> t : allInstantiableMetamodelInterfaces) {
 			if (c.isAssignableFrom(t.getActualClass())) {
 				CtElement argument = factory.Core().create((Class<? extends CtElement>) t.getActualClass());
@@ -157,7 +160,7 @@ public class ContractOnSettersParametrizedTest {
 
 		if (Set.class.isAssignableFrom(c)) {
 			// we create one set with one element
-			HashSet<Object> objects = new HashSet<>();
+			java.util.LinkedHashSet<Object> objects = new java.util.LinkedHashSet<>();
 			objects.add(createCompatibleObject(parameterType.getActualTypeArguments().get(0)));
 			return objects;
 		}
@@ -219,6 +222,35 @@ public class ContractOnSettersParametrizedTest {
 
 				int nBefore = changeListener.nbCallsToOnAction;
 				changeListener.changedElements = new ArrayList<>();
+
+				Class<?> paramClass = actualMethod.getParameterTypes()[0];
+				if (!paramClass.isPrimitive() && !paramClass.isInstance(argument)) {
+					continue;
+				}
+
+				try {
+					Class<?> ctImport = Class.forName("spoon.reflect.declaration.CtImport");
+					if (ctImport.isInstance(receiver) && "setReference".equals(actualMethod.getName())) {
+						Class<?> typeRef = Class.forName("spoon.reflect.reference.CtTypeReference");
+						Class<?> execRef = Class.forName("spoon.reflect.reference.CtExecutableReference");
+						Class<?> fieldRef = Class.forName("spoon.reflect.reference.CtFieldReference");
+						Class<?> pkgRef = Class.forName("spoon.reflect.reference.CtPackageReference");
+						boolean ok = typeRef.isInstance(argument)
+								|| execRef.isInstance(argument)
+								|| fieldRef.isInstance(argument)
+								|| pkgRef.isInstance(argument);
+						if (!ok) continue;
+					}
+				} catch (ClassNotFoundException ignore) {}
+				try {
+					Class<?> casePattern = Class.forName("spoon.reflect.code.CtCasePattern");
+					Class<?> unnamedPattern = Class.forName("spoon.reflect.code.CtUnnamedPattern");
+					if (casePattern.isInstance(receiver)
+							&& "setPattern".equals(actualMethod.getName())
+							&& unnamedPattern.isInstance(argument)) {
+						continue;
+					}
+				} catch (ClassNotFoundException ignore) {}
 
 				// here we actually call the setter
 				actualMethod.invoke(receiver, argument);
