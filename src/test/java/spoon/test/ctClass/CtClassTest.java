@@ -435,7 +435,7 @@ public class CtClassTest {
 	}
 
 	@ExtendWith(LineSeparatorExtension.class)
-	@ModelTest(value = {"src/test/resources/ctClass/Main.java"}, complianceLevel = 25)
+	@ModelTest(value = {"src/test/resources/ctClass/Main.java"}, complianceLevel = 25, noClasspath = false)
 	public void testCompactSourceFilesAndInstanceMainMethods(@BySimpleName("Main") CtClass<?> cl) {
 		// contract: Java 25 supports compact source files and instance main methods
 		assertThat(cl).getSimpleName().isEqualTo("Main");
@@ -464,7 +464,7 @@ public class CtClassTest {
 				}
 
 				void main() {
-				    IO.println(greeting());
+				    java.lang.System.out.println(greeting());
 				}
 
 				java.lang.String greeting() {
