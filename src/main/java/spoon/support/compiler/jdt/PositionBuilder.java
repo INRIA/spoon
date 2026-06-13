@@ -7,7 +7,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
@@ -43,12 +42,13 @@ import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
+import spoon.support.util.internal.lexer.ModifierExtractor;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -62,10 +62,12 @@ import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
  */
 public class PositionBuilder {
 
+	private final ModifierExtractor extractor;
 	private final JDTTreeBuilder jdtTreeBuilder;
 
 	public PositionBuilder(JDTTreeBuilder jdtTreeBuilder) {
 		this.jdtTreeBuilder = jdtTreeBuilder;
+		this.extractor = new ModifierExtractor();
 	}
 
 	SourcePosition buildPosition(int sourceStart, int sourceEnd) {
@@ -320,8 +322,8 @@ public class PositionBuilder {
 				modifiersSourceEnd = findPrevNonWhitespace(contents, modifiersSourceStart - 1,
 											findPrevWhitespace(contents, modifiersSourceStart - 1,
 												findPrevNonWhitespace(contents, modifiersSourceStart - 1, sourceStart - 1)));
-				if (e instanceof CtModifiable) {
-					setModifiersPosition((CtModifiable) e, modifiersSourceStart, modifiersSourceEnd);
+				if (e instanceof CtModifiable modifiable) {
+					setModifiersPosition(modifiable, modifiersSourceStart, modifiersSourceEnd);
 				}
 				if (modifiersSourceEnd < modifiersSourceStart) {
 					//there is no modifier
@@ -570,44 +572,26 @@ public class PositionBuilder {
 		char[] contents = jdtTreeBuilder.getContextBuilder().getCompilationUnitContents();
 
 		Set<CtExtendedModifier> modifiers = e.getExtendedModifiers();
-		Map<String, CtExtendedModifier> explicitModifiersByName = new HashMap<>();
+		Map<ModifierKind, CtExtendedModifier> explicitModifiersByKind = new HashMap<>();
 		for (CtExtendedModifier modifier: modifiers) {
 			if (modifier.isImplicit()) {
 				modifier.setPosition(cf.createPartialSourcePosition(cu));
 				continue;
 			}
-			if (explicitModifiersByName.put(modifier.getKind().toString(), modifier) != null) {
-				throw new SpoonException("The modifier " + modifier.getKind().toString() + " found twice");
+			if (explicitModifiersByKind.put(modifier.getKind(), modifier) != null) {
+				throw new SpoonException("The modifier " + modifier.getKind().toString() + " was found twice");
 			}
 		}
 
-		//move end after the last char
-		end++;
-		while (start < end && explicitModifiersByName.size() > 0) {
-			int o1 = findNextNonWhitespace(contents, end - 1, start);
-			if (o1 == -1) {
-				break;
-			}
-			int o2 = findNextWhitespace(contents, end - 1, o1);
-			if (o2 == -1) {
-				o2 = end;
-			}
-
-			// this is the index into the modifier char array snippet, so must be +o1 if >-1
-			int chevronIndex = ArrayUtils.indexOf(Arrays.copyOfRange(contents, o1, o2), '<');
-			if (chevronIndex > 0) {
-				o2 = o1 + chevronIndex;
-			}
-
-			String modifierName = String.valueOf(contents, o1, o2 - o1);
-			CtExtendedModifier modifier = explicitModifiersByName.remove(modifierName);
-			if (modifier != null) {
-				modifier.setPosition(cf.createSourcePosition(cu, o1, o2 - 1, jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions()));
-			}
-			start = o2;
-		}
-		if (explicitModifiersByName.size() > 0) {
-			throw new SpoonException("Position of CtExtendedModifiers: [" + String.join(", ", explicitModifiersByName.keySet()) + "] not found in " + String.valueOf(contents, start, end - start));
+		extractor.collectModifiers(
+			contents,
+			start,
+			Math.max(start, end) + 1, // move end after the last char, fixup weird end positions
+			explicitModifiersByKind,
+			(modStart, modEnd) -> cf.createSourcePosition(cu, modStart, modEnd, cu.getLineSeparatorPositions())
+		);
+		if (!explicitModifiersByKind.isEmpty()) {
+			throw new SpoonException("Position of CtExtendedModifiers: " + explicitModifiersByKind.keySet() + " not found in " + String.valueOf(contents, start, end - start));
 		}
 	}
 
