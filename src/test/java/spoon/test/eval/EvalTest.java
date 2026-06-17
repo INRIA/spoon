@@ -40,6 +40,7 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
@@ -613,6 +614,26 @@ public class EvalTest {
 			ctBinaryOperator.getFactory().createLiteral(Double.POSITIVE_INFINITY),
 			ctLiteral
 		);
+	}
+
+	@Test
+	public void testVisitCtFor() {
+		// contract: visitCtFor evaluates forInit, condition, and forUpdate, and returns a CtFor clone
+		Launcher launcher = new Launcher();
+		CtCodeElement el = launcher.getFactory().Code().createCodeSnippetStatement(
+			"for (int i = 0; i < 10; i++) { System.out.println(i); }"
+		).compile();
+		VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+		CtElement result = eval.evaluate(el);
+		// the result should be a CtFor (a clone of the original for loop)
+		assertInstanceOf(CtFor.class, result);
+		CtFor forResult = (CtFor) result;
+		// forInit: original (int i = 0) + evaluated copy = 2 entries
+		assertEquals(2, forResult.getForInit().size());
+		// condition should be present (i < 10 cannot be fully reduced, stays as is)
+		assertNotNull(forResult.getExpression());
+		// forUpdate: original (i++) + evaluated copy = 2 entries
+		assertEquals(2, forResult.getForUpdate().size());
 	}
 
 	@Test
