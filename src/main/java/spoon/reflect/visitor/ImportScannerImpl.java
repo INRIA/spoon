@@ -151,7 +151,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		stringBuilder.append(ctJavaDoc.getContent());
 
 		for (CtJavaDocTag ctJavaDocTag : ctJavaDoc.getTags()) {
-			stringBuilder.append("\n").append(ctJavaDocTag.getType()).append(" ").append(ctJavaDocTag.getContent());
+			stringBuilder.append("\n").append(ctJavaDocTag.getType());
+			if (ctJavaDocTag.getParam() != null) {
+				stringBuilder.append(" ").append(ctJavaDocTag.getParam());
+			}
+			stringBuilder.append(" ").append(ctJavaDocTag.getContent());
 		}
 
 		String javadoc = stringBuilder.toString();
