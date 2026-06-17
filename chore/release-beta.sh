@@ -12,8 +12,18 @@ if [[ ! $OLD_VERSION_WITH_SNAPSHOT =~ .*-SNAPSHOT ]]; then
 fi
 
 # Compute next beta number
+# Compute next beta number
 echo "::group::Computing next beta number"
-LAST_BETA_NUMBER="$(curl -L "https://central.sonatype.com/solrsearch/select?q=a:spoon-core+g:fr.inria.gforge.spoon" | jq -r ".response.docs | map(.latestVersion) | map((match(\"$OLD_VERSION-beta-(.*)\") | .captures[0].string) // \"0\") | .[0]")"
+LAST_BETA_NUMBER="$(
+  curl --fail --silent \
+    'https://repo1.maven.org/maven2/fr/inria/gforge/spoon/spoon-core/maven-metadata.xml' |
+    env OLD_VERSION="$OLD_VERSION" yq -p=xml -r '
+      .metadata.versioning.versions.version
+      | map(select(test("^" + strenv(OLD_VERSION) + "-beta-[0-9]+$")))
+      | map(capture("(?P<beta>[0-9]+)$").beta | tonumber)
+      | max // 0
+    ' -
+)"
 echo "LAST_BETA_NUMBER $LAST_BETA_NUMBER"
 
 NEW_BETA_NUMBER=$((LAST_BETA_NUMBER + 1))

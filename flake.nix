@@ -172,7 +172,7 @@
           packages = with pkgs;
             [ jdk maven test codegen coverage mavenPomQuality javadocQuality reproducibleBuilds ]
             ++ (if extraChecks then [ gradle pythonEnv extra extraRemote jbang ] else [ ])
-            ++ (if release then [ semver pkgs.jreleaser-cli ] else [ ]);
+            ++ (if release then [ semver pkgs.jreleaser-cli yq-go ] else [ ]);
         };
     in
     {
