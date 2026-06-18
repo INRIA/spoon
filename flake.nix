@@ -19,7 +19,7 @@
                 let
                   base = rec {
                     jdk =
-                      if javaVersion <= 23 then prev."jdk${toString javaVersion}"
+                      if javaVersion <= 25 then prev."jdk${toString javaVersion}"
                       else abort "Not set up yet :)";
                     maven = prev.maven.override { jdk_headless = jdk; };
                   };
@@ -187,7 +187,8 @@
                 default = jdk17;
                 jdk17 = mkShell system { javaVersion = 17; };
                 jdk21 = mkShell system { javaVersion = 21; };
-                extraChecks = mkShell system { extraChecks = true; javaVersion = 23; };
+                jdk25 = mkShell system { javaVersion = 25; };
+                extraChecks = mkShell system { extraChecks = true; javaVersion = 25; };
                 jReleaser = mkShell system { release = true; javaVersion = 21; };
               });
         in
