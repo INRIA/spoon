@@ -16,42 +16,43 @@
  */
 package spoon.testing;
 
-import org.junit.jupiter.api.Test;
+import org.assertj.core.api.Assertions;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
 import spoon.testing.processors.FooToBarProcessor;
+import spoon.testing.utils.ByClass;
+import spoon.testing.utils.ModelTest;
+import spoon.testing.utils.ProcessorUtils;
 
-import static spoon.testing.Assert.assertThat;
-import static spoon.testing.utils.ModelUtils.buildNoClasspath;
+import java.io.File;
+import java.util.List;
+
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class AbstractAssertTest {
-	public static final String PATH = "./src/test/java/spoon/testing/testclasses/";
 
-	@Test
-	public void testTransformationWithProcessorInstantiated() {
-		assertThat(PATH + "Foo.java").withProcessor(new FooToBarProcessor()).isEqualTo(PATH + "Bar.java");
+	@ModelTest("./src/test/java/spoon/testing/testclasses/Foo.java")
+	public void testTransformationWithProcessor(Factory actual) {
+		ProcessorUtils.process(actual, List.of(new FooToBarProcessor()));
+		List<CtType<?>> actualTypes = actual.Type().getAll();
+		List<CtType<?>> expectedTypes = build(new File("./src/test/java/spoon/testing/testclasses/Bar.java")).Type().getAll();
+		Assertions.assertThat(actualTypes).containsExactlyElementsOf(expectedTypes);
 	}
 
-	@Test
-	public void testTransformationWithProcessorClass() {
-		assertThat(PATH + "Foo.java").withProcessor(FooToBarProcessor.class).isEqualTo(PATH + "Bar.java");
-	}
-
-	@Test
-	public void testTransformationWithProcessorName() {
-		assertThat(PATH + "Foo.java").withProcessor(FooToBarProcessor.class.getName()).isEqualTo(PATH + "Bar.java");
-	}
-
-	@Test
-	public void testTransformationFromCtElementWithProcessor() throws Exception {
+	@ModelTest("./src/test/java/spoon/testing/CtElementAssertTest.java")
+	public void testTransformationFromCtElementWithProcessor(
+		@ByClass(CtElementAssertTest.class) CtType<CtElementAssertTest> type, Factory factory) throws Exception {
 		class MyProcessor extends AbstractProcessor<CtField<?>> {
 			@Override
 			public void process(CtField<?> element) {
 				element.setSimpleName("j");
 			}
 		}
-		final CtType<CtElementAssertTest> type = buildNoClasspath(CtElementAssertTest.class).Type().get(CtElementAssertTest.class);
-		assertThat(type.getField("i")).withProcessor(new MyProcessor()).isEqualTo("public int j;");
+		CtField<?> field = type.getField("i");
+		ProcessorUtils.process(factory, List.of(new MyProcessor()));
+		Assertions.assertThat(field.toString()).isEqualTo("public int j;");
 	}
 }
