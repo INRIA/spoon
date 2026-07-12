@@ -225,4 +225,28 @@ public class NoClasspathTest {
 			.nested(it -> it.satisfies(CtExecutableReference::isConstructor))
 			.nested(it -> it.getParameters().hasSize(1));
 	}
+
+	@GitHubIssue(issueNumber = 4077, fixed = true)
+	@ModelTest(code = """
+			import foo.A;
+			import foo.B;
+
+			class Example {
+				void method() {
+					java.util.AbstractMap.SimpleEntry<A, B> entry =
+						new java.util.AbstractMap.SimpleEntry<>(A.a, B.b);
+				}
+			}
+			""")
+	void testQualifiedGenericTypeWithIncompleteClasspath(CtModel model) {
+		// contract: qualified generic types with unresolved type arguments can be modeled in no classpath mode
+		var localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+		assertThat(localVariable.getType().getQualifiedName())
+			.isEqualTo("java.util.AbstractMap$SimpleEntry");
+		assertThat(localVariable.getType().isImplicit()).isFalse();
+
+		var constructorCall = (CtConstructorCall<?>) localVariable.getDefaultExpression();
+		assertThat(constructorCall.getExecutable().getDeclaringType().getQualifiedName())
+			.isEqualTo("java.util.AbstractMap.SimpleEntry");
+	}
 }
