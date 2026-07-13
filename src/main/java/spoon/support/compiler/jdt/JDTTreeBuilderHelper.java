@@ -649,7 +649,7 @@ public class JDTTreeBuilderHelper {
 						//keep it explicit
 						return;
 					}
-					if (packageNames != null && packageNames.length != off) {
+					if (packageNames != null) {
 						/*
 						 * In no classpath mode, unresolved generic arguments can make JDT treat a declaring type as part of
 						 * the package. The package tokens cannot be aligned reliably, so keep the reference explicit.
