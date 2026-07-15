@@ -20,6 +20,7 @@ import org.eclipse.jdt.internal.compiler.ast.EitherOrMultiPattern;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ForStatement;
+import org.eclipse.jdt.internal.compiler.ast.GuardedPattern;
 import org.eclipse.jdt.internal.compiler.ast.IfStatement;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
@@ -533,9 +534,16 @@ public class ParentExiter extends CtInheritanceScanner {
 			&& caseStatement.getCaseExpressions().size() < cs.constantExpressions.length) {
 			return true;
 		}
-		// case A _, B _ -> {} is only one constantExpression in JDT, but an EitherOrMultiPattern
-		// so we need to unpack it and see how many case expressions it actually is
-		if (cs.constantExpressions.length == 1 && cs.constantExpressions[0] instanceof EitherOrMultiPattern eomp) {
+		// JDT represents case A _, B _ as one EitherOrMultiPattern, optionally wrapped by a guard,
+		// so we need to unpack it and see how many case expressions it actually is.
+		if (cs.constantExpressions.length != 1) {
+			return false;
+		}
+		Expression caseExpression = cs.constantExpressions[0];
+		if (caseExpression instanceof GuardedPattern guardedPattern) {
+			caseExpression = guardedPattern.primaryPattern;
+		}
+		if (caseExpression instanceof EitherOrMultiPattern eomp) {
 			// returns true if we still expect more case expressions to be added
 			return caseStatement.getCaseExpressions().size() < eomp.getAlternatives().length;
 		}
