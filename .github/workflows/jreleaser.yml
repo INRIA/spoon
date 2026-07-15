@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
           fetch-depth: 0
           token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
@@ -41,7 +41,7 @@ jobs:
           sha256sum $(find fr -type f -not -name maven-metadata.xml -not -name '*.asc' -not -name '*.md5' -not -name '*.sha1' -not -name '*.sha256' -not -name '*.sha512' -print) > ../subject-checksums.txt
 
       - name: Sign artifacts with sigstore/cosign
-        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
         with:
           subject-checksums: './target/subject-checksums.txt'
 
