@@ -177,6 +177,27 @@ public class NoClasspathTest {
 		spoon.buildModel();
 	}
 
+	@ModelTest(code = """
+		class Sample {
+			Object transform(Missing source) {
+				return source.call(value -> {
+					final class FlatMap implements Unknown {}
+					return new FlatMap();
+				});
+			}
+		}
+		""")
+	@GitHubIssue(issueNumber = 6793, fixed = true)
+	void testLocalClassInUnresolvedLambda(Factory factory) {
+		// contract: a local class inside a lambda is modeled when the callback type is unresolved
+		CtClass<?> sample = factory.Class().get("Sample");
+		List<CtClass<?>> localClasses = sample.getElements(new TypeFilter<>(CtClass.class));
+
+		assertThat(localClasses)
+			.extracting(CtClass::getSimpleName)
+			.contains("FlatMap");
+	}
+
 	@Test
 	public void testInheritanceInNoClassPathWithClasses() {
 		// contract: when using noclasspath in combination with a source classpath
