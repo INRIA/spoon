@@ -19,7 +19,7 @@
                 let
                   base = rec {
                     jdk =
-                      if javaVersion <= 23 then prev."jdk${toString javaVersion}"
+                      if javaVersion <= 25 then prev."jdk${toString javaVersion}"
                       else abort "Not set up yet :)";
                     maven = prev.maven.override { jdk_headless = jdk; };
                   };
@@ -163,7 +163,7 @@
           '';
           pythonEnv =
             if extraChecks then
-              with pkgs; python311.withPackages (ps: [
+              with pkgs; python3.withPackages (ps: [
                 ps.requests
                 ps.pygithub
                 ps.commonmark
@@ -187,7 +187,7 @@
                 default = jdk17;
                 jdk17 = mkShell system { javaVersion = 17; };
                 jdk21 = mkShell system { javaVersion = 21; };
-                extraChecks = mkShell system { extraChecks = true; javaVersion = 23; };
+                extraChecks = mkShell system { extraChecks = true; javaVersion = 25; };
                 jReleaser = mkShell system { release = true; javaVersion = 21; };
               });
         in
