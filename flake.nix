@@ -163,7 +163,7 @@
           '';
           pythonEnv =
             if extraChecks then
-              with pkgs; python311.withPackages (ps: [
+              with pkgs; python3.withPackages (ps: [
                 ps.requests
                 ps.pygithub
                 ps.commonmark
