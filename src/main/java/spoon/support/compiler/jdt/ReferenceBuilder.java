@@ -14,12 +14,14 @@ import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ConditionalExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.LambdaExpression;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
+import org.eclipse.jdt.internal.compiler.ast.NullLiteral;
 import org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
@@ -54,6 +56,7 @@ import org.eclipse.jdt.internal.compiler.lookup.PolyTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemPackageBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ProblemReasons;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -61,6 +64,7 @@ import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.SyntheticFactoryMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.UnresolvedReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
@@ -95,6 +99,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -495,12 +500,17 @@ public class ReferenceBuilder {
 	}
 
 	<T> CtExecutableReference<T> getExecutableReference(AllocationExpression allocationExpression) {
+		cacheInferredResourceTypeReferences(allocationExpression.arguments);
 		CtExecutableReference<T> ref;
 		if (allocationExpression.binding != null) {
 			ref = getExecutableReference(allocationExpression.binding);
 			// in some cases the binding is not null but points wrong to object type see #4643
 			if (isIncorrectlyBoundExecutableInNoClasspath(ref, allocationExpression)) {
 				adjustExecutableAccordingToResolvedType(ref, allocationExpression);
+			}
+			if (allocationExpression.binding instanceof ProblemMethodBinding problemBinding
+					&& problemBinding.closestMatch == null) {
+				recoverInferredResourceArgumentTypes(ref, allocationExpression.arguments);
 			}
 		} else {
 			ref = jdtTreeBuilder.getFactory().Core().createExecutableReference();
@@ -509,8 +519,11 @@ public class ReferenceBuilder {
 
 			final List<CtTypeReference<?>> parameters =
 					new ArrayList<>(allocationExpression.argumentTypes.length);
-			for (TypeBinding b : allocationExpression.argumentTypes) {
-				parameters.add(getTypeReference(b, true));
+			for (int index = 0; index < allocationExpression.argumentTypes.length; index++) {
+				Expression argument = allocationExpression.arguments == null || index >= allocationExpression.arguments.length
+						? null
+						: allocationExpression.arguments[index];
+				parameters.add(getExpressionTypeReference(argument, allocationExpression.argumentTypes[index]));
 			}
 			ref.setParameters(parameters);
 		}
@@ -565,12 +578,18 @@ public class ReferenceBuilder {
 	}
 
 	<T> CtExecutableReference<T> getExecutableReference(MessageSend messageSend) {
+		cacheInferredResourceTypeReferences(messageSend.arguments);
 		if (messageSend.binding != null) {
-			return getExecutableReference(
+			CtExecutableReference<T> ref = getExecutableReference(
 				messageSend.binding,
 				getExecutableRefSourceStart(messageSend.typeArguments, messageSend.nameSourceStart()),
 				messageSend.nameSourceEnd()
 			);
+			if (messageSend.binding instanceof ProblemMethodBinding problemBinding
+					&& problemBinding.closestMatch == null) {
+				recoverInferredResourceArgumentTypes(ref, messageSend.arguments);
+			}
+			return ref;
 		}
 		CtExecutableReference<T> ref = jdtTreeBuilder.getFactory().Core().createExecutableReference();
 		ref.setSimpleName(CharOperation.charToString(messageSend.selector));
@@ -587,17 +606,68 @@ public class ReferenceBuilder {
 			} else if (messageSend.receiver instanceof QualifiedNameReference) {
 				ref.setDeclaringType(jdtTreeBuilder.getHelper().createTypeAccessNoClasspath((QualifiedNameReference) messageSend.receiver).getAccessedType());
 			}
+		} else if (messageSend.receiver instanceof SingleNameReference singleNameReference
+				&& singleNameReference.binding instanceof LocalVariableBinding localVariableBinding) {
+			ref.setDeclaringType(getLocalVariableTypeReference(localVariableBinding));
 		} else {
 			ref.setDeclaringType(getTypeReference(messageSend.receiver.resolvedType));
 		}
 		if (messageSend.arguments != null) {
 			final List<CtTypeReference<?>> parameters = new ArrayList<>();
 			for (Expression expression : messageSend.arguments) {
-				parameters.add(getTypeReference(expression.resolvedType, true));
+				parameters.add(getExpressionTypeReference(expression, expression.resolvedType));
 			}
 			ref.setParameters(parameters);
 		}
 		return ref;
+	}
+
+	private CtTypeReference<?> getExpressionTypeReference(@Nullable Expression expression, TypeBinding fallbackType) {
+		return getInferredResourceTypeReference(expression)
+				.orElseGet(() -> getTypeReference(fallbackType, true));
+	}
+
+	private Optional<CtTypeReference<?>> getInferredResourceTypeReference(@Nullable Expression expression) {
+		if (expression instanceof SingleNameReference singleNameReference
+				&& singleNameReference.binding instanceof LocalVariableBinding localVariableBinding
+				&& isInferredAnonymousResource(localVariableBinding)) {
+			return Optional.of(getLocalVariableTypeReference(localVariableBinding));
+		}
+		if (expression instanceof ConditionalExpression conditionalExpression) {
+			Optional<CtTypeReference<?>> trueType = getInferredResourceTypeReference(conditionalExpression.valueIfTrue);
+			Optional<CtTypeReference<?>> falseType = getInferredResourceTypeReference(conditionalExpression.valueIfFalse);
+			if (conditionalExpression.valueIfTrue instanceof NullLiteral) {
+				return falseType;
+			}
+			if (conditionalExpression.valueIfFalse instanceof NullLiteral) {
+				return trueType;
+			}
+			return trueType.flatMap(candidate -> falseType.filter(candidate::equals));
+		}
+		return Optional.empty();
+	}
+
+	private void recoverInferredResourceArgumentTypes(
+			CtExecutableReference<?> executableReference, @Nullable Expression[] arguments) {
+		if (arguments == null || executableReference.getParameters().size() != arguments.length) {
+			return;
+		}
+		List<CtTypeReference<?>> parameters = new ArrayList<>(executableReference.getParameters());
+		for (int index = 0; index < arguments.length; index++) {
+			int parameterIndex = index;
+			getInferredResourceTypeReference(arguments[index])
+					.ifPresent(type -> parameters.set(parameterIndex, type));
+		}
+		executableReference.setParameters(parameters);
+	}
+
+	private void cacheInferredResourceTypeReferences(@Nullable Expression[] expressions) {
+		if (expressions == null) {
+			return;
+		}
+		for (Expression expression : expressions) {
+			getInferredResourceTypeReference(expression);
+		}
 	}
 
 	private CtPackageReference getPackageReference(PackageBinding reference) {
@@ -614,6 +684,7 @@ public class ReferenceBuilder {
 	}
 
 	final Map<TypeBinding, CtTypeReference> bindingCache = new HashMap<>();
+	private final Map<ProblemReferenceBinding, CtTypeReference<?>> inferredResourceTypeReferences = new IdentityHashMap<>();
 
 	<T> CtTypeReference<T> getTypeReference(TypeBinding binding, TypeReference ref) {
 		CtTypeReference<T> ctRef = getTypeReference(binding);
@@ -1231,6 +1302,10 @@ public class ReferenceBuilder {
 	}
 
 	private CtTypeReference<?> getTypeReferenceFromProblemReferenceBinding(ProblemReferenceBinding binding) {
+		CtTypeReference<?> inferredResourceType = inferredResourceTypeReferences.get(binding);
+		if (inferredResourceType != null) {
+			return inferredResourceType.clone();
+		}
 		// Spoon is able to analyze also without the classpath
 		String readableName = String.valueOf(binding.readableName());
 		if (isParameterizedProblemReferenceBinding(binding)) {
@@ -1338,7 +1413,7 @@ public class ReferenceBuilder {
 			} else {
 				CtLocalVariableReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createLocalVariableReference();
 				ref.setSimpleName(new String(varbin.name));
-				CtTypeReference<T> ref2 = getTypeReference(varbin.type);
+				CtTypeReference<T> ref2 = getLocalVariableTypeReference(localVariableBinding);
 				ref.setType(ref2);
 				return ref;
 			}
@@ -1346,6 +1421,30 @@ public class ReferenceBuilder {
 			// unknown VariableBinding, the caller must do something
 			return null;
 		}
+	}
+
+	private <T> CtTypeReference<T> getLocalVariableTypeReference(LocalVariableBinding binding) {
+		if (isInferredAnonymousResource(binding)) {
+			ProblemReferenceBinding problemBinding = (ProblemReferenceBinding) binding.type;
+			AllocationExpression allocation = (AllocationExpression) binding.declaration.initialization;
+			CtTypeReference<T> recoveredType = getTypeReference(allocation.type.resolvedType, allocation.type);
+			inferredResourceTypeReferences.put(problemBinding, recoveredType);
+			return recoveredType;
+		}
+		return getTypeReference(binding.type);
+	}
+
+	private boolean isInferredAnonymousResource(LocalVariableBinding binding) {
+		return binding.type instanceof ProblemReferenceBinding problemBinding
+				&& problemBinding.problemId() == ProblemReasons.InvalidTypeForAutoManagedResource
+				&& jdtTreeBuilder.getFactory().getEnvironment().getComplianceLevel() >= 10
+				&& binding.declaration.type != null
+				&& CharOperation.equals(binding.declaration.type.getLastToken(), TypeConstants.VAR)
+				&& binding.declaration.initialization instanceof AllocationExpression allocation
+				&& allocation.resolvedType != null
+				&& allocation.resolvedType.isAnonymousType()
+				&& allocation.type != null
+				&& allocation.type.resolvedType != null;
 	}
 
 	<T> CtVariableReference<T> getVariableReference(ProblemBinding binding) {
