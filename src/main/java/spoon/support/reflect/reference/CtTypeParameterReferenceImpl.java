@@ -24,6 +24,7 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayDeque;
@@ -228,6 +229,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		return expectedOwner == null || expectedOwner.equals(actualOwner);
 	}
 
+	@SuppressWarnings("ReturnOfNull")
 	private String declarationOwner(CtTypeParameter declaration) {
 		if (!declaration.isParentInitialized()) {
 			return null;
@@ -262,6 +264,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		return null;
 	}
 
+	@SuppressWarnings("ReturnOfNull")
 	private String sourceDeclarationOwner(String kind, CtElement declaration, int rank) {
 		if (!declaration.getPosition().isValidPosition()) {
 			return null;
@@ -278,6 +281,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 				+ "|" + rank;
 	}
 
+	@SuppressWarnings("ReturnOfNull")
 	private String virtualSourcePath(CtElement declaration) {
 		var compilationUnit = declaration.getPosition().getCompilationUnit();
 		for (var entry : declaration.getFactory().CompilationUnit().getMap().entrySet()) {
@@ -293,9 +297,11 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	private static final class DeclarationOwnerIdentity implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 	}
 
+	@SuppressWarnings("ReturnOfNull")
 	private CtElement getExecutableDeclaration(CtExecutableReference<?> executableReference) {
 		Set<CtExecutableReference<?>> resolving = RESOLVING_EXECUTABLE_DECLARATIONS.get();
 		if (!resolving.add(executableReference)) {
@@ -311,6 +317,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		}
 	}
 
+	@SuppressWarnings("ReturnOfNull")
 	private CtTypeParameter findCorrespondingTypeParameter(
 			CtExecutableReference<?> executableReference,
 			CtExecutable<?> executableDeclaration) {
@@ -381,13 +388,15 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		return findTypeParamDeclarationInHierarchy(typeDeclarer);
 	}
 
+	@SuppressWarnings("ReturnOfNull")
 	private CtTypeParameter findTypeParamDeclarationInHierarchy(CtFormalTypeDeclarer typeDeclarer) {
-		while (typeDeclarer != null) {
-			CtTypeParameter result = findTypeParamDeclaration(typeDeclarer, getSimpleName());
+		CtFormalTypeDeclarer currentTypeDeclarer = typeDeclarer;
+		while (currentTypeDeclarer != null) {
+			CtTypeParameter result = findTypeParamDeclaration(currentTypeDeclarer, getSimpleName());
 			if (result != null) {
 				return result;
 			}
-			typeDeclarer = ((CtElement) typeDeclarer).getParent(CtFormalTypeDeclarer.class);
+			currentTypeDeclarer = currentTypeDeclarer.getParent(CtFormalTypeDeclarer.class);
 		}
 		return null;
 	}
