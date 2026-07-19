@@ -550,9 +550,16 @@ public class ParentExiter extends CtInheritanceScanner {
 			&& caseStatement.getCaseExpressions().size() < cs.constantExpressions.length) {
 			return true;
 		}
-		// case A _, B _ -> {} is only one constantExpression in JDT, but an EitherOrMultiPattern
-		// so we need to unpack it and see how many case expressions it actually is
-		if (cs.constantExpressions.length == 1 && cs.constantExpressions[0] instanceof EitherOrMultiPattern eomp) {
+		// JDT represents case A _, B _ as one EitherOrMultiPattern, optionally wrapped by a guard,
+		// so we need to unpack it and see how many case expressions it actually is.
+		if (cs.constantExpressions.length != 1) {
+			return false;
+		}
+		Expression caseExpression = cs.constantExpressions[0];
+		if (caseExpression instanceof GuardedPattern guardedPattern) {
+			caseExpression = guardedPattern.primaryPattern;
+		}
+		if (caseExpression instanceof EitherOrMultiPattern eomp) {
 			// returns true if we still expect more case expressions to be added
 			return caseStatement.getCaseExpressions().size() < eomp.getAlternatives().length;
 		}
