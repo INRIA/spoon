@@ -20,6 +20,7 @@ import org.eclipse.jdt.internal.compiler.ast.EitherOrMultiPattern;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ForStatement;
+import org.eclipse.jdt.internal.compiler.ast.GuardedPattern;
 import org.eclipse.jdt.internal.compiler.ast.IfStatement;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
@@ -513,13 +514,29 @@ public class ParentExiter extends CtInheritanceScanner {
 				caseStatement.addCaseExpression((CtExpression<E>) child);
 			}
 			return;
+		} else if (isGuardExpression(node)) {
+			caseStatement.setGuard((CtExpression<?>) child);
+			return;
 		} else if (child instanceof CtStatement) {
 			caseStatement.addStatement((CtStatement) child);
 			return;
-		} else if (child instanceof CtExpression<?> guard) {
-			caseStatement.setGuard(guard);
 		}
 		super.visitCtCase(caseStatement);
+	}
+
+	private boolean isGuardExpression(ASTNode node) {
+		if (!(node instanceof CaseStatement caseStatement)
+			|| caseStatement.constantExpressions == null
+			|| !(child instanceof CtExpression)) {
+			return false;
+		}
+		for (Expression expression : caseStatement.constantExpressions) {
+			if (expression instanceof GuardedPattern guardedPattern
+				&& getFinalExpressionFromCast(guardedPattern.condition) == childJDT) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private <E> boolean shouldAddAsCaseExpression(CtCase<E> caseStatement, ASTNode node) {
