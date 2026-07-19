@@ -122,22 +122,28 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	private boolean checkAll(String name) {
 		int i = 0;
 		// leading digits come from anonymous/local classes. Skip them
-		while (i < name.length() && Character.isDigit(name.charAt(i))) {
-			i++;
+		while (i < name.length()) {
+			int codePoint = name.codePointAt(i);
+			if (!Character.isDigit(codePoint)) {
+				break;
+			}
+			i += Character.charCount(codePoint);
 		}
 		int start = i; // used to mark the beginning of a part
-		final char anything = 0;
-		char expectNext = anything;
-		for (; i < name.length(); i++) {
+		final int anything = 0;
+		int expectNext = anything;
+		while (i < name.length()) {
+			int codePoint = name.codePointAt(i);
 			if (expectNext != anything) {
-				if (name.charAt(i) != expectNext) {
+				if (codePoint != expectNext) {
 					return false;
-				} else if (name.charAt(i) == expectNext) {
+				} else {
 					expectNext = anything; // reset
+					i += Character.charCount(codePoint);
 					continue; // skip it, no further checks required
 				}
 			}
-			switch (name.charAt(i)) {
+			switch (codePoint) {
 				case '.':
 				case '<':
 				case '>':
@@ -153,12 +159,13 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 					expectNext = ']'; // next char *must* close
 					break;
 				default: // if we come across an illegal java identifier char here, it's not valid at all
-					if (start == i && !Character.isJavaIdentifierStart(name.charAt(i))
-							|| !Character.isJavaIdentifierPart(name.charAt(i))) {
+					if (start == i && !Character.isJavaIdentifierStart(codePoint)
+							|| !Character.isJavaIdentifierPart(codePoint)) {
 						return false;
 					}
 					break;
 			}
+			i += Character.charCount(codePoint);
 		}
 		// make sure the end state is correct too
 		if (expectNext != anything) {
