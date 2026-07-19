@@ -7,6 +7,8 @@
  */
 package spoon.support.compiler.jdt;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.jspecify.annotations.Nullable;
@@ -64,6 +66,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -74,6 +77,8 @@ import java.util.stream.Collectors;
  * The comment builder that will insert all element of a CompilationUnitDeclaration into the Spoon AST
  */
 public class JDTCommentBuilder {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private final CompilationUnitDeclaration declarationUnit;
 	private CompilationUnit spoonUnit;
@@ -530,7 +535,9 @@ public class JDTCommentBuilder {
 		if (!comment.isParentInitialized()) {
 			// A specialized visitor may not find a suitable child, for example when a
 			// comment is placed next to an operator or inside an empty module directive.
-			// Keep the comment on the enclosing element instead of dropping it.
+			LOGGER.error("\"" + comment + "\" cannot be added to a specialized AST child; attaching it to parent "
+					+ commentParent.getClass() + " at " + commentParent.getPosition().toString()
+					+ ", please report the bug by posting on https://github.com/INRIA/spoon/issues/2482");
 			commentParent.addComment(comment);
 		}
 	}
