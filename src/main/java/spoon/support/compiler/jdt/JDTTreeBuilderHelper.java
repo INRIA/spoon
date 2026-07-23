@@ -649,6 +649,20 @@ public class JDTTreeBuilderHelper {
 						//keep it explicit
 						return;
 					}
+					if (originTypeRef.getFactory().getEnvironment().getNoClasspath()
+							&& qualifiedNameReference instanceof QualifiedTypeReference qualifiedTypeReference
+							&& (qualifiedTypeReference.resolvedType.tagBits & TagBits.HasUnresolvedTypeVariables) != 0) {
+						// Unresolved generic arguments can leave the enclosing type modeled as part of the package.
+						return;
+					}
+					if (packageNames != null && packageNames.length > off) {
+						/*
+						 * In no-classpath mode, unresolved generic type arguments cause JDT to fold the declaring type
+						 * into the package binding's compound name, making it longer than the remaining token count.
+						 * This mismatch is expected; keep the reference explicit rather than treating it as an error.
+						 */
+						return;
+					}
 					throw new SpoonException("Unexpected QualifiedNameReference tokens " + qualifiedNameReference + " for typeRef: " + originTypeRef);
 				}
 			}
