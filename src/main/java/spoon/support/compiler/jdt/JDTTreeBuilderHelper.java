@@ -649,6 +649,12 @@ public class JDTTreeBuilderHelper {
 						//keep it explicit
 						return;
 					}
+					if (originTypeRef.getFactory().getEnvironment().getNoClasspath()
+							&& qualifiedNameReference instanceof QualifiedTypeReference qualifiedTypeReference
+							&& (qualifiedTypeReference.resolvedType.tagBits & TagBits.HasUnresolvedTypeVariables) != 0) {
+						// Unresolved generic arguments can leave the enclosing type modeled as part of the package.
+						return;
+					}
 					if (packageNames != null && packageNames.length > off) {
 						/*
 						 * In no-classpath mode, unresolved generic type arguments cause JDT to fold the declaring type
