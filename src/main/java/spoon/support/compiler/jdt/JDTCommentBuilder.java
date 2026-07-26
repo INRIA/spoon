@@ -533,10 +533,12 @@ public class JDTCommentBuilder {
 		// now we make sure that there is a parent
 		// if there is no parent
 		if (!comment.isParentInitialized()) {
-			// that's a serious error, there is something to debug
-			LOGGER.error("\"" + comment + "\" cannot be added into the AST, with parent " + commentParent.getClass()
-					+ " at " + commentParent.getPosition().toString()
+			// A specialized visitor may not find a suitable child, for example when a
+			// comment is placed next to an operator or inside an empty module directive.
+			LOGGER.error("\"" + comment + "\" cannot be added to a specialized AST child; attaching it to parent "
+					+ commentParent.getClass() + " at " + commentParent.getPosition().toString()
 					+ ", please report the bug by posting on https://github.com/INRIA/spoon/issues/2482");
+			commentParent.addComment(comment);
 		}
 	}
 
