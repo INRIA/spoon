@@ -7,6 +7,8 @@
  */
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
+import java.util.List;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
@@ -17,9 +19,6 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_CASES_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.BODY;

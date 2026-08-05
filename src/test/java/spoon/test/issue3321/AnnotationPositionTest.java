@@ -1,17 +1,17 @@
 package spoon.test.issue3321;
 
-import spoon.reflect.cu.SourcePosition;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.Factory;
 import spoon.test.issue3321.testclasses.AnnoUser;
 import spoon.testing.utils.GitHubIssue;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtMethod;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AnnotationPositionTest {
 

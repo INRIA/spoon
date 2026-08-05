@@ -4,7 +4,6 @@ package spoon.reflect.factory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtPackage;

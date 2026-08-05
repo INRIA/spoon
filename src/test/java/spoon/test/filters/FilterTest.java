@@ -16,6 +16,13 @@
  */
 package spoon.test.filters;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -92,14 +99,6 @@ import spoon.test.filters.testclasses.Tostada;
 import spoon.test.imports.testclasses.internal4.Constants;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.utils.ModelUtils.build;

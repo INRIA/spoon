@@ -1,8 +1,5 @@
 package spoon.test.textBlocks;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
@@ -17,6 +14,9 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.testing.utils.LineSeparatorExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Test for the new Java 15 text block feature with */
 public class TextBlockTest{

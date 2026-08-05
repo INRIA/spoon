@@ -16,28 +16,20 @@
  */
 package spoon.test.ctClass;
 
-import static spoon.testing.assertions.SpoonAssertions.assertThat;
-
 import java.io.File;
-import java.util.List;
 import java.util.Set;
-
 import java.util.concurrent.TimeUnit;
-
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
-import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtFieldAccess;
-import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
@@ -77,6 +69,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.test.SpoonTestHelpers.contentEquals;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;

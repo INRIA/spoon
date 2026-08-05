@@ -7,6 +7,10 @@
  */
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCatchVariable;
@@ -27,11 +31,6 @@ import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 import spoon.support.reflect.declaration.CtElementImpl;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatchVariable<T> {
 	private static final long serialVersionUID = 1L;

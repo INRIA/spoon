@@ -7,25 +7,24 @@
  */
 package spoon.support.reflect.reference;
 
-import static spoon.reflect.path.CtRole.PACKAGE_REF;
-
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
-
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.Experimental;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import static spoon.reflect.path.CtRole.PACKAGE_REF;
 
 /**
  * This class intends to be used only to represent the reference of a

@@ -7,15 +7,14 @@
  */
 package spoon.reflect.path;
 
+import java.util.LinkedList;
+import java.util.List;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.impl.CtNamedPathElement;
 import spoon.reflect.path.impl.CtPathElement;
 import spoon.reflect.path.impl.CtPathImpl;
 import spoon.reflect.path.impl.CtRolePathElement;
 import spoon.reflect.path.impl.CtTypedNameElement;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This builder allow to create some CtPath.

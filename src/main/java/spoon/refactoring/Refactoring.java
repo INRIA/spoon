@@ -7,6 +7,8 @@
  */
 package spoon.refactoring;
 
+import java.util.HashMap;
+import java.util.List;
 import spoon.SpoonException;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtAnnotation;
@@ -22,9 +24,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
-
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Contains all methods to refactor code elements in the AST.

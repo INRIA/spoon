@@ -16,8 +16,6 @@
  */
 package spoon.test.model;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,12 +26,10 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import spoon.IncrementalLauncher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtAssignment;
@@ -41,6 +37,8 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IncrementalLauncherTest {
 
@@ -260,4 +258,3 @@ public class IncrementalLauncherTest {
 		launcher1.saveCache();
 	}
 }
-

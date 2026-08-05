@@ -7,14 +7,13 @@
  */
 package spoon.reflect.visitor;
 
+import java.util.List;
+import java.util.Map;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * This interface defines the pretty printers.

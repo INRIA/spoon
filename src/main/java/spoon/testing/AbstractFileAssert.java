@@ -7,11 +7,10 @@
  */
 package spoon.testing;
 
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
-
 import java.io.File;
 import java.util.List;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
 
 import static spoon.testing.utils.Check.assertExists;
 import static spoon.testing.utils.Check.assertNotNull;

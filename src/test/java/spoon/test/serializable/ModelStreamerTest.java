@@ -24,11 +24,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;

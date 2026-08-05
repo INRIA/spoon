@@ -16,27 +16,26 @@
  */
 package spoon.test.method_overriding;
 
-import spoon.SpoonModelBuilder;
-import spoon.reflect.factory.Factory;
-import spoon.test.method_overriding.testclasses2.ObjectInterface;
-import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.reflect.declaration.CtType;
-import spoon.testing.utils.ModelUtils;
-import spoon.Launcher;
-import spoon.reflect.declaration.CtMethod;
-import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.function.BiFunction;
-import java.util.Comparator;
-import java.util.List;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
+import org.junit.jupiter.api.Test;
+import spoon.Launcher;
+import spoon.SpoonModelBuilder;
+import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.method_overriding.testclasses2.ObjectInterface;
+import spoon.testing.utils.ModelUtils;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MethodOverriddingTest {
 

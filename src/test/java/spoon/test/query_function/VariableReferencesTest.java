@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -68,7 +67,6 @@ import spoon.testing.utils.BySimpleName;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
-import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -76,6 +74,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 
 public class VariableReferencesTest {
 	CtClass<?> modelClass;

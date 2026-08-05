@@ -1,9 +1,7 @@
 package spoon.test.issue3321.source;
 
-import spoon.test.issue3321.SomeObjectDto;
-
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import spoon.test.issue3321.SomeObjectDto;
 
 /**
  * @author Gibah Joseph

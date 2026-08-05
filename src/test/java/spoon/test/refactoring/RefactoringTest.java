@@ -16,22 +16,13 @@
  */
 package spoon.test.refactoring;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import spoon.Launcher;
@@ -56,13 +47,20 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 import spoon.test.refactoring.processors.ThisTransformationProcessor;
 import spoon.test.refactoring.testclasses.AClass;
-import spoon.test.refactoring.testclasses.GenericRenaming;
-import spoon.test.refactoring.testclasses.MethodGenericRenaming;
-import spoon.testing.utils.ModelUtils;
 import spoon.test.refactoring.testclasses.AnnotationMethodRenaming;
 import spoon.test.refactoring.testclasses.ExampleAnnotation;
+import spoon.test.refactoring.testclasses.GenericRenaming;
 import spoon.test.refactoring.testclasses.InterfaceRenaming;
+import spoon.test.refactoring.testclasses.MethodGenericRenaming;
 import spoon.test.refactoring.testclasses.MethodRenaming;
+import spoon.testing.utils.ModelUtils;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RefactoringTest {
 	@Test

@@ -39,7 +39,6 @@ import spoon.support.comparator.DeepRepresentationComparator;
 import spoon.test.constructorcallnewclass.testclasses.Foo;
 import spoon.test.constructorcallnewclass.testclasses.Panini;
 
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;

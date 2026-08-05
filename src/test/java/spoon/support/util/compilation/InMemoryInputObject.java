@@ -1,7 +1,7 @@
 package spoon.support.util.compilation;
 
-import javax.tools.SimpleJavaFileObject;
 import java.nio.file.Paths;
+import javax.tools.SimpleJavaFileObject;
 
 class InMemoryInputObject extends SimpleJavaFileObject {
 

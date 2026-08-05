@@ -7,6 +7,16 @@
  */
 package spoon.support.reflect.reference;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
@@ -34,17 +44,6 @@ import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.adaption.TypeAdaptor;
 import spoon.support.reflect.declaration.CtElementImpl;
-
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.DECLARING_TYPE;

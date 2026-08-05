@@ -25,13 +25,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
-import spoon.reflect.declaration.CtModule;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.compiler.VirtualFile;

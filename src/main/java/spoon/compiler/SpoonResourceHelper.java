@@ -7,16 +7,15 @@
  */
 package spoon.compiler;
 
-import spoon.Launcher;
-import spoon.support.compiler.FileSystemFile;
-import spoon.support.compiler.FileSystemFolder;
-import spoon.support.compiler.ZipFolder;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import spoon.Launcher;
+import spoon.support.compiler.FileSystemFile;
+import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.ZipFolder;
 
 /**
  * This class defines a helper for manipulating resources.

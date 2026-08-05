@@ -7,12 +7,11 @@
  */
 package spoon.reflect.visitor;
 
+import java.util.Set;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.support.Experimental;
-
-import java.util.Set;
 
 /**
  * Used to compute the imports required to write readable code with no fully qualified names.

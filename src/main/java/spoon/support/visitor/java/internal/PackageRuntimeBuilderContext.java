@@ -7,11 +7,10 @@
  */
 package spoon.support.visitor.java.internal;
 
+import java.lang.annotation.Annotation;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-
-import java.lang.annotation.Annotation;
 
 public class PackageRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	private CtPackage ctPackage;
