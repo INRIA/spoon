@@ -16,16 +16,11 @@
  */
 package spoon.test.field;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static spoon.testing.utils.ModelUtils.buildClass;
-import static spoon.testing.utils.ModelUtils.createFactory;
-
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
@@ -49,6 +44,10 @@ import spoon.test.field.testclasses.AddFieldAtTop;
 import spoon.test.field.testclasses.BaseClass;
 import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelTest;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static spoon.testing.utils.ModelUtils.buildClass;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class FieldTest {
 

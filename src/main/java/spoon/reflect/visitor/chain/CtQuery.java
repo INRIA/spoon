@@ -7,11 +7,10 @@
  */
 package spoon.reflect.visitor.chain;
 
+import java.util.List;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
-
-import java.util.List;
 
 /**
  * <p>CtQuery represents a query, which can be used to traverse a spoon model and collect

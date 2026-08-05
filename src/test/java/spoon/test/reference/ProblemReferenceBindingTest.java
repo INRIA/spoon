@@ -1,7 +1,5 @@
 package spoon.test.reference;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +13,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtQueryable;
 import spoon.reflect.visitor.filter.TypeFilter;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ProblemReferenceBindingTest {
 	@Test

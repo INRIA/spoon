@@ -1,11 +1,11 @@
 package spoon.support.util.compilation;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
-import java.util.HashMap;
-import java.util.Map;
 
 class ClassFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
 

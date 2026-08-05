@@ -7,11 +7,11 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 import spoon.support.UnsettableProperty;
 
 import static spoon.reflect.path.CtRole.IS_INFERRED;

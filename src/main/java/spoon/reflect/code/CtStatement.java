@@ -7,9 +7,9 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.declaration.ParentNotInitializedException;
 
 import static spoon.reflect.path.CtRole.LABEL;
 

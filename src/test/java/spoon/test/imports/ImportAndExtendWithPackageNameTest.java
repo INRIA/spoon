@@ -16,12 +16,11 @@
  */
 package spoon.test.imports;
 
+import java.util.Collection;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

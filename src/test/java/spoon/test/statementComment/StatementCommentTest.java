@@ -39,6 +39,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.support.reflect.code.CtCatchImpl;
 import spoon.testing.utils.LineSeparatorExtension;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class StatementCommentTest {

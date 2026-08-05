@@ -7,15 +7,14 @@
  */
 package spoon.reflect.factory;
 
+import java.lang.reflect.Field;
+import java.util.Set;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.lang.reflect.Field;
-import java.util.Set;
 
 /**
  * The {@link CtField} sub-factory.

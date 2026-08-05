@@ -7,14 +7,13 @@
  */
 package spoon;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import spoon.support.compiler.SpoonPom;
-
 import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import spoon.support.compiler.SpoonPom;
 
 /**
  * Create a Spoon launcher from a maven pom file

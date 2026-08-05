@@ -19,7 +19,6 @@ package spoon.test.arrays;
 
 import java.lang.reflect.Array;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtInvocation;

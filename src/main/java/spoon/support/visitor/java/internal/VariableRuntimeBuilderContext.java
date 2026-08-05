@@ -7,14 +7,13 @@
  */
 package spoon.support.visitor.java.internal;
 
+import java.lang.annotation.Annotation;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.lang.annotation.Annotation;
 
 public class VariableRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	private CtVariable ctVariable;

@@ -7,6 +7,12 @@
  */
 package spoon.support.compiler.jdt;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
@@ -47,13 +53,6 @@ import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 

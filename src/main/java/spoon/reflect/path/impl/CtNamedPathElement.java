@@ -7,13 +7,6 @@
  */
 package spoon.reflect.path.impl;
 
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.reference.CtReference;
-import spoon.reflect.visitor.CtInheritanceScanner;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -21,6 +14,12 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.reference.CtReference;
+import spoon.reflect.visitor.CtInheritanceScanner;
 
 /**
  * A CtPathElement that match on CtNamedElement#getSimpleName

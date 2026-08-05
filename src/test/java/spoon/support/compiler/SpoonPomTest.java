@@ -1,6 +1,5 @@
 package spoon.support.compiler;
 
-import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -9,6 +8,8 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.junit.jupiter.api.Test;
 import spoon.MavenLauncher;
 import spoon.support.StandardEnvironment;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SpoonPomTest {
 

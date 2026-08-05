@@ -7,14 +7,13 @@
  */
 package spoon.metamodel;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.adaption.TypeAdaptor;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Represents a method used to get or set a {@link MetamodelProperty} of a {@link MetamodelConcept}.

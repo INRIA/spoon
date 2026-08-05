@@ -10,7 +10,6 @@ package spoon.support.sniper.internal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import spoon.SpoonException;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePositionHolder;
@@ -18,9 +17,9 @@ import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 
-import static spoon.support.sniper.internal.ElementSourceFragment.findIndexOfNextFragment;
-import static spoon.support.sniper.internal.ElementSourceFragment.filter;
 import static spoon.support.sniper.internal.ElementSourceFragment.checkCollectionItems;
+import static spoon.support.sniper.internal.ElementSourceFragment.filter;
+import static spoon.support.sniper.internal.ElementSourceFragment.findIndexOfNextFragment;
 import static spoon.support.sniper.internal.ElementSourceFragment.isCommentFragment;
 import static spoon.support.sniper.internal.ElementSourceFragment.isSpaceFragment;
 

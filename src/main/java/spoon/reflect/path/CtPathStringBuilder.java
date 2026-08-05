@@ -8,19 +8,18 @@
 package spoon.reflect.path;
 
 
-import spoon.SpoonException;
-import spoon.reflect.path.impl.AbstractPathElement;
-import spoon.reflect.path.impl.CtNamedPathElement;
-import spoon.reflect.path.impl.CtPathElement;
-import spoon.reflect.path.impl.CtPathImpl;
-import spoon.reflect.path.impl.CtTypedNameElement;
-import spoon.reflect.path.impl.CtRolePathElement;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
+import spoon.SpoonException;
+import spoon.reflect.path.impl.AbstractPathElement;
+import spoon.reflect.path.impl.CtNamedPathElement;
+import spoon.reflect.path.impl.CtPathElement;
+import spoon.reflect.path.impl.CtPathImpl;
+import spoon.reflect.path.impl.CtRolePathElement;
+import spoon.reflect.path.impl.CtTypedNameElement;
 
 /**
  * Created by nicolas on 27/08/2015.

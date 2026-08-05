@@ -7,13 +7,12 @@
  */
 package spoon.support.reflect;
 
+import java.io.Serializable;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.sniper.internal.ElementSourceFragment;
-
-import java.io.Serializable;
 
 /** Represents a modifier (eg "public").
  * When a modifier is "implicit", it does not appear in the source code (eg public for interface methods)

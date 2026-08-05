@@ -1,5 +1,6 @@
 package spoon.test.factory;
 
+import java.lang.reflect.Method;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
@@ -10,10 +11,8 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.test.factory.testclasses4.Bar;
 
-import java.lang.reflect.Method;
-
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class MethodFactoryTest {
 

@@ -7,6 +7,14 @@
  */
 package spoon.support.compiler.jdt;
 
+import java.io.File;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.compiler.CompilationProgress;
@@ -25,15 +33,6 @@ import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.eclipse.jdt.internal.core.util.CommentRecorderParser;
 import spoon.SpoonException;
 import spoon.support.compiler.SpoonProgress;
-
-import java.io.File;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 /*
  * Overrides the getCompilationUnits() from JDT's class to pass the ones we want.

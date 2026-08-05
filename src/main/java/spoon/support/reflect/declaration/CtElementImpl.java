@@ -7,6 +7,16 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
@@ -53,16 +63,6 @@ import spoon.support.visitor.TypeReferenceScanner;
 import spoon.support.visitor.equals.CloneHelper;
 import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.support.visitor.replace.ReplacementVisitor;
-import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static spoon.reflect.visitor.CommentHelper.printComment;
 

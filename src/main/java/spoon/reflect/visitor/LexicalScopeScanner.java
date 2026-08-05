@@ -7,6 +7,11 @@
  */
 package spoon.reflect.visitor;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtLambda;
@@ -19,12 +24,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A {@link CtScanner} which provides current lexical scope

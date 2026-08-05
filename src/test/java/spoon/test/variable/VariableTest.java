@@ -17,6 +17,10 @@
 package spoon.test.variable;
 
 import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledForJreRange;
@@ -39,12 +43,6 @@ import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.testing.utils.ModelTest;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;

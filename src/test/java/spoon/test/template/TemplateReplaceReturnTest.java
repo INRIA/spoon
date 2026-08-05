@@ -16,13 +16,8 @@
  */
 package spoon.test.template;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static spoon.testing.utils.ModelUtils.getOptimizedString;
-
 import java.io.File;
-
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.reflect.code.CtBlock;
@@ -32,6 +27,9 @@ import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFile;
 import spoon.test.template.testclasses.ReturnReplaceTemplate;
 import spoon.testing.utils.ModelUtils;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static spoon.testing.utils.ModelUtils.getOptimizedString;
 
 public class TemplateReplaceReturnTest {
 

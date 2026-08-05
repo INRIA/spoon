@@ -1,8 +1,7 @@
 package spoon.reflect.visitor;
 
-import spoon.reflect.factory.Factory;
-
 import java.util.stream.Collectors;
+import spoon.reflect.factory.Factory;
 
 public class ModelConsistencyCheckerTestHelper {
 

@@ -15,4 +15,3 @@
  * </ul>
  */
 package spoon.template;
-

@@ -16,11 +16,10 @@
  */
 package spoon.support.compiler.jdt;
 
+import java.util.List;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

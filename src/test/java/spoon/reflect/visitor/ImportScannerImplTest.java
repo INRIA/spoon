@@ -7,16 +7,15 @@
  */
 package spoon.reflect.visitor;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

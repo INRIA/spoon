@@ -38,7 +38,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.compiler.VirtualFile;
 
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;

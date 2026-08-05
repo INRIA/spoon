@@ -11,7 +11,6 @@ package spoon.test.reference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;

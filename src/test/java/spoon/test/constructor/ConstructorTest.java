@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +48,6 @@ import spoon.testing.utils.BySimpleName;
 import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
-
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;

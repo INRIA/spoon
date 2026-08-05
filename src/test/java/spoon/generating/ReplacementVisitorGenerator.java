@@ -7,6 +7,7 @@
  */
 package spoon.generating;
 
+import java.util.List;
 import spoon.generating.replace.ReplaceScanner;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
@@ -16,8 +17,6 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
-
-import java.util.List;
 
 import static spoon.generating.replace.ReplaceScanner.GENERATING_REPLACE_VISITOR;
 import static spoon.generating.replace.ReplaceScanner.TARGET_REPLACE_PACKAGE;

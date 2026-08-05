@@ -16,6 +16,10 @@
  */
 package spoon.processing;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
@@ -28,11 +32,6 @@ import spoon.support.compiler.FileSystemFile;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.processing.processors.MyProcessor;
 import spoon.test.template.testclasses.AssertToIfAssertedStatementTemplate;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

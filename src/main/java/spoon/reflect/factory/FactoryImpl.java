@@ -7,6 +7,15 @@
  */
 package spoon.reflect.factory;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
 import spoon.reflect.CtModelImpl;
@@ -119,16 +128,6 @@ import spoon.reflect.visitor.chain.CtQuery;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.visitor.GenericTypeAdapter;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Implements {@link Factory}

@@ -8,29 +8,15 @@
 
 package spoon.test.model;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static spoon.testing.assertions.SpoonAssertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.createFactory;
-
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CaseKind;
@@ -55,6 +41,18 @@ import spoon.support.compiler.VirtualFile;
 import spoon.testing.utils.BySimpleName;
 import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 @DisplayName("Switchcase Tests")
 public class SwitchCaseTest {

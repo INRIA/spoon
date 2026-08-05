@@ -7,6 +7,13 @@
  */
 package spoon.support.visitor;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtConstructor;
@@ -26,14 +33,6 @@ import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.support.SpoonClassNotFoundException;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Helper class created from type X or reference to X.
