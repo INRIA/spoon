@@ -7,13 +7,12 @@
  */
 package spoon.support.adaption;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

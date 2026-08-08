@@ -7,10 +7,9 @@
  */
 package spoon.support.modelobs.context;
 
+import java.util.Collection;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
-
-import java.util.Collection;
 
 public abstract class CollectionContext<T extends Collection<?>> extends Context {
 	protected final T copyOfTheCollection;

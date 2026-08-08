@@ -7,12 +7,23 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.jspecify.annotations.Nullable;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spoon.SpoonException;
 import spoon.reflect.code.CtAbstractSwitch;
 import spoon.reflect.code.CtBinaryOperator;
@@ -59,19 +70,6 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * The comment builder that will insert all element of a CompilationUnitDeclaration into the Spoon AST

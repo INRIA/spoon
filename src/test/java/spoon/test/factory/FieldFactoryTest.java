@@ -19,7 +19,6 @@ package spoon.test.factory;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;

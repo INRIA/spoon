@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
@@ -70,7 +69,6 @@ import spoon.template.TemplateParameter;
 import spoon.test.api.processors.AwesomeProcessor;
 import spoon.test.api.testclasses.Bar;
 import spoon.testing.utils.GitHubIssue;
-
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;

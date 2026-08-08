@@ -8,19 +8,18 @@
 package spoon.support.util;
 
 
-import static spoon.support.util.internal.ModelCollectionUtils.linkToParent;
-
 import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
-
-import spoon.support.modelobs.FineModelChangeListener;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
+import spoon.support.modelobs.FineModelChangeListener;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import static spoon.support.util.internal.ModelCollectionUtils.linkToParent;
 
 /**
  * The implementation of the {@link List}, which is used by Spoon model objects.

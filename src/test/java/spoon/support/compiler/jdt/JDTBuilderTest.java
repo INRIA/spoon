@@ -16,6 +16,7 @@
  */
 package spoon.support.compiler.jdt;
 
+import java.io.File;
 import org.junit.jupiter.api.Test;
 import spoon.compiler.builder.AdvancedOptions;
 import spoon.compiler.builder.AnnotationProcessingOptions;
@@ -23,8 +24,6 @@ import spoon.compiler.builder.ClasspathOptions;
 import spoon.compiler.builder.ComplianceOptions;
 import spoon.compiler.builder.JDTBuilderImpl;
 import spoon.compiler.builder.SourceOptions;
-
-import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

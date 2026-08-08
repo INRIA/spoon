@@ -9,7 +9,6 @@ package spoon.support.compiler.jdt;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Set;
-
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;

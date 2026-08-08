@@ -16,13 +16,9 @@
  */
 package spoon.test.template;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.io.File;
 import java.lang.annotation.ElementType;
-
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.reflect.declaration.CtClass;
@@ -30,6 +26,8 @@ import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFile;
 import spoon.test.template.testclasses.EnumAccessTemplate;
 import spoon.testing.utils.ModelUtils;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TemplateEnumAccessTest {
 

@@ -7,6 +7,8 @@
  */
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
+import java.util.List;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtConstructorCall;
@@ -20,9 +22,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.ARGUMENT;

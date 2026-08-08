@@ -16,6 +16,11 @@
  */
 package spoon.test.refactoring;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -35,12 +40,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.test.refactoring.testclasses.CtRenameLocalVariableRefactoringTestSubject;
 import spoon.test.refactoring.testclasses.TestTryRename;
 import spoon.testing.utils.ModelUtils;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;

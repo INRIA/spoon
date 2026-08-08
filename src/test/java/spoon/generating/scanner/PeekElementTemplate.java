@@ -7,9 +7,8 @@
  */
 package spoon.generating.scanner;
 
-import spoon.reflect.declaration.CtElement;
-
 import java.util.Deque;
+import spoon.reflect.declaration.CtElement;
 
 class PeekElementTemplate {
 	Deque<CtElement> stack;

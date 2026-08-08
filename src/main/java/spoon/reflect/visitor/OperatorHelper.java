@@ -7,6 +7,8 @@
  */
 package spoon.reflect.visitor;
 
+import java.util.Optional;
+import java.util.Set;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtExpression;
@@ -15,9 +17,6 @@ import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.Internal;
-
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * Computes source code representation of the operator

@@ -24,10 +24,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -58,7 +55,6 @@ import spoon.test.pkg.testclasses.Foo;
 import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
-
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;

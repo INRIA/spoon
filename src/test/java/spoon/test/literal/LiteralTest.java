@@ -16,30 +16,30 @@
  */
 package spoon.test.literal;
 
-import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.comparator.DeepRepresentationComparator;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.factory.CodeFactory;
-import spoon.test.literal.testclasses.Tacos;
-import spoon.Launcher;
-import spoon.reflect.code.LiteralBase;
-import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.factory.TypeFactory;
-import spoon.reflect.declaration.CtClass;
-import org.junit.jupiter.api.Test;
-import spoon.testing.utils.GitHubIssue;
-import spoon.testing.utils.ModelTest;
 import java.util.List;
 import java.util.TreeSet;
+import org.junit.jupiter.api.Test;
+import spoon.Launcher;
+import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.LiteralBase;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.CodeFactory;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.TypeFactory;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.comparator.DeepRepresentationComparator;
+import spoon.test.literal.testclasses.Tacos;
+import spoon.testing.utils.GitHubIssue;
+import spoon.testing.utils.ModelTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class LiteralTest {
 

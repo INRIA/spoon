@@ -17,7 +17,6 @@
 package spoon.test.staticFieldAccess2;
 
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.test.staticFieldAccess2.testclasses.AmbiguousImplicitFieldReference;

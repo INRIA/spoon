@@ -7,6 +7,9 @@
  */
 package spoon.support.compiler.jdt;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.Assignment;
@@ -28,10 +31,6 @@ import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.reflect.CtExtendedModifier;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /** Helper class for JDTTreeBuilder. Package visible to reduce API surface. */
 class JDTTreeBuilderQuery {

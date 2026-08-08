@@ -16,12 +16,7 @@
  */
 package spoon.test.template;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
@@ -34,6 +29,10 @@ import spoon.template.BlockTemplate;
 import spoon.test.template.testclasses.InvocationSubstitutionByExpressionTemplate;
 import spoon.test.template.testclasses.InvocationSubstitutionByStatementTemplate;
 import spoon.test.template.testclasses.SubstitutionByExpressionTemplate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class TemplateInvocationSubstitutionTest {
 

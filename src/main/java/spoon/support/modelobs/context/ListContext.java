@@ -7,10 +7,9 @@
  */
 package spoon.support.modelobs.context;
 
+import java.util.List;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
-
-import java.util.List;
 
 /**
  * defines a list context

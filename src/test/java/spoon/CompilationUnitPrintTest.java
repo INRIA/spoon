@@ -2,7 +2,6 @@ package spoon;
 
 
 import java.io.File;
-
 import org.junit.jupiter.api.Test;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtClass;

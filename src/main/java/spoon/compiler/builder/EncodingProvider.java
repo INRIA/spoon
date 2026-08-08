@@ -7,8 +7,8 @@
  */
 package spoon.compiler.builder;
 
-import spoon.compiler.SpoonFile;
 import java.nio.charset.Charset;
+import spoon.compiler.SpoonFile;
 
 public interface EncodingProvider {
 

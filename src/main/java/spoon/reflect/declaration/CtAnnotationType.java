@@ -7,13 +7,12 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtTypeReference;
-import spoon.support.DerivedProperty;
-import spoon.support.UnsettableProperty;
-
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 /**
  * This element defines an annotation type.

@@ -7,16 +7,15 @@
  */
 package spoon.support.reflect.reference;
 
+import java.lang.reflect.AnnotatedElement;
+import java.util.Collections;
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.lang.reflect.AnnotatedElement;
-import java.util.Collections;
-import java.util.Set;
 
 import static spoon.reflect.path.CtRole.TYPE;
 

@@ -7,8 +7,8 @@
  */
 package spoon.test.pattern;
 
-import org.junit.jupiter.api.Test;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCase;

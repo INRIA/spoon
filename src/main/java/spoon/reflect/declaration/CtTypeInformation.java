@@ -7,14 +7,13 @@
  */
 package spoon.reflect.declaration;
 
+import java.util.Collection;
+import java.util.Set;
+import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-
-import java.util.Collection;
-import java.util.Set;
 
 import static spoon.reflect.path.CtRole.INTERFACE;
 import static spoon.reflect.path.CtRole.MODIFIER;

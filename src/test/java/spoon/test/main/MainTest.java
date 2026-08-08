@@ -16,18 +16,17 @@
  */
 package spoon.test.main;
 
-import org.junit.jupiter.api.Test;
-import spoon.ContractVerifier;
-import spoon.Launcher;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
+import spoon.ContractVerifier;
+import spoon.Launcher;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

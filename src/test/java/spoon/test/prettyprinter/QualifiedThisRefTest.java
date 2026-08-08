@@ -20,7 +20,6 @@ package spoon.test.prettyprinter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -43,7 +42,6 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.code.CtFieldAccessImpl;
-import spoon.support.reflect.code.CtTypeAccessImpl;
 import spoon.test.delete.testclasses.Adobada;
 import spoon.test.prettyprinter.testclasses.QualifiedThisRef;
 
