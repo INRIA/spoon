@@ -831,6 +831,27 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	void testSniperKeepsClassKeywordOnTypeAnnotatedWithClassLiteral() {
+		// contract: the sniper printer must not drop the `class` keyword of a type whose annotation
+		// contains a class-literal (e.g. @X(exclude = {String.class})). The annotation source contains
+		// the substring "class" (from ".class"); a substring match in the collection context wrongly
+		// claimed the type's `class` keyword and dropped it, producing non-compilable "@X Foo".
+		Consumer<CtType<?>> modify = type -> {
+			CtType<?> nested = type.getNestedType("Nested");
+			CtStatement stmt = nested.getMethodsByName("notFound").get(0).getBody().getStatement(0);
+			CtConstructorCall<?> call = stmt.filterChildren(CtConstructorCall.class::isInstance).first();
+			call.addArgument(type.getFactory().createLiteral("extra"));
+		};
+
+		BiConsumer<CtType<?>, String> assertClassKeywordPreserved = (type, result) -> {
+			assertThat(result, containsString("class ClassKeywordAnnotation"));
+			assertThat(result, not(containsString("}) ClassKeywordAnnotation")));
+		};
+
+		testSniper("sniperPrinter.ClassKeywordAnnotation", modify, assertClassKeywordPreserved);
+	}
+
+	@Test
 	@GitHubIssue(issueNumber = 4218, fixed = true)
 	void testSniperDoesNotPrintTheDeletedAnnotation() {
 		Consumer<CtType<?>> deleteAnnotation = type -> {
