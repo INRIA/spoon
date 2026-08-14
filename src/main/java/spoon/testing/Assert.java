@@ -20,7 +20,10 @@ import static spoon.testing.utils.Check.assertNotNull;
  * Each method in this class is a static factory for the type-specific
  * assertion objects. The purpose of this class is to make test code
  * more readable.
+ *
+ * @deprecated Use {@code spoon.testing.assertions.SpoonAssertions} instead.
  */
+@Deprecated(since = "11", forRemoval = true)
 public class Assert {
 	private Assert() { }
 	/**
