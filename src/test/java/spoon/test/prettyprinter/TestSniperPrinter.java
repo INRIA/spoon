@@ -800,6 +800,28 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	@GitHubIssue(issueNumber = 6846, fixed = true)
+	void testSniperPrintsSwitchWithTypePattern() {
+		// contract: a switch with a type-pattern label (`case Type x ->`) can be sniper printed.
+		// The type pattern is modelled by a synthetic CtCasePattern which has no source position.
+		// While building the source fragment tree the sniper skips that positionless node, so the
+		// nested reference is offered to the enclosing CtCase, which does not own that role. This
+		// used to throw a SpoonException that aborted printing of the whole compilation unit; the
+		// enclosing element must instead be reprinted from its original source tokens.
+
+		// Noop: printing the unchanged model already forces the sniper to rebuild the fragment tree.
+		Consumer<CtType<?>> noop = type -> {};
+
+		BiConsumer<CtType<?>, String> assertKeepsTypePatterns = (type, result) -> {
+			assertThat(result, containsString("case Integer i ->"));
+			assertThat(result, containsString("case String s ->"));
+			assertThat(result, containsString("default ->"));
+		};
+
+		testSniper("sniperPrinter.SwitchCasePattern", noop, assertKeepsTypePatterns);
+	}
+
+	@Test
 	@GitHubIssue(issueNumber = 3911, fixed = true)
 	void testRoundBracketPrintingInComplexArithmeticExpression() {
 		Consumer<CtType<?>> noOpModifyFieldAssignment = type ->
