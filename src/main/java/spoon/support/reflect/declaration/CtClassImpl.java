@@ -7,6 +7,16 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder.InputType;
 import spoon.reflect.annotations.MetamodelPropertyField;
@@ -28,17 +38,6 @@ import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.reflect.code.CtStatementImpl;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.support.util.SignatureBasedSortedSet;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
 import static spoon.reflect.path.CtRole.CONSTRUCTOR;

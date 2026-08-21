@@ -7,6 +7,9 @@
  */
 package spoon.support;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import spoon.processing.ProcessInterruption;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
@@ -14,10 +17,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
 import spoon.support.visitor.ProcessingVisitor;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This processing manager implements a blocking processing policy that consists

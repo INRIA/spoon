@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.code;
 
+import java.util.Objects;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
@@ -14,8 +15,6 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.util.Objects;
 
 import static spoon.support.compiler.jdt.JDTCommentBuilder.cleanComment;
 

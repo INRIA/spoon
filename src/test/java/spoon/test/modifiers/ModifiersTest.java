@@ -16,6 +16,9 @@
  */
 package spoon.test.modifiers;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -30,10 +33,6 @@ import spoon.test.modifiers.testclasses.AbstractClass;
 import spoon.test.modifiers.testclasses.MethodVarArgs;
 import spoon.test.modifiers.testclasses.StaticMethod;
 import spoon.testing.utils.ModelUtils;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

@@ -7,12 +7,11 @@
  */
 package spoon.reflect.declaration;
 
+import java.util.List;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.support.DerivedProperty;
-
-import java.util.List;
 
 import static spoon.reflect.path.CtRole.EXPORTED_PACKAGE;
 import static spoon.reflect.path.CtRole.MODIFIER;

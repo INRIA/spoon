@@ -7,6 +7,10 @@
  */
 package spoon.support.reflect.reference;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
+import java.util.Collections;
+import java.util.Set;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
@@ -22,11 +26,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.util.RtHelper;
-
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-import java.util.Collections;
-import java.util.Set;
 
 import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_FINAL;

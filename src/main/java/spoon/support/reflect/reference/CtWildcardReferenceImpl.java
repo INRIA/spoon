@@ -7,9 +7,6 @@
  */
 package spoon.support.reflect.reference;
 
-import static spoon.reflect.path.CtRole.BOUNDING_TYPE;
-import static spoon.reflect.path.CtRole.IS_UPPER;
-
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtReference;
@@ -17,6 +14,9 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.UnsettableProperty;
+
+import static spoon.reflect.path.CtRole.BOUNDING_TYPE;
+import static spoon.reflect.path.CtRole.IS_UPPER;
 
 public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implements CtWildcardReference {
 

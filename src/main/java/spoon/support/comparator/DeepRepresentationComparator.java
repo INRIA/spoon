@@ -7,10 +7,9 @@
  */
 package spoon.support.comparator;
 
-import spoon.reflect.declaration.CtElement;
-
 import java.io.Serializable;
 import java.util.Comparator;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * Compares based on a toString representation.

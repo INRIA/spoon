@@ -7,14 +7,13 @@
  */
 package spoon.generating.scanner;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.path.CtRole;
-import spoon.reflect.visitor.CtAbstractBiScanner;
-
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.visitor.CtAbstractBiScanner;
 
 /**
  * This visitor implements a deep-search scan on the model for 2 elements.

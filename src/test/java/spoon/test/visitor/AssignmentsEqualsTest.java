@@ -1,9 +1,6 @@
 package spoon.test.visitor;
 
 import java.util.List;
-
-import org.junit.jupiter.api.Test;
-import spoon.Launcher;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;

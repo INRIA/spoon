@@ -16,6 +16,12 @@
  */
 package spoon.test.lambda;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -52,13 +58,6 @@ import spoon.test.lambda.testclasses.LambdaRxJava;
 import spoon.test.lambda.testclasses.Panini;
 import spoon.test.lambda.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;

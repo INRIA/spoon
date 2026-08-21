@@ -7,15 +7,14 @@
  */
 package spoon.reflect.reference;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.List;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.List;
 
 
 /**

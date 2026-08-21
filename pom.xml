@@ -258,6 +258,13 @@
         <artifactId>spotless-maven-plugin</artifactId>
         <version>3.10.0</version>
         <configuration>
+          <!--
+            The generated assertions under src/test/java/spoon/testing/assertions/ do not
+            follow a consistent formatting and are fully managed by spotless. The generic
+            <format> block normalises whitespace and indentation (tabs, matching checkstyle),
+            while the <java> block applies import ordering and unused-import removal to the
+            whole codebase (see issue #5741).
+          -->
           <formats>
             <format>
               <includes>
@@ -272,14 +279,15 @@
             </format>
           </formats>
           <java>
-            <includes>
-              <include>src/test/java/spoon/testing/assertions/**/*.java</include>
-            </includes>
-            <palantirJavaFormat>
-              <version>2.40.0</version>
-              <style>PALANTIR</style>
-              <formatJavadoc>true</formatJavadoc>
-            </palantirJavaFormat>
+            <excludes>
+              <!-- Test inputs are intentionally weird and must not be reformatted. -->
+              <exclude>**/testclasses*/**</exclude>
+              <exclude>**/src/test/resources/**</exclude>
+            </excludes>
+            <importOrder>
+              <order>,\#javax|\#java,\#</order>
+            </importOrder>
+            <removeUnusedImports/>
           </java>
         </configuration>
       </plugin>

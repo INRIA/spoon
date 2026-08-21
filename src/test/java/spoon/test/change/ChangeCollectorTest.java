@@ -19,7 +19,6 @@ package spoon.test.change;
 
 import java.util.Arrays;
 import java.util.HashSet;
-
 import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;

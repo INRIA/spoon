@@ -1,13 +1,12 @@
 package spoon.test.reference;
 
+import java.util.List;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.testing.utils.BySimpleName;
 import spoon.testing.utils.ModelTest;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static spoon.testing.assertions.SpoonAssertions.assertThat;

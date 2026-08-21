@@ -7,6 +7,10 @@
  */
 package spoon;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.builder.JDTBuilder;
 import spoon.processing.Processor;
@@ -18,11 +22,6 @@ import spoon.support.compiler.jdt.CompilationUnitFilter;
 import spoon.support.compiler.jdt.FactoryCompilerConfig;
 import spoon.support.compiler.jdt.FileCompilerConfig;
 import spoon.support.compiler.jdt.JDTBatchCompiler;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Responsible for building a spoon model from Java source code.

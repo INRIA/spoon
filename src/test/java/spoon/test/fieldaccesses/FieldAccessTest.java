@@ -20,7 +20,6 @@ package spoon.test.fieldaccesses;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
