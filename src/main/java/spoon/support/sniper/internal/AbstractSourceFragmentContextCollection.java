@@ -43,9 +43,9 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 				return true;
 			}
 			if (TokenType.KEYWORD.equals(tpe.getTokenType())) {
-// we must have its fragment
+				// we must have a child fragment that contains this keyword as a standalone token
 				for (SourceFragment f : childFragments) {
-					if (f.getSourceCode().contains(tpe.getToken())) {
+					if (containsKeywordToken(f.getSourceCode(), tpe.getToken())) {
 						return true;
 					}
 				}
@@ -71,6 +71,39 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 			return findIndexOfNextChildTokenOfElement(event.getElement()) >= 0;
 		}
 		throw new SpoonException("Unexpected PrintEvent: " + event.getClass());
+	}
+
+	/**
+	 * @return true if {@code keyword} occurs in {@code code} as a standalone keyword token, i.e. not
+	 * as part of a larger identifier and not as a class-literal / qualified-name suffix such as
+	 * {@code String.class}. A plain substring match is not enough: an annotation argument like
+	 * {@code Foo.class} contains the substring {@code class}, which would make a (muted) annotation
+	 * collection wrongly claim the {@code class} keyword of a following type declaration and cause the
+	 * sniper printer to silently drop it ("@X class Foo" -> "@X Foo").
+	 */
+	private static boolean containsKeywordToken(String code, String keyword) {
+		if (code == null) {
+			return false;
+		}
+		int from = 0;
+		while (true) {
+			int idx = code.indexOf(keyword, from);
+			if (idx < 0) {
+				return false;
+			}
+			int before = idx - 1;
+			int after = idx + keyword.length();
+			// a keyword token is never part of a larger identifier, nor preceded by '.'
+			// (the only keywords following '.' are the class/new/this/super of member expressions)
+			boolean boundaryBefore = before < 0
+					|| (!Character.isJavaIdentifierPart(code.charAt(before)) && code.charAt(before) != '.');
+			boolean boundaryAfter = after >= code.length()
+					|| !Character.isJavaIdentifierPart(code.charAt(after));
+			if (boundaryBefore && boundaryAfter) {
+				return true;
+			}
+			from = idx + 1;
+		}
 	}
 
 	private boolean anyChildFragmentHasRole(CtRole role) {
