@@ -509,7 +509,14 @@ public class ParentExiter extends CtInheritanceScanner {
 		}
 		if (shouldAddAsCaseExpression(caseStatement, node)) {
 			if (child instanceof CtPattern pattern) {
-				caseStatement.addCaseExpression((CtExpression<E>) jdtTreeBuilder.getFactory().Core().createCasePattern().setPattern(pattern));
+				CtCasePattern casePattern = jdtTreeBuilder.getFactory().Core().createCasePattern();
+				casePattern.setPattern(pattern);
+				// The CtCasePattern wrapper has no source range of its own; it spans exactly the pattern.
+				// Give it the pattern's position, mirroring the CtTypePattern handling above. Without a
+				// position the sniper's source-fragment builder skips the wrapper and offers its child to
+				// the enclosing CtCase, which does not own CtRole.PATTERN, aborting sniper printing.
+				casePattern.setPosition(pattern.getPosition());
+				caseStatement.addCaseExpression((CtExpression<E>) casePattern);
 			} else {
 				caseStatement.addCaseExpression((CtExpression<E>) child);
 			}
