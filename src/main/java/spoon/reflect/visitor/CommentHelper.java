@@ -30,7 +30,7 @@ public class CommentHelper {
 	public static String printComment(CtComment comment) {
 		PrinterHelper ph = new PrinterHelper(comment.getFactory().getEnvironment());
 		// now we only use one single method to print all tags
-		printCommentContent(ph, comment, s -> { return  s; });
+		printCommentContent(ph, comment, s -> s);
 		return ph.toString();
 	}
 
