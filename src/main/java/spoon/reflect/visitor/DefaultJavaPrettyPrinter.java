@@ -1054,7 +1054,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		 * E.g. from CtJavaDocTag#toString
 		 * Write directly to PrinterHelper, because java doc tag is not a java token. Normally it is part of COMMENT token.
 		 */
-		CommentHelper.printJavaDocTag(printer.getPrinterHelper(), docTag, x -> { return x; });
+		CommentHelper.printJavaDocTag(printer.getPrinterHelper(), docTag, x -> x);
 	}
 
 	@Override
