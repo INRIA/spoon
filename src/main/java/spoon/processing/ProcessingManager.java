@@ -27,6 +27,8 @@ public interface ProcessingManager extends FactoryAccessor {
 	 * Adds a processor by instantiating its type (a class that must define an
 	 * empty constructor).
 	 *
+	 * @param type
+	 *            the processor class to instantiate and add
 	 * @see #getProcessors()
 	 */
 	void addProcessor(Class<? extends Processor<?>> type);
@@ -34,6 +36,9 @@ public interface ProcessingManager extends FactoryAccessor {
 	/**
 	 * Adds a processor.
 	 *
+	 * @param p
+	 *            the processor instance to add
+	 * @return {@code true} if the processor was added
 	 * @see #getProcessors()
 	 */
 	boolean addProcessor(Processor<?> p);
@@ -52,6 +57,7 @@ public interface ProcessingManager extends FactoryAccessor {
 	 * Gets the processors that have been added to the manager and that will be
 	 * applied when invoking one of the {@code process} methods).
 	 *
+	 * @return the processors currently registered on this manager
 	 * @see #process(Collection)
 	 */
 	Collection<Processor<?>> getProcessors();
@@ -64,6 +70,9 @@ public interface ProcessingManager extends FactoryAccessor {
 	 * <code>process</code> method (non-blocking implementation). Processors
 	 * that have been applied are removed from the manager and
 	 * {@link #getProcessors()} does not contain them anymore.
+	 *
+	 * @param elements
+	 *            the elements to process recursively
 	 */
 	void process(Collection<? extends CtElement> elements);
 
@@ -74,6 +83,9 @@ public interface ProcessingManager extends FactoryAccessor {
 	 * another call to a <code>process</code> method (non-blocking
 	 * implementation). Processors that have been applied are removed from the
 	 * manager and {@link #getProcessors()} does not contain them anymore.
+	 *
+	 * @param element
+	 *            the element to process recursively
 	 */
 	void process(CtElement element);
 
