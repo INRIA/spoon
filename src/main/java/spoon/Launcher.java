@@ -100,6 +100,8 @@ public class Launcher implements SpoonAPI {
 	/**
 	 * A default program entry point (instantiates a launcher with the given
 	 * arguments and calls {@link #run()}).
+	 *
+	 * @param args command-line arguments
 	 */
 	public static void main(String[] args) {
 		new Launcher().run(args);
@@ -119,6 +121,11 @@ public class Launcher implements SpoonAPI {
 		}
 	}
 
+	/**
+	 * Sets the command-line arguments for this launcher.
+	 *
+	 * @param args2 the command-line arguments
+	 */
 	public void setArgs(String[] args2) {
 		this.commandLineArgs = args2;
 		if (processed) {
