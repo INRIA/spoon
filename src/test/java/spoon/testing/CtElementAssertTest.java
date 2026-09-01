@@ -16,24 +16,25 @@
  */
 package spoon.testing;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.testing.utils.ByClass;
+import spoon.testing.utils.ModelTest;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static spoon.testing.Assert.assertThat;
-import static spoon.testing.utils.ModelUtils.buildNoClasspath;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class CtElementAssertTest {
 	public int i;
 
-	@Test
-	public void testEqualityBetweenTwoCtElement() throws Exception {
-		final CtType<CtElementAssertTest> type = buildNoClasspath(CtElementAssertTest.class).Type().get(CtElementAssertTest.class);
+	@ModelTest("./src/test/java/spoon/testing/CtElementAssertTest.java")
+	public void testEqualityBetweenTwoCtElement(@ByClass(CtElementAssertTest.class) CtType<CtElementAssertTest> type) throws Exception {
 		final Factory factory = createFactory();
 		final CtField<Integer> expected = factory.Core().createField();
 		expected.setSimpleName("i");
@@ -43,29 +44,31 @@ public class CtElementAssertTest {
 		assertThat(f).isEqualTo(expected);
 	}
 
-	@Test
-	public void testEqualityBetweenACtElementAndAString() throws Exception {
-		final CtType<CtElementAssertTest> type = buildNoClasspath(CtElementAssertTest.class).Type().get(CtElementAssertTest.class);
-		assertThat(type.getField("i")).isEqualTo("public int i;");
+	@ModelTest("./src/test/java/spoon/testing/CtElementAssertTest.java")
+	public void testEqualityBetweenACtElementAndAString(@ByClass(CtElementAssertTest.class) CtType<CtElementAssertTest> type) throws Exception {
+		Assertions.assertThat(type.getField("i").toString()).isEqualTo("public int i;");
 	}
 
 	@Test
 	public void testEqualityBetweenTwoCtElementWithTypeDifferent() {
-		assertThrows(AssertionError.class, ()-> assertThat(createFactory().Core().createAnnotation()).isEqualTo(createFactory().Core().createBlock()));
+		assertThatThrownBy(() -> assertThat(createFactory().Core().createAnnotation()).isEqualTo(createFactory().Core().createBlock()))
+			.isInstanceOf(AssertionError.class);
 	}
 
-	@Test
-	public void testEqualityBetweenTwoCtElementWithTheSameSignatureButNotTheSameContent() throws Exception {
-		assertThrows(AssertionError.class, ()-> assertThat(buildNoClasspath(CtElementAssertTest.class).Type().get(CtElementAssertTest.class)).isEqualTo(createFactory().Class().create(CtElementAssertTest.class.getName())));
+	@ModelTest("./src/test/java/spoon/testing/CtElementAssertTest.java")
+	public void testEqualityBetweenTwoCtElementWithTheSameSignatureButNotTheSameContent(
+		@ByClass(CtElementAssertTest.class) CtType<CtElementAssertTest> actual, Factory factory) {
+		assertThatThrownBy(() -> assertThat(actual).isEqualTo(factory.Class().create(CtElementAssertTest.class.getName())))
+			.isInstanceOf(AssertionError.class);
 	}
 
-	@Test
-	public void testEqualityBetweenTwoDifferentCtElement() throws Exception {
+	@ModelTest("./src/test/java/spoon/testing/CtElementAssertTest.java")
+	public void testEqualityBetweenTwoDifferentCtElement(Factory factory) throws Exception {
 		class String {
 		}
-		final Factory build = buildNoClasspath(CtElementAssertTest.class);
-		final CtFieldAccess<Class<String>> actual = build.Code().createClassAccess(build.Type().<String>get(String.class).getReference());
+		final CtFieldAccess<Class<String>> actual = factory.Code().createClassAccess(factory.Type().<String>get(String.class).getReference());
 		final CtFieldAccess<Class<java.lang.String>> expected = createFactory().Code().createClassAccess(createFactory().Type().stringType());
-		assertThrows(AssertionError.class, ()-> assertThat(actual).isEqualTo(expected));
+		assertThatThrownBy(() -> assertThat(actual).isEqualTo(expected))
+			.isInstanceOf(AssertionError.class);
 	}
 }
