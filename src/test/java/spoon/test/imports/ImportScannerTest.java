@@ -56,7 +56,7 @@ import static spoon.testing.utils.ModelUtils.build;
 
 public class ImportScannerTest {
 
-	@ModelTest("./src/main/java/spoon/")
+	@ModelTest(value = "./src/main/java/spoon/", complianceLevel = 17)
 	public void testImportOnSpoon(Launcher launcher, Factory factory, CtModel model) throws IOException {
 		File targetDir = new File("./target/import-test");
 		launcher.getEnvironment().setSourceOutputDirectory(targetDir);
