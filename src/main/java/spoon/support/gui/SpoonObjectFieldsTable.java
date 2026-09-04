@@ -81,6 +81,13 @@ public class SpoonObjectFieldsTable extends JFrame {
 			return null;
 		}
 
+		/**
+		 * Collects non-static declared fields of {@code c} and of every
+		 * superclass, adding them to this table model.
+		 *
+		 * @param c class whose instance fields should be listed; recursion
+		 *        stops when there is no superclass
+		 */
 		public void scanFields(Class<?> c) {
 			for (Field f : c.getDeclaredFields()) {
 				f.setAccessible(true);
