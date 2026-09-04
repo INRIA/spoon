@@ -27,6 +27,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
 public class EqualsChecker extends CtInheritanceScanner {
@@ -179,6 +180,15 @@ public class EqualsChecker extends CtInheritanceScanner {
 			setNotEqual(CtRole.TYPE);
 		}
 		super.visitCtArrayTypeReference(e);
+	}
+
+	@Override
+	public void visitCtWildcardReference(CtWildcardReference e) {
+		final CtWildcardReference peek = (CtWildcardReference) this.other;
+		if (e.isUpper() != peek.isUpper()) {
+			setNotEqual(CtRole.IS_UPPER);
+		}
+		super.visitCtWildcardReference(e);
 	}
 
 	@Override
