@@ -471,6 +471,18 @@ public class PackageTest {
 	}
 
 
+	@Test
+	public void testPackageSetShadow() {
+		// contract: CtPackage.setShadow stores the flag so isShadow reflects it
+		Factory factory = createFactory();
+		CtPackage pkg = factory.Package().getOrCreate("spoon.test.pkg.shadow");
+		assertFalse(pkg.isShadow());
+		assertSame(pkg, pkg.setShadow(true));
+		assertTrue(pkg.isShadow());
+		assertSame(pkg, pkg.setShadow(false));
+		assertFalse(pkg.isShadow());
+	}
+
 	@ModelTest("./src/test/resources/noclasspath/MultipleClasses.java")
 	public void testGetTypesReturnsTypesInDeclarationOrder(CtModel model) {
 		// contract: Types should be stored in declaration order. This is important for the
