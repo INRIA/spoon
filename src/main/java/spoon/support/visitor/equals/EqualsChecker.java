@@ -182,6 +182,9 @@ public class EqualsChecker extends CtInheritanceScanner {
 		super.visitCtArrayTypeReference(e);
 	}
 
+	/**
+	 * @param e the wildcard reference
+	 */
 	@Override
 	public void visitCtWildcardReference(CtWildcardReference e) {
 		final CtWildcardReference peek = (CtWildcardReference) this.other;
