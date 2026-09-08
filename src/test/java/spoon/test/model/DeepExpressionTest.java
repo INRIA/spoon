@@ -114,6 +114,33 @@ public class DeepExpressionTest {
 	}
 
 	@Test
+	public void testInheritableThreadLocalContextReachesProcessors() {
+		// contract: processors run on the dedicated spoon thread, so caller context exposed
+		// through an InheritableThreadLocal still reaches them (#6804); a plain ThreadLocal
+		// is confined to the calling thread by design
+		InheritableThreadLocal<String> context = new InheritableThreadLocal<>();
+		context.set("source context");
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
+		launcher.addInputResource(new VirtualFile("class Shallow { int value = 1 + 2; }", "Shallow.java"));
+		AtomicReference<String> processingContext = new AtomicReference<>();
+		launcher.addProcessor(new AbstractProcessor<CtClass<?>>() {
+			@Override
+			public void process(CtClass<?> type) {
+				processingContext.set(context.get());
+			}
+		});
+
+		try {
+			launcher.run();
+		} finally {
+			context.remove();
+		}
+
+		assertEquals("source context", processingContext.get());
+	}
+
+	@Test
 	public void testNegativeStackSizeIsRejected() {
 		// contract: an invalid stack size is reported instead of being silently ignored (#6804)
 		Environment environment = new StandardEnvironment();
