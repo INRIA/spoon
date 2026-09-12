@@ -123,6 +123,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
 
+	private long stackSize = DEFAULT_STACK_SIZE;
+
 	private boolean previewFeaturesEnabled = false;
 
 	private transient OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
@@ -392,6 +394,19 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setComplianceLevel(int level) {
 		complianceLevel = level;
+	}
+
+	@Override
+	public long getStackSize() {
+		return stackSize;
+	}
+
+	@Override
+	public void setStackSize(long stackSize) {
+		if (stackSize < 0) {
+			throw new SpoonException("The stack size must not be negative but was " + stackSize);
+		}
+		this.stackSize = stackSize;
 	}
 
 	@Override
