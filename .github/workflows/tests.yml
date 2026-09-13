@@ -31,7 +31,7 @@ jobs:
     name: Tests with Java ${{ matrix.java }} on ${{ matrix.os }}
     strategy:
       matrix:
-        java: [17, 21, 25]
+        java: [21, 25]
         os: [ubuntu-latest]
     steps:
       - name: Checkout
@@ -48,7 +48,7 @@ jobs:
 
   test-windows:
     runs-on: windows-latest
-    name: Tests with Java 17 on windows-latest
+    name: Tests with Java 21 on windows-latest
     steps:
       - name: Disable Git's autocrlf
         run: git config --global core.autocrlf false
@@ -59,7 +59,7 @@ jobs:
       - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
           cache: 'maven'
 
       - name: Test
