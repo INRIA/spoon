@@ -29,6 +29,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.visitor.equals.EqualsVisitor;
 
@@ -127,5 +128,28 @@ public class EqualTest {
 		assertSame(var2.getCatchers().get(0).getParameter().getMultiTypes(), ev.getNotEqualElement());
 		assertSame(var.getCatchers().get(0).getParameter().getMultiTypes(), ev.getNotEqualOther());
 		assertSame(CtRole.MULTI_TYPE, ev.getNotEqualRole());
+	}
+
+	@Test
+	public void testEqualsWildcardRespectsUpperBound() {
+		// contract: ? super T and ? extends T are not equal
+		Factory factory = new Launcher().createFactory();
+		CtWildcardReference lower = factory.createWildcardReference()
+				.setBoundingType(factory.Type().objectType())
+				.setUpper(false);
+		CtWildcardReference upper = factory.createWildcardReference()
+				.setBoundingType(factory.Type().objectType())
+				.setUpper(true);
+
+		assertEquals("? super java.lang.Object", lower.toString());
+		assertEquals("? extends java.lang.Object", upper.toString());
+		assertNotEquals(lower, upper);
+		assertNotEquals(upper, lower);
+		assertEquals(lower, lower.clone());
+		assertEquals(upper, upper.clone());
+
+		EqualsVisitor ev = new EqualsVisitor();
+		assertFalse(ev.checkEquals(lower, upper));
+		assertSame(CtRole.IS_UPPER, ev.getNotEqualRole());
 	}
 }
