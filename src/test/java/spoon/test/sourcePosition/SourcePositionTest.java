@@ -20,12 +20,11 @@ package spoon.test.sourcePosition;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import spoon.Launcher;
+import org.junit.jupiter.api.function.Executable;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtType;
@@ -34,7 +33,6 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.BodyHolderSourcePositionImpl;
 import spoon.support.reflect.cu.position.DeclarationSourcePositionImpl;
@@ -44,6 +42,8 @@ import spoon.test.sourcePosition.testclasses.Brambora;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -77,7 +77,7 @@ public class SourcePositionTest {
 	private Factory factoryFor(String packageName, String className) throws Exception {
 		return build(packageName, className).getFactory();
 	}
-	
+
 	@Test
 	public void testSourcePositionOfSecondPrimitiveType() throws Exception {
 		/*
@@ -127,6 +127,25 @@ public class SourcePositionTest {
 	public void testSourcePositionWhenCommentInAnnotation(CtModel model) {
 		// contract: comment characters as element values in annotations should not break position assignment to modifiers
 		List<CtClassImpl> list = model.getElements(new TypeFilter<>(CtClassImpl.class));
-		assertEquals(4,list.get(0).getPosition().getLine());
+		assertEquals(4, list.get(0).getPosition().getLine());
+	}
+
+	@ModelTest(
+		value = "./src/test/resources/spoon/test/sourcePosition/ModifierSourcePositions.java",
+		complianceLevel = 17
+	)
+	void testModifiersHaveSourcePosition(CtModel model) {
+		// contract: all explicit modifiers should have a valid position
+		Executable[] executables = model.getElements(new TypeFilter<>(CtModifiable.class)).stream()
+			.flatMap(modifiable -> modifiable.getExtendedModifiers().stream())
+			.filter(modifier -> !modifier.isImplicit())
+			.map(mod -> (Executable) () -> assertThat(mod).matches(
+					m -> m.getPosition().isValidPosition(),
+					"is valid source position"
+				)
+			)
+			.toArray(Executable[]::new);
+		assertEquals(8, executables.length, "unexpected length of modifiers found");
+		assertAll(executables);
 	}
 }
