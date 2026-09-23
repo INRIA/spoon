@@ -25,8 +25,8 @@
     </modules>
 
     <properties>
-        <maven.compiler.release>17</maven.compiler.release>
-        <maven.compiler.testRelease>17</maven.compiler.testRelease>
+        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.testRelease>21</maven.compiler.testRelease>
         <runtime.log>target/velocity.log</runtime.log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.outputTimestamp>1784033150</project.build.outputTimestamp>
