@@ -22,6 +22,7 @@ import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import spoon.JLSViolation;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
@@ -147,7 +148,15 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 		}
 
 		// The entire constructor does not exist in the source, therefore all children are marked as implicit:
-		canonical.filterChildren(new TypeFilter<>(CtElement.class)).forEach((CtElement ctElement) -> ctElement.setImplicit(true));
+		canonical.filterChildren(new TypeFilter<>(CtElement.class)).forEach((CtElement ctElement) -> {
+			ctElement.setImplicit(true);
+			// When cloning, like done in getClonedType() for the parameter, it will copy
+			// the source position of the original record component type. When printing
+			// through Sniper, the cloned type is therefore treated as part of the record
+			// component declaration, even though the parameter is generated and has no
+			// corresponding source.
+			ctElement.setPosition(SourcePosition.NOPOSITION);
+		});
 
 		addTypeMember(canonical);
 

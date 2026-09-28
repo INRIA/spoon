@@ -229,6 +229,14 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	void testPrintRecord() {
+		// contract: an unchanged record can be sniper-printed
+		testSniper("records.SingleParameter", type -> {}, (type, printed) -> {
+			assertIsPrintedWithExpectedChanges(type, printed);
+		});
+	}
+
+	@Test
 	public void testPrintAfterRenameOfField() {
 		//contract: sniper printing after rename of field
 		testSniper(ToBeChanged.class.getName(), type -> {

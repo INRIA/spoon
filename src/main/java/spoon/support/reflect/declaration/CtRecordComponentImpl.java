@@ -15,6 +15,7 @@ import org.jspecify.annotations.Nullable;
 import spoon.JLSViolation;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -86,11 +87,6 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 		return makeTreeImplicit(field);
 	}
 
-	@Override
-	public boolean isImplicit() {
-		return true;
-	}
-
 	private @Nullable CtTypeReference<?> getClonedType() {
 		return getType() != null ? getType().clone() : null;
 	}
@@ -152,6 +148,7 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 			@Override
 			protected void enter(CtElement e) {
 				e.setImplicit(true);
+				e.setPosition(SourcePosition.NOPOSITION);
 			}
 		});
 		return element;
