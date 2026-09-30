@@ -391,6 +391,27 @@ public class CtRecordTest {
 		}
 	}
 
+	@ModelTest(code = "record Point(int x) {}", complianceLevel = 17)
+	void testRecordComponentPositionContainsTypePosition(@BySimpleName("Point") CtRecord record) {
+		var component = record.getRecordComponents().iterator().next();
+
+		assertThat(component.isImplicit()).isFalse();
+		assertThat(component.getType().getPosition().isValidPosition()).isTrue();
+		assertThat(component.getPosition().isValidPosition()).isTrue();
+		assertThat(component.getPosition().getSourceStart())
+			.isLessThanOrEqualTo(component.getType().getPosition().getSourceStart());
+		assertThat(component.getPosition().getSourceEnd())
+			.isGreaterThanOrEqualTo(component.getType().getPosition().getSourceEnd());
+	}
+
+	@ModelTest(code = "record Point(int x) {}", complianceLevel = 17)
+	void testImplicitRecordMembersHaveNoSourcePosition(@BySimpleName("Point") CtRecord record) {
+		assertThat(record.getTypeMembers())
+			.filteredOn(CtElement::isImplicit)
+			.flatMap(member -> member.getElements(new TypeFilter<>(CtElement.class)))
+			.allSatisfy(element -> assertThat(element.getPosition().isValidPosition()).isFalse());
+	}
+
 	private <T> T head(Collection<T> collection) {
 		return collection.iterator().next();
 	}
