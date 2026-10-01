@@ -1157,6 +1157,10 @@ public class ReferenceBuilder {
 			return getTypeReferenceOfBoundingType(binding).clone();
 		} else {
 			CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
+			String declarationOwner = typeParameterDeclarationOwner(binding);
+			if (declarationOwner != null) {
+				ref.putMetadata("spoon.typeParameterDeclarationOwner", declarationOwner);
+			}
 			String name = new String(binding.sourceName());
 			if (binding.declaringElement instanceof SyntheticFactoryMethodBinding) {
 				// JDT uses these factory methods for type inference of diamond constructors. In no classpath mode they
@@ -1168,6 +1172,42 @@ public class ReferenceBuilder {
 			ref.setSimpleName(name);
 			return ref;
 		}
+	}
+
+	private static String typeParameterDeclarationOwner(TypeVariableBinding binding) {
+		if (binding.declaringElement instanceof MethodBinding method) {
+			var sourceMethod = method.sourceMethod();
+			if (sourceMethod != null && sourceMethod.compilationResult != null) {
+				return "M|" + normalizedSourceFile(sourceMethod.compilationResult.getFileName())
+						+ "|" + sourceMethod.declarationSourceStart
+						+ "|" + binding.rank;
+			}
+			return "M|" + normalizedTypeName(method.declaringClass)
+					+ "|" + new String(method.selector)
+					+ "|" + method.parameters.length
+					+ "|-1"
+					+ "|" + binding.rank;
+		}
+		if (binding.declaringElement instanceof ReferenceBinding type) {
+			if (type instanceof SourceTypeBinding sourceType
+					&& sourceType.scope != null
+					&& sourceType.scope.referenceContext != null
+					&& sourceType.scope.referenceContext.compilationResult != null) {
+				return "T|" + normalizedSourceFile(sourceType.scope.referenceContext.compilationResult.getFileName())
+						+ "|" + sourceType.scope.referenceContext.declarationSourceStart
+						+ "|" + binding.rank;
+			}
+			return "T|" + normalizedTypeName(type) + "|" + binding.rank;
+		}
+		return null;
+	}
+
+	private static String normalizedSourceFile(char[] fileName) {
+		return new String(fileName).replace('\\', '/');
+	}
+
+	private static String normalizedTypeName(ReferenceBinding type) {
+		return CharOperation.toString(type.compoundName).replace('$', '.');
 	}
 
 	private CtTypeReference<?> getTypeReferenceOfBoundingType(TypeVariableBinding binding) {
