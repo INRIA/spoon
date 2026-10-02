@@ -616,6 +616,31 @@ public class EvalTest {
 	}
 
 	@Test
+	@GitHubIssue(issueNumber = 6917, fixed = true)
+	void testGetPromotedTypeRespectsCast() {
+		// contract: getPromotedType uses the cast type, not the underlying expression type
+		String code = "public class Test {\n"
+			+ "    void test() {\n"
+			+ "        double dd = 4.0;\n"
+			+ "        boolean x = (int) dd == 4;\n"
+			+ "    }\n"
+			+ "}\n";
+		CtBinaryOperator<?> op = Launcher.parseClass(code)
+			.getElements(new TypeFilter<>(CtBinaryOperator.class))
+			.get(0);
+		Optional<CtTypeReference<?>> promotedType = OperatorHelper.getPromotedType(
+			op.getKind(),
+			op.getLeftHandOperand(),
+			op.getRightHandOperand()
+		);
+		assertTrue(promotedType.isPresent());
+		assertEquals(
+			op.getFactory().Type().integerPrimitiveType(),
+			promotedType.get()
+		);
+	}
+
+	@Test
 	@GitHubIssue(issueNumber = 5001, fixed = true)
 	public void testVisitCtLiteralWithLongStringValue() throws Exception {
 		CtClass<?> ctClass = Launcher.parseClass(Files.readString(Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/SampleClassIssue5001.java")));

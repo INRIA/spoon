@@ -16,6 +16,7 @@ import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.Internal;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -259,6 +260,14 @@ public final class OperatorHelper {
 		char.class
 	);
 
+	private static CtTypeReference<?> getEffectiveType(CtExpression<?> expression) {
+		List<CtTypeReference<?>> casts = expression.getTypeCasts();
+		if (casts != null && !casts.isEmpty()) {
+			return casts.get(0);
+		}
+		return expression.getType();
+	}
+
 	private static boolean isIntegralType(CtTypeReference<?> ctTypeReference) {
 		return ctTypeReference.isPrimitive()
 			// see https://docs.oracle.com/javase/specs/jls/se7/html/jls-4.html#jls-4.2.1
@@ -279,7 +288,7 @@ public final class OperatorHelper {
 	private static Optional<CtTypeReference<?>> unaryNumericPromotion(CtExpression<?> operand) {
 		// if the operand is of type Byte, Short, Character, Integer, Long, Float, or Double it is subject
 		// to unboxing (§5.1.8)
-		CtTypeReference<?> operandType = operand.getType().unbox();
+		CtTypeReference<?> operandType = getEffectiveType(operand).unbox();
 		// check if unary numeric promotion applies
 		if (!isNumericType(operandType)) {
 			return Optional.empty();
@@ -300,8 +309,8 @@ public final class OperatorHelper {
 		CtExpression<?> right
 	) {
 		// If any operand is of a reference type, it is subjected to unboxing conversion (§5.1.8).
-		CtTypeReference<?> leftType = left.getType().unbox();
-		CtTypeReference<?> rightType = right.getType().unbox();
+		CtTypeReference<?> leftType = getEffectiveType(left).unbox();
+		CtTypeReference<?> rightType = getEffectiveType(right).unbox();
 		TypeFactory typeFactory = leftType.getFactory().Type();
 
 		// each of which must denote a value that is convertible to a numeric type
@@ -360,7 +369,7 @@ public final class OperatorHelper {
 			case AND:
 			case OR: {
 				CtTypeReference<?> booleanType = typeFactory.booleanPrimitiveType();
-				if (!left.getType().equals(booleanType) || !right.getType().equals(booleanType)) {
+				if (!getEffectiveType(left).equals(booleanType) || !getEffectiveType(right).equals(booleanType)) {
 					return Optional.empty();
 				}
 
@@ -395,8 +404,8 @@ public final class OperatorHelper {
 			case EQ:
 			case NE: {
 				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.21
-				CtTypeReference<?> leftType = left.getType().unbox();
-				CtTypeReference<?> rightType = right.getType().unbox();
+				CtTypeReference<?> leftType = getEffectiveType(left).unbox();
+				CtTypeReference<?> rightType = getEffectiveType(right).unbox();
 
 				// The equality operators may be used to compare two operands that are convertible (§5.1.8)
 				// to numeric type, or two operands of type boolean or Boolean, or two operands that are each
@@ -455,7 +464,7 @@ public final class OperatorHelper {
 					// If the type of either operand of a + operator is String, then the operation is
 					// string concatenation.
 					CtTypeReference<?> stringType = typeFactory.stringType();
-					if (left.getType().equals(stringType) || right.getType().equals(stringType)) {
+					if (getEffectiveType(left).equals(stringType) || getEffectiveType(right).equals(stringType)) {
 						return Optional.of(stringType);
 					}
 
@@ -465,8 +474,8 @@ public final class OperatorHelper {
 			case BITXOR:
 			case BITOR: {
 				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.22
-				CtTypeReference<?> leftType = left.getType().unbox();
-				CtTypeReference<?> rightType = right.getType().unbox();
+				CtTypeReference<?> leftType = getEffectiveType(left).unbox();
+				CtTypeReference<?> rightType = getEffectiveType(right).unbox();
 
 				Set<CtTypeReference<?>> floatingPointNumbers = Set.of(
 					typeFactory.floatPrimitiveType(),
@@ -509,7 +518,7 @@ public final class OperatorHelper {
 		CtExpression<?> operand
 	) {
 		TypeFactory typeFactory = operand.getFactory().Type();
-		CtTypeReference<?> operandType = operand.getType();
+		CtTypeReference<?> operandType = getEffectiveType(operand);
 		switch (operator) {
 			case COMPL:
 				if (isIntegralType(operandType.unbox())) {
@@ -522,7 +531,7 @@ public final class OperatorHelper {
 				// See: https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.15.3
 				return unaryNumericPromotion(operand);
 			case NOT:
-				if (operand.getType().unbox().equals(typeFactory.booleanPrimitiveType())) {
+				if (getEffectiveType(operand).unbox().equals(typeFactory.booleanPrimitiveType())) {
 					return Optional.of(typeFactory.booleanPrimitiveType());
 				}
 
