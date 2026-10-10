@@ -52,6 +52,43 @@ public interface Environment {
 	void setComplianceLevel(int level);
 
 	/**
+	 * The default stack size, in bytes, of the thread on which {@link spoon.SpoonAPI}
+	 * runs the Spoon pipeline. See {@link #getStackSize()}.
+	 */
+	long DEFAULT_STACK_SIZE = 64L * 1024 * 1024;
+
+	/**
+	 * Gets the stack size, in bytes, of the thread on which {@link spoon.SpoonAPI} runs the
+	 * Spoon pipeline (model building, processing and pretty-printing).
+	 *
+	 * <p>Spoon's visitors are recursive: they use one JVM frame per AST node on the path from
+	 * the root to the node being visited. Legal but deeply nested expressions, such as a string
+	 * concatenation of tens of thousands of operands, therefore exhaust the default thread stack
+	 * of a few hundred kilobytes. Running the pipeline on a thread with a larger stack lets Spoon
+	 * handle such input without a {@link StackOverflowError}.
+	 *
+	 * <p>The stack is reserved address space, not committed memory: pages are only committed as
+	 * the stack actually grows, so a large value costs nothing on ordinary models.
+	 *
+	 * @return the stack size in bytes, or 0 to run the pipeline on the calling thread
+	 */
+	default long getStackSize() {
+		return DEFAULT_STACK_SIZE;
+	}
+
+	/**
+	 * Sets the stack size, in bytes, of the thread on which {@link spoon.SpoonAPI} runs the
+	 * Spoon pipeline.
+	 *
+	 * @param stackSize the stack size in bytes, or 0 to run the pipeline on the calling thread,
+	 *                  which is useful when the embedding application manages its own threads
+	 * @see #getStackSize()
+	 */
+	default void setStackSize(long stackSize) {
+		throw new UnsupportedOperationException("This environment does not support setting the stack size");
+	}
+
+	/**
 	 * Returns true if preview language features are enabled.
 	 *
 	 * @return true iff preview features are enabled
