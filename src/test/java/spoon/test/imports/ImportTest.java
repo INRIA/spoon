@@ -978,6 +978,15 @@ public class ImportTest {
 		assertThat(result, not(hasItem(Object.class.getName())));
 	}
 
+	@ModelTest("src/test/resources/noclasspath/shadowedimport/demo")
+	public void testSingleTypeImportShadowsSamePackageTypeNoClasspath(@BySimpleName("FooImpl") CtType<?> impl) {
+		// contract: a single-type import shadows a same-package type of the same simple name (JLS 6.4.1),
+		// even when the imported type is not in the model
+		CtTypeReference<?> iface = impl.getSuperInterfaces().iterator().next();
+		assertEquals("other.Foo", iface.getQualifiedName());
+		assertNull(iface.getTypeDeclaration());
+	}
+
 	@Test
 	public void testSuperInheritanceHierarchyFunctionNoClasspath() {
 		final Launcher launcher = new Launcher();

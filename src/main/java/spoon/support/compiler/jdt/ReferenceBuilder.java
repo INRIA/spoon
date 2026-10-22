@@ -725,7 +725,7 @@ public class ReferenceBuilder {
 			return false;
 		}
 		if (!(ref.resolvedType instanceof ProblemReferenceBinding)) {
-			return true;
+			return !isShadowedBySingleTypeImport(ref);
 		}
 		final String[] compoundName = CharOperation.charArrayToStringArray(((ProblemReferenceBinding) ref.resolvedType).compoundName);
 		final String[] typeName = CharOperation.charArrayToStringArray(ref.getTypeName());
@@ -733,6 +733,33 @@ public class ReferenceBuilder {
 			return false;
 		}
 		return compoundName[compoundName.length - 1].equals(typeName[typeName.length - 1]);
+	}
+
+	private boolean isShadowedBySingleTypeImport(TypeReference ref) {
+		if (!(ref instanceof SingleTypeReference) || !(ref.resolvedType instanceof ReferenceBinding)) {
+			return false;
+		}
+		CompilationUnitDeclaration cuDeclaration = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration;
+		if (cuDeclaration == null || cuDeclaration.imports == null) {
+			return false;
+		}
+		ReferenceBinding resolved = (ReferenceBinding) ref.resolvedType;
+		if (resolved.isNestedType() || resolved.getPackage() == null || cuDeclaration.scope == null
+				|| !CharOperation.equals(resolved.getPackage().compoundName, cuDeclaration.scope.fPackage.compoundName)) {
+			return false;
+		}
+		char[] simpleName = ((SingleTypeReference) ref).token;
+		for (ImportReference anImport : cuDeclaration.imports) {
+			if (anImport.isStatic() || (anImport.bits & ASTNode.OnDemand) != 0) {
+				continue;
+			}
+			char[][] importName = anImport.getImportName();
+			if (CharOperation.equals(importName[importName.length - 1], simpleName)
+					&& !CharOperation.equals(importName, resolved.compoundName)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private <T> void insertGenericTypesInNoClasspathFromJDTInSpoon(TypeReference original, CtTypeReference<T> type) {
