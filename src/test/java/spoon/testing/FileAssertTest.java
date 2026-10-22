@@ -16,22 +16,34 @@
  */
 package spoon.testing;
 
-import org.junit.jupiter.api.Test;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.testing.utils.ModelTest;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static spoon.testing.Assert.assertThat;
+import java.io.File;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class FileAssertTest {
-	public static final String PATH = "./src/test/java/spoon/testing/testclasses/";
 
-	@Test
-	public void testEqualsBetweenTwoSameFile() {
-		final String actual = PATH + "Foo.java";
-		assertThat(actual).isEqualTo(actual);
+	@ModelTest("./src/test/java/spoon/testing/testclasses/" + "Foo.java")
+	public void testEqualsBetweenTwoSameFile(Factory factory) {
+		for (CtType<?> type : factory.Type().getAll()) {
+			assertThat(type).isEqualTo(type);
+		}
 	}
 
-	@Test
-	public void testEqualsBetweenTwoDifferentFile() {
-		assertThrows(AssertionError.class, ()-> assertThat(PATH + "Foo.java").isEqualTo(PATH + "Bar.java"));
+	@ModelTest("./src/test/java/spoon/testing/testclasses/" + "Foo.java")
+	public void testEqualsBetweenTwoDifferentFile(Factory fooFactory) {
+		Factory barFactory = build(new File("./src/test/java/spoon/testing/testclasses/" + "Bar.java"));
+		assertThatThrownBy(() -> {
+			for (CtType<?> fooType : fooFactory.Type().getAll()) {
+				for (CtType<?> barType : barFactory.Type().getAll()) {
+					assertThat(fooType).isEqualTo(barType);
+				}
+			}
+		}).isInstanceOf(AssertionError.class);
 	}
 }

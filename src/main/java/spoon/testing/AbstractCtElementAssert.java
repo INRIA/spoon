@@ -14,6 +14,10 @@ import static spoon.testing.utils.Check.assertNotNull;
 import static spoon.testing.utils.Check.assertIsSame;
 import static spoon.testing.utils.ProcessorUtils.process;
 
+/**
+ * @deprecated Use {@code spoon.testing.assertions.SpoonAssertions} instead.
+ */
+@Deprecated(since = "11", forRemoval = true)
 public abstract class AbstractCtElementAssert<T extends AbstractCtElementAssert<T>> extends AbstractAssert<T, CtElement> {
 	protected AbstractCtElementAssert(CtElement actual, Class<?> selfType) {
 		super(actual, selfType);
