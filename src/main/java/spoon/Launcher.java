@@ -54,6 +54,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import static spoon.support.StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL;
 
@@ -81,6 +83,12 @@ public class Launcher implements SpoonAPI {
 	private String[] commandLineArgs = new String[0];
 
 	private Filter<CtType<?>> typeFilter;
+
+	/**
+	 * True while this launcher's pipeline runs on the thread created by
+	 * {@link #onSpoonThread(Supplier)}, so that nested pipeline steps reuse that thread.
+	 */
+	private boolean runningOnSpoonThread;
 
 	/**
 	 * Contains the arguments accepted by this launcher (available after
@@ -722,6 +730,10 @@ public class Launcher implements SpoonAPI {
 	 */
 	@Override
 	public void run() {
+		onSpoonThread(this::doRun);
+	}
+
+	private void doRun() {
 		Environment env = modelBuilder.getFactory().getEnvironment();
 		env.debugMessage(getVersionMessage());
 		env.reportProgressMessage("Running Spoon...");
@@ -777,6 +789,10 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public CtModel buildModel() {
+		return onSpoonThread(this::doBuildModel);
+	}
+
+	private CtModel doBuildModel() {
 		long tstart = System.currentTimeMillis();
 		modelBuilder.build();
 		getEnvironment().debugMessage("model built in " + (System.currentTimeMillis() - tstart));
@@ -785,6 +801,10 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public void process() {
+		onSpoonThread(this::doProcess);
+	}
+
+	private void doProcess() {
 		long tstart = System.currentTimeMillis();
 		modelBuilder.instantiateAndProcess(getProcessorTypes());
 		modelBuilder.process(getProcessors());
@@ -793,6 +813,10 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public void prettyprint() {
+		onSpoonThread(this::doPrettyprint);
+	}
+
+	private void doPrettyprint() {
 		long tstart = System.currentTimeMillis();
 		try {
 			modelBuilder.generateProcessedSourceFiles(getEnvironment().getOutputType(), typeFilter);
@@ -828,6 +852,70 @@ public class Launcher implements SpoonAPI {
 		}
 
 		getEnvironment().debugMessage("pretty-printed in " + (System.currentTimeMillis() - tstart) + " ms");
+	}
+
+	/**
+	 * Runs {@code task} on a thread whose stack size is {@link Environment#getStackSize()}.
+	 *
+	 * <p>Spoon's visitors use one JVM frame per AST node on the path from the root to the node
+	 * being visited, so legal but deeply nested expressions overflow the default thread stack
+	 * (see <a href="https://github.com/INRIA/spoon/issues/6804">#6804</a>). The task runs on the
+	 * calling thread when the configured stack size is 0 or when the pipeline is already running
+	 * on such a thread.
+	 *
+	 * @param task the pipeline step to run
+	 * @param <T> the type of the step's result
+	 * @return the value returned by {@code task}
+	 */
+	private <T> T onSpoonThread(Supplier<T> task) {
+		long stackSize = getEnvironment().getStackSize();
+		if (stackSize <= 0 || runningOnSpoonThread) {
+			return task.get();
+		}
+		AtomicReference<T> result = new AtomicReference<>();
+		AtomicReference<Throwable> failure = new AtomicReference<>();
+		Thread thread = new Thread(null, () -> {
+			runningOnSpoonThread = true;
+			try {
+				result.set(task.get());
+			} catch (Throwable t) {
+				failure.set(t);
+			} finally {
+				runningOnSpoonThread = false;
+			}
+		}, "spoon", stackSize);
+		thread.start();
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new SpoonException(e);
+		}
+		Throwable t = failure.get();
+		if (t == null) {
+			return result.get();
+		}
+		// contract: the caller sees the same exception as if the task had run on its own thread
+		if (t instanceof RuntimeException) {
+			throw (RuntimeException) t;
+		}
+		if (t instanceof Error) {
+			throw (Error) t;
+		}
+		throw new SpoonException(t);
+	}
+
+	/**
+	 * Runs {@code task} on a thread whose stack size is {@link Environment#getStackSize()}.
+	 *
+	 * @param task the pipeline step to run
+	 * @see #onSpoonThread(Supplier)
+	 */
+	private void onSpoonThread(Runnable task) {
+		onSpoonThread(() -> {
+			task.run();
+			return null;
+		});
 	}
 
 	public SpoonModelBuilder getModelBuilder() {
