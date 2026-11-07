@@ -7,10 +7,15 @@
  */
 package spoon.support.visitor;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import spoon.processing.Processor;
 import spoon.processing.TraversalStrategy;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtScanner;
 
 /**
@@ -53,24 +58,72 @@ public class ProcessingVisitor extends CtScanner {
 	 * {@link Processor#isToBeProcessed(CtElement)} returns true.
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void scan(CtElement e) {
 		if (e == null) {
 			return;
 		}
+		if (getClass() == ProcessingVisitor.class && e instanceof CtBinaryOperator<?> binaryOperator) {
+			scanBinaryOperator(binaryOperator);
+			return;
+		}
+		processIfRequested(e, TraversalStrategy.PRE_ORDER);
+		super.scan(e);
+		processIfRequested(e, TraversalStrategy.POST_ORDER);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void processIfRequested(CtElement element, TraversalStrategy strategy) {
 		Processor<CtElement> p = (Processor<CtElement>) processor;
-		if (p.getTraversalStrategy() == TraversalStrategy.PRE_ORDER
-				&& canBeProcessed(e)) {
-			if (p.isToBeProcessed(e)) {
-				p.process(e);
+		if (p.getTraversalStrategy() == strategy && canBeProcessed(element) && p.isToBeProcessed(element)) {
+			p.process(element);
+		}
+	}
+
+	private void scanBinaryOperator(CtBinaryOperator<?> root) {
+		Deque<BinaryFrame> frames = new ArrayDeque<>();
+		frames.push(new BinaryFrame(root));
+		while (!frames.isEmpty()) {
+			BinaryFrame frame = frames.peek();
+			switch (frame.nextStage()) {
+			case 0 -> {
+				processIfRequested(frame.operator, TraversalStrategy.PRE_ORDER);
+				enter(frame.operator);
+				scan(CtRole.ANNOTATION, frame.operator.getAnnotations());
+				scan(CtRole.TYPE, frame.operator.getType());
+				scan(CtRole.CAST, frame.operator.getTypeCasts());
+			}
+			case 1 -> scanBinaryOperand(frames, CtRole.LEFT_OPERAND, frame.operator.getLeftHandOperand());
+			case 2 -> scanBinaryOperand(frames, CtRole.RIGHT_OPERAND, frame.operator.getRightHandOperand());
+			case 3 -> scan(CtRole.COMMENT, frame.operator.getComments());
+			default -> {
+				exit(frame.operator);
+				processIfRequested(frame.operator, TraversalStrategy.POST_ORDER);
+				frames.pop();
+				}
 			}
 		}
-		super.scan(e);
-		if (p.getTraversalStrategy() == TraversalStrategy.POST_ORDER
-				&& canBeProcessed(e)) {
-			if (p.isToBeProcessed(e)) {
-				p.process(e);
-			}
+	}
+
+	private void scanBinaryOperand(Deque<BinaryFrame> frames, CtRole role, CtElement operand) {
+		if (operand instanceof CtBinaryOperator<?> binaryOperator) {
+			frames.push(new BinaryFrame(binaryOperator));
+		} else {
+			scan(role, operand);
+		}
+	}
+
+	private static final class BinaryFrame {
+		private final CtBinaryOperator<?> operator;
+		private int stage;
+
+		private BinaryFrame(CtBinaryOperator<?> operator) {
+			this.operator = operator;
+		}
+
+		private int nextStage() {
+			int currentStage = stage;
+			stage = currentStage + 1;
+			return currentStage;
 		}
 	}
 
