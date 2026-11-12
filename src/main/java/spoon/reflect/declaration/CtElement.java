@@ -199,6 +199,12 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * Returns true if this element is not present in the code (automatically added by the
 	 * Java compiler or inferred when the model is built).
 	 * Consequently, implicit elements are not pretty-printed and have no position.
+	 *
+	 * <p>{@link CtTypeInformation#getAllExecutables()} and {@link CtExecutable#getReference()}
+	 * return fresh references that are not part of the source tree. Implicitness does not
+	 * make sense on those objects; query the declaration instead
+	 * ({@link spoon.reflect.reference.CtExecutableReference#getExecutableDeclaration()}
+	 * or {@link #getElements(Filter)} for {@link CtConstructor}).
 	 */
 	@PropertyGetter(role = IS_IMPLICIT)
 	boolean isImplicit();
