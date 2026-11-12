@@ -9,6 +9,10 @@ package spoon.testing;
 
 import spoon.reflect.declaration.CtElement;
 
+/**
+ * @deprecated Use {@code spoon.testing.assertions.SpoonAssertions} instead.
+ */
+@Deprecated(since = "11", forRemoval = true)
 public class CtElementAssert extends AbstractCtElementAssert<CtElementAssert> {
 	protected CtElementAssert(CtElement actual) {
 		super(actual, CtElementAssert.class);
