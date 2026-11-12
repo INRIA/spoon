@@ -13,8 +13,8 @@ import spoon.reflect.path.impl.AbstractPathElement;
 import spoon.reflect.path.impl.CtNamedPathElement;
 import spoon.reflect.path.impl.CtPathElement;
 import spoon.reflect.path.impl.CtPathImpl;
-import spoon.reflect.path.impl.CtTypedNameElement;
 import spoon.reflect.path.impl.CtRolePathElement;
+import spoon.reflect.path.impl.CtTypedNameElement;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -145,7 +145,8 @@ public class CtPathStringBuilder {
 				}
 			} else if ("]".equals(token) || ";".equals(token)) {
 				//finished reading of argument value
-				pathElement.addArgument(argName, argValue.toString());
+				//[fix bug]:AbstractPathElement.getArguments([constructor with no parameters])
+				pathElement.addArgument(argName, argValue.toString().replace("())", "()"));
 				return token;
 			}
 			argValue.append(token);
