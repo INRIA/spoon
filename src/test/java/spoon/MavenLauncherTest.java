@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,7 +79,7 @@ public class MavenLauncherTest {
 		MavenLauncher launcher = new MavenLauncher(targetPathString, MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 
 		//contract: classpath is not empty
-		assertNotEquals(0, launcher.getEnvironment().getSourceClasspath().length);
+		assertNotEquals(0, launcher.getEnvironment().getSourceClasspath().length, () -> describeClasspathFiles(targetPath));
 		//contract: classpath contains only valid elements
 		for (String cpe : launcher.getEnvironment().getSourceClasspath()) {
 			assertTrue(new File(cpe).exists());
@@ -101,7 +102,7 @@ public class MavenLauncherTest {
 		launcher = new MavenLauncher(targetPathString, MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 
 		//contract: classpath is not empty
-		assertNotEquals(0, launcher.getEnvironment().getSourceClasspath().length);
+		assertNotEquals(0, launcher.getEnvironment().getSourceClasspath().length, () -> describeClasspathFiles(targetPath));
 		//contract: classpath contains only valid elements
 		for (String cpe : launcher.getEnvironment().getSourceClasspath()) {
 			assertTrue(new File(cpe).exists());
@@ -292,6 +293,34 @@ public class MavenLauncherTest {
 			"Spoon dependency not found. Was the environment variable set? Classpath: "
 				+ Arrays.toString(launcher.getEnvironment().getSourceClasspath())
 		);
+	}
+
+	/**
+	 * Describes the cached classpath files, both in the copied project and in the working directory it was copied
+	 * from, to diagnose the flaky empty classpath of {@link #spoonMavenLauncherTest()}.
+	 */
+	private static String describeClasspathFiles(Path targetPath) {
+		StringBuilder sb = new StringBuilder("empty classpath, cached classpath files:");
+		for (Path dir : List.of(targetPath, Path.of(".").toAbsolutePath().normalize())) {
+			for (String name : List.of("spoon.classpath.tmp", "spoon.classpath-app.tmp", "spoon.classpath-test.tmp")) {
+				Path file = dir.resolve(name);
+				sb.append("\n  ").append(file).append(": ");
+				try {
+					if (!Files.exists(file)) {
+						sb.append("absent");
+						continue;
+					}
+					String content = Files.readString(file);
+					sb.append(Files.size(file)).append(" bytes, modified ")
+						.append(Files.getLastModifiedTime(file))
+						.append(", content: ").append(StringUtils.abbreviate(content, 300));
+				} catch (IOException e) {
+					sb.append("unreadable (").append(e).append(")");
+				}
+			}
+		}
+		sb.append("\n  now: ").append(Instant.now());
+		return sb.toString();
 	}
 
 	private static String copyResourceToFolder(Path tempDir, String resourcePath) throws IOException {
