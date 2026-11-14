@@ -87,6 +87,11 @@ public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implem
 	}
 
 	@Override
+	public CtTypeReference<?> getTypeErasure() {
+		return isUpper() ? getBoundingType().getTypeErasure() : getFactory().Type().objectType();
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public Class<Object> getActualClass() {
 		if (isUpper()) {
