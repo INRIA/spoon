@@ -268,7 +268,7 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 	public <C extends CtType<Object>> C setTypeMembers(List<CtTypeMember> members) {
 		super.setTypeMembers(members);
 		for (CtRecordComponent component : components) {
-			if (hasMethodWithSameNameAndNoParameter(component)) {
+			if (!hasMethodWithSameNameAndNoParameter(component)) {
 				addMethod(component.toMethod());
 			}
 			if (getField(component.getSimpleName()) == null) {
