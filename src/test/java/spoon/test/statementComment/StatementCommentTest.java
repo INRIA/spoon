@@ -140,6 +140,7 @@ public class StatementCommentTest {
 				"}", m1.getBody().prettyprint());
 	}
 	
+	@Test
 	public void testCaseStatement(){
 		// contract: test an isolated case statement commented out leads to UnsupportedOperationException
 		Launcher launcher = setUpTest();
@@ -151,6 +152,7 @@ public class StatementCommentTest {
 		assertThrows(UnsupportedOperationException.class, () -> caseStmt.comment());
 	}
 
+	@Test
 	public void testClassStatement(){
 		// contract: test an entire class cannot be commented out
 		Launcher launcher = setUpTest();
@@ -278,6 +280,7 @@ public class StatementCommentTest {
 	}
 	
 
+	@Test
 	public void testCatchStatementFail(){
 		// contract: test commenting of isolated catch leads to UnsupportedOperationException exception
 		Launcher launcher = setUpTest();
