@@ -26,6 +26,7 @@ import java.util.Set;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -395,7 +396,11 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 	private CtBinaryOperator<Object> buildDivision(Object first, Object second) {
-		return factory.createBinaryOperator(factory.createLiteral(first), factory.createLiteral(second), BinaryOperatorKind.DIV);
+		CtLiteral<Object> numerator = factory.createLiteral(first);
+		CtLiteral<Object> denominator = factory.createLiteral(second);
+		CtBinaryOperator<Object> division = factory.createBinaryOperator(numerator, denominator, BinaryOperatorKind.DIV);
+		division.setType(numerator.getType().clone());
+		return division;
 	}
 
 	@Override
