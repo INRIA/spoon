@@ -148,6 +148,34 @@ public class CtRecordTest {
 	}
 
 	@Test
+	void testSetTypeMembersDoesNotDuplicateExplicitAccessor() {
+		Factory factory = new Launcher().getFactory();
+
+		CtRecord record = factory.createRecord();
+		record.setSimpleName("Person");
+
+		CtRecordComponent component = factory.createRecordComponent();
+		component.setSimpleName("name");
+		component.setType(factory.Type().stringType());
+
+		record.addRecordComponent(component);
+
+		CtMethod<?> explicitAccessor = factory.createMethod();
+		explicitAccessor.setSimpleName("name");
+		explicitAccessor.setType(factory.Type().stringType());
+		explicitAccessor.setBody(factory.createBlock());
+
+		record.setTypeMembers(List.of(explicitAccessor));
+
+		assertEquals(1, record.getMethodsByName("name").size());
+
+		assertFalse(
+			record.getMethodsByName("name").get(0).isImplicit(),
+			"The explicit accessor should not be replaced by an implicit accessor"
+		);
+	}
+
+	@Test
 	void testNoClasspathAnnotations() {
 		// contract: annotations that are no in the classpath should be ignored for record fields, methods and parameters.
 		String code = "src/test/resources/records/NoClasspathAnnotations.java";
