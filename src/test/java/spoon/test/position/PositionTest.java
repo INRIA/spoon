@@ -109,9 +109,11 @@ import spoon.test.position.testclasses.PositionTry;
 import spoon.test.position.testclasses.SomeEnum;
 import spoon.test.position.testclasses.TypeParameter;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
+import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelTest;
 import spoon.testing.utils.ModelUtils;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -1433,6 +1435,22 @@ public class PositionTest {
 			.collect(Collectors.toList());
 
 		assertTrue(listOfBadPositionElements.stream().allMatch(elt -> elt.getPosition().getLine() == 1), "Some Spoon elements have an invalid line position");
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 6702, fixed = true)
+	void testColumnOfCompilationUnitWithoutOriginalSource() {
+		// contract: the columns of a compilation unit built from a VirtualFile can be computed, even though it has no original source code on disk
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile("class Source {\n\t// newline is essential\n}\n", "x/y/z/Source.java"));
+		launcher.buildModel();
+
+		CtCompilationUnit compilationUnit = launcher.getFactory().CompilationUnit().getMap().values().iterator().next();
+		SourcePosition position = compilationUnit.getPosition();
+
+		assertTrue(position.isValidPosition());
+		assertThatCode(position::getColumn).doesNotThrowAnyException();
+		assertThatCode(position::getEndColumn).doesNotThrowAnyException();
 	}
 
 	@Test
