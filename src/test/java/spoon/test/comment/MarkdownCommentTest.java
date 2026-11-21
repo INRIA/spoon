@@ -7,6 +7,7 @@
  */
 package spoon.test.comment;
 
+import java.util.List;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtComment;
@@ -15,8 +16,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelTest;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -410,5 +409,3 @@ public class MarkdownCommentTest {
                 .contains("[jdk]: https://docs.oracle.com/en/java/");
     }
 }
-
-

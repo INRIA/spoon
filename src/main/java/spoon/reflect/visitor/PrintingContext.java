@@ -7,15 +7,14 @@
  */
 package spoon.reflect.visitor;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.EnumSet;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.EnumSet;
 
 public class PrintingContext {
 	private CtStatement statement;

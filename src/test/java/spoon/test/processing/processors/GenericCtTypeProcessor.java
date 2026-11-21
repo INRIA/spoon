@@ -16,11 +16,10 @@
  */
 package spoon.test.processing.processors;
 
-import spoon.processing.AbstractProcessor;
-import spoon.reflect.declaration.CtType;
-
 import java.util.ArrayList;
 import java.util.List;
+import spoon.processing.AbstractProcessor;
+import spoon.reflect.declaration.CtType;
 
 /**
  * Created by urli on 10/08/2017.

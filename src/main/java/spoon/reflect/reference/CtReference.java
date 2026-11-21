@@ -7,6 +7,7 @@
  */
 package spoon.reflect.reference;
 
+import java.util.List;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtComment;
@@ -14,8 +15,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
-
-import java.util.List;
 
 
 /**

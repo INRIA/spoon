@@ -1,5 +1,6 @@
 package spoon.test.template;
 
+import java.util.*;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtBlock;
@@ -15,8 +16,6 @@ import spoon.template.*;
 import spoon.test.template.testclasses.types.AClassModel;
 import spoon.test.template.testclasses.types.AnEnumModel;
 import spoon.test.template.testclasses.types.AnIfaceModel;
-
-import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertSame;

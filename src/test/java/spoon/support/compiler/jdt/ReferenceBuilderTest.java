@@ -1,12 +1,11 @@
 package spoon.support.compiler.jdt;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLiteral;

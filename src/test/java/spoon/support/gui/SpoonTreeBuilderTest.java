@@ -1,14 +1,12 @@
 package spoon.support.gui;
 
+import javax.swing.tree.DefaultMutableTreeNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.factory.Factory;
 import spoon.support.reflect.declaration.CtClassImpl;
-
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import static org.junit.jupiter.api.Assertions.*;
 

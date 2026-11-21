@@ -7,10 +7,9 @@
  */
 package spoon.support.reflect.cu.position;
 
+import java.io.File;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.NoSourcePosition;
-
-import java.io.File;
 
 /**
  * This class intends to create a source position containing only a compilation unit.

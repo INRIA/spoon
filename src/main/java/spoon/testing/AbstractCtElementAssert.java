@@ -10,8 +10,8 @@ package spoon.testing;
 import spoon.reflect.declaration.CtElement;
 
 import static spoon.testing.utils.Check.assertCtElementEquals;
-import static spoon.testing.utils.Check.assertNotNull;
 import static spoon.testing.utils.Check.assertIsSame;
+import static spoon.testing.utils.Check.assertNotNull;
 import static spoon.testing.utils.ProcessorUtils.process;
 
 public abstract class AbstractCtElementAssert<T extends AbstractCtElementAssert<T>> extends AbstractAssert<T, CtElement> {

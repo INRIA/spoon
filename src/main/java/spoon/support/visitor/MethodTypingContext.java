@@ -7,14 +7,11 @@
  */
 package spoon.support.visitor;
 
-import static spoon.support.visitor.ClassTypingContext.getTypeReferences;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
-
 import org.jspecify.annotations.Nullable;
 import spoon.SpoonException;
 import spoon.reflect.code.CtExpression;
@@ -30,6 +27,8 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import static spoon.support.visitor.ClassTypingContext.getTypeReferences;
 
 /**
  * For the scope method or constructor and super type hierarchy of it's declaring type,

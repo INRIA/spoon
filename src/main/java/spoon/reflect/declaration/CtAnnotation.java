@@ -7,6 +7,11 @@
  */
 package spoon.reflect.declaration;
 
+import java.lang.annotation.Annotation;
+import java.util.List;
+import java.util.Map;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLiteral;
@@ -15,13 +20,7 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 import spoon.support.UnsettableProperty;
-
-import java.lang.annotation.Annotation;
-import java.util.List;
-import java.util.Map;
 
 import static spoon.reflect.path.CtRole.ANNOTATION_TYPE;
 import static spoon.reflect.path.CtRole.VALUE;

@@ -8,9 +8,9 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtPackageReference;
-import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtPackageDeclarationImpl extends CtElementImpl implements CtPackageDeclaration {

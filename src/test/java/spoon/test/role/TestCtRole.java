@@ -17,7 +17,6 @@
 package spoon.test.role;
 
 import org.junit.jupiter.api.Test;
-
 import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.path.CtRole;
@@ -29,6 +28,7 @@ import spoon.support.reflect.declaration.CtConstructorImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.testing.utils.GitHubIssue;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;

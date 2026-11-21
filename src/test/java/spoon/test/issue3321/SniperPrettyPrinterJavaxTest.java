@@ -1,9 +1,9 @@
 package spoon.test.issue3321;
 
-import spoon.support.sniper.SniperJavaPrettyPrinter;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.compiler.Environment;
-import org.junit.jupiter.api.Test;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 public class SniperPrettyPrinterJavaxTest {
     @Test

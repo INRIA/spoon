@@ -19,7 +19,6 @@ package spoon.test.serializable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-
 import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtType;
@@ -32,7 +31,6 @@ import spoon.support.util.ByteSerialization;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static spoon.testing.utils.ModelUtils.build;
 

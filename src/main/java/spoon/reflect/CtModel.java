@@ -7,6 +7,9 @@
  */
 package spoon.reflect;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 import spoon.SpoonModelBuilder;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
@@ -15,10 +18,6 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtQueryable;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
 
 /** represents a Java program, modeled by a set of compile-time (Ct) objects
  * where each object is a program element (for instance, a CtClass represents a class).

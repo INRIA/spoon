@@ -7,6 +7,14 @@
  */
 package spoon.generating.replace;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.generating.ReplacementVisitorGenerator;
@@ -33,17 +41,8 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.util.internal.ElementNameMap;
 import spoon.support.util.ModelList;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import spoon.support.util.internal.ElementNameMap;
 
 public class ReplaceScanner extends CtScanner {
 	public static final String TARGET_REPLACE_PACKAGE = "spoon.support.visitor.replace";

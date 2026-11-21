@@ -7,10 +7,9 @@
  */
 package spoon.testing;
 
+import java.util.LinkedList;
 import spoon.SpoonException;
 import spoon.processing.Processor;
-
-import java.util.LinkedList;
 
 /**
  * Base contract for all assertion objects: the minimum functionality that

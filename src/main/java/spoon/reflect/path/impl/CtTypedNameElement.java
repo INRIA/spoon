@@ -7,10 +7,9 @@
  */
 package spoon.reflect.path.impl;
 
-import spoon.reflect.declaration.CtElement;
-
 import java.util.ArrayList;
 import java.util.Collection;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * spoon.reflect.path.impl.CtPathElement that match on CtNamedElement

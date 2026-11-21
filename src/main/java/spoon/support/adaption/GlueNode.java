@@ -7,17 +7,16 @@
  */
 package spoon.support.adaption;
 
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.reference.CtTypeParameterReference;
-import spoon.reflect.reference.CtTypeReference;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.reflect.reference.CtTypeReference;
 
 import static spoon.support.adaption.NodePrintHelper.quote;
 import static spoon.support.adaption.NodePrintHelper.toJsonLikeArray;

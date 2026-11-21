@@ -7,9 +7,9 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.declaration.CtField;
 
 import static spoon.reflect.path.CtRole.ASSIGNMENT;
 

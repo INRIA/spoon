@@ -13,8 +13,6 @@ import spoon.support.template.Parameters;
 import spoon.template.Parameter;
 import spoon.template.Template;
 
-import java.lang.reflect.Field;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
