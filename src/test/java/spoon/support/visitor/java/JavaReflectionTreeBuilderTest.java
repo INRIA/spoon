@@ -45,8 +45,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -359,16 +361,21 @@ public class JavaReflectionTreeBuilderTest {
 				this.isNotEqual = false;
 				return false;
 			}
+			if (role == CtRole.NAME) {
+				String le = (element instanceof CtEnumValue) ? ((CtEnumValue) element).getSimpleName() : null;
+				String ro = (other   instanceof CtEnumValue) ? ((CtEnumValue)  other).getSimpleName()  : null;
+				if (le != null && le.equals(ro)) {
+					this.isNotEqual = false;
+					return false;
+				}
+			}
 
 			CtElement parentOfOther = stack.peek();
-			try {
-				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther).toString() + "#" + role.getCamelCaseName()
+			String where = safePath(pathBuilder, rootOfOther, parentOfOther) + "#" + role.getCamelCaseName();
+			differences.add("Difference on path: " + where
 				+ "\nShadow: " + String.valueOf(other)
 				+ "\nNormal: " + String.valueOf(element) + "\n");
-			} catch (CtPathException e) {
-				throw new SpoonException(e);
-			}
-			return false;
+			return false;	
 		}
 		@Override
 		public void biScan(CtRole role, CtElement element, CtElement other) {
@@ -408,34 +415,100 @@ public class JavaReflectionTreeBuilderTest {
 		protected void biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
 			if (role == CtRole.TYPE_MEMBER) {
 				//sort type members so they match together
-				Map<String, CtTypeMember> elementsByName = groupTypeMembersBySignature((Collection) elements);
-				Map<String, CtTypeMember> othersByName = groupTypeMembersBySignature((Collection) others);
-				for (Map.Entry<String, CtTypeMember> e : elementsByName.entrySet()) {
-					String name = e.getKey();
+				List<CtTypeMember> elementMembers = elements.stream().filter(CtTypeMember.class::isInstance).map(CtTypeMember.class::cast).collect(Collectors.toList());
+        		List<CtTypeMember> othersMembers = others.stream().filter(CtTypeMember.class::isInstance).map(CtTypeMember.class::cast).collect(Collectors.toList());
+				Map<String, CtTypeMember> elementsByName = groupTypeMembersBySignature(elementMembers);
+        		Map<String, CtTypeMember> othersByName   = groupTypeMembersBySignature(othersMembers);
+				List<String> keys = new ArrayList<>(elementsByName.keySet());
+				Collections.sort(keys);
+				for (String name : keys) {
+					CtTypeMember element  = elementsByName.get(name);
 					CtTypeMember other = othersByName.remove(name);
 					if (other == null) {
-						if (e.getValue().isImplicit()) {
+						if (element.isImplicit()) {
 							//it is OK, that implicit elements are not available in runtime
 							continue;
 						}
 						differences.add("Missing shadow typeMember: " + name);
+						continue;
 					}
-					biScan(role, e.getValue(), other);
+					biScan(role, element, other);
 				}
-				for (Map.Entry<String, CtTypeMember> e : othersByName.entrySet()) {
-					differences.add("Unexpected shadow typeMember: " + e.getKey());
+				List<String> remaining = new ArrayList<>(othersByName.keySet());
+				Collections.sort(remaining);
+				for (String name : remaining) {
+					differences.add("Unexpected shadow typeMember: " + name);
 				}
 				return;
 			}
+			boolean leftHasEnumVals  = elements != null && elements.stream().anyMatch(CtEnumValue.class::isInstance);
+			boolean rightHasEnumVals = others != null && others.stream().anyMatch(CtEnumValue.class::isInstance);
+			if (leftHasEnumVals || rightHasEnumVals) {
+				Map<String, CtEnumValue> left = elements.stream().filter(CtEnumValue.class::isInstance).map(CtEnumValue.class::cast)
+					.collect(Collectors.toMap(
+						CtEnumValue::getSimpleName,
+						v -> v,
+						(a, b) -> a,
+						LinkedHashMap::new
+					));
+				Map<String, CtEnumValue> right = others.stream().filter(CtEnumValue.class::isInstance).map(CtEnumValue.class::cast)
+					.collect(Collectors.toMap(
+						CtEnumValue::getSimpleName,
+						v -> v,
+						(a, b) -> a,
+						LinkedHashMap::new
+					));
+				List<String> keys = new ArrayList<>(left.keySet());
+				Collections.sort(keys);
+				
+				for (String name : keys) {
+					CtEnumValue l = left.get(name);
+					CtEnumValue r = right.remove(name);
+					if (r == null) {
+						differences.add("Missing shadow enum value: " + name);
+						continue;
+					}
+					super.biScan(role, l, r);
+				}
+
+				if (!right.isEmpty()) {
+					List<String> extra = new ArrayList<>(right.keySet());
+					Collections.sort(extra);
+					for (String name : extra) {
+						differences.add("Unexpected shadow enum value: " + name);
+					}
+				}
+				return;
+			}
+
 			if (role == CtRole.ANNOTATION) {
-				//remove all RetentionPolicy#SOURCE level annotations from elements
-				List<CtAnnotation<?>> fileteredElements = ((List<CtAnnotation<?>>) elements).stream().filter(a -> {
+				java.util.function.Predicate<CtAnnotation<?>> keep = a -> {
 					CtTypeReference<?> at = a.getAnnotationType();
 					Class ac = at.getActualClass();
 					return ac != Override.class && ac != SuppressWarnings.class && ac != Root.class
 						   && ac != Serial.class && ac != Nullable.class;
-				}).collect(Collectors.toList());
-				super.biScan(role, fileteredElements, others);
+				};
+				java.util.function.Function<CtAnnotation<?>, String> key = a -> {
+					CtTypeReference<?> at = a.getAnnotationType();
+					return at != null ? String.valueOf(at.getQualifiedName()) : "";
+				};
+
+				List<CtAnnotation<?>> left =
+					elements.stream()
+							.filter(CtAnnotation.class::isInstance)
+							.map(e -> (CtAnnotation<?>) e)
+							.filter(keep)
+							.sorted(Comparator.comparing(key))
+							.collect(Collectors.toList());
+				List<CtAnnotation<?>> right =
+					others.stream()
+						.filter(CtAnnotation.class::isInstance)
+						.map(e -> (CtAnnotation<?>) e)
+						.filter(keep)
+						.sorted(Comparator.comparing(key))
+						.collect(Collectors.toList());
+
+				super.biScan(role, left, right);
 				return;
 			}
 			super.biScan(role, elements, others);
@@ -455,7 +528,8 @@ public class JavaReflectionTreeBuilderTest {
 						parentOf = diff.element.getParent();
 						rootOf = type;
 					}
-					differences.add("Diff on path: " + pathBuilder.fromElement(rootOf, parentOf).toString() + "#"
+					String where = safePath(pathBuilder, rootOf, parentOf);
+					differences.add("Diff on path: " + where + "#"
 					+ diff.roles.stream().map(CtRole::getCamelCaseName).collect(Collectors.joining(", ", "[", "]"))
 					+ "\nShadow: " + String.valueOf(diff.other)
 					+ "\nNormal: " + String.valueOf(diff.element) + "\n");
@@ -466,24 +540,47 @@ public class JavaReflectionTreeBuilderTest {
 			}
 			return differences;
 		}
+
+		private static String simpleEnumName(Object o) {
+			if (!(o instanceof CtEnumValue)) return null;
+			return ((CtEnumValue) o).getSimpleName();
+		}
 	}
 
 	private static Map<String, CtTypeMember> groupTypeMembersBySignature(Collection<CtTypeMember> typeMembers) {
-		Map<String, CtTypeMember> typeMembersByName = new HashMap<>();
-		for (CtTypeMember tm : typeMembers) {
-			String name;
-			if (tm instanceof CtExecutable) {
-				CtExecutable<?> exec = ((CtExecutable) tm);
-				name = exec.getSignature();
-			} else {
-				name = tm.getSimpleName();
-			}
-			CtTypeMember conflictTM = typeMembersByName.put(name, tm);
-			if (conflictTM != null) {
-				throw new SpoonException("There are two type members with name: " + name + " in " + tm.getParent(CtType.class).getQualifiedName());
-			}
+		List<CtTypeMember> typeMembersByName = new ArrayList<>(typeMembers);
+		typeMembersByName.sort(Comparator
+			.comparing(JavaReflectionTreeBuilderTest::memberSignature)
+			.thenComparing(m -> {
+				SourcePosition p = m.getPosition();
+				return p != null ? p.getSourceStart() : Integer.MAX_VALUE;
+			})
+			.thenComparing(m -> {
+				CtType<?> decl = m.getDeclaringType();
+				return decl != null ? decl.getQualifiedName() : "";
+			})
+		);
+		
+		Map<String, CtTypeMember> byName = new LinkedHashMap<>();
+		for (CtTypeMember tm : typeMembersByName) {
+			String name = memberSignature(tm);
+			byName.putIfAbsent(name, tm);
 		}
-		return typeMembersByName;
+		return byName;
+	}
+
+	private static String memberSignature(CtTypeMember tm) {
+		return (tm instanceof CtExecutable<?>)
+				? ((CtExecutable<?>) tm).getSignature()
+				: tm.getSimpleName();
+	}
+
+	private static String safePath(CtElementPathBuilder builder, CtElement root, CtElement parent) {
+		try {
+			return builder.fromElement(parent, root).toString();
+		} catch (CtPathException e) {
+			return "<no-path:" + (parent != null ? parent.getClass().getSimpleName() : "null") + ">";
+		}
 	}
 
 	@Test
