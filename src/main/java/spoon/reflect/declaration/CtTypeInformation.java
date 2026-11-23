@@ -198,6 +198,12 @@ public interface CtTypeInformation {
 	 *
 	 * If a method is overridden twice in the hierarchy, it counts for two different elements.
 	 * The method can be abstract.
+	 *
+	 * <p>Returned elements are fresh {@link CtExecutableReference} instances
+	 * (via {@link CtExecutable#getReference()}), not the declarations in the model.
+	 * {@link CtElement#isImplicit()} on those references is not meaningful; use
+	 * {@link CtExecutableReference#getExecutableDeclaration()} or query the model
+	 * for {@link CtConstructor}/{@link CtMethod}.
 	 */
 	@DerivedProperty
 	Collection<CtExecutableReference<?>> getAllExecutables();
