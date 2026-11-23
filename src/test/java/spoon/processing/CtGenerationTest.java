@@ -37,7 +37,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static spoon.testing.Assert.assertThat;
+import static spoon.testing.assertions.SpoonAssertions.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class CtGenerationTest {
