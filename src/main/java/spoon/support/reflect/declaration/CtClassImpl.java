@@ -89,6 +89,20 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 	}
 
 	@Override
+	public CtConstructor<T> getConstructorBySignature(String signature) {
+		for (CtTypeMember typeMember : getTypeMembers()) {
+			if (!(typeMember instanceof CtConstructor)) {
+				continue;
+			}
+			CtConstructor<T> c = (CtConstructor<T>) typeMember;
+			if (c.getSignature().replaceAll(c.getDeclaringType().getQualifiedName(), "").equals(signature)) {
+				return c;
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public Set<CtConstructor<T>> getConstructors() {
 		Set<CtConstructor<T>> constructors = new SignatureBasedSortedSet<>();
 		for (CtTypeMember typeMember : typeMembers) {
