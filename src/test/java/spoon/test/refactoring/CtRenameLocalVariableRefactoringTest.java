@@ -166,14 +166,14 @@ public class CtRenameLocalVariableRefactoringTest
 		try {
 			launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
 		} catch (Throwable e) {
-			new AssertionError("The printing of java sources failed after: "+refactoringDescription, e);
+			throw new AssertionError("The printing of java sources failed after: "+refactoringDescription, e);
 		}
 		
 //		 2) build it
 		try {
 			launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.CTTYPES);
 		} catch (Throwable e) {
-			new AssertionError("The compilation of java sources in "+launcher.getEnvironment().getBinaryOutputDirectory()+" failed after: "+refactoringDescription, e);
+			throw new AssertionError("The compilation of java sources in "+launcher.getEnvironment().getBinaryOutputDirectory()+" failed after: "+refactoringDescription, e);
 		}
 //		 3) create instance using that new model and test consistency
 		try (TestClassloader classLoader = new TestClassloader(launcher)) {
