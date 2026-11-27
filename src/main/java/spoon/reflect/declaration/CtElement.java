@@ -385,14 +385,16 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	CtPath getPath();
 
 	/**
-	 * Returns an iterator over this CtElement's descendants.
-	 * @return An iterator over this CtElement's descendants.
+	 * Returns an iterator over this CtElement and all its descendants in depth-first order.
+	 * This CtElement itself is included as the first element returned by the iterator.
+	 * @return An iterator over this CtElement and all its descendants.
 	 */
 	Iterator<CtElement> descendantIterator();
 
 	/**
-	 * Returns an Iterable instance of this CtElement, allowing for dfs traversal of its descendants.
-	 * @return an Iterable object that allows iterating through this CtElement's descendants.
+	 * Returns an Iterable instance that allows depth-first traversal of this CtElement
+	 * and all its descendants. This CtElement itself is included as the first element.
+	 * @return an Iterable object that allows iterating through this CtElement and its descendants.
 	 */
 	Iterable<CtElement> asIterable();
 

@@ -16,7 +16,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * A class to be able to iterate over the children elements in the tree of a given node, in depth-first order.
+ * An iterator over a given node and all its descendants in depth-first order.
+ * The given node is included as the first element returned by the iterator.
  */
 public class CtIterator extends CtScanner implements Iterator<CtElement> {
 	/**
