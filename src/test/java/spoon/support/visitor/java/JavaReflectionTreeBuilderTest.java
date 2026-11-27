@@ -991,6 +991,7 @@ public class JavaReflectionTreeBuilderTest {
 		for (CtField<?> field : specialValues.getFields()) {
 			assertNotNull(field.getDefaultExpression());
 			assertFalse(field.getDefaultExpression() instanceof CtLiteral<?>, "special value cannot be represented by literal");
+			assertNotNull(field.getDefaultExpression().getType(), "special value expression must carry its primitive type");
 		}
 
 	}
