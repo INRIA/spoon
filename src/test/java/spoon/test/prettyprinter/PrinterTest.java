@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;

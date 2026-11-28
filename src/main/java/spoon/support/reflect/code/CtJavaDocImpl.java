@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.code;
 
+import java.util.List;
 import spoon.javadoc.internal.Javadoc;
 import spoon.javadoc.internal.JavadocBlockTag;
 import spoon.javadoc.internal.JavadocDescriptionElement;
@@ -18,8 +19,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.util.ModelList;
-
-import java.util.List;
 
 import static spoon.support.compiler.jdt.JDTCommentBuilder.cleanComment;
 

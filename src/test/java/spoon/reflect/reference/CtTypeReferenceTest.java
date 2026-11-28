@@ -1,13 +1,15 @@
 package spoon.reflect.reference;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
 import spoon.Launcher;
 import spoon.compiler.Environment;
@@ -20,9 +22,6 @@ import spoon.support.compiler.VirtualFile;
 import spoon.support.modelobs.FineModelChangeListener;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
 import spoon.testing.utils.GitHubIssue;
-
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static com.google.common.primitives.Primitives.allPrimitiveTypes;
 import static com.google.common.primitives.Primitives.wrap;

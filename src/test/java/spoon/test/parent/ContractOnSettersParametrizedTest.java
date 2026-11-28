@@ -16,6 +16,13 @@
  */
 package spoon.test.parent;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import spoon.SpoonException;
@@ -39,14 +46,6 @@ import spoon.support.UnsettableProperty;
 import spoon.support.modelobs.ActionBasedChangeListenerImpl;
 import spoon.support.modelobs.action.Action;
 import spoon.test.SpoonTestHelpers;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.createFactory;

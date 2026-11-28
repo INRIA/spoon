@@ -7,6 +7,8 @@
  */
 package spoon.support.visitor.java.internal;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericDeclaration;
 import org.jspecify.annotations.Nullable;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtConstructor;
@@ -21,9 +23,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.GenericDeclaration;
 
 abstract class AbstractRuntimeBuilderContext implements RuntimeBuilderContext {
 

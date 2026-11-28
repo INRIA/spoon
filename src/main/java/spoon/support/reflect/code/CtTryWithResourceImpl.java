@@ -7,15 +7,14 @@
  */
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.RESOURCES_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.TRY_RESOURCE;

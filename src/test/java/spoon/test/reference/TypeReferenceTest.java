@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -67,7 +66,6 @@ import spoon.test.reference.testclasses.Panini;
 import spoon.test.reference.testclasses.ParamRefs;
 import spoon.test.reference.testclasses.SuperAccess;
 import spoon.testing.utils.ModelUtils;
-
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;

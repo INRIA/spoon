@@ -16,18 +16,17 @@
  */
 package spoon.reflect.visitor;
 
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.TestFactory;
-import org.mockito.Mockito;
-import spoon.reflect.factory.CoreFactory;
-import spoon.reflect.factory.Factory;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
+import org.mockito.Mockito;
+import spoon.reflect.factory.CoreFactory;
+import spoon.reflect.factory.Factory;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;

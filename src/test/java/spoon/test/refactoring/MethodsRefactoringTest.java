@@ -16,6 +16,14 @@
  */
 package spoon.test.refactoring;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -45,15 +53,6 @@ import spoon.test.refactoring.parameter.testclasses.TypeB;
 import spoon.test.refactoring.parameter.testclasses.TypeC;
 import spoon.test.refactoring.parameter.testclasses.TypeR;
 import spoon.testing.utils.ModelUtils;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

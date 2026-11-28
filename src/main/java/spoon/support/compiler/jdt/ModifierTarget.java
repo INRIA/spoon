@@ -7,11 +7,10 @@
  */
 package spoon.support.compiler.jdt;
 
-import spoon.reflect.declaration.ModifierKind;
-
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
+import spoon.reflect.declaration.ModifierKind;
 
 /**
  * Defines the elements that can have modifiers assigned to them.

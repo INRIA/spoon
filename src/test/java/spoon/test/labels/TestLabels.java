@@ -16,29 +16,26 @@
  */
 package spoon.test.labels;
 
-import spoon.reflect.code.CtBreak;
-import spoon.reflect.code.CtSwitch;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtWhile;
-import spoon.reflect.code.CtStatement;
+import java.util.List;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
-import spoon.Launcher;
-import spoon.reflect.code.CtFor;
-import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtContinue;
+import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtFor;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.NamedElementFilter;
-import org.junit.jupiter.api.Test;
 import spoon.testing.utils.ModelTest;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by urli on 19/06/2017.

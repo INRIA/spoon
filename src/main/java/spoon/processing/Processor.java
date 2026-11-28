@@ -7,10 +7,9 @@
  */
 package spoon.processing;
 
+import java.util.Set;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
-
-import java.util.Set;
 
 /**
  * This interface defines a generic code processor. To define a new processor,

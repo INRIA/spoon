@@ -1,5 +1,8 @@
 package spoon.test.reference;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -19,10 +22,6 @@ import spoon.reflect.visitor.filter.VariableReferenceFunction;
 import spoon.testing.utils.BySimpleName;
 import spoon.testing.utils.GitHubIssue;
 import spoon.testing.utils.ModelTest;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;

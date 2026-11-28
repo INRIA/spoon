@@ -7,10 +7,9 @@
  */
 package spoon.reflect.code;
 
+import java.util.List;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.UnsettableProperty;
-
-import java.util.List;
 
 /**
  * This code element defines an unnamed pattern, introduced in Java 2

@@ -7,12 +7,13 @@
  */
 package spoon.reflect.declaration;
 
-import static spoon.reflect.path.CtRole.NAME;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.UnsettableProperty;
+
+import static spoon.reflect.path.CtRole.NAME;
 
 /**
  * This element defines a constructor declaration.

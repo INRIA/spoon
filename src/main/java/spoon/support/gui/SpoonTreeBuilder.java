@@ -7,14 +7,13 @@
  */
 package spoon.support.gui;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import javax.swing.tree.DefaultMutableTreeNode;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtScanner;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.ArrayDeque;
-import java.util.Deque;
 
 public class SpoonTreeBuilder extends CtScanner {
 	Deque<DefaultMutableTreeNode> nodes;

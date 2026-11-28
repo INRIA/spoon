@@ -8,6 +8,13 @@
 package spoon.support.compiler;
 
 
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.ModelBuildingException;
 import spoon.reflect.code.CtBlock;
@@ -32,14 +39,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.compiler.jdt.PositionBuilder;
 import spoon.support.reflect.declaration.CtElementImpl;
-
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /** Helper class for working with snippets */
 public class SnippetCompilationHelper {

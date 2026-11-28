@@ -7,6 +7,9 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
@@ -25,10 +28,6 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 

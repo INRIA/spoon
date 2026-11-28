@@ -16,15 +16,27 @@
  */
 package spoon.test.template;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.pattern.ConflictResolutionMode;
 import spoon.pattern.Match;
-import spoon.pattern.PatternParameterConfigurator;
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
 import spoon.pattern.PatternBuilderHelper;
+import spoon.pattern.PatternParameterConfigurator;
 import spoon.pattern.Quantifier;
 import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.code.CtBlock;
@@ -69,19 +81,6 @@ import spoon.test.template.testclasses.replace.OldPattern;
 import spoon.test.template.testclasses.types.AClassWithMethodsAndRefs;
 import spoon.testing.utils.LineSeparatorExtension;
 import spoon.testing.utils.ModelUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

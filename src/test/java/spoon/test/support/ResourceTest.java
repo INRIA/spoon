@@ -18,9 +18,7 @@ package spoon.test.support;
 
 
 import java.io.File;
-
 import org.junit.jupiter.api.Test;
-
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonFolder;

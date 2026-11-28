@@ -7,11 +7,10 @@
  */
 package spoon.support.reflect.reference;
 
+import java.lang.reflect.AnnotatedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.lang.reflect.AnnotatedElement;
 
 public class CtPackageReferenceImpl extends CtReferenceImpl implements CtPackageReference {
 	private static final long serialVersionUID = 1L;
